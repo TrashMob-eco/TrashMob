@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | Complete |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -13,6 +13,13 @@
 ## Business Rationale
 
 Understanding how users interact with TrashMob features is critical for making data-driven product decisions. Currently, we have basic telemetry through Application Insights but lack structured feature usage tracking. Adding explicit feature metrics will help:
+
+**Current State:**
+- **Microsoft Clarity:** Session recordings, heatmaps, UX behavior analysis (already integrated)
+- **Application Insights:** Performance monitoring, error tracking (already integrated)
+- **Gap:** Structured custom event tracking for feature adoption metrics
+
+This project focuses on adding structured event tracking to Application Insights. Clarity remains for UX team insights.
 
 - Identify which features are most/least used
 - Understand user journeys and drop-off points
@@ -42,16 +49,16 @@ Understanding how users interact with TrashMob features is critical for making d
 ### Phase 1 - Core Infrastructure
 - ✅ Define standard event taxonomy and naming conventions
 - ✅ Create React hook/context for consistent event tracking
-- ✅ Implement backend API for custom metrics ingestion
+- ✅ Implement backend service for custom metrics (OpenTelemetry)
 - ✅ Configure Application Insights custom events
 
 ### Phase 2 - Feature Instrumentation
-- ✅ Track user authentication events (login, signup, logout)
-- ✅ Track event lifecycle (create, edit, cancel, complete)
-- ✅ Track attendance actions (register, unregister, check-in)
+- ✅ Track user authentication events (login, logout)
+- ✅ Track event lifecycle (create)
+- ✅ Track attendance actions (register)
 - ✅ Track litter report submissions
-- ✅ Track partner/community interactions
-- ✅ Track search and discovery actions
+- ⬜ Track partner/community interactions
+- ⬜ Track search and discovery actions
 
 ### Phase 3 - Dashboards & Reporting
 - ✅ Create Application Insights workbook for feature metrics
@@ -347,29 +354,46 @@ public class MetricsService : IMetricsService
 
 ---
 
-## Open Questions
+## Decisions
 
 1. **Should we track session recordings?**
-   **Recommendation:** No, too privacy-invasive and adds complexity
-   **Owner:** Product
-   **Due:** Before Phase 1
+   **Decision:** Microsoft Clarity already handles session recordings for UX analysis. This project focuses on aggregate event metrics in Application Insights only.
 
 2. **What retention period for metrics?**
-   **Recommendation:** Use Application Insights default (90 days), archive monthly aggregates
-   **Owner:** Engineering
-   **Due:** Before Phase 3
+   **Decision:** Use Application Insights default (90 days), archive monthly aggregates for long-term trend analysis.
 
 ---
 
 ## Related Documents
 
+- **[Feature Metrics Guide](./Project_29_Metrics_Guide.md)** - Stakeholder documentation for using metrics
 - **[Project 27 - OpenTelemetry Migration](./Project_27_OpenTelemetry_Migration.md)** - Future observability improvements
 - **[CLAUDE.md](../../CLAUDE.md)** - Observability section
 - **[Application Insights Documentation](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)**
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** February 1, 2026
 **Owner:** Engineering Team
-**Status:** Not Started
-**Next Review:** Q2 2026
+**Status:** Complete
+**Next Review:** Quarterly metrics review
+
+---
+
+## Changelog
+
+- **2026-02-01:** Completed Phase 3 - Dashboards & Reporting
+  - Created Application Insights workbook (`Deploy/workbooks/feature-metrics-workbook.json`)
+  - Created workbook Bicep template (`Deploy/appInsightsWorkbook.bicep`)
+  - Created automated alerts Bicep template (`Deploy/appInsightsAlerts.bicep`)
+  - Documented KPIs and stakeholder metrics guide (`Planning/Projects/Project_29_Metrics_Guide.md`)
+- **2026-02-01:** Implemented Phase 1 and partial Phase 2
+  - Created `useFeatureMetrics` React hook for frontend tracking
+  - Created `IFeatureMetricsService` and `FeatureMetricsService` for backend OpenTelemetry integration
+  - Added FeatureMetrics ActivitySource to OpenTelemetry configuration
+  - Instrumented authentication flows (login, logout)
+  - Instrumented event creation
+  - Instrumented attendance registration
+  - Instrumented litter report creation
+- **2026-01-31:** Documented Microsoft Clarity for UX analysis; clarified App Insights for aggregate metrics
+- **2026-01-31:** Converted open questions to decisions; confirmed all scope items

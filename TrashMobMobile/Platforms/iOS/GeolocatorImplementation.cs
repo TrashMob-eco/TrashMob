@@ -23,13 +23,18 @@
                 }
             }
 
+            manager.AllowsBackgroundLocationUpdates = true;
+            manager.PausesLocationUpdatesAutomatically = false;
+
             var taskCompletionSource = new TaskCompletionSource();
             cancellationToken.Register(() =>
             {
+                manager.StopUpdatingLocation();
                 manager.LocationsUpdated -= PositionChanged;
                 taskCompletionSource.TrySetResult();
             });
             manager.LocationsUpdated += PositionChanged;
+            manager.StartUpdatingLocation();
 
             void PositionChanged(object? sender, CLLocationsUpdatedEventArgs args)
             {

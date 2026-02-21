@@ -3,3 +3,6 @@ public
 coverage
 build
 dist
+e2e
+playwright.config.ts
+**/*.html

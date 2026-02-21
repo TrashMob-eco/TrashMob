@@ -8,6 +8,15 @@ param storageAccountName string
 param environment string
 param minReplicas int = 1
 param maxReplicas int = 3
+param strapiBaseUrl string = ''
+
+// Custom domain configuration (optional)
+// The managed certificate must be created separately before deployment
+param customDomainName string = ''
+param managedCertificateName string = ''
+
+// Build the managed certificate resource ID if provided
+var managedCertificateId = managedCertificateName != '' ? '${containerAppsEnvironmentId}/managedCertificates/${managedCertificateName}' : ''
 
 // Custom domain configuration (optional)
 // The managed certificate must be created separately before deployment
@@ -29,6 +38,17 @@ var b2cSignUpSignInPolicyId = 'B2C_1A_TM_SIGNUP_SIGNIN'
 
 // Frontend B2C settings (for MSAL in browser - different client IDs than backend)
 var b2cFrontendClientId = environment == 'dev' ? 'e46d67ba-fe46-40f4-b222-2f982b2bb112' : '0a1647a4-c758-4964-904f-a9b66958c071'
+
+// Azure AD Entra External ID configuration - these are public values, not secrets
+// Note: Microsoft accounts work natively in Entra External ID (no external IDP setup needed)
+var entraInstance = environment == 'dev' ? 'https://trashmobecodev.ciamlogin.com/' : 'https://trashmobecopr.ciamlogin.com/'
+var entraDomain = environment == 'dev' ? 'TrashMobEcoDev.onmicrosoft.com' : 'trashmobecopr.onmicrosoft.com'
+var entraBackendClientId = environment == 'dev' ? '84df543d-6535-45f5-afab-4d38528b721a' : 'dc09e17b-bce4-4af9-82ab-f7b12af586b4'
+var entraTenantId = environment == 'dev' ? '8577fa31-4b86-4e4b-8b02-93fba708cb19' : 'b5fc8717-29eb-496e-8e09-cf90d344ce9f'
+var entraFrontendClientId = environment == 'dev' ? '1e6ae74d-0160-4a01-9d75-04048e03b17e' : '0604ef02-6b84-450f-b5d5-2196e96f3b48'
+
+// Feature flag: use Entra External ID instead of B2C
+var useEntraExternalId = 'true'
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: containerRegistryName
@@ -138,6 +158,38 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               name: 'AzureAdB2C__FrontendClientId'
               value: b2cFrontendClientId
             }
+            // Auth provider feature flag
+            {
+              name: 'UseEntraExternalId'
+              value: useEntraExternalId
+            }
+            // Azure AD Entra External ID backend settings (for JWT validation)
+            {
+              name: 'AzureAdEntra__Instance'
+              value: entraInstance
+            }
+            {
+              name: 'AzureAdEntra__ClientId'
+              value: entraBackendClientId
+            }
+            {
+              name: 'AzureAdEntra__Domain'
+              value: entraDomain
+            }
+            {
+              name: 'AzureAdEntra__TenantId'
+              value: entraTenantId
+            }
+            // Azure AD Entra External ID frontend settings (for MSAL in browser)
+            {
+              name: 'AzureAdEntra__FrontendClientId'
+              value: entraFrontendClientId
+            }
+            // Strapi CMS integration
+            {
+              name: 'StrapiBaseUrl'
+              value: strapiBaseUrl
+            }
           ]
           probes: [
             {
@@ -186,8 +238,8 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   }
 }
 
-// Note: Key Vault access policy is granted in the GitHub workflow using Azure CLI
-// to avoid requiring the deployment identity to have Key Vault access policy permissions
+// Note: Key Vault access is granted via RBAC (Key Vault Secrets User role) in the GitHub workflow
+// See Project 26 (KeyVault RBAC Migration) for details on the RBAC authorization model
 
 output containerAppFqdn string = containerApp.properties.configuration.ingress.fqdn
 output containerAppName string = containerApp.name

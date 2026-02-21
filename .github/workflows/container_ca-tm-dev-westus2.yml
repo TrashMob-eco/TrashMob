@@ -14,6 +14,12 @@ on:
       - 'Deploy/containerApp.bicep'
   workflow_dispatch:
 
+# Cancel in-progress deployments when a newer commit lands on main.
+# Only the latest code matters — earlier runs deploy stale commits.
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: true
+
 env:
   AZURE_CONTAINER_REGISTRY: acrtmdevwestus2
   CONTAINER_APP_NAME: ca-tm-dev-westus2
@@ -25,6 +31,7 @@ env:
   REGION: westus2
   CUSTOM_DOMAIN_NAME: dev.trashmob.eco
   MANAGED_CERTIFICATE_NAME: dev-trashmob-eco-cert
+  STRAPI_CONTAINER_APP_NAME: ca-strapi-tm-dev-westus2
 
 jobs:
   build-and-deploy:
@@ -36,18 +43,18 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v3.1.11
+        uses: gittools/actions/gitversion/setup@v3.2.1
         with:
           versionSpec: '5.x'
 
       - name: Determine Version
         id: version_step
-        uses: gittools/actions/gitversion/execute@v3.1.11
+        uses: gittools/actions/gitversion/execute@v3.2.1
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -65,9 +72,33 @@ jobs:
           IMAGE_TAG=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}
           IMAGE_TAG_LATEST=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
 
-          docker build -f TrashMob/Dockerfile -t $IMAGE_TAG -t $IMAGE_TAG_LATEST .
+          # BUILD_ENVIRONMENT=dev blocks search engine crawlers via robots.txt
+          docker build -f TrashMob/Dockerfile --build-arg BUILD_ENVIRONMENT=dev -t $IMAGE_TAG -t $IMAGE_TAG_LATEST .
           docker push $IMAGE_TAG
           docker push $IMAGE_TAG_LATEST
+
+      - name: Get Strapi FQDN
+        id: get-strapi
+        run: |
+          # Check if Strapi container app exists
+          STRAPI_EXISTS=$(az containerapp show \
+            --name ${{ env.STRAPI_CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query name \
+            -o tsv 2>/dev/null || echo "")
+
+          if [ -n "$STRAPI_EXISTS" ]; then
+            STRAPI_FQDN=$(az containerapp show \
+              --name ${{ env.STRAPI_CONTAINER_APP_NAME }} \
+              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --query properties.configuration.ingress.fqdn \
+              -o tsv)
+            echo "Strapi FQDN: $STRAPI_FQDN"
+            echo "strapi_url=https://$STRAPI_FQDN" >> $GITHUB_OUTPUT
+          else
+            echo "Strapi container app not found. CMS will be disabled."
+            echo "strapi_url=" >> $GITHUB_OUTPUT
+          fi
 
       - name: Deploy to Azure Container Apps
         run: |
@@ -90,12 +121,69 @@ jobs:
               minReplicas=1 \
               maxReplicas=3 \
               customDomainName=${{ env.CUSTOM_DOMAIN_NAME }} \
-              managedCertificateName=${{ env.MANAGED_CERTIFICATE_NAME }}
+              managedCertificateName=${{ env.MANAGED_CERTIFICATE_NAME }} \
+              strapiBaseUrl="${{ steps.get-strapi.outputs.strapi_url }}"
 
       # Note: Azure AD B2C configuration is now set via environment variables in containerApp.bicep
       # The B2C settings are public configuration values (not secrets) determined by the 'environment' parameter
 
-      - name: Grant Key Vault Access
+      - name: Grant Key Vault and Storage Access via RBAC
+        run: |
+          echo "Getting Container App managed identity..."
+          PRINCIPAL_ID=$(az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query identity.principalId \
+            -o tsv)
+          echo "Principal ID: $PRINCIPAL_ID"
+          PERMISSIONS_ADDED=false
+
+          # Get Key Vault resource ID for role assignment scope
+          KEY_VAULT_ID=$(az keyvault show --name ${{ env.KEY_VAULT_NAME }} --query id -o tsv)
+
+          echo "Checking if Key Vault Secrets User role already assigned..."
+          EXISTING_ROLE=$(az role assignment list \
+            --assignee $PRINCIPAL_ID \
+            --scope $KEY_VAULT_ID \
+            --role "Key Vault Secrets User" \
+            --query "[].id" \
+            -o tsv)
+
+          if [ -z "$EXISTING_ROLE" ]; then
+            echo "Role assignment not found. Granting Key Vault Secrets User role..."
+            az role assignment create \
+              --assignee $PRINCIPAL_ID \
+              --role "Key Vault Secrets User" \
+              --scope $KEY_VAULT_ID
+            PERMISSIONS_ADDED=true
+          else
+            echo "Key Vault Secrets User role already assigned to principal $PRINCIPAL_ID"
+          fi
+
+          echo "Checking if Storage Blob Data Contributor role already assigned..."
+          EXISTING_STORAGE_ROLE=$(az role assignment list \
+            --assignee $PRINCIPAL_ID \
+            --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ env.RESOURCE_GROUP }}/providers/Microsoft.Storage/storageAccounts/${{ env.STORAGE_ACCOUNT_NAME }} \
+            --query "[?roleDefinitionName=='Storage Blob Data Contributor'].roleDefinitionName" \
+            -o tsv)
+
+          if [ -z "$EXISTING_STORAGE_ROLE" ]; then
+            echo "Storage role assignment not found. Granting Storage Blob Data Contributor role..."
+            az role assignment create \
+              --assignee $PRINCIPAL_ID \
+              --role "Storage Blob Data Contributor" \
+              --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ env.RESOURCE_GROUP }}/providers/Microsoft.Storage/storageAccounts/${{ env.STORAGE_ACCOUNT_NAME }}
+            PERMISSIONS_ADDED=true
+          else
+            echo "Storage Blob Data Contributor role already assigned"
+          fi
+
+          if [ "$PERMISSIONS_ADDED" = true ]; then
+            echo "Waiting 30 seconds for permissions to propagate..."
+            sleep 30
+          fi
+
+      - name: Grant Azure Maps Access via RBAC
         run: |
           echo "Getting Container App managed identity..."
           PRINCIPAL_ID=$(az containerapp show \
@@ -105,23 +193,29 @@ jobs:
             -o tsv)
           echo "Principal ID: $PRINCIPAL_ID"
 
-          echo "Checking if Key Vault access policy already exists..."
-          EXISTING_POLICY=$(az keyvault show \
-            --name ${{ env.KEY_VAULT_NAME }} \
-            --query "properties.accessPolicies[?objectId=='$PRINCIPAL_ID'].objectId" \
+          # Deploy Azure Maps bicep to create role assignment and get client ID
+          echo "Deploying Azure Maps role assignment..."
+          DEPLOY_OUTPUT=$(az deployment group create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --template-file Deploy/azureMaps.bicep \
+            --parameters \
+              environment=dev \
+              region=${{ env.REGION }} \
+              containerAppPrincipalId=$PRINCIPAL_ID \
+            --query "properties.outputs.azureMapsClientId.value" \
             -o tsv)
 
-          if [ -z "$EXISTING_POLICY" ]; then
-            echo "Access policy not found. Granting Key Vault access..."
-            az keyvault set-policy \
-              --name ${{ env.KEY_VAULT_NAME }} \
-              --object-id $PRINCIPAL_ID \
-              --secret-permissions get list
-            echo "Waiting 30 seconds for permissions to propagate..."
-            sleep 30
-          else
-            echo "Access policy already exists for principal $PRINCIPAL_ID"
-          fi
+          echo "Azure Maps Client ID: $DEPLOY_OUTPUT"
+
+          # Store Azure Maps Client ID in Key Vault
+          echo "Storing Azure Maps Client ID in Key Vault..."
+          az keyvault secret set \
+            --vault-name ${{ env.KEY_VAULT_NAME }} \
+            --name AzureMapsClientId \
+            --value "$DEPLOY_OUTPUT" \
+            --output none
+
+          echo "Azure Maps managed identity access configured successfully"
 
       - name: Restart Container App
         run: |

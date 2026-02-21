@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Partners
+namespace TrashMob.Shared.Managers.Partners
 {
     using System;
     using System.Collections.Generic;
@@ -16,40 +16,20 @@
     /// <summary>
     /// Manages partner admin invitations including sending, accepting, declining, and resending invitations.
     /// </summary>
-    public class PartnerAdminInvitationManager : KeyedManager<PartnerAdminInvitation>, IPartnerAdminInvitationManager
+    public class PartnerAdminInvitationManager(
+        IKeyedRepository<PartnerAdminInvitation> partnerAdminInvitationRepository,
+        IPartnerAdminManager partnerAdminManager,
+        IUserManager userManager,
+        IKeyedManager<Partner> partnerManager,
+        IEmailManager emailManager)
+        : KeyedManager<PartnerAdminInvitation>(partnerAdminInvitationRepository), IPartnerAdminInvitationManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly IPartnerAdminManager partnerAdminManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IUserManager userManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerAdminInvitationManager"/> class.
-        /// </summary>
-        /// <param name="partnerAdminInvitationRepository">The repository for partner admin invitation data access.</param>
-        /// <param name="partnerAdminManager">The manager for partner admin operations.</param>
-        /// <param name="userManager">The manager for user operations.</param>
-        /// <param name="partnerManager">The manager for partner operations.</param>
-        /// <param name="emailManager">The email manager for sending notifications.</param>
-        public PartnerAdminInvitationManager(IKeyedRepository<PartnerAdminInvitation> partnerAdminInvitationRepository,
-            IPartnerAdminManager partnerAdminManager,
-            IUserManager userManager,
-            IKeyedManager<Partner> partnerManager,
-            IEmailManager emailManager)
-            : base(partnerAdminInvitationRepository)
-        {
-            this.partnerAdminManager = partnerAdminManager;
-            this.userManager = userManager;
-            this.partnerManager = partnerManager;
-            this.emailManager = emailManager;
-        }
 
         /// <inheritdoc />
         public override async Task<IEnumerable<PartnerAdminInvitation>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
-            return (await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken))
-                .AsEnumerable();
+            return await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -73,7 +53,7 @@
             var existingUser = await userManager.GetUserByEmailAsync(instance.Email, cancellationToken);
             var partner = await partnerManager.GetAsync(instance.PartnerId, cancellationToken);
 
-            if (existingInvitation != null)
+            if (existingInvitation is not null)
             {
                 if (existingInvitation.InvitationStatusId == (int)InvitationStatusEnum.Accepted)
                 {
@@ -87,7 +67,7 @@
             {
                 instance.InvitationStatusId = (int)InvitationStatusEnum.New;
 
-                if (existingUser != null)
+                if (existingUser is not null)
                 {
                     // Check to see if this Admin already exists in the system (without an invite since they were created prior to invites).
                     var partners =
@@ -103,7 +83,7 @@
                 await base.AddAsync(instance, userId, cancellationToken);
             }
 
-            if (existingUser == null)
+            if (existingUser is null)
             {
                 var welcomeMessage =
                     emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteNewUserToBePartnerAdmin.ToString());
@@ -116,15 +96,14 @@
                     subject = welcomeSubject,
                 };
 
-                var welcomeRecipients = new List<EmailAddress>
-                {
+                List<EmailAddress> welcomeRecipients =
+                [
                     new() { Name = instance.Email, Email = instance.Email },
-                };
+                ];
 
                 await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
-                        CancellationToken.None)
-                    .ConfigureAwait(false);
+                        CancellationToken.None);
 
                 instance.InvitationStatusId = (int)InvitationStatusEnum.Sent;
             }
@@ -144,31 +123,31 @@
                         subject = welcomeSubject,
                     };
 
-                    var welcomeRecipients = new List<EmailAddress>
-                    {
+                    List<EmailAddress> welcomeRecipients =
+                    [
                         new() { Name = existingUser.UserName, Email = instance.Email },
-                    };
+                    ];
 
                     await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
-                        CancellationToken.None).ConfigureAwait(false);
+                        CancellationToken.None);
 
                     instance.InvitationStatusId = (int)InvitationStatusEnum.Sent;
                 }
             }
 
-            var newInvitation = await base.UpdateAsync(instance, userId, cancellationToken).ConfigureAwait(false);
+            var newInvitation = await base.UpdateAsync(instance, userId, cancellationToken);
             return newInvitation;
         }
 
         /// <inheritdoc />
-        public async Task AcceptInvitation(Guid partnerAdminInviationId, Guid userId,
+        public async Task AcceptInvitationAsync(Guid partnerAdminInviationId, Guid userId,
             CancellationToken cancellationToken)
         {
             var partnerAdminInvitation = await Repository.Get(pa => pa.Id == partnerAdminInviationId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (partnerAdminInvitation == null)
+            if (partnerAdminInvitation is null)
             {
                 return;
             }
@@ -185,13 +164,13 @@
         }
 
         /// <inheritdoc />
-        public async Task DeclineInvitation(Guid partnerAdminInviationId, Guid userId,
+        public async Task DeclineInvitationAsync(Guid partnerAdminInviationId, Guid userId,
             CancellationToken cancellationToken)
         {
             var partnerAdminInvitation = await Repository.Get(pa => pa.Id == partnerAdminInviationId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (partnerAdminInvitation == null)
+            if (partnerAdminInvitation is null)
             {
                 return;
             }
@@ -201,7 +180,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<PartnerAdminInvitation> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId,
+        public async Task<PartnerAdminInvitation> ResendPartnerAdminInvitationAsync(Guid partnerAdminInvitationId,
             Guid UserId, CancellationToken cancellationToken)
         {
             // Check to see if this user already exists in the system.
@@ -209,7 +188,7 @@
             var existingUser = await userManager.GetUserByEmailAsync(instance.Email, cancellationToken);
             var partner = await partnerManager.GetAsync(instance.PartnerId, cancellationToken);
 
-            if (existingUser == null)
+            if (existingUser is null)
             {
                 var welcomeMessage =
                     emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteNewUserToBePartnerAdmin.ToString());
@@ -222,15 +201,14 @@
                     subject = welcomeSubject,
                 };
 
-                var welcomeRecipients = new List<EmailAddress>
-                {
+                List<EmailAddress> welcomeRecipients =
+                [
                     new() { Name = instance.Email, Email = instance.Email },
-                };
+                ];
 
                 await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
-                        CancellationToken.None)
-                    .ConfigureAwait(false);
+                        CancellationToken.None);
             }
             else
             {
@@ -245,15 +223,14 @@
                     subject = welcomeSubject,
                 };
 
-                var welcomeRecipients = new List<EmailAddress>
-                {
+                List<EmailAddress> welcomeRecipients =
+                [
                     new() { Name = existingUser.UserName, Email = instance.Email },
-                };
+                ];
 
                 await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
-                        CancellationToken.None)
-                    .ConfigureAwait(false);
+                        CancellationToken.None);
             }
 
             instance.InvitationStatusId = (int)InvitationStatusEnum.Sent;
@@ -273,7 +250,7 @@
                 .Include(p => p.Partner)
                 .ToListAsync(cancellationToken);
 
-            var displayInvitations = new List<DisplayPartnerAdminInvitation>();
+            List<DisplayPartnerAdminInvitation> displayInvitations = [];
             foreach (var invitation in partnerInvitations)
             {
                 var displayInvitation = new DisplayPartnerAdminInvitation

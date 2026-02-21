@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -14,22 +14,11 @@
     /// </summary>
     [Authorize]
     [Route("api/partnerlocationcontacts")]
-    public class PartnerLocationContactsController : SecureController
+    public class PartnerLocationContactsController(
+        IPartnerLocationManager partnerLocationManager,
+        IPartnerLocationContactManager partnerLocationContactManager)
+        : SecureController
     {
-        private readonly IPartnerLocationContactManager partnerLocationContactManager;
-        private readonly IPartnerLocationManager partnerLocationManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerLocationContactsController"/> class.
-        /// </summary>
-        /// <param name="partnerLocationManager">The partner location manager.</param>
-        /// <param name="partnerLocationContactManager">The partner location contact manager.</param>
-        public PartnerLocationContactsController(IPartnerLocationManager partnerLocationManager,
-            IPartnerLocationContactManager partnerLocationContactManager)
-        {
-            this.partnerLocationManager = partnerLocationManager;
-            this.partnerLocationContactManager = partnerLocationContactManager;
-        }
 
         /// <summary>
         /// Gets all contacts for a given partner location. Requires a valid user.
@@ -78,21 +67,17 @@
                 await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationContact.PartnerLocationId,
                     cancellationToken);
 
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            await partnerLocationContactManager.AddAsync(partnerLocationContact, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            await partnerLocationContactManager.AddAsync(partnerLocationContact, UserId, cancellationToken);
             TrackEvent(nameof(AddPartnerLocationContact));
 
             return Ok();
@@ -112,16 +97,13 @@
             var partner =
                 await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationContact.PartnerLocationId,
                     cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
             var result = await partnerLocationContactManager
-                .UpdateAsync(partnerLocationContact, UserId, cancellationToken).ConfigureAwait(false);
+                .UpdateAsync(partnerLocationContact, UserId, cancellationToken);
             TrackEvent(nameof(UpdatePartnerLocationContact));
 
             return Ok(result);
@@ -140,19 +122,15 @@
             var partner =
                 await partnerLocationContactManager.GetPartnerForLocationContact(partnerLocationContactId,
                     cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            await partnerLocationContactManager.DeleteAsync(partnerLocationContactId, cancellationToken)
-                .ConfigureAwait(false);
+            await partnerLocationContactManager.DeleteAsync(partnerLocationContactId, cancellationToken);
             TrackEvent(nameof(DeletePartnerLocationContact));
 
-            return Ok(partnerLocationContactId);
+            return NoContent();
         }
     }
 }

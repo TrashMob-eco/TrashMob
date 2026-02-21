@@ -19,7 +19,7 @@ public class EventPartnerLocationServiceRestService(IHttpClientFactory httpClien
         {
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonConvert.DeserializeObject<PartnerLocation>(content);
+            var result = JsonConvert.DeserializeObject<PartnerLocation>(content)!;
             return result;
         }
     }
@@ -33,7 +33,7 @@ public class EventPartnerLocationServiceRestService(IHttpClientFactory httpClien
         {
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonConvert.DeserializeObject<List<DisplayEventPartnerLocation>>(content);
+            var result = JsonConvert.DeserializeObject<List<DisplayEventPartnerLocation>>(content) ?? [];
             return result;
         }
     }
@@ -47,7 +47,7 @@ public class EventPartnerLocationServiceRestService(IHttpClientFactory httpClien
         {
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonConvert.DeserializeObject<List<DisplayEventPartnerLocationService>>(content);
+            var result = JsonConvert.DeserializeObject<List<DisplayEventPartnerLocationService>>(content) ?? [];
             return result;
         }
     }
@@ -60,7 +60,7 @@ public class EventPartnerLocationServiceRestService(IHttpClientFactory httpClien
         var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken);
         response.EnsureSuccessStatusCode();
         var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<EventPartnerLocationService>(returnContent);
+        return JsonConvert.DeserializeObject<EventPartnerLocationService>(returnContent)!;
     }
 
     public async Task<EventPartnerLocationService> AddEventPartnerLocationService(
@@ -71,7 +71,7 @@ public class EventPartnerLocationServiceRestService(IHttpClientFactory httpClien
         var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
         response.EnsureSuccessStatusCode();
         var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<EventPartnerLocationService>(returnContent);
+        return JsonConvert.DeserializeObject<EventPartnerLocationService>(returnContent)!;
     }
 
     public async Task DeleteEventPartnerLocationServiceAsync(EventPartnerLocationService eventPartnerLocationService,

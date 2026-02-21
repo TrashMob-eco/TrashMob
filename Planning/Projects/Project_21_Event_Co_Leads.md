@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning in Progress |
+| **Status** | Complete |
 | **Priority** | Medium |
 | **Risk** | High |
 | **Size** | Medium |
@@ -19,16 +19,16 @@ Support multiple admins per event to distribute workload and provide backup if p
 ## Objectives
 
 ### Primary Goals
-- **Invite and manage co-leads** for events
-- **Attendee list management UI** improvements
-- **Notifications parity** for co-leads
+- **Promote and manage co-leads** for events
+- **Attendee list management UI** with lead status display
+- **Notifications** when co-lead status changes
 - **Security updates** for all admin checks
 
 ### Secondary Goals
-- Transfer primary lead role
-- Co-lead activity history
-- Co-lead communication tools
-- Bulk co-lead assignment
+- Transfer primary lead role (deferred)
+- Co-lead activity history (deferred)
+- Co-lead communication tools (deferred)
+- Bulk co-lead assignment (deferred)
 
 ---
 
@@ -38,22 +38,22 @@ Support multiple admins per event to distribute workload and provide backup if p
 - ✅ Add `IsEventLead` flag to EventAttendees
 - ✅ Update all admin checks to query EventAttendees
 - ✅ Migrate existing event creators as leads
+- ✅ Security authorization handlers
 
 ### Phase 2 - Co-Lead Management
-- ✅ Invite attendee to be co-lead
-- ✅ Accept/decline co-lead invitation
-- ✅ Remove co-lead role
-- ✅ Co-leads can manage event
+- ✅ Promote attendee to co-lead
+- ✅ Demote co-lead back to attendee
+- ✅ Enforce maximum 5 co-leads per event
+- ✅ Prevent demoting last remaining lead
 
 ### Phase 3 - UI Enhancements
-- ✅ Edit Event: attendee list with lead toggles
+- ✅ Event details: attendee list with Lead badges
+- ✅ Event details: promote/demote dropdown for leads
 - ✅ Create Event: auto-add creator as lead
-- ✅ Event detail shows all leads
 
 ### Phase 4 - Notifications
-- ✅ Co-leads receive same notifications as creator
-- ✅ Attendee notifications include all leads
-- ✅ Co-lead added/removed notifications
+- ✅ Co-lead added notification email
+- ✅ Co-lead removed notification email
 
 ---
 
@@ -63,6 +63,7 @@ Support multiple admins per event to distribute workload and provide backup if p
 - ❌ Co-lead voting/consensus features
 - ❌ Automatic co-lead assignment
 - ❌ Co-lead compensation tracking
+- ❌ Invitation workflow (rejected - use direct promote/demote instead)
 
 ---
 
@@ -70,7 +71,6 @@ Support multiple admins per event to distribute workload and provide backup if p
 
 ### Quantitative
 - **Events with co-leads:** ≥ 20% of events with 10+ attendees
-- **Co-lead acceptance rate:** ≥ 80%
 - **Event management issues:** Reduction in "can't edit event" support requests
 
 ### Qualitative
@@ -103,203 +103,119 @@ None - independent feature
 
 ---
 
-## Implementation Plan
+## Implementation (Completed)
 
 ### Data Model Changes
 
-```sql
--- Modify EventAttendees table
-ALTER TABLE EventAttendees
-ADD IsEventLead BIT NOT NULL DEFAULT 0;
+**Modification: EventAttendee (IsEventLead field)**
+```csharp
+// In TrashMob.Models/EventAttendee.cs
+/// <summary>
+/// Gets or sets whether this attendee is an event lead with management permissions.
+/// Maximum 5 co-leads per event enforced at API level.
+/// </summary>
+public bool IsEventLead { get; set; }
+```
 
--- Migration: Set existing event creators as leads
+**Migration: AddEventCoLeads**
+```sql
+-- Set existing event creators as leads
 UPDATE ea
 SET IsEventLead = 1
 FROM EventAttendees ea
 INNER JOIN Events e ON ea.EventId = e.Id
 WHERE ea.UserId = e.CreatedByUserId;
-
--- Co-lead invitations
-CREATE TABLE EventLeadInvitations (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    InvitedUserId UNIQUEIDENTIFIER NOT NULL,
-    InvitedByUserId UNIQUEIDENTIFIER NOT NULL,
-    Status NVARCHAR(20) NOT NULL DEFAULT 'Pending', -- Pending, Accepted, Declined
-    InvitedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    RespondedDate DATETIMEOFFSET NULL,
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    FOREIGN KEY (InvitedUserId) REFERENCES Users(Id),
-    FOREIGN KEY (InvitedByUserId) REFERENCES Users(Id),
-    UNIQUE (EventId, InvitedUserId)
-);
-
-CREATE INDEX IX_EventAttendees_IsEventLead ON EventAttendees(IsEventLead) WHERE IsEventLead = 1;
-CREATE INDEX IX_EventLeadInvitations_InvitedUserId ON EventLeadInvitations(InvitedUserId);
-CREATE INDEX IX_EventLeadInvitations_Status ON EventLeadInvitations(Status) WHERE Status = 'Pending';
 ```
 
-### API Changes
+### API Endpoints
 
 ```csharp
-// Check if user is event lead (reusable method)
-public async Task<bool> IsEventLeadAsync(Guid eventId, Guid userId)
-{
-    return await _context.EventAttendees
-        .AnyAsync(ea => ea.EventId == eventId &&
-                        ea.UserId == userId &&
-                        ea.IsEventLead);
-}
-
 // Get event leads
-[HttpGet("api/events/{eventId}/leads")]
-public async Task<ActionResult<IEnumerable<EventLeadDto>>> GetEventLeads(Guid eventId)
-{
-    // Return all users with IsEventLead = true
-}
+[HttpGet("api/eventattendees/{eventId}/leads")]
+// Returns all users with IsEventLead = true
 
-// Invite co-lead
-[Authorize]
-[HttpPost("api/events/{eventId}/leads/invite")]
-public async Task<ActionResult> InviteCoLead(
-    Guid eventId, [FromBody] InviteCoLeadRequest request)
-{
-    // Validate caller is event lead
-    // Create invitation
-    // Send notification
-}
+// Promote to lead
+[HttpPut("api/eventattendees/{eventId}/{userId}/promote")]
+// Sets IsEventLead = true, sends notification
 
-// Respond to co-lead invitation
-[Authorize]
-[HttpPut("api/events/{eventId}/leads/invitation")]
-public async Task<ActionResult> RespondToInvitation(
-    Guid eventId, [FromBody] InvitationResponseRequest request)
-{
-    // Accept or decline
-    // If accept, add IsEventLead to attendance
-}
-
-// Remove co-lead
-[Authorize]
-[HttpDelete("api/events/{eventId}/leads/{userId}")]
-public async Task<ActionResult> RemoveCoLead(Guid eventId, Guid userId)
-{
-    // Validate caller is event lead
-    // Cannot remove last lead
-    // Set IsEventLead = false
-}
-
-// Promote attendee to co-lead (already attending)
-[Authorize]
-[HttpPut("api/events/{eventId}/attendees/{userId}/promote")]
-public async Task<ActionResult> PromoteToCoLead(Guid eventId, Guid userId)
-{
-    // Validate caller is event lead
-    // Set IsEventLead = true
-    // Notify promoted user
-}
+// Demote from lead
+[HttpPut("api/eventattendees/{eventId}/{userId}/demote")]
+// Sets IsEventLead = false, sends notification
 ```
 
-### Security Audit Required
+### Security Updates
 
-Update all endpoints that check for event ownership:
+Authorization handlers check `IsEventLead` via `EventAttendeeManager.IsEventLeadAsync()`:
+- `UserIsEventLeadAuthHandler`
+- `UserIsEventLeadOrIsAdminAuthHandler`
 
-```csharp
-// BEFORE (checks CreatedByUserId only)
-if (existingEvent.CreatedByUserId != currentUserId)
-    return Forbid();
-
-// AFTER (checks EventAttendees.IsEventLead)
-if (!await IsEventLeadAsync(eventId, currentUserId))
-    return Forbid();
-```
-
-**Endpoints to update:**
+**Endpoints using event lead authorization:**
 - `PUT /api/events/{id}` - Edit event
 - `DELETE /api/events/{id}` - Cancel event
 - `POST /api/events/{id}/summary` - Add event summary
 - `PUT /api/events/{id}/summary` - Edit event summary
-- `POST /api/events/{id}/pickuplocations` - Add pickup location
-- `PUT /api/events/{id}/partners` - Manage partner services
-- `POST /api/events/{id}/litterreports` - Link litter reports
+- `POST /api/pickuplocations` - Add pickup location
+- Event partner and litter report management
 
-### Web UX Changes
+### Web UI
 
-**Edit Event Page:**
-- Attendee list with columns: Name, Email, Status, Lead (toggle)
-- "Invite Co-Lead" button
-- Lead badge next to lead names
-- Prevent removing last lead
+**Event Details Page (Attendee Table):**
+- Shows "Lead" badge for all event leads
+- Actions dropdown for current leads:
+  - Promote to Lead (if < 5 leads)
+  - Remove Lead Status (if > 1 lead)
+- Real-time updates via React Query
 
-**Event Detail Page:**
-- Show all leads in event info
-- "You are a co-lead" indicator
+### Email Notifications
 
-**Dashboard:**
-- "Events I Lead" section shows all led events (not just created)
+**Co-Lead Added (EventCoLeadAdded.html):**
+- Sent when user is promoted to co-lead
+- Includes event name, date, and list of permissions
 
-**Notifications:**
-- Co-lead invitation notification
-- Co-lead added to event notification
-- Co-lead removed notification
-
-### Mobile App Changes
-
-- View event leads
-- Accept/decline co-lead invitations
-- Manage event if co-lead
-- Co-lead notifications
+**Co-Lead Removed (EventCoLeadRemoved.html):**
+- Sent when user is demoted from co-lead
+- Confirms user is still an event attendee
 
 ---
 
-## Implementation Phases
+## Account Deletion Handling
 
-### Phase 1: Data Model & Migration
-- Add IsEventLead column
-- Migrate existing data
-- Update base authorization method
+When the primary event creator deletes their account:
 
-### Phase 2: Security Updates
-- Audit all event admin endpoints
-- Update authorization checks
-- Test thoroughly
+1. **For each event they created:**
+   - Query co-leads ordered by `CreatedDate` (earliest first)
+   - Promote the longest-tenured co-lead to primary creator
+   - Update `Event.CreatedByUserId` to the new primary creator
+   - Notify the new primary creator via email
 
-### Phase 3: Co-Lead Management API
-- Invitation endpoints
-- Promote/demote endpoints
-- Get leads endpoint
-
-### Phase 4: UI Updates
-- Edit event attendee list
-- Invitation flow
-- Dashboard updates
-- Notifications
-
-**Note:** Security is critical; extensive testing required before release.
+2. **If no co-leads exist:**
+   - Event remains with original creator reference (soft-deleted user)
+   - Event continues to function but cannot be edited
+   - Admin can assign a new lead if needed
 
 ---
 
-## Open Questions
+## Resolved Questions
 
 1. **Maximum number of co-leads per event?**
-   **Recommendation:** No hard limit; soft warning at 5
-   **Owner:** Product Lead
-   **Due:** Before Phase 3
+   **Decision:** Hard limit of 5 co-leads per event (enforced by API)
 
 2. **Can co-leads remove other co-leads?**
-   **Recommendation:** No, only primary creator can remove leads
-   **Owner:** Product Lead
-   **Due:** Before Phase 2
+   **Decision:** Yes, any event lead can demote other leads (except the last one)
 
 3. **What happens if primary creator deletes account?**
-   **Recommendation:** Promote longest-tenured co-lead automatically
-   **Owner:** Product Lead
-   **Due:** Before Phase 4
+   **Decision:** Automatically promote the longest-tenured co-lead to primary creator
 
-4. **Should co-leads be able to transfer primary role?**
-   **Recommendation:** Only primary creator can transfer; implement later
-   **Owner:** Product Lead
-   **Due:** Future phase
+4. **Should we use an invitation workflow?**
+   **Decision:** No - rejected in favor of direct promote/demote for simplicity
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#968](https://github.com/trashmob/TrashMob/issues/968)** - Project 21: Event Co-Leads (tracking issue)
 
 ---
 
@@ -310,7 +226,21 @@ if (!await IsEventLeadAsync(eventId, currentUserId))
 
 ---
 
-**Last Updated:** January 24, 2026
+## Post-Completion Bug Fixes
+
+- **PR #2758** (Feb 15, 2026): Fixed bug where event creator was not automatically set as event lead (`IsEventLead = true`) when creating a new event. The `EventAttendee` record was created but `IsEventLead` defaulted to `false`, causing `GetEventLeadsAsync()` to miss the creator.
+
+---
+
+**Last Updated:** February 15, 2026
 **Owner:** Engineering Team
-**Status:** Planning in Progress
-**Next Review:** When prioritized
+**Status:** Complete
+**Completed:** February 1, 2026
+
+---
+
+## Changelog
+
+- **2026-02-01:** Marked complete; added UI for promote/demote in attendee table; added email notifications
+- **2026-01-31:** Rejected invitation workflow in favor of direct promote/demote
+- **2026-01-31:** Initial implementation of IsEventLead field and security handlers

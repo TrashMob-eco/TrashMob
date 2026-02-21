@@ -35,6 +35,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using TrashMob.Common;
 using TrashMob.Security;
+using TrashMob.Services;
 using TrashMob.Shared;
 using TrashMob.Shared.Managers;
 using TrashMob.Shared.Managers.Interfaces;
@@ -49,12 +50,17 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Configuration.AddJsonFile("appsettings.json", true, true)
-                             .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true); // optional extra provider     
+                             .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true); // optional extra provider
 
         if (builder.Environment.IsDevelopment())
         {
             builder.Configuration.AddJsonFile("appsettings.Development.json", true, true);
         }
+
+        // Re-add environment variables so they override JSON file values
+        // (CreateBuilder already adds them, but the AddJsonFile calls above
+        // were appended after, giving JSON files higher priority)
+        builder.Configuration.AddEnvironmentVariables();
 
         if (!builder.Environment.IsDevelopment())
         {
@@ -112,10 +118,13 @@ public class Program
             }
         });
 
+        var useEntraExternalId = builder.Configuration.GetValue<bool>("UseEntraExternalId");
+        var authConfigSection = useEntraExternalId ? "AzureAdEntra" : "AzureAdB2C";
+
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(options =>
             {
-                builder.Configuration.Bind("AzureAdB2C", options);
+                builder.Configuration.Bind(authConfigSection, options);
 
                 options.TokenValidationParameters.NameClaimType = "name";
                 options.TokenValidationParameters.ValidateLifetime = true;
@@ -149,7 +158,7 @@ public class Program
                     },
                 };
             },
-                options => { builder.Configuration.Bind("AzureAdB2C", options); });
+                options => { builder.Configuration.Bind(authConfigSection, options); });
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(AuthorizationPolicyConstants.ValidUser,
@@ -161,7 +170,13 @@ public class Program
             .AddPolicy(AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin,
                 policy => policy.AddRequirements(new UserIsPartnerUserOrIsAdminRequirement()))
             .AddPolicy(AuthorizationPolicyConstants.UserIsAdmin,
-                policy => policy.AddRequirements(new UserIsAdminRequirement()));
+                policy => policy.AddRequirements(new UserIsAdminRequirement()))
+            .AddPolicy(AuthorizationPolicyConstants.UserIsEventLead,
+                policy => policy.AddRequirements(new UserIsEventLeadRequirement()))
+            .AddPolicy(AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin,
+                policy => policy.AddRequirements(new UserIsEventLeadOrIsAdminRequirement()))
+            .AddPolicy(AuthorizationPolicyConstants.UserIsProfessionalCompanyUserOrIsAdmin,
+                policy => policy.AddRequirements(new UserIsProfessionalCompanyUserOrIsAdminRequirement()));
 
         // In production, the React files will be served from this directory
         builder.Services.AddSpaStaticFiles(configuration => { configuration.RootPath = "client-app/build"; });
@@ -207,6 +222,9 @@ public class Program
         builder.Services.AddScoped<IAuthorizationHandler, UserIsAdminAuthHandler>();
         builder.Services.AddScoped<IAuthorizationHandler, UserOwnsEntityOrIsAdminAuthHandler>();
         builder.Services.AddScoped<IAuthorizationHandler, UserIsPartnerUserOrIsAdminAuthHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, UserIsEventLeadAuthHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, UserIsEventLeadOrIsAdminAuthHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, UserIsProfessionalCompanyUserOrIsAdminAuthHandler>();
 
         builder.Services.AddManagers();
         builder.Services.AddRepositories();
@@ -240,6 +258,21 @@ public class Program
         }
 
         // builder.Services.AddScoped(serviceProvider => new BlobServiceClient(blobStorageUrl));
+
+        // Add HttpClient for Strapi CMS
+        builder.Services.AddHttpClient("Strapi", client =>
+        {
+            var strapiUrl = builder.Configuration["StrapiBaseUrl"];
+            if (!string.IsNullOrEmpty(strapiUrl))
+            {
+                client.BaseAddress = new Uri(strapiUrl);
+            }
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+        });
+
+        // Area generation background service
+        builder.Services.AddSingleton<IAreaGenerationQueue, AreaGenerationQueue>();
+        builder.Services.AddHostedService<AreaGenerationBackgroundService>();
 
         builder.Services.AddHealthChecks()
             .AddSqlServer(
@@ -334,6 +367,18 @@ public class Program
             });
         });
 #pragma warning restore ASP0014
+
+        // Ensure API routes that weren't handled return 404 instead of falling through to SPA
+        // This prevents the SPA middleware from trying to serve index.html for invalid API routes
+        app.Use(async (context, next) =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api"))
+            {
+                context.Response.StatusCode = 404;
+                return;
+            }
+            await next();
+        });
 
         app.UseSpa(spa =>
         {

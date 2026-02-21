@@ -1,0 +1,286 @@
+/*
+ * TrashMob.eco — Entra External ID Sign-In Page Branding
+ *
+ * Custom CSS for the hosted sign-in/sign-up experience.
+ * Matches the TrashMob web app design tokens (index.css).
+ *
+ * Constraints:
+ *   - Only .ext-* selectors are supported
+ *   - No @import, @font-face, or external resources
+ *   - Use hex codes instead of color names
+ *   - No ::placeholder styling (blocked by Entra)
+ */
+
+/* ============================================================
+   Page Background
+   ============================================================ */
+
+body {
+    background-color: #F3F4F6;
+    color: #222832;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+
+.ext-middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.ext-background-image {
+    background-size: cover;
+    background-position: center;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+
+.ext-header {
+    padding: 16px 24px;
+}
+
+.ext-header-logo {
+    max-height: 40px;
+}
+
+/* ============================================================
+   Sign-In Box
+   ============================================================ */
+
+.ext-sign-in-box {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    padding: 32px;
+    max-width: 440px;
+    width: 100%;
+}
+
+.ext-banner-logo {
+    max-height: 48px;
+    margin-bottom: 16px;
+}
+
+.ext-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #222832;
+    margin-bottom: 8px;
+}
+
+.ext-subtitle {
+    font-size: 14px;
+    color: #737373;
+    margin-bottom: 16px;
+}
+
+/* ============================================================
+   Form Inputs
+   ============================================================ */
+
+.ext-input.ext-text-box {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    border-radius: 6px;
+    color: #222832;
+    font-size: 14px;
+    padding: 8px 12px;
+    width: 100%;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.ext-input.ext-text-box:hover {
+    border-color: #C4C4C4;
+}
+
+.ext-input.ext-text-box:focus {
+    border-color: #005C5C;
+    outline: 2px solid rgba(0, 92, 92, 0.2);
+    outline-offset: 1px;
+}
+
+.ext-input.ext-text-box:focus:hover {
+    border-color: #005C5C;
+}
+
+.ext-input.ext-text-box.ext-has-error {
+    border-color: #EF4444;
+}
+
+/* ============================================================
+   Primary Buttons (Sign in, Submit, Next)
+   ============================================================ */
+
+.ext-button.ext-primary {
+    background-color: #005C5C;
+    border: 1px solid #005C5C;
+    border-radius: 6px;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 16px;
+    width: 100%;
+    display: block;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.ext-button.ext-primary:hover {
+    background-color: #004A4A;
+    border-color: #004A4A;
+}
+
+.ext-button.ext-primary:focus {
+    background-color: #005C5C;
+    border-color: #005C5C;
+    outline: 2px solid rgba(0, 92, 92, 0.3);
+    outline-offset: 2px;
+}
+
+.ext-button.ext-primary:focus:hover {
+    background-color: #004A4A;
+    border-color: #004A4A;
+}
+
+.ext-button.ext-primary:active {
+    background-color: #003838;
+    border-color: #003838;
+}
+
+/* ============================================================
+   Secondary Buttons (Cancel, Back)
+   ============================================================ */
+
+.ext-button.ext-secondary {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    border-radius: 6px;
+    color: #222832;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 16px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.ext-button.ext-secondary:hover {
+    background-color: #F4F4F5;
+    border-color: #C4C4C4;
+}
+
+.ext-button.ext-secondary:focus {
+    outline: 2px solid rgba(0, 0, 0, 0.1);
+    outline-offset: 2px;
+}
+
+.ext-button.ext-secondary:focus:hover {
+    background-color: #F4F4F5;
+}
+
+.ext-button.ext-secondary:active {
+    background-color: #E5E5E5;
+}
+
+/* ============================================================
+   Links
+   ============================================================ */
+
+a,
+a:link {
+    color: #005C5C;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #004A4A;
+    text-decoration: underline;
+}
+
+a:focus {
+    color: #005C5C;
+    outline: 2px solid rgba(0, 92, 92, 0.3);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+a:focus:hover {
+    color: #004A4A;
+}
+
+a:active {
+    color: #003838;
+}
+
+.ext-link {
+    color: #005C5C;
+    font-size: 13px;
+}
+
+/* ============================================================
+   Social / Federated Identity Providers
+   ============================================================ */
+
+.ext-promoted-fed-cred-box {
+    margin-top: 0;
+    padding-top: 16px;
+    border-top: 1px solid #E5E5E5;
+}
+
+/* ============================================================
+   Error Messages
+   ============================================================ */
+
+.ext-error {
+    color: #EF4444;
+    font-size: 13px;
+}
+
+/* ============================================================
+   Boilerplate / Custom Text
+   ============================================================ */
+
+.ext-boilerplate-text {
+    font-size: 13px;
+    color: #737373;
+    margin-top: 16px;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+
+.ext-footer {
+    padding: 16px 24px;
+    text-align: center;
+}
+
+.ext-footer-content.ext-footer-item {
+    color: #737373;
+    font-size: 12px;
+}
+
+.ext-footer-content.ext-footer-item.ext-debug-item {
+    color: #737373;
+}
+
+/* ============================================================
+   Responsive — smaller screens
+   ============================================================ */
+
+@media (max-width: 600px) {
+    .ext-sign-in-box {
+        border-radius: 0;
+        box-shadow: none;
+        padding: 24px 16px;
+        max-width: 100%;
+    }
+}

@@ -30,6 +30,14 @@ class UserData {
     travelLimitForLocalEvents: number = 0;
 
     isSiteAdmin: boolean = false;
+
+    givenName: string = '';
+
+    surname: string = '';
+
+    dateOfBirth: string = '';
+
+    profilePhotoUrl: string = '';
 }
 
 export default UserData;

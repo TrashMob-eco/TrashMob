@@ -2,6 +2,7 @@
 
 namespace TrashMob.Models
 {
+    using System.ComponentModel.DataAnnotations.Schema;
     /// <summary>
     /// Represents a cleanup event organized through TrashMob.
     /// </summary>
@@ -23,6 +24,9 @@ namespace TrashMob.Models
             UserNotifications = [];
             PickupLocations = [];
             EventAttendees = [];
+            AdoptionEvents = [];
+            AttendeeMetrics = [];
+            EventPhotos = [];
         }
 
         /// <summary>
@@ -101,9 +105,27 @@ namespace TrashMob.Models
         public int MaxNumberOfParticipants { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the event is publicly visible.
+        /// Gets or sets the visibility level of the event (Public=1, TeamOnly=2, Private=3).
         /// </summary>
-        public bool IsEventPublic { get; set; }
+        public int EventVisibilityId { get; set; } = (int)EventVisibilityEnum.Public;
+
+        /// <summary>
+        /// Gets or sets the identifier of the team this event is scoped to, when visibility is TeamOnly.
+        /// Null for Public and Private events.
+        /// </summary>
+        public Guid? TeamId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the team this event is scoped to, when visibility is TeamOnly.
+        /// </summary>
+        public virtual Team Team { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the event is publicly visible.
+        /// Backward-compatible computed property for mobile API consumers.
+        /// </summary>
+        [NotMapped]
+        public bool IsEventPublic => EventVisibilityId == (int)EventVisibilityEnum.Public;
 
         /// <summary>
         /// Gets or sets the reason for event cancellation, if applicable.
@@ -149,5 +171,30 @@ namespace TrashMob.Models
         /// Gets or sets the collection of litter reports associated with the event.
         /// </summary>
         public virtual ICollection<EventLitterReport> EventLitterReports { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team adoption events linking this event to adoptions.
+        /// </summary>
+        public virtual ICollection<TeamAdoptionEvent> AdoptionEvents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of attendee-submitted metrics for this event.
+        /// </summary>
+        public virtual ICollection<EventAttendeeMetrics> AttendeeMetrics { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of photos uploaded for this event.
+        /// </summary>
+        public virtual ICollection<EventPhoto> EventPhotos { get; set; }
+
+        /// <summary>
+        /// Gets the username of the user who created the event.
+        /// </summary>
+        /// <remarks>
+        /// This is a computed property that returns the UserName from the CreatedByUser navigation property.
+        /// It is not mapped to a database column.
+        /// </remarks>
+        [NotMapped]
+        public string CreatedByUserName => CreatedByUser?.UserName;
     }
 }

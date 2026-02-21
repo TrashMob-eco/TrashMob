@@ -23,12 +23,12 @@
         /// <summary>
         /// Gets or sets the total weight of litter collected in pounds.
         /// </summary>
-        public int TotalWeightInPounds { get; set; }
+        public decimal TotalWeightInPounds { get; set; }
 
         /// <summary>
         /// Gets or sets the total weight of litter collected in kilograms.
         /// </summary>
-        public int TotalWeightInKilograms { get; set; }
+        public decimal TotalWeightInKilograms { get; set; }
 
         /// <summary>
         /// Gets or sets the total number of participants across all events.

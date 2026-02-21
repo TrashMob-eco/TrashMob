@@ -10,86 +10,85 @@
              Title="Event Summary">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" >
-                <Grid RowDefinitions="*" ColumnDefinitions="*, *">
-                    <Button Text="Add Pickup Location" 
-                            Command="{Binding AddPickupLocationCommand}"
-                            IsVisible="{Binding EnableAddPickupLocation}" 
-                            Grid.Row="0" 
-                            Grid.Column="0"
-                            Style="{StaticResource PrimarySmallButton}" />
-                    <Button Text="Edit Event Summary" 
-                            Command="{Binding EditEventSummaryCommand}"
-                            IsVisible="{Binding EnableEditEventSummary}" 
-                            Grid.Row="0" 
-                            Grid.Column="1" 
-                            Style="{StaticResource SecondarySmallButton}"/>
-                </Grid>
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *">
-                    <Border Style="{x:StaticResource RoundBorder}" Margin="5,0" Grid.Row="0" Grid.ColumnSpan="2">
-                        <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *">
-                            <Label Text="Here's what TrashMob volunteers accomplished at this event!" Grid.Row="0"
-                                   Grid.Column="0" Grid.ColumnSpan="3" FontSize="Micro" Margin="0, 0, 0, 10" />
-                            <Image Grid.Row="1" Grid.Column="0" Source="person" MaximumWidthRequest="25" />
-                            <Label Grid.Row="2" Grid.Column="0"
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
+
+                <!-- Event Metrics -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,8,10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Event Metrics" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Label Text="Here's what TrashMob volunteers accomplished at this event!"
+                               FontSize="Small"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                               HorizontalTextAlignment="Center" />
+                        <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, *, *, *" ColumnSpacing="8">
+                            <Image Grid.Row="0" Grid.Column="0" Source="person" MaximumWidthRequest="25" />
+                            <Label Grid.Row="1" Grid.Column="0"
                                    Text="{ Binding EventSummaryViewModel.ActualNumberOfAttendees }" FontSize="Micro"
                                    HorizontalTextAlignment="Center" />
-                            <Label Grid.Row="3" Grid.Column="0" Text="Attendees" FontSize="Micro"
+                            <Label Grid.Row="2" Grid.Column="0" Text="Attendees" FontSize="Micro"
                                    HorizontalTextAlignment="Center" />
-                            <Image Grid.Row="1" Grid.Column="1" Source="trashbag" WidthRequest="25" />
-                            <Label Grid.Row="2" Grid.Column="1" Text="{ Binding EventSummaryViewModel.NumberOfBags }"
+                            <Image Grid.Row="0" Grid.Column="1" Source="trashbag" WidthRequest="25" />
+                            <Label Grid.Row="1" Grid.Column="1" Text="{ Binding EventSummaryViewModel.NumberOfBags }"
                                    FontSize="Micro" HorizontalTextAlignment="Center" />
-                            <Label Grid.Row="3" Grid.Column="1" Text="Bags Collected" FontSize="Micro"
+                            <Label Grid.Row="2" Grid.Column="1" Text="Bags Collected" FontSize="Micro"
                                    HorizontalTextAlignment="Center" />
-                            <Image Grid.Row="1" Grid.Column="2" Source="clock" WidthRequest="25" />
-                            <Label Grid.Row="2" Grid.Column="2"
+                            <Image Grid.Row="0" Grid.Column="2" Source="clock" WidthRequest="25" />
+                            <Label Grid.Row="1" Grid.Column="2"
                                    Text="{ Binding EventSummaryViewModel.DurationInMinutes }" FontSize="Micro"
                                    HorizontalTextAlignment="Center" />
-                            <Label Grid.Row="3" Grid.Column="2" Text="Duration in Minutes" FontSize="Micro"
+                            <Label Grid.Row="2" Grid.Column="2" Text="Duration (min)" FontSize="Micro"
+                                   HorizontalTextAlignment="Center" />
+                            <Image Grid.Row="0" Grid.Column="3" Source="scale" WidthRequest="25" />
+                            <Label Grid.Row="1" Grid.Column="3"
+                                   Text="{ Binding EventSummaryViewModel.WeightDisplay }" FontSize="Micro"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Grid.Row="2" Grid.Column="3" Text="Weight" FontSize="Micro"
                                    HorizontalTextAlignment="Center" />
                         </Grid>
-                    </Border>
-
-                    <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2">
-                        <Label Text="Notes" Style="{StaticResource FieldLabel}" />
-                        <Label Text="{Binding EventSummaryViewModel.Notes}"
-                               VerticalOptions="Center"
-                               HorizontalOptions="Start"
-                               HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
+                </Border>
 
-                    <Label Text="Pickup Locations" Grid.Row="2" Style="{StaticResource FieldLabel}" />
+                <!-- Notes -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Notes" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Label Text="{Binding EventSummaryViewModel.Notes}"
+                               FontSize="Small"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </VerticalStackLayout>
+                </Border>
 
-                    <Grid Margin="5" Grid.Row="2" Grid.Column="1"
-                      ColumnDefinitions="4*, *, *"
-                      RowDefinitions="Auto">
-                        <ImageButton Grid.Column="1"
-                             HeightRequest="24"
-                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
-                             Command="{Binding MapSelectedCommand}" />
-                        <ImageButton Grid.Column="2" 
-                             HeightRequest="24"
-                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
-                             Command="{Binding ListSelectedCommand}" />
-                    </Grid>
+                <!-- Pickup Locations -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
+                            <Label Text="Pickup Locations" Style="{StaticResource SectionHeader}" Margin="0"
+                                   Grid.Column="0" />
+                            <ImageButton Grid.Column="1"
+                                     HeightRequest="24"
+                                     Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}"
+                                     Command="{Binding MapSelectedCommand}" />
+                            <ImageButton Grid.Column="2"
+                                     HeightRequest="24"
+                                     Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}"
+                                     Command="{Binding ListSelectedCommand}" />
+                        </Grid>
 
-                    <CollectionView x:Name="PickupLocationCollection"
-                                    ItemsSource="{Binding PickupLocations}"
-                                    SelectedItem="{Binding SelectedPickupLocation}"
-                                    IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
-                                    SelectionMode="Single"
-                                    Grid.Row="4"
-                                    Grid.ColumnSpan="2">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:PickupLocationViewModel">
-                                <StackLayout Margin="5">
-                                    <Border Style="{StaticResource RoundBorder}">
+                        <CollectionView x:Name="PickupLocationCollection"
+                                        ItemsSource="{Binding PickupLocations}"
+                                        SelectedItem="{Binding SelectedPickupLocation}"
+                                        IsVisible="{Binding IsListSelected}"
+                                        SelectionMode="Single">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:PickupLocationViewModel">
+                                    <Border Style="{StaticResource RoundBorder}" Margin="0,3">
                                         <Grid ColumnDefinitions="*, *, *, *"
                                               RowDefinitions="Auto"
                                               x:Name="LitterReportItem">
                                             <Image Source="{Binding ImageUrl}" Grid.Column="0" Margin="5" />
                                             <Label Text="{Binding Address.DisplayAddress}" Grid.Column="1" Margin="5"
-                                                   FontSize="Micro" />
+                                                   FontSize="Micro"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                                             <Button Text="Edit Location" Grid.Column="2"
                                                     Command="{Binding EditPickupLocationCommand}"
                                                     IsEnabled="{Binding CanEditPickupLocation}"
@@ -102,27 +101,39 @@
                                                     HeightRequest="40" FontSize="Micro" />
                                         </Grid>
                                     </Border>
-                                </StackLayout>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
 
-                    <controls:CustomMap x:Name="pickupLocationsMap"
-                              ItemsSource="{Binding PickupLocations}"
-                              IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}"
-                              Grid.Row="4"
-                              Grid.ColumnSpan="2">
-                        <maps:Map.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:PickupLocationViewModel">
-                                <controls:CustomPin Location="{Binding Address.Location}"
-                                          Address="{Binding Address.StreetAddress}"
-                                          Label="{Binding Id}"
-                                          AutomationId="{Binding Id}"
-                                          ImageSource="{Binding Address.IconFile}"
-                                          InfoWindowClicked="Pin_InfoWindowClicked" />
-                            </DataTemplate>
-                        </maps:Map.ItemTemplate>
-                    </controls:CustomMap>
+                        <controls:CustomMap x:Name="pickupLocationsMap"
+                                  ItemsSource="{Binding PickupLocations}"
+                                  IsVisible="{Binding IsMapSelected}">
+                            <maps:Map.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:PickupLocationViewModel">
+                                    <controls:CustomPin Location="{Binding Address.Location}"
+                                              Address="{Binding Address.StreetAddress}"
+                                              Label="{Binding Id}"
+                                              AutomationId="{Binding Id}"
+                                              ImageSource="{Binding Address.IconFile}"
+                                              InfoWindowClicked="Pin_InfoWindowClicked" />
+                                </DataTemplate>
+                            </maps:Map.ItemTemplate>
+                        </controls:CustomMap>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Action Buttons -->
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="8" Margin="10,0">
+                    <Button Text="Add Pickup Location"
+                            Command="{Binding AddPickupLocationCommand}"
+                            IsVisible="{Binding EnableAddPickupLocation}"
+                            Grid.Column="0"
+                            Style="{StaticResource PrimarySmallButton}" />
+                    <Button Text="Edit Event Summary"
+                            Command="{Binding EditEventSummaryCommand}"
+                            IsVisible="{Binding EnableEditEventSummary}"
+                            Grid.Column="1"
+                            Style="{StaticResource SecondarySmallButton}" />
                 </Grid>
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"

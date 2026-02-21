@@ -2,16 +2,18 @@ namespace TrashMobHourlyJobs
 {
     using System;
     using System.Threading.Tasks;
+    using Azure.Extensions.AspNetCore.Configuration.Secrets;
+    using Azure.Identity;
+    using Azure.Security.KeyVault.Secrets;
+    using Microsoft.Extensions.Azure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using TrashMob.Shared;
     using TrashMob.Shared.Engine;
-    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence;
-    using Microsoft.Extensions.Azure;
-    using Azure.Identity;
 
     public class Program
     {
@@ -25,20 +27,54 @@ namespace TrashMobHourlyJobs
 
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
             var userNotificationManager = scope.ServiceProvider.GetRequiredService<IUserNotificationManager>();
+            var newsletterManager = scope.ServiceProvider.GetRequiredService<INewsletterManager>();
 
-            logger.LogInformation("UserNotifier job started at: {Time}", DateTime.UtcNow);
+            logger.LogInformation("Hourly jobs started at: {Time}", DateTime.UtcNow);
 
+            // Run user notifications
+            logger.LogInformation("Running user notifications...");
             await userNotificationManager.RunAllNotifications();
 
-            logger.LogInformation("UserNotifier job completed at: {Time}", DateTime.UtcNow);
+            // Process scheduled newsletters
+            logger.LogInformation("Processing scheduled newsletters...");
+            var scheduledCount = await newsletterManager.ProcessScheduledNewslettersAsync();
+            logger.LogInformation("Started sending {Count} scheduled newsletters", scheduledCount);
+
+            // Process newsletters that are in sending status
+            logger.LogInformation("Processing sending newsletters...");
+            var processedCount = await newsletterManager.ProcessSendingNewslettersAsync();
+            logger.LogInformation("Processed {Count} newsletters for sending", processedCount);
+
+            // Process due outreach follow-ups
+            logger.LogInformation("Processing prospect outreach follow-ups...");
+            var outreachManager = scope.ServiceProvider.GetRequiredService<IProspectOutreachManager>();
+            var followUpCount = await outreachManager.ProcessDueFollowUpsAsync();
+            logger.LogInformation("Processed {Count} outreach follow-up emails", followUpCount);
+
+            logger.LogInformation("Hourly jobs completed at: {Time}", DateTime.UtcNow);
         }
 
         private static void ConfigureServices(IServiceCollection services)
         {
-            // Build configuration from environment variables
-            var configuration = new ConfigurationBuilder()
-                .AddEnvironmentVariables()
-                .Build();
+            // Build configuration from environment variables + Key Vault secrets
+            var configBuilder = new ConfigurationBuilder()
+                .AddEnvironmentVariables();
+
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
+                throw new InvalidOperationException("The environment variable 'ASPNETCORE_ENVIRONMENT' is not set or is empty.");
+
+            // In production, load secrets from Azure Key Vault into configuration
+            // This makes TMDBServerConnectionString, SendGridApiKey, etc. available via IConfiguration
+            if (environment != "Development")
+            {
+                var vaultUri = Environment.GetEnvironmentVariable("VaultUri") ??
+                    throw new InvalidOperationException("The environment variable 'VaultUri' is not set or is empty.");
+
+                var secretClient = new SecretClient(new Uri(vaultUri), new DefaultAzureCredential());
+                configBuilder.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
+            }
+
+            var configuration = configBuilder.Build();
 
             services.AddSingleton<IConfiguration>(configuration);
 
@@ -55,9 +91,6 @@ namespace TrashMobHourlyJobs
 
             Uri blobStorageUrl = new(Environment.GetEnvironmentVariable("StorageAccountUri") ??
                 throw new InvalidOperationException("The environment variable 'StorageAccountUri' is not set or is empty."));
-
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
-                throw new InvalidOperationException("The environment variable 'ASPNETCORE_ENVIRONMENT' is not set or is empty.");
 
             if (environment == "Development")
             {
@@ -76,13 +109,13 @@ namespace TrashMobHourlyJobs
             }
             else
             {
+                var vaultUriStr = Environment.GetEnvironmentVariable("VaultUri") ??
+                    throw new InvalidOperationException("The environment variable 'VaultUri' is not set or is empty.");
+
                 services.AddAzureClients(azureClientFactoryBuilder =>
                 {
                     azureClientFactoryBuilder.UseCredential(new DefaultAzureCredential());
-                    Uri vaultUri = new(Environment.GetEnvironmentVariable("VaultUri") ??
-                        throw new InvalidOperationException("The environment variable 'VaultUri' is not set or is empty."));
-
-                    azureClientFactoryBuilder.AddSecretClient(vaultUri);
+                    azureClientFactoryBuilder.AddSecretClient(new Uri(vaultUriStr));
                     azureClientFactoryBuilder.AddBlobServiceClient(blobStorageUrl);
                 });
 

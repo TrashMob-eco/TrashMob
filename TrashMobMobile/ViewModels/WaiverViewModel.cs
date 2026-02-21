@@ -1,42 +1,69 @@
-﻿namespace TrashMobMobile.ViewModels;
+namespace TrashMobMobile.ViewModels;
 
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using TrashMobMobile.Config;
+using TrashMob.Models;
+using TrashMobMobile.Models;
 using TrashMobMobile.Services;
 
-public partial class WaiverViewModel(INotificationService notificationService, IUserManager userManager) : BaseViewModel(notificationService)
+public partial class WaiverViewModel(INotificationService notificationService, IWaiverManager waiverManager) : BaseViewModel(notificationService)
 {
-    private readonly IUserManager userManager = userManager;
+    private Guid waiverVersionId;
 
-    [RelayCommand]
+    [ObservableProperty]
+    private string waiverName = string.Empty;
+
+    [ObservableProperty]
+    private string waiverText = string.Empty;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SignWaiverCommand))]
+    private string typedLegalName = string.Empty;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SignWaiverCommand))]
+    private bool hasAgreed;
+
+    private bool CanSignWaiver => HasAgreed && TypedLegalName.Trim().Length >= 2;
+
+    public async Task Init(Guid versionId)
+    {
+        waiverVersionId = versionId;
+        TypedLegalName = string.Empty;
+        HasAgreed = false;
+
+        await ExecuteAsync(async () =>
+        {
+            var requiredWaivers = await waiverManager.GetRequiredWaiversAsync();
+            var waiver = requiredWaivers.Find(w => w.Id == versionId);
+
+            if (waiver != null)
+            {
+                WaiverName = waiver.Name;
+                WaiverText = waiver.WaiverText ?? string.Empty;
+            }
+        }, "Failed to load waiver details. Please try again.");
+    }
+
+    [RelayCommand(CanExecute = nameof(CanSignWaiver))]
     private async Task SignWaiver()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
-            var user = await userManager.GetUserAsync(App.CurrentUser.Id.ToString()); 
-            if (user == null)
+            var request = new AcceptWaiverApiRequest
             {
-                throw new Exception("User not found.");
-            }
+                WaiverVersionId = waiverVersionId,
+                TypedLegalName = TypedLegalName.Trim(),
+            };
 
-            user.DateAgreedToTrashMobWaiver = DateTime.UtcNow;
-            user.TrashMobWaiverVersion = Settings.CurrentTrashMobWaiverVersion.VersionId;
+            await waiverManager.AcceptWaiverAsync(request);
+            await Shell.Current.GoToAsync("..");
+        }, "An error occurred while signing the waiver. Please try again.");
+    }
 
-            await userManager.UpdateUserAsync(user);
-            
-            App.CurrentUser = user;
-            
-            await Navigation.PopAsync();
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while opening the waiver page. Please try again.");
-        }
+    [RelayCommand]
+    private async Task Cancel()
+    {
+        await Shell.Current.GoToAsync("..");
     }
 }

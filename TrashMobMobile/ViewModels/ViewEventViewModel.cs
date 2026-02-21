@@ -3,6 +3,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
@@ -19,7 +20,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IEventLitterReportManager eventLitterReportManager,
     IUserManager userManager,
     IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
-    ILitterReportManager litterReportManager) : BaseViewModel(notificationService)
+    ILitterReportManager litterReportManager,
+    IEventPhotoManager eventPhotoManager) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
@@ -29,6 +31,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IWaiverManager waiverManager = waiverManager;
+    private readonly IEventPhotoManager eventPhotoManager = eventPhotoManager;
  
     [ObservableProperty]
     private string attendeeCount = string.Empty;
@@ -81,18 +84,69 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private bool areNoLitterReportsAvailable;
 
     [ObservableProperty]
+    private bool canManageCoLeads;
+
+    [ObservableProperty]
+    private int coLeadCount;
+
+    [ObservableProperty]
+    private string coLeadCountDisplay = string.Empty;
+
+    private const int MaxCoLeads = 5;
+
+    [ObservableProperty]
     private bool isLitterReportMapSelected;
 
     [ObservableProperty]
     private bool isLitterReportListSelected;
     
-    private Action UpdateRoutes;
+    private Action UpdateRoutes = null!;
 
     [ObservableProperty]
     private DateTimeOffset routeStartTime;
 
     [ObservableProperty]
     private DateTimeOffset routeEndTime;
+
+    [ObservableProperty]
+    private bool arePhotosFound;
+
+    [ObservableProperty]
+    private bool areNoPhotosFound = true;
+
+    [ObservableProperty]
+    private bool canUploadPhoto;
+
+    [ObservableProperty]
+    private string photoCountDisplay = string.Empty;
+
+    [ObservableProperty]
+    private bool enableSimulateRoute;
+
+    [ObservableProperty]
+    private bool isRecordingRoute;
+
+    [ObservableProperty]
+    private bool areRoutesFound;
+
+    [ObservableProperty]
+    private bool areNoRoutesFound = true;
+
+    [ObservableProperty]
+    private string routeCountDisplay = "No routes";
+
+    [ObservableProperty]
+    private string totalDistanceDisplay = "0 m";
+
+    [ObservableProperty]
+    private string totalDurationDisplay = "0 min";
+
+    [ObservableProperty]
+    private string totalBagsDisplay = "0";
+
+    public List<string> PrivacyOptions { get; } = ["Private", "EventOnly", "Public"];
+
+    public ObservableCollection<EventPhotoViewModel> EventPhotos { get; set; } = [];
 
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
 
@@ -108,11 +162,11 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<DisplayEventAttendeeRoute> EventAttendeeRoutes { get; set; } = [];
 
+    public ObservableCollection<EventAttendeeRouteViewModel> EventAttendeeRouteViewModels { get; set; } = [];
+
     public async Task Init(Guid eventId, Action updRoutes)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             UpdateRoutes = updRoutes;
 
@@ -135,31 +189,19 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             EnableStopTrackEventRoute = false;
 
             WhatToExpect =
-                "What to Expect: \n\tCleanup supplies provided\n\tMeet fellow community members\n\tContribute to a cleaner environment.";
+                "What to Expect:\n\u2022 Cleanup supplies provided\n\u2022 Meet fellow community members\n\u2022 Contribute to a cleaner environment";
 
             await SetRegistrationOptions();
             await GetAttendeeCount();
             await LoadPartners();
             await LoadLitterReports();
+            await LoadPhotos();
+
+            EnableSimulateRoute = DeviceInfo.DeviceType == DeviceType.Virtual;
 
             var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
-            EventAttendeeRoutes.Clear();
-
-            foreach (var eventAttendeeRoute in routes)
-            {
-                EventAttendeeRoutes.Add(eventAttendeeRoute);
-            }
-
-            UpdateRoutes();
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while loading the event. Please try again.");
-        }
+            LoadRouteViewModels(routes);
+        }, "An error occurred while loading the event. Please try again.");
     }
     
     [RelayCommand]
@@ -250,13 +292,28 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private async Task GetAttendeeCount()
     {
         var attendees = await eventAttendeeRestService.GetEventAttendeesAsync(mobEvent.Id);
+        var eventLeads = await eventAttendeeRestService.GetEventLeadsAsync(mobEvent.Id);
+        var eventLeadIds = new HashSet<Guid>(eventLeads.Select(l => l.Id));
+
+        CoLeadCount = eventLeadIds.Count;
+        CoLeadCountDisplay = $"Co-leads: {CoLeadCount}/{MaxCoLeads}";
+        CanManageCoLeads = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
 
         EventAttendees.Clear();
 
         foreach (var attendee in attendees)
         {
             var attendeeVm = attendee.ToEventAttendeeViewModel();
-            attendeeVm.Role = mobEvent.IsEventLead(attendee.Id) ? "Lead" : "Attendee";
+            var isLead = eventLeadIds.Contains(attendee.Id);
+            var isCreator = attendee.Id == mobEvent.CreatedByUserId;
+
+            attendeeVm.EventId = mobEvent.Id;
+            attendeeVm.IsEventLead = isLead;
+            attendeeVm.IsEventCreator = isCreator;
+            attendeeVm.Role = isLead ? (isCreator ? "Creator" : "Co-lead") : "Attendee";
+            attendeeVm.CanPromote = CanManageCoLeads && !isLead && !isCreator && CoLeadCount < MaxCoLeads;
+            attendeeVm.CanDemote = CanManageCoLeads && isLead && !isCreator && CoLeadCount > 1;
+
             EventAttendees.Add(attendeeVm);
         }
 
@@ -303,10 +360,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             RouteEndTime = DateTimeOffset.Now;
             EnableStopTrackEventRoute = true;
             EnableStartTrackEventRoute = false;
+            IsRecordingRoute = true;
         }
 
         cancellationToken.Register(async () =>
         {
+            IsRecordingRoute = false;
             RouteEndTime = DateTimeOffset.Now;
             await SaveRoute();
             Locations.Clear();
@@ -325,7 +384,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     private async Task SaveRoute()
     {
-        try
+        await ExecuteAsync(async () =>
         {
             // If there are no locations, then there is nothing to save.
             if (Locations.Count == 0)
@@ -347,13 +406,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 StartTime = RouteStartTime,
                 EndTime = RouteEndTime,
             });
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while saving your route.");
-        }
+        }, "An error occurred while saving your route.");
     }
 
     private List<SortableLocation> GetSortableLocations()
@@ -384,13 +437,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     [RelayCommand]
     private async Task Register()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
-            if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+            if (!await waiverManager.HasUserSignedAllRequiredWaiversAsync())
             {
-                await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+                await Shell.Current.GoToAsync($"{nameof(WaiverListPage)}");
+                return;
             }
 
             var eventAttendee = new EventAttendee
@@ -404,24 +456,14 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await SetRegistrationOptions();
             await GetAttendeeCount();
 
-            IsBusy = false;
-
             await NotificationService.Notify("You have been registered for this event.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while registering you for this event. Please try again.");
-        }
+        }, "An error occurred while registering you for this event. Please try again.");
     }
 
     [RelayCommand]
     private async Task Unregister()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var eventAttendee = new EventAttendee
             {
@@ -434,16 +476,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await SetRegistrationOptions();
             await GetAttendeeCount();
 
-            IsBusy = false;
-
             await NotificationService.Notify("You have been unregistered for this event.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while unregistering you for this event. Please try again.");
-        }
+        }, "An error occurred while unregistering you for this event. Please try again.");
     }
 
     private async Task SetRegistrationOptions()
@@ -452,5 +486,284 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
         EnableRegister = !mobEvent.IsEventLead(userManager.CurrentUser.Id) && !isAttending && mobEvent.AreNewRegistrationsAllowed();
         EnableUnregister = !mobEvent.IsEventLead(userManager.CurrentUser.Id) && isAttending && mobEvent.AreUnregistrationsAllowed();
+    }
+
+    [RelayCommand]
+    private async Task PromoteToLead(EventAttendeeViewModel attendee)
+    {
+        if (!CanManageCoLeads || attendee.IsEventLead || CoLeadCount >= MaxCoLeads)
+        {
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            await eventAttendeeRestService.PromoteToLeadAsync(attendee.EventId, attendee.AttendeeId);
+            await GetAttendeeCount();
+            await NotificationService.Notify($"{attendee.UserName} has been promoted to co-lead.");
+        }, "An error occurred while promoting the attendee. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task DemoteFromLead(EventAttendeeViewModel attendee)
+    {
+        if (!CanManageCoLeads || !attendee.IsEventLead || attendee.IsEventCreator || CoLeadCount <= 1)
+        {
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            await eventAttendeeRestService.DemoteFromLeadAsync(attendee.EventId, attendee.AttendeeId);
+            await GetAttendeeCount();
+            await NotificationService.Notify($"{attendee.UserName} has been demoted from co-lead.");
+        }, "An error occurred while demoting the co-lead. Please try again.");
+    }
+
+    private async Task LoadPhotos()
+    {
+        ArePhotosFound = false;
+        AreNoPhotosFound = true;
+
+        var photos = await eventPhotoManager.GetEventPhotosAsync(EventViewModel.Id);
+
+        EventPhotos.Clear();
+
+        var currentUserId = userManager.CurrentUser.Id;
+        var isLead = mobEvent.IsEventLead(currentUserId);
+
+        foreach (var photo in photos.OrderByDescending(p => p.UploadedDate))
+        {
+            EventPhotos.Add(new EventPhotoViewModel
+            {
+                Id = photo.Id,
+                EventId = photo.EventId,
+                ImageUrl = photo.ImageUrl ?? string.Empty,
+                ThumbnailUrl = photo.ThumbnailUrl ?? string.Empty,
+                PhotoType = photo.PhotoType,
+                Caption = photo.Caption ?? string.Empty,
+                UploadedDate = photo.UploadedDate,
+                UploadedByUserId = photo.UploadedByUserId,
+                CanDelete = photo.UploadedByUserId == currentUserId || isLead,
+            });
+        }
+
+        ArePhotosFound = EventPhotos.Count > 0;
+        AreNoPhotosFound = !ArePhotosFound;
+        PhotoCountDisplay = EventPhotos.Count == 1 ? "1 photo" : $"{EventPhotos.Count} photos";
+
+        var isAttending = await mobEventManager.IsUserAttendingAsync(mobEvent.Id, currentUserId);
+        CanUploadPhoto = isLead || isAttending;
+    }
+
+    [RelayCommand]
+    private async Task PickPhoto()
+    {
+        await ExecuteAsync(async () =>
+        {
+            var sourcePopup = new Controls.PhotoSourcePopup();
+            var sourceResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(sourcePopup);
+            var source = sourceResult?.Result;
+
+            if (string.IsNullOrEmpty(source))
+            {
+                return;
+            }
+
+            FileResult? result;
+
+            if (source == Controls.PhotoSourcePopup.TakePhoto)
+            {
+                result = await MediaPicker.Default.CapturePhotoAsync(new MediaPickerOptions
+                {
+                    Title = "Take a photo",
+                });
+            }
+            else
+            {
+                var results = await MediaPicker.Default.PickPhotosAsync(new MediaPickerOptions
+                {
+                    Title = "Select a photo",
+                });
+                result = results?.FirstOrDefault();
+            }
+
+            if (result == null)
+            {
+                return;
+            }
+
+            var typePopup = new Controls.PhotoTypePopup();
+            var typeResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(typePopup);
+            var photoType = typeResult?.Result;
+
+            if (string.IsNullOrEmpty(photoType))
+            {
+                return;
+            }
+
+            var eventPhotoType = photoType switch
+            {
+                Controls.PhotoTypePopup.Before => EventPhotoType.Before,
+                Controls.PhotoTypePopup.After => EventPhotoType.After,
+                _ => EventPhotoType.During,
+            };
+
+            await eventPhotoManager.UploadPhotoAsync(
+                EventViewModel.Id, result.FullPath, eventPhotoType, string.Empty);
+
+            await LoadPhotos();
+
+            await NotificationService.Notify("Photo uploaded successfully.");
+        }, "An error occurred while uploading the photo. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task DeletePhoto(EventPhotoViewModel? photoVm)
+    {
+        if (photoVm == null)
+        {
+            return;
+        }
+
+        var popup = new Controls.ConfirmPopup("Delete Photo", "Are you sure you want to delete this photo?", "Delete");
+        var result = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        if (result?.Result != Controls.ConfirmPopup.Confirmed)
+        {
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            await eventPhotoManager.DeletePhotoAsync(photoVm.EventId, photoVm.Id);
+            await LoadPhotos();
+            await NotificationService.Notify("Photo deleted.");
+        }, "An error occurred while deleting the photo. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task SimulateRoute()
+    {
+        await ExecuteAsync(async () =>
+        {
+            var route = await eventAttendeeRouteRestService.SimulateRouteAsync(EventViewModel.Id);
+
+            EventAttendeeRoutes.Add(route);
+            EventAttendeeRouteViewModels.Add(
+                EventAttendeeRouteViewModel.FromRoute(route, userManager.CurrentUser.Id));
+            UpdateRouteStats();
+            UpdateRoutes();
+
+            await NotificationService.Notify("Route simulated successfully!");
+        }, "An error occurred while simulating the route. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task DeleteRoute(EventAttendeeRouteViewModel? routeVm)
+    {
+        if (routeVm == null)
+        {
+            return;
+        }
+
+        var popup = new Controls.ConfirmPopup("Delete Route", "Are you sure you want to delete this route?", "Delete");
+        var result = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        if (result?.Result != Controls.ConfirmPopup.Confirmed)
+        {
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            await eventAttendeeRouteRestService.DeleteEventAttendeeRouteAsync(routeVm.Id);
+
+            var rawRoute = EventAttendeeRoutes.FirstOrDefault(r => r.Id == routeVm.Id);
+            if (rawRoute != null)
+            {
+                EventAttendeeRoutes.Remove(rawRoute);
+            }
+
+            EventAttendeeRouteViewModels.Remove(routeVm);
+            UpdateRouteStats();
+            UpdateRoutes();
+
+            await NotificationService.Notify("Route deleted.");
+        }, "An error occurred while deleting the route. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task ChangeRoutePrivacy(EventAttendeeRouteViewModel? routeVm)
+    {
+        if (routeVm == null)
+        {
+            return;
+        }
+
+        var popup = new Controls.PrivacyPopup();
+        var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        var selectedPrivacy = popupResult?.Result;
+        if (string.IsNullOrEmpty(selectedPrivacy))
+        {
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            var request = new UpdateRouteMetadataRequest
+            {
+                PrivacyLevel = selectedPrivacy,
+            };
+
+            var updated = await eventAttendeeRouteRestService.UpdateRouteMetadataAsync(routeVm.Id, request);
+
+            routeVm.PrivacyLevel = updated.PrivacyLevel;
+
+            var rawRoute = EventAttendeeRoutes.FirstOrDefault(r => r.Id == routeVm.Id);
+            if (rawRoute != null)
+            {
+                rawRoute.PrivacyLevel = updated.PrivacyLevel;
+            }
+
+            await NotificationService.Notify("Privacy updated.");
+        }, "An error occurred while updating privacy. Please try again.");
+    }
+
+    private void LoadRouteViewModels(IEnumerable<DisplayEventAttendeeRoute> routes)
+    {
+        EventAttendeeRoutes.Clear();
+        EventAttendeeRouteViewModels.Clear();
+
+        var currentUserId = userManager.CurrentUser.Id;
+
+        foreach (var route in routes)
+        {
+            EventAttendeeRoutes.Add(route);
+            EventAttendeeRouteViewModels.Add(
+                EventAttendeeRouteViewModel.FromRoute(route, currentUserId));
+        }
+
+        UpdateRouteStats();
+        UpdateRoutes();
+    }
+
+    private void UpdateRouteStats()
+    {
+        var count = EventAttendeeRoutes.Count;
+        AreRoutesFound = count > 0;
+        AreNoRoutesFound = !AreRoutesFound;
+        RouteCountDisplay = count == 1 ? "1 route" : $"{count} routes";
+
+        var totalMeters = EventAttendeeRoutes.Sum(r => r.TotalDistanceMeters);
+        TotalDistanceDisplay = totalMeters >= 1000
+            ? $"{totalMeters / 1000.0:F1} km"
+            : $"{totalMeters} m";
+
+        var totalMinutes = EventAttendeeRoutes.Sum(r => r.DurationMinutes);
+        TotalDurationDisplay = totalMinutes >= 60
+            ? $"{totalMinutes / 60} hr {totalMinutes % 60} min"
+            : $"{totalMinutes} min";
+
+        var totalBags = EventAttendeeRoutes.Sum(r => r.BagsCollected ?? 0);
+        TotalBagsDisplay = totalBags.ToString();
     }
 }

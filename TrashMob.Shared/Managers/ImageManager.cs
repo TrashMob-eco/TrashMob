@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.IO;
@@ -32,7 +32,7 @@
             var imageUrl = string.Empty;
 
             // Should only be one image.
-            await foreach (var blob in blobContainer.GetBlobsAsync(prefix: fileNameFilter, cancellationToken: cancellationToken))
+            await foreach (var blob in blobContainer.GetBlobsAsync(BlobTraits.None, BlobStates.None, fileNameFilter, cancellationToken))
             {
                 imageUrl = $"{blobContainer.Uri}/{blob.Name}";
                 break;
@@ -42,9 +42,9 @@
         }
 
         /// <inheritdoc />
-        public async Task UploadImage(ImageUpload imageUpload)
+        public async Task UploadImageAsync(ImageUpload imageUpload)
         {
-            if (imageUpload?.FormFile == null)
+            if (imageUpload?.FormFile is null)
             {
                 throw new ArgumentNullException(nameof(imageUpload));
             }
@@ -56,17 +56,17 @@
             const int reducedHeight = 400;
 
             var blobContainer = blobServiceClient.GetBlobContainerClient(imageUpload.ImageType.ToString().ToLower());
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
             var fileTime = DateTimeOffset.UtcNow.ToString("ddHHmmss");
 
             logger.LogInformation("ParentId: {ParentId}, ImageType: {ImageType}, File: {FileName}",
                 imageUpload.ParentId, imageUpload.ImageType, imageUpload.FormFile?.FileName);
 
-            var fileName = string.Format("{0}-{1}-{2}-{3}{4}", imageUpload.ParentId, imageUpload.ImageType.ToString(),
-                ImageSizeEnum.Raw.ToString(), fileTime, Path.GetExtension(imageUpload.FormFile?.FileName)).ToLower();
+            var fileName = $"{imageUpload.ParentId}-{imageUpload.ImageType}-{ImageSizeEnum.Raw}-{fileTime}{Path.GetExtension(imageUpload.FormFile?.FileName)}".ToLower();
 
             // Upload the raw file
-            if (imageUpload.FormFile == null)
+            if (imageUpload.FormFile is null)
             {
                 throw new ArgumentException("ImageUpload FormFile cannot be null");
             }
@@ -81,8 +81,7 @@
             // Create a thumbnail
             using (var image = await Image.LoadAsync(memoryStream))
             {
-                var thumbNailFileName = string.Format("{0}-{1}-{2}-{3}.jpg", imageUpload.ParentId,
-                    imageUpload.ImageType.ToString(), ImageSizeEnum.Thumb.ToString(), fileTime).ToLower();
+                var thumbNailFileName = $"{imageUpload.ParentId}-{imageUpload.ImageType}-{ImageSizeEnum.Thumb}-{fileTime}.jpg".ToLower();
 
                 image.Mutate(x => x.Resize(thumbnailWidth, thumbnailHeight));
 
@@ -99,8 +98,7 @@
             // Create a reduced image
             using (var image = await Image.LoadAsync(memoryStream))
             {
-                var reducedFileName = string.Format("{0}-{1}-{2}-{3}.jpg", imageUpload.ParentId,
-                    imageUpload.ImageType.ToString(), ImageSizeEnum.Reduced.ToString(), fileTime).ToLower();
+                var reducedFileName = $"{imageUpload.ParentId}-{imageUpload.ImageType}-{ImageSizeEnum.Reduced}-{fileTime}.jpg".ToLower();
 
                 image.Mutate(x => x.Resize(reducedWidth, reducedHeight));
 
@@ -114,11 +112,48 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> DeleteImage(Guid parentId, ImageTypeEnum imageType)
+        public async Task<string> UploadImageWithSizeAsync(ImageUpload imageUpload, int width, int height)
+        {
+            if (imageUpload?.FormFile is null)
+            {
+                throw new ArgumentNullException(nameof(imageUpload));
+            }
+
+            var blobContainer = blobServiceClient.GetBlobContainerClient(imageUpload.ImageType.ToString().ToLower());
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.Blob);
+
+            var fileTime = DateTimeOffset.UtcNow.ToString("ddHHmmss");
+
+            logger.LogInformation("UploadImageWithSize ParentId: {ParentId}, ImageType: {ImageType}, Size: {Width}x{Height}",
+                imageUpload.ParentId, imageUpload.ImageType, width, height);
+
+            // Delete any existing images for this parent/type so we replace rather than accumulate
+            await DeleteImageAsync(imageUpload.ParentId, imageUpload.ImageType);
+
+            using var memoryStream = new MemoryStream();
+            await imageUpload.FormFile.CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
+
+            using var image = await Image.LoadAsync(memoryStream);
+            image.Mutate(x => x.Resize(width, height));
+
+            var fileName = $"{imageUpload.ParentId}-{imageUpload.ImageType}-{ImageSizeEnum.Reduced}-{fileTime}.jpg".ToLower();
+
+            using var outputStream = new MemoryStream();
+            await image.SaveAsync(outputStream, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
+            outputStream.Position = 0;
+
+            await UploadBlob(outputStream, fileName, blobContainer);
+
+            return $"{blobContainer.Uri}/{fileName}";
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> DeleteImageAsync(Guid parentId, ImageTypeEnum imageType)
         {
             var imageName = await GetImageNameAsync(parentId, imageType);
 
-            if (imageName == null)
+            if (string.IsNullOrEmpty(imageName))
             {
                 return false;
             }
@@ -147,7 +182,7 @@
             var imageName = string.Empty;
 
             // For now, only show the first image, since there should only be one for Pickups.
-            await foreach (var blob in blobContainer.GetBlobsAsync(prefix: fileNameFilter))
+            await foreach (var blob in blobContainer.GetBlobsAsync(BlobTraits.None, BlobStates.None, fileNameFilter, CancellationToken.None))
             {
                 imageName = blob.Name;
                 break;

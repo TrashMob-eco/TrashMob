@@ -26,10 +26,6 @@ export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<JobOpportun
         header: ({ column }) => <DataTableColumnHeader column={column} title='Tag Line' />,
     },
     {
-        accessorKey: 'fullDescription',
-        header: ({ column }) => <DataTableColumnHeader column={column} title='Full Description' />,
-    },
-    {
         accessorKey: 'isActive',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Is Active' />,
         cell: ({ row }) =>

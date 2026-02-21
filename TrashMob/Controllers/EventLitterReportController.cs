@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -32,8 +32,7 @@
         [ProducesResponseType(typeof(IEnumerable<EventLitterReport>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventLitterReports(Guid eventId, CancellationToken cancellationToken)
         {
-            var result = await eventLitterReportManager.GetByParentIdAsync(eventId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await eventLitterReportManager.GetByParentIdAsync(eventId, cancellationToken);
 
             var fullEventLitterReports = await ToFullEventLitterReports(result, cancellationToken);
 
@@ -50,8 +49,7 @@
         [ProducesResponseType(typeof(FullEventLitterReport), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventLitterReportByLitterReportId(Guid litterReportId, CancellationToken cancellationToken)
         {
-            var result = await eventLitterReportManager.GetAsync(l => l.LitterReportId == litterReportId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await eventLitterReportManager.GetAsync(l => l.LitterReportId == litterReportId, cancellationToken);
 
             var lastEventLitterReport = result.OrderByDescending(e => e.CreatedDate).FirstOrDefault();
 
@@ -68,6 +66,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated event litter report.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventLitterReport), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -75,11 +74,7 @@
         public async Task<IActionResult> UpdateEventLitterReport(EventLitterReport eventLitterReport,
             CancellationToken cancellationToken)
         {
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, eventLitterReport,
-                    AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(eventLitterReport, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -87,15 +82,14 @@
             try
             {
                 var updatedEventLitterReport = await eventLitterReportManager
-                    .UpdateAsync(eventLitterReport, UserId, cancellationToken).ConfigureAwait(false);
+                    .UpdateAsync(eventLitterReport, UserId, cancellationToken);
                 TrackEvent(nameof(UpdateEventLitterReport));
 
                 return Ok(updatedEventLitterReport);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await EventLitterReportExists(eventLitterReport.EventId, eventLitterReport.LitterReportId, cancellationToken)
-                        .ConfigureAwait(false))
+                if (!await EventLitterReportExists(eventLitterReport.EventId, eventLitterReport.LitterReportId, cancellationToken))
                 {
                     return NotFound();
                 }
@@ -116,7 +110,7 @@
         public async Task<IActionResult> AddEventLitterReport(EventLitterReport eventLitterReport,
             CancellationToken cancellationToken)
         {
-            await eventLitterReportManager.AddAsync(eventLitterReport, UserId, cancellationToken).ConfigureAwait(false);
+            await eventLitterReportManager.AddAsync(eventLitterReport, UserId, cancellationToken);
             TrackEvent(nameof(AddEventLitterReport));
             return Ok();
         }
@@ -135,7 +129,7 @@
         public async Task<IActionResult> DeleteEventLitterReport(Guid eventId, Guid litterReportId,
             CancellationToken cancellationToken)
         {
-            await eventLitterReportManager.Delete(eventId, litterReportId, cancellationToken).ConfigureAwait(false);
+            await eventLitterReportManager.Delete(eventId, litterReportId, cancellationToken);
             TrackEvent(nameof(DeleteEventLitterReport));
 
             return new NoContentResult();
@@ -144,14 +138,14 @@
         private async Task<bool> EventLitterReportExists(Guid eventId, Guid litterReportId, CancellationToken cancellationToken)
         {
             var litterReport = await eventLitterReportManager
-                .GetAsync(ea => ea.EventId == eventId && ea.LitterReportId == litterReportId, cancellationToken).ConfigureAwait(false);
+                .GetAsync(ea => ea.EventId == eventId && ea.LitterReportId == litterReportId, cancellationToken);
 
-            return litterReport?.FirstOrDefault() != null;
+            return litterReport?.FirstOrDefault() is not null;
         }
 
         private async Task<IEnumerable<FullEventLitterReport>> ToFullEventLitterReports(IEnumerable<EventLitterReport> eventLitterReports, CancellationToken cancellationToken)
         {
-            var fullEventLitterReports = new List<FullEventLitterReport>();
+            List<FullEventLitterReport> fullEventLitterReports = [];
 
             foreach (var eventLitterReport in eventLitterReports)
             {

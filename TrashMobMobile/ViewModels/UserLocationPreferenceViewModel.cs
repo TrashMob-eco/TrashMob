@@ -25,31 +25,19 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
 
     public async Task Init()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             Addresses.Clear();
             Address = userManager.CurrentUser.GetAddress();
             Addresses.Add(Address);
             TravelDistance = userManager.CurrentUser.TravelLimitForLocalEvents;
             Units = userManager.CurrentUser.PrefersMetric ? "Kilometers" : "Miles";
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while initializing the user location preference page.");
-        }
+        }, "An error occurred while initializing the user location preference page.");
     }
 
     public async Task ChangeLocation(Location location)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var addr = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
 
@@ -64,23 +52,13 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
 
             Addresses.Clear();
             Addresses.Add(Address);
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while updating your location. Please try again.");
-        }
+        }, "An error occurred while updating your location. Please try again.");
     }
 
     [RelayCommand]
     private async Task UpdateLocation()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             userManager.CurrentUser.City = Address.City;
             userManager.CurrentUser.Country = Address.Country;
@@ -93,17 +71,9 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
 
             await userManager.UpdateUserAsync(userManager.CurrentUser);
 
-            IsBusy = false;
-
             await NotificationService.Notify("User location preference has been updated.");
 
             await Navigation.PopToRootAsync();
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while updating your location. Please try again.");
-        }
+        }, "An error occurred while updating your location. Please try again.");
     }
 }

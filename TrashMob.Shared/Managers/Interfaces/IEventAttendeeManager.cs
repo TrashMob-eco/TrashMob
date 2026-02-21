@@ -41,5 +41,42 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <returns>A collection of canceled events the user was attending.</returns>
         Task<IEnumerable<Event>> GetCanceledEventsUserIsAttendingAsync(Guid attendeeId, bool futureEventsOnly = false,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Checks whether a user is an event lead for the specified event.
+        /// </summary>
+        /// <param name="eventId">The unique identifier of the event.</param>
+        /// <param name="userId">The unique identifier of the user.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>True if the user is an event lead; otherwise, false.</returns>
+        Task<bool> IsEventLeadAsync(Guid eventId, Guid userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets all event leads for the specified event.
+        /// </summary>
+        /// <param name="eventId">The unique identifier of the event.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A collection of event attendees who are leads for the event.</returns>
+        Task<IEnumerable<EventAttendee>> GetEventLeadsAsync(Guid eventId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Promotes an attendee to event lead status.
+        /// </summary>
+        /// <param name="eventId">The unique identifier of the event.</param>
+        /// <param name="userId">The unique identifier of the user to promote.</param>
+        /// <param name="promotedByUserId">The unique identifier of the user performing the promotion.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The updated event attendee with lead status.</returns>
+        Task<EventAttendee> PromoteToLeadAsync(Guid eventId, Guid userId, Guid promotedByUserId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Demotes an event lead back to regular attendee status.
+        /// </summary>
+        /// <param name="eventId">The unique identifier of the event.</param>
+        /// <param name="userId">The unique identifier of the user to demote.</param>
+        /// <param name="demotedByUserId">The unique identifier of the user performing the demotion.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The updated event attendee without lead status.</returns>
+        Task<EventAttendee> DemoteFromLeadAsync(Guid eventId, Guid userId, Guid demotedByUserId, CancellationToken cancellationToken = default);
     }
 }

@@ -1,3 +1,15 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.trashmob.eco/sitemap.xml
+
+# Disallow admin and user-specific pages from indexing
+Disallow: /siteadmin/
+Disallow: /mydashboard
+Disallow: /partnerdashboard/
+Disallow: /deletemydata
+Disallow: /locationpreference
+Disallow: /waivers
+Disallow: /unsubscribe

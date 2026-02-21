@@ -10,34 +10,34 @@ public partial class AddressViewModel : ObservableObject
     private Guid parentId;
 
     [ObservableProperty]
-    private string displayName;
+    private string displayName = string.Empty;
 
     [ObservableProperty]
-    private string iconFile;
+    private string iconFile = string.Empty;
 
     [ObservableProperty]
     private AddressType addressType;
 
     [ObservableProperty]
-    private string country;
+    private string country = string.Empty;
 
     [ObservableProperty]
-    private string county;
+    private string county = string.Empty;
 
     [ObservableProperty]
-    private string displayAddress;
+    private string displayAddress = string.Empty;
 
     [ObservableProperty]
     private double? latitude;
 
     [ObservableProperty]
-    private Location location;
+    private Location? location;
 
     [ObservableProperty]
     private double? longitude;
 
     [ObservableProperty]
-    private string postalCode;
+    private string postalCode = string.Empty;
 
     private string region = string.Empty;
 

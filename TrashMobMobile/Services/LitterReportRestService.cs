@@ -20,7 +20,7 @@
             {
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<LitterReport>(content);
+                return JsonConvert.DeserializeObject<LitterReport>(content)!;
             }
         }
 
@@ -31,9 +31,19 @@
 
             using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
             {
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode || response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    return string.Empty;
+                }
+
                 var result = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<string>(result);
+
+                if (string.IsNullOrWhiteSpace(result))
+                {
+                    return string.Empty;
+                }
+
+                return JsonConvert.DeserializeObject<string>(result) ?? string.Empty;
             }
         }
 
@@ -44,7 +54,13 @@
 
             using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
             {
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                    throw new HttpRequestException(
+                        $"Server returned {(int)response.StatusCode} ({response.StatusCode}): {errorBody}");
+                }
+
                 var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
                 var result = JsonConvert.DeserializeObject<LitterReport>(responseContent);
 
@@ -69,7 +85,12 @@
 
             using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
             {
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                    throw new HttpRequestException(
+                        $"Server returned {(int)response.StatusCode} ({response.StatusCode}): {errorBody}");
+                }
 
                 var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
                 var result = JsonConvert.DeserializeObject<LitterReport>(responseContent);
@@ -96,7 +117,7 @@
                 response.EnsureSuccessStatusCode();
                 var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                return JsonConvert.DeserializeObject<PaginatedList<LitterReport>>(returnContent);
+                return JsonConvert.DeserializeObject<PaginatedList<LitterReport>>(returnContent)!;
             }
         }
 
@@ -115,7 +136,7 @@
                     return [];
                 }
 
-                return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content);
+                return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content) ?? [];
             }
         }
 
@@ -154,7 +175,7 @@
                     return [];
                 }
 
-                return JsonConvert.DeserializeObject<IEnumerable<TrashMob.Models.Poco.Location>>(content);
+                return JsonConvert.DeserializeObject<IEnumerable<TrashMob.Models.Poco.Location>>(content) ?? [];
             }
         }
 
@@ -181,7 +202,12 @@
 
                     using (var response = await AuthorizedHttpClient.SendAsync(request, cancellationToken))
                     {
-                        response.EnsureSuccessStatusCode();
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                            throw new HttpRequestException(
+                                $"Image upload failed with {(int)response.StatusCode} ({response.StatusCode}): {errorBody}");
+                        }
                     }
                 }
         }

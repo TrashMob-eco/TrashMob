@@ -1,0 +1,172 @@
+name: Daily Exception Monitor
+
+on:
+  schedule:
+    # Run daily at 7 AM UTC
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-exceptions:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - environment: DEV
+            github_environment: test
+            app_insights: ai-tm-dev-westus2
+            resource_group: rg-trashmob-dev-westus2
+          - environment: PROD
+            github_environment: production
+            app_insights: ai-tm-pr-westus2
+            resource_group: rg-trashmob-pr-westus2
+
+    environment: ${{ matrix.github_environment }}
+
+    permissions:
+      id-token: write
+      contents: read
+      issues: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install App Insights extension
+        run: az extension add --name application-insights --yes
+
+      - name: Query App Insights for exceptions
+        id: query
+        run: |
+          # Query distinct exceptions from the last 24 hours
+          # Do not use 2>&1 — stderr warnings from az CLI would break jq parsing
+          RESULT=$(az monitor app-insights query \
+            --app "${{ matrix.app_insights }}" \
+            --resource-group "${{ matrix.resource_group }}" \
+            --analytics-query "
+              exceptions
+              | where timestamp > ago(24h)
+              | summarize
+                  Count=count(),
+                  FirstSeen=min(timestamp),
+                  LastSeen=max(timestamp),
+                  SampleDetails=take_any(details)
+                by type, outerMessage
+              | order by Count desc
+            " \
+            --output json) || true
+
+          # Check if the query returned valid data
+          if [ -z "$RESULT" ]; then
+            echo "has_exceptions=false" >> "$GITHUB_OUTPUT"
+            echo "Query returned no data. Check workflow logs for errors."
+          elif echo "$RESULT" | jq -e '.tables[0].rows | length > 0' > /dev/null 2>&1; then
+            echo "has_exceptions=true" >> "$GITHUB_OUTPUT"
+            echo "$RESULT" > /tmp/exceptions.json
+          else
+            echo "has_exceptions=false" >> "$GITHUB_OUTPUT"
+            echo "No exceptions found in the last 24 hours."
+          fi
+
+      - name: Create issues for new exceptions
+        if: steps.query.outputs.has_exceptions == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ENVIRONMENT: ${{ matrix.environment }}
+          APP_INSIGHTS: ${{ matrix.app_insights }}
+        run: |
+          # Ensure the auto-exception label exists
+          gh label create "auto-exception" --description "Automatically created from App Insights exceptions" --color "d73a4a" 2>/dev/null || true
+
+          # Parse the query results
+          # Columns: type, outerMessage, Count, FirstSeen, LastSeen, SampleDetails
+          ROWS=$(jq -c '.tables[0].rows[]' /tmp/exceptions.json)
+
+          if [ -z "$ROWS" ]; then
+            echo "No exception rows to process."
+            exit 0
+          fi
+
+          echo "$ROWS" | while IFS= read -r row; do
+            TYPE=$(echo "$row" | jq -r '.[0]')
+            MESSAGE=$(echo "$row" | jq -r '.[1]')
+            COUNT=$(echo "$row" | jq -r '.[2]')
+            FIRST_SEEN=$(echo "$row" | jq -r '.[3]')
+            LAST_SEEN=$(echo "$row" | jq -r '.[4]')
+            SAMPLE_DETAILS=$(echo "$row" | jq -r '.[5]' | head -c 3000)
+
+            # Skip if type is empty
+            if [ -z "$TYPE" ] || [ "$TYPE" = "null" ]; then
+              continue
+            fi
+
+            # Truncate message for title (max 100 chars)
+            SHORT_MSG=$(echo "$MESSAGE" | head -c 100)
+            TITLE="[$ENVIRONMENT] $TYPE: $SHORT_MSG"
+
+            # Check if an open issue already exists for this exception type + environment
+            EXISTING=$(gh issue list \
+              --label "auto-exception" \
+              --search "[$ENVIRONMENT] $TYPE in:title" \
+              --state open \
+              --limit 1 \
+              --json number \
+              --jq 'length')
+
+            if [ "$EXISTING" -gt 0 ]; then
+              echo "Issue already exists for [$ENVIRONMENT] $TYPE — skipping."
+              continue
+            fi
+
+            echo "Creating issue for [$ENVIRONMENT] $TYPE ($COUNT occurrences)..."
+
+            BODY=$(cat <<EOF
+          ## Exception Report
+
+          **Environment:** $ENVIRONMENT
+          **Exception Type:** \`$TYPE\`
+          **Occurrences (last 24h):** $COUNT
+          **First Seen:** $FIRST_SEEN
+          **Last Seen:** $LAST_SEEN
+
+          ### Message
+          \`\`\`
+          $MESSAGE
+          \`\`\`
+
+          ### Sample Details
+          \`\`\`
+          $SAMPLE_DETAILS
+          \`\`\`
+
+          ### App Insights
+          Query this in [Azure Portal](https://portal.azure.com) > $APP_INSIGHTS:
+          \`\`\`kql
+          exceptions
+          | where timestamp > ago(24h)
+          | where type == "$TYPE"
+          | order by timestamp desc
+          \`\`\`
+
+          ---
+          *Auto-generated by the [exception-monitor](${{ github.server_url }}/${{ github.repository }}/actions/workflows/exception-monitor.yml) workflow.*
+          EOF
+          )
+
+            gh issue create \
+              --title "$TITLE" \
+              --body "$BODY" \
+              --label "auto-exception"
+
+          done
+
+      - name: Azure Logout
+        if: always()
+        run: az logout

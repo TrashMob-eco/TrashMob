@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phase 1 Backend Complete) |
 | **Priority** | Medium |
 | **Risk** | High |
 | **Size** | Medium |
@@ -53,10 +53,10 @@ Drive engagement with leaderboards across roles and time ranges while preventing
 - ✅ Inter-community challenges
 
 ### Phase 4 - Achievements
-- ❓ Badge system
-- ❓ Milestones (first event, 10 events, etc.)
-- ❓ Streaks (consecutive weeks)
-- ❓ Special achievements
+- ✅ Badge system
+- ✅ Milestones (first event, 10 events, etc.)
+- ✅ Streaks (consecutive weeks)
+- ✅ Special achievements
 
 ---
 
@@ -113,57 +113,281 @@ Drive engagement with leaderboards across roles and time ranges while preventing
 
 ### Data Model Changes
 
-```sql
--- Leaderboard cache (pre-computed for performance)
-CREATE TABLE LeaderboardCache (
-    Id BIGINT PRIMARY KEY IDENTITY(1,1),
-    LeaderboardType NVARCHAR(50) NOT NULL, -- User, Team, Community
-    MetricType NVARCHAR(50) NOT NULL, -- Events, Bags, Weight, Hours
-    TimeRange NVARCHAR(20) NOT NULL, -- Today, Week, Month, Year, AllTime
-    LocationScope NVARCHAR(50) NULL, -- Global, Region:XX, City:XX
-    EntityId UNIQUEIDENTIFIER NOT NULL, -- UserId, TeamId, or CommunityId
-    EntityName NVARCHAR(200) NOT NULL,
-    Score DECIMAL(18,2) NOT NULL,
-    Rank INT NOT NULL,
-    ComputedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET()
-);
+**Modification: User (add gamification preferences)**
+```csharp
+// Add to existing TrashMob.Models/User.cs
+#region Gamification Preferences
 
--- User achievements
-CREATE TABLE UserAchievements (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    AchievementTypeId INT NOT NULL,
-    EarnedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    UNIQUE (UserId, AchievementTypeId)
-);
+/// <summary>
+/// Gets or sets whether the user appears on public leaderboards.
+/// </summary>
+public bool ShowOnLeaderboards { get; set; } = true;
 
--- Achievement types
-CREATE TABLE AchievementTypes (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(500) NOT NULL,
-    IconUrl NVARCHAR(500) NULL,
-    Category NVARCHAR(50) NOT NULL, -- Events, Impact, Streaks, Special
-    Criteria NVARCHAR(MAX) NOT NULL, -- JSON rules
-    Points INT NOT NULL DEFAULT 0,
-    IsActive BIT NOT NULL DEFAULT 1
-);
+/// <summary>
+/// Gets or sets whether the user receives achievement notifications.
+/// </summary>
+public bool AchievementNotificationsEnabled { get; set; } = true;
 
--- Fraud detection log
-CREATE TABLE LeaderboardAuditLog (
-    Id BIGINT PRIMARY KEY IDENTITY(1,1),
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    EventId UNIQUEIDENTIFIER NULL,
-    ActionType NVARCHAR(50) NOT NULL,
-    Details NVARCHAR(MAX) NULL,
-    FlaggedForReview BIT NOT NULL DEFAULT 0,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET()
-);
+#endregion
+```
 
-CREATE INDEX IX_LeaderboardCache_Type_Metric_Time ON LeaderboardCache(LeaderboardType, MetricType, TimeRange);
-CREATE INDEX IX_LeaderboardCache_EntityId ON LeaderboardCache(EntityId);
-CREATE INDEX IX_UserAchievements_UserId ON UserAchievements(UserId);
+**New Entity: LeaderboardCache**
+```csharp
+// New file: TrashMob.Models/LeaderboardCache.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Pre-computed leaderboard entry for performance.
+    /// </summary>
+    public class LeaderboardCache
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier.
+        /// </summary>
+        public long Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the leaderboard type (User, Team, Community).
+        /// </summary>
+        public string LeaderboardType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the metric type (Events, Bags, Weight, Hours).
+        /// </summary>
+        public string MetricType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time range (Today, Week, Month, Year, AllTime).
+        /// </summary>
+        public string TimeRange { get; set; }
+
+        /// <summary>
+        /// Gets or sets the location scope (Global, Region:XX, City:XX).
+        /// </summary>
+        public string LocationScope { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity ID (user, team, or community).
+        /// </summary>
+        public Guid EntityId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity display name.
+        /// </summary>
+        public string EntityName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the score for this entry.
+        /// </summary>
+        public decimal Score { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rank position.
+        /// </summary>
+        public int Rank { get; set; }
+
+        /// <summary>
+        /// Gets or sets when this entry was computed.
+        /// </summary>
+        public DateTimeOffset ComputedDate { get; set; }
+    }
+}
+```
+
+**New Entity: UserAchievement**
+```csharp
+// New file: TrashMob.Models/UserAchievement.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents an achievement earned by a user.
+    /// </summary>
+    public class UserAchievement : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the user identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the achievement type identifier.
+        /// </summary>
+        public int AchievementTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the achievement was earned.
+        /// </summary>
+        public DateTimeOffset EarnedDate { get; set; }
+
+        // Navigation properties
+        public virtual User User { get; set; }
+        public virtual AchievementType AchievementType { get; set; }
+    }
+}
+```
+
+**New Entity: AchievementType (lookup table)**
+```csharp
+// New file: TrashMob.Models/AchievementType.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Defines an achievement type that users can earn.
+    /// </summary>
+    public class AchievementType : LookupModel
+    {
+        /// <summary>
+        /// Gets or sets the achievement description.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of the achievement icon/badge.
+        /// </summary>
+        public string IconUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the category (Events, Impact, Streaks, Special).
+        /// </summary>
+        public string Category { get; set; }
+
+        /// <summary>
+        /// Gets or sets the JSON criteria rules for earning this achievement.
+        /// </summary>
+        public string Criteria { get; set; }
+
+        /// <summary>
+        /// Gets or sets the points value of this achievement.
+        /// </summary>
+        public int Points { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this achievement is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        // Navigation property
+        public virtual ICollection<UserAchievement> UserAchievements { get; set; }
+    }
+}
+```
+
+**New Entity: LeaderboardAuditLog**
+```csharp
+// New file: TrashMob.Models/LeaderboardAuditLog.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Audit log for leaderboard activity and fraud detection.
+    /// </summary>
+    public class LeaderboardAuditLog
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier.
+        /// </summary>
+        public long Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the related event identifier (if applicable).
+        /// </summary>
+        public Guid? EventId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the action type being logged.
+        /// </summary>
+        public string ActionType { get; set; }
+
+        /// <summary>
+        /// Gets or sets additional details as JSON.
+        /// </summary>
+        public string Details { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this entry is flagged for review.
+        /// </summary>
+        public bool FlaggedForReview { get; set; }
+
+        /// <summary>
+        /// Gets or sets when this log entry was created.
+        /// </summary>
+        public DateTimeOffset CreatedDate { get; set; }
+
+        // Navigation properties
+        public virtual User User { get; set; }
+        public virtual Event Event { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<User>(entity =>
+{
+    // Add to existing User configuration
+    entity.Property(e => e.ShowOnLeaderboards).HasDefaultValue(true);
+    entity.Property(e => e.AchievementNotificationsEnabled).HasDefaultValue(true);
+});
+
+modelBuilder.Entity<LeaderboardCache>(entity =>
+{
+    entity.HasKey(e => e.Id);
+    entity.Property(e => e.Id).UseIdentityColumn();
+    entity.Property(e => e.LeaderboardType).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.MetricType).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.TimeRange).HasMaxLength(20).IsRequired();
+    entity.Property(e => e.LocationScope).HasMaxLength(50);
+    entity.Property(e => e.EntityName).HasMaxLength(200).IsRequired();
+    entity.Property(e => e.Score).HasPrecision(18, 2);
+
+    entity.HasIndex(e => new { e.LeaderboardType, e.MetricType, e.TimeRange });
+    entity.HasIndex(e => e.EntityId);
+});
+
+modelBuilder.Entity<UserAchievement>(entity =>
+{
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.AchievementType)
+        .WithMany(a => a.UserAchievements)
+        .HasForeignKey(e => e.AchievementTypeId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.UserId);
+    entity.HasIndex(e => new { e.UserId, e.AchievementTypeId }).IsUnique();
+});
+
+modelBuilder.Entity<AchievementType>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+    entity.Property(e => e.Description).HasMaxLength(500).IsRequired();
+    entity.Property(e => e.IconUrl).HasMaxLength(500);
+    entity.Property(e => e.Category).HasMaxLength(50).IsRequired();
+});
+
+modelBuilder.Entity<LeaderboardAuditLog>(entity =>
+{
+    entity.HasKey(e => e.Id);
+    entity.Property(e => e.Id).UseIdentityColumn();
+    entity.Property(e => e.ActionType).HasMaxLength(50).IsRequired();
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.Event)
+        .WithMany()
+        .HasForeignKey(e => e.EventId)
+        .OnDelete(DeleteBehavior.NoAction);
+});
 ```
 
 ### API Changes
@@ -288,7 +512,7 @@ public async Task<ActionResult<IEnumerable<UserAchievementDto>>> GetUserAchievem
 
 ### Phase 1: Infrastructure
 - Database schema
-- Leaderboard computation job
+- Leaderboard computation job (daily Azure Container App job)
 - Caching strategy
 - Basic API
 
@@ -313,27 +537,61 @@ public async Task<ActionResult<IEnumerable<UserAchievementDto>>> GetUserAchievem
 
 ---
 
-## Open Questions
+## Initial Achievement Types
+
+**Milestone Achievements (Events Category):**
+| Name | Description | Criteria |
+|------|-------------|----------|
+| First Steps | Attended your first cleanup event | events_attended >= 1 |
+| Regular Volunteer | Attended 10 cleanup events | events_attended >= 10 |
+| Dedicated Volunteer | Attended 25 cleanup events | events_attended >= 25 |
+| Super Volunteer | Attended 50 cleanup events | events_attended >= 50 |
+| Cleanup Champion | Attended 100 cleanup events | events_attended >= 100 |
+
+**Milestone Achievements (Impact Category):**
+| Name | Description | Criteria |
+|------|-------------|----------|
+| Trash Collector | Collected 10 bags of trash | bags_collected >= 10 |
+| Trash Warrior | Collected 50 bags of trash | bags_collected >= 50 |
+| Trash Hero | Collected 100 bags of trash | bags_collected >= 100 |
+
+**Streak Achievements:**
+| Name | Description | Criteria |
+|------|-------------|----------|
+| Week Warrior | Attended events 2 weeks in a row | consecutive_weeks >= 2 |
+| Month of Service | Attended events 4 weeks in a row | consecutive_weeks >= 4 |
+| Quarterly Champion | Attended events 12 weeks in a row | consecutive_weeks >= 12 |
+
+**Special Achievements:**
+| Name | Description | Criteria |
+|------|-------------|----------|
+| Event Leader | Led your first cleanup event | events_led >= 1 |
+| Team Player | Joined a cleanup team | team_member = true |
+| Community Builder | Participated in a community event | community_event_attended = true |
+
+---
+
+## Resolved Questions
 
 1. **Leaderboard refresh frequency?**
-   **Recommendation:** Hourly for active time ranges; daily for historical
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+   **Decision:** Daily refresh for all time ranges (simpler compute, sufficient for engagement)
 
 2. **Minimum events to appear on leaderboard?**
-   **Recommendation:** 3 events to prevent gaming with single high-impact event
-   **Owner:** Product Lead
-   **Due:** Before Phase 2
+   **Decision:** 3 events minimum (prevents gaming with single high-impact event)
 
 3. **Achievement notification preferences?**
-   **Recommendation:** Opt-in for notifications; always visible in profile
-   **Owner:** Product Lead
-   **Due:** Before Phase 4
+   **Decision:** Default on with opt-out (users receive notifications by default; can disable in preferences)
 
 4. **Opt-out of leaderboards?**
-   **Recommendation:** Yes, privacy option to hide from public leaderboards
-   **Owner:** Product Lead
-   **Due:** Before Phase 2
+   **Decision:** Yes, privacy option to hide from public leaderboards (users can still earn achievements privately)
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2240](https://github.com/trashmob/TrashMob/issues/2240)** - Project 20: Gamification (tracking issue)
 
 ---
 
@@ -345,7 +603,7 @@ public async Task<ActionResult<IEnumerable<UserAchievementDto>>> GetUserAchievem
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** February 3, 2026
 **Owner:** Product Lead + Engineering
-**Status:** Not Started
-**Next Review:** When dependencies complete
+**Status:** In Progress (Phase 1 Backend Complete)
+**Next Review:** After Phase 1 frontend is complete

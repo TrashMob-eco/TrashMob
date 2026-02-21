@@ -95,5 +95,20 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <returns>A service result containing the created litter report or error details.</returns>
         Task<ServiceResult<LitterReport>> AddWithResultAsync(LitterReport litterReport, Guid userId,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets the count of all litter reports and cleaned litter reports efficiently.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A tuple containing (totalCount, cleanedCount).</returns>
+        Task<(int TotalCount, int CleanedCount)> GetLitterReportCountsAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets the count of litter reports submitted by a specific user.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The count of litter reports submitted by the user.</returns>
+        Task<int> GetUserLitterReportCountAsync(Guid userId, CancellationToken cancellationToken = default);
     }
 }

@@ -1,0 +1,94 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>TrashMobMobile.Tests</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.31" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.31" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
+    <PackageReference Include="Sentry.Maui" Version="6.0.0" />
+    <PackageReference Include="Polly" Version="8.6.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TrashMob.Models\TrashMob.Models.csproj" />
+  </ItemGroup>
+
+  <!-- Link ViewModel source files -->
+  <ItemGroup>
+    <Compile Include="..\TrashMobMobile\ViewModels\*.cs" Link="LinkedSource\ViewModels\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- Link service interfaces -->
+  <ItemGroup>
+    <Compile Include="..\TrashMobMobile\Services\I*.cs" Link="LinkedSource\Services\%(Filename)%(Extension)" />
+    <Compile Include="..\TrashMobMobile\Services\NotificationService.cs" Link="LinkedSource\Services\NotificationService.cs" />
+    <Compile Include="..\TrashMobMobile\Services\Geolocator.cs" Link="LinkedSource\Services\Geolocator.cs" />
+  </ItemGroup>
+
+  <!-- Link extensions (exclude ServiceCollectionExtensions which has DI registration) -->
+  <ItemGroup>
+    <Compile Include="..\TrashMobMobile\Extensions\EventExtensions.cs" Link="LinkedSource\Extensions\EventExtensions.cs" />
+    <Compile Include="..\TrashMobMobile\Extensions\LitterReportExtensions.cs" Link="LinkedSource\Extensions\LitterReportExtensions.cs" />
+    <Compile Include="..\TrashMobMobile\Extensions\UserExtensions.cs" Link="LinkedSource\Extensions\UserExtensions.cs" />
+    <Compile Include="..\TrashMobMobile\Extensions\DisplayUserExtensions.cs" Link="LinkedSource\Extensions\DisplayUserExtensions.cs" />
+    <Compile Include="..\TrashMobMobile\Extensions\StringExtensions.cs" Link="LinkedSource\Extensions\StringExtensions.cs" />
+    <Compile Include="..\TrashMobMobile\Extensions\TeamExtensions.cs" Link="LinkedSource\Extensions\TeamExtensions.cs" />
+    <Compile Include="..\TrashMobMobile\Extensions\CommunityExtensions.cs" Link="LinkedSource\Extensions\CommunityExtensions.cs" />
+  </ItemGroup>
+
+  <!-- Link authentication types -->
+  <ItemGroup>
+    <Compile Include="..\TrashMobMobile\Authentication\IAuthService.cs" Link="LinkedSource\Authentication\IAuthService.cs" />
+    <Compile Include="..\TrashMobMobile\Authentication\SignInResult.cs" Link="LinkedSource\Authentication\SignInResult.cs" />
+    <Compile Include="..\TrashMobMobile\Authentication\UserContext.cs" Link="LinkedSource\Authentication\UserContext.cs" />
+    <Compile Include="..\TrashMobMobile\Authentication\UserState.cs" Link="LinkedSource\Authentication\UserState.cs" />
+  </ItemGroup>
+
+  <!-- Link config and models -->
+  <ItemGroup>
+    <Compile Include="..\TrashMobMobile\Config\Settings.cs" Link="LinkedSource\Config\Settings.cs" />
+    <Compile Include="..\TrashMobMobile\DateRanges.cs" Link="LinkedSource\DateRanges.cs" />
+
+    <Compile Include="..\TrashMobMobile\Models\AcceptWaiverApiRequest.cs" Link="LinkedSource\Models\AcceptWaiverApiRequest.cs" />
+    <Compile Include="..\TrashMobMobile\Models\EventCancellationRequest.cs" Link="LinkedSource\Models\EventCancellationRequest.cs" />
+    <Compile Include="..\TrashMobMobile\Models\ImageUpload.cs" Link="LinkedSource\Models\ImageUpload.cs" />
+    <Compile Include="..\TrashMobMobile\Models\PickupLocationImage.cs" Link="LinkedSource\Models\PickupLocationImage.cs" />
+    <Compile Include="..\TrashMobMobile\Models\EnvelopeRequest.cs" Link="LinkedSource\Models\EnvelopeRequest.cs" />
+    <Compile Include="..\TrashMobMobile\Models\EnvelopeResponse.cs" Link="LinkedSource\Models\EnvelopeResponse.cs" />
+    <Compile Include="..\TrashMobMobile\Models\LeaderboardEntry.cs" Link="LinkedSource\Models\LeaderboardEntry.cs" />
+    <Compile Include="..\TrashMobMobile\Models\LeaderboardResponse.cs" Link="LinkedSource\Models\LeaderboardResponse.cs" />
+    <Compile Include="..\TrashMobMobile\Models\UserRankResponse.cs" Link="LinkedSource\Models\UserRankResponse.cs" />
+    <Compile Include="..\TrashMobMobile\Models\AchievementDto.cs" Link="LinkedSource\Models\AchievementDto.cs" />
+    <Compile Include="..\TrashMobMobile\Models\UserAchievementsResponse.cs" Link="LinkedSource\Models\UserAchievementsResponse.cs" />
+    <Compile Include="..\TrashMobMobile\Models\NewsletterCategoryDto.cs" Link="LinkedSource\Models\NewsletterCategoryDto.cs" />
+    <Compile Include="..\TrashMobMobile\Models\NewsletterPreferenceDto.cs" Link="LinkedSource\Models\NewsletterPreferenceDto.cs" />
+  </ItemGroup>
+
+  <!-- Link global usings and MAUI page base class -->
+  <ItemGroup>
+    <Compile Include="..\TrashMobMobile\GlobalUsings.cs" Link="LinkedSource\GlobalUsings.cs" />
+    <Compile Include="..\TrashMobMobile\Pages\CreateEvent\BaseStepClass.cs" Link="LinkedSource\Pages\CreateEvent\BaseStepClass.cs" />
+  </ItemGroup>
+
+</Project>

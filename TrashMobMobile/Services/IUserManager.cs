@@ -1,15 +1,14 @@
 ﻿namespace TrashMobMobile.Services
 {
     using TrashMob.Models;
-    using TrashMobMobile.Authentication;
 
     public interface IUserManager
     {
-        User CurrentUser { get; }
+        User CurrentUser { get; set; }
 
         Task<User> GetUserAsync(string userId, CancellationToken cancellationToken = default);
 
-        Task<User> GetUserByEmailAsync(string email, UserContext userContext,
+        Task<User> GetUserByEmailAsync(string email,
             CancellationToken cancellationToken = default);
 
         Task<User> AddUserAsync(User user, CancellationToken cancellationToken = default);

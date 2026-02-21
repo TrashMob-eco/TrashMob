@@ -12,33 +12,40 @@
              Title="Create Pickup Location">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
 
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*">
-                    <Label
-                        Text="To add a pickup location, click the Take Photo button. The location will be auto-determined from that."
-                        Grid.Row="0" FontSize="Micro" Margin="10" HorizontalTextAlignment="Center"
-                        HorizontalOptions="Center" />
-                    <Button Text="Take Photo" Clicked="TakePhoto_Clicked" Grid.Row="1" Margin="10" />
-                    <VerticalStackLayout Grid.Row="2">
-                        <Label Text="Name" Style="{StaticResource FieldLabel}" />
-                        <controls:TMEntry Text="{Binding PickupLocationViewModel.Name}">
-                            <controls:TMEntry.Behaviors>
-                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
-                                                                    x:Name="nameValidator" />
-                            </controls:TMEntry.Behaviors>
-                        </controls:TMEntry>
+                <Label
+                    Text="Take a photo to auto-detect the pickup location"
+                    FontSize="Small"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                    Margin="5,8,5,0" />
+
+                <!-- Details -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Details" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Button Text="Take Photo" Clicked="TakePhoto_Clicked"
+                                Style="{StaticResource SecondarySmallButton}" />
+                        <VerticalStackLayout>
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Name" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMEntry Text="{Binding PickupLocationViewModel.Name}">
+                                <controls:TMEntry.Behaviors>
+                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
+                                                                        x:Name="nameValidator" />
+                                </controls:TMEntry.Behaviors>
+                            </controls:TMEntry>
+                            <Label FontSize="Micro" TextColor="Red" Margin="4,0,0,0"
+                                   Text="Name is required and must be at least 5 characters."
+                                   IsVisible="{Binding Source={x:Reference nameValidator}, Path=IsNotValid}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout>
+                            <Label Text="Description" Style="{StaticResource FieldLabel}" />
+                            <controls:TMEditor Text="{Binding PickupLocationViewModel.Notes}" />
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="3">
-                        <Label Text="Description" Style="{StaticResource FieldLabel}" />
-                        <controls:TMEditor Text="{Binding PickupLocationViewModel.Notes}">
-                            <controls:TMEditor.Behaviors>
-                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10"
-                                                                    x:Name="notesValidator" />
-                                </controls:TMEditor.Behaviors>
-                            </controls:TMEditor>
-                    </VerticalStackLayout>
-                </Grid>
+                </Border>
 
                 <Image x:Name="pickupPhoto" IsVisible="false" MaximumHeightRequest="200" />
 
@@ -53,70 +60,51 @@
                     </maps:Map.ItemTemplate>
                 </controls:CustomMap>
 
-                <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, *">
-                    <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
-                        <Label Text="Address" Style="{StaticResource FieldLabel}" />
-                        <Label Text="{Binding PickupLocationViewModel.Address.StreetAddress }" FontSize="Micro" />
+                <!-- Location -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Location" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, *" ColumnSpacing="12" RowSpacing="8">
+                            <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2" Spacing="2">
+                                <Label Text="Address" Style="{StaticResource FieldLabel}" />
+                                <Label Text="{Binding PickupLocationViewModel.Address.StreetAddress}" FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="2">
+                                <Label Text="City" Style="{StaticResource FieldLabel}" />
+                                <Label Text="{Binding PickupLocationViewModel.Address.City}" FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="2">
+                                <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
+                                <Label Text="{Binding PickupLocationViewModel.Address.Region}" FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="2" Grid.Column="0" Spacing="2">
+                                <Label Text="Country" Style="{StaticResource FieldLabel}" />
+                                <Label Text="{Binding PickupLocationViewModel.Address.Country}" FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="2" Grid.Column="1" Spacing="2">
+                                <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
+                                <Label Text="{Binding PickupLocationViewModel.Address.PostalCode}" FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                        </Grid>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="1" Grid.Column="0">
-                        <Label Text="City" Style="{StaticResource FieldLabel}" />
-                        <Label Text="{Binding PickupLocationViewModel.Address.City }" FontSize="Micro" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="1" Grid.Column="1">
-                        <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
-                        <Label Text="{Binding PickupLocationViewModel.Address.Region }" FontSize="Micro" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="2" Grid.Column="0">
-                        <Label Text="Country" Style="{StaticResource FieldLabel}" />
-                        <Label Text="{Binding PickupLocationViewModel.Address.Country }" FontSize="Micro" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="2" Grid.Column="1">
-                        <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
-                        <Label Text="{Binding PickupLocationViewModel.Address.PostalCode }" FontSize="Micro" />
-                    </VerticalStackLayout>
-                </Grid>
+                </Border>
 
-                <Button Text="Save Pickup Location" Command="{Binding SavePickupLocationCommand}" Margin="10">
+                <Button Text="Save Pickup Location" Command="{Binding SavePickupLocationCommand}"
+                        Style="{StaticResource PrimaryLargeButton}"
+                        Margin="10,8,10,10">
                     <Button.Triggers>
-                        <MultiTrigger TargetType="Button">
-                            <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                                  Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference notesValidator}, Path=IsValid}"
-                                                  Value="True" />
-                            </MultiTrigger.Conditions>
+                        <DataTrigger TargetType="Button"
+                                     Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
+                                     Value="True">
                             <Setter Property="IsEnabled" Value="True" />
-                        </MultiTrigger>
+                        </DataTrigger>
                     </Button.Triggers>
                 </Button>
-
-                <Label
-                    FontSize="Micro"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Center"
-                    HorizontalTextAlignment="Center"
-                    TextColor="Red">
-                    <Label.Triggers>
-                        <MultiTrigger TargetType="Label">
-                            <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                                  Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference notesValidator}, Path=IsValid}"
-                                                  Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter Property="IsVisible" Value="False" />
-                        </MultiTrigger>
-                        <DataTrigger TargetType="Label"
-                                     Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="False">
-                            <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Label"
-                                     Binding="{Binding Source={x:Reference notesValidator}, Path=IsValid}"
-                                     Value="False">
-                            <Setter Property="Text" Value="Notes is required and must be at least 10 characters." />
-                        </DataTrigger>
-                    </Label.Triggers>
-                </Label>
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />

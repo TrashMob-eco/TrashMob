@@ -9,6 +9,7 @@ public partial class LitterImageViewModel : BaseViewModel
     private AddressViewModel address;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DisplayImageSource))]
     private string azureBlobUrl;
 
     [ObservableProperty]
@@ -18,7 +19,13 @@ public partial class LitterImageViewModel : BaseViewModel
     private DateTimeOffset? createdDate;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DisplayImageSource))]
     private string filePath;
+
+    /// <summary>
+    /// Returns the local file path if available (new photo), otherwise the server URL.
+    /// </summary>
+    public string DisplayImageSource => !string.IsNullOrEmpty(FilePath) ? FilePath : AzureBlobUrl;
 
     [ObservableProperty]
     private Guid id;
@@ -37,6 +44,7 @@ public partial class LitterImageViewModel : BaseViewModel
 
     public LitterImageViewModel(INotificationService notificationService) : base(notificationService)
     {
+        FilePath = string.Empty;
         AzureBlobUrl = string.Empty;
         Address = new AddressViewModel();
     }

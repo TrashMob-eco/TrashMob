@@ -19,7 +19,13 @@ export const SiteAdminEvents = () => {
                 <CardTitle>Events ({len})</CardTitle>
             </CardHeader>
             <CardContent>
-                <DataTable columns={columns} data={events || []} />
+                <DataTable
+                    columns={columns}
+                    data={events || []}
+                    enableSearch
+                    searchPlaceholder='Search events...'
+                    searchColumns={['name', 'city', 'region', 'country']}
+                />
             </CardContent>
         </Card>
     );

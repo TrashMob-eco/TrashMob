@@ -19,10 +19,465 @@ namespace TrashMob.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .UseCollation("SQL_Latin1_General_CP1_CI_AS")
-                .HasAnnotation("ProductVersion", "10.0.1")
+                .HasAnnotation("ProductVersion", "10.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("TrashMob.Models.AchievementType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Criteria")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IconUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AchievementTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Category = "Participation",
+                            Criteria = "{\"eventsAttended\": 1}",
+                            Description = "Attended your first cleanup event",
+                            DisplayName = "First Steps",
+                            DisplayOrder = 1,
+                            IsActive = true,
+                            Name = "FirstSteps",
+                            Points = 10
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Category = "Participation",
+                            Criteria = "{\"eventsAttended\": 10}",
+                            Description = "Attended 10 cleanup events",
+                            DisplayName = "Regular Volunteer",
+                            DisplayOrder = 2,
+                            IsActive = true,
+                            Name = "RegularVolunteer",
+                            Points = 50
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Category = "Participation",
+                            Criteria = "{\"eventsAttended\": 25}",
+                            Description = "Attended 25 cleanup events",
+                            DisplayName = "Dedicated Volunteer",
+                            DisplayOrder = 3,
+                            IsActive = true,
+                            Name = "DedicatedVolunteer",
+                            Points = 100
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Category = "Impact",
+                            Criteria = "{\"bagsCollected\": 10}",
+                            Description = "Collected 10 bags of trash",
+                            DisplayName = "Trash Collector",
+                            DisplayOrder = 4,
+                            IsActive = true,
+                            Name = "TrashCollector",
+                            Points = 25
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Category = "Impact",
+                            Criteria = "{\"bagsCollected\": 100}",
+                            Description = "Collected 100 bags of trash",
+                            DisplayName = "Trash Hero",
+                            DisplayOrder = 5,
+                            IsActive = true,
+                            Name = "TrashHero",
+                            Points = 150
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Category = "Special",
+                            Criteria = "{\"joinedTeam\": true}",
+                            Description = "Joined a cleanup team",
+                            DisplayName = "Team Player",
+                            DisplayOrder = 6,
+                            IsActive = true,
+                            Name = "TeamPlayer",
+                            Points = 20
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Category = "Special",
+                            Criteria = "{\"eventsCreated\": 1}",
+                            Description = "Created your first cleanup event",
+                            DisplayName = "Event Creator",
+                            DisplayOrder = 7,
+                            IsActive = true,
+                            Name = "EventCreator",
+                            Points = 30
+                        });
+                });
+
+            modelBuilder.Entity("TrashMob.Models.AdoptableArea", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("AllowCoAdoption")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("AreaType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("CleanupFrequencyDays")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(90);
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<double?>("EndLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("EndLongitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("GeoJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("MinEventsPerYear")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(4);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("PartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SafetyRequirements")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<double?>("StartLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("StartLongitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Available");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PartnerId")
+                        .HasDatabaseName("IX_AdoptableAreas_PartnerId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_AdoptableAreas_Status");
+
+                    b.HasIndex("PartnerId", "Name")
+                        .IsUnique()
+                        .HasDatabaseName("IX_AdoptableAreas_PartnerId_Name");
+
+                    b.ToTable("AdoptableAreas");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.AreaGenerationBatch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ApprovedCount")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("BoundsEast")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BoundsNorth")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BoundsSouth")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BoundsWest")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTimeOffset?>("CompletedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CreatedCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("DiscoveredCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("PartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ProcessedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RejectedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SkippedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StagedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Queued");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PartnerId", "Status")
+                        .HasDatabaseName("IX_AreaGenerationBatches_PartnerId_Status");
+
+                    b.ToTable("AreaGenerationBatches");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.CommunityProspect", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ContactEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ContactName")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("ContactTitle")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<Guid?>("ConvertedPartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("FitScore")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTimeOffset?>("LastContactedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTimeOffset?>("NextFollowUpDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("PipelineStage")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int?>("Population")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Region")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConvertedPartnerId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.ToTable("CommunityProspects");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.CommunityWaiver", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CommunityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsRequired")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("WaiverVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("WaiverVersionId");
+
+                    b.HasIndex("CommunityId", "WaiverVersionId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_CommunityWaivers_CommunityId_WaiverVersionId");
+
+                    b.ToTable("CommunityWaivers");
+                });
 
             modelBuilder.Entity("TrashMob.Models.ContactRequest", b =>
                 {
@@ -61,6 +516,152 @@ namespace TrashMob.Migrations
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.ToTable("ContactRequests");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.EmailInvite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BatchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("DeliveredDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("SentDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("SignedUpDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("SignedUpUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Pending");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BatchId")
+                        .HasDatabaseName("IX_EmailInvites_BatchId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("Email")
+                        .HasDatabaseName("IX_EmailInvites_Email");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("SignedUpUserId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_EmailInvites_Status");
+
+                    b.ToTable("EmailInvites");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.EmailInviteBatch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BatchType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("BouncedCount")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("CommunityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CompletedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("DeliveredCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("SenderUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SentCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<Guid?>("TeamId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TotalCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommunityId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("CreatedDate")
+                        .HasDatabaseName("IX_EmailInviteBatches_CreatedDate");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("SenderUserId")
+                        .HasDatabaseName("IX_EmailInviteBatches_SenderUserId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_EmailInviteBatches_Status");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("EmailInviteBatches");
                 });
 
             modelBuilder.Entity("TrashMob.Models.Event", b =>
@@ -110,8 +711,8 @@ namespace TrashMob.Migrations
                     b.Property<int>("EventTypeId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsEventPublic")
-                        .HasColumnType("bit");
+                    b.Property<int>("EventVisibilityId")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
@@ -148,6 +749,9 @@ namespace TrashMob.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<Guid?>("TeamId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByUserId");
@@ -158,7 +762,13 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("EventTypeId");
 
+                    b.HasIndex("EventVisibilityId")
+                        .HasDatabaseName("IX_Events_EventVisibilityId");
+
                     b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("TeamId")
+                        .HasDatabaseName("IX_Events_TeamId");
 
                     b.ToTable("Events");
                 });
@@ -180,6 +790,9 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<bool>("IsEventLead")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -197,14 +810,35 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("UserId");
 
+                    b.HasIndex("EventId", "IsEventLead")
+                        .HasDatabaseName("IX_EventAttendees_EventId_IsEventLead");
+
                     b.ToTable("EventAttendees");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.EventAttendeeRoute", b =>
+            modelBuilder.Entity("TrashMob.Models.EventAttendeeMetrics", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("AdjustedBagsCollected")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AdjustedDurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("AdjustedPickedWeight")
+                        .HasColumnType("decimal(10,1)");
+
+                    b.Property<int?>("AdjustedPickedWeightUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AdjustmentReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int?>("BagsCollected")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
@@ -212,8 +846,8 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("EndTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<int?>("DurationMinutes")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
@@ -224,14 +858,130 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("LastUpdatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<decimal?>("PickedWeight")
+                        .HasColumnType("decimal(10,1)");
+
+                    b.Property<int?>("PickedWeightUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid?>("ReviewedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ReviewedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdjustedPickedWeightUnitId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PickedWeightUnitId");
+
+                    b.HasIndex("ReviewedByUserId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_EventAttendeeMetrics_Status");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("EventId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_EventAttendeeMetrics_EventId_UserId");
+
+                    b.ToTable("EventAttendeeMetrics");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.EventAttendeeRoute", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("BagsCollected")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("EndTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ExpiresDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsTrimmed")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("PrivacyLevel")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("EventOnly");
+
                     b.Property<DateTimeOffset>("StartTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("TotalDistanceMeters")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TrimEndMeters")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(100);
+
+                    b.Property<int>("TrimStartMeters")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(100);
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Geometry>("UserPath")
                         .HasColumnType("geography");
+
+                    b.Property<decimal?>("WeightCollected")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -379,6 +1129,98 @@ namespace TrashMob.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TrashMob.Models.EventPhoto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Caption")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("InReview")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("ModeratedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ModeratedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModerationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ModerationStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("PhotoType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("ReviewRequestedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ReviewRequestedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("TakenAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("UploadedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UploadedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ModeratedByUserId");
+
+                    b.HasIndex("ModerationStatus");
+
+                    b.HasIndex("PhotoType");
+
+                    b.HasIndex("ReviewRequestedByUserId");
+
+                    b.HasIndex("UploadedByUserId");
+
+                    b.ToTable("EventPhotos");
+                });
+
             modelBuilder.Entity("TrashMob.Models.EventStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -470,8 +1312,9 @@ namespace TrashMob.Migrations
                     b.Property<int>("NumberOfBuckets")
                         .HasColumnType("int");
 
-                    b.Property<int>("PickedWeight")
-                        .HasColumnType("int");
+                    b.Property<decimal>("PickedWeight")
+                        .HasPrecision(10, 1)
+                        .HasColumnType("decimal(10,1)");
 
                     b.Property<int>("PickedWeightUnitId")
                         .ValueGeneratedOnAdd()
@@ -794,6 +1637,66 @@ namespace TrashMob.Migrations
                     b.ToTable("JobOpportunities", (string)null);
                 });
 
+            modelBuilder.Entity("TrashMob.Models.LeaderboardCache", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ComputedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("LeaderboardType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("LocationScope")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("LocationValue")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Score")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TimeRange")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityId")
+                        .HasDatabaseName("IX_LeaderboardCache_EntityId");
+
+                    b.HasIndex("EntityType", "LeaderboardType", "TimeRange", "LocationScope", "LocationValue", "Rank")
+                        .HasDatabaseName("IX_LeaderboardCache_Lookup");
+
+                    b.ToTable("LeaderboardCaches");
+                });
+
             modelBuilder.Entity("TrashMob.Models.LitterImage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -815,6 +1718,11 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<bool>("InReview")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsCancelled")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -835,11 +1743,32 @@ namespace TrashMob.Migrations
                     b.Property<double?>("Longitude")
                         .HasColumnType("float");
 
+                    b.Property<Guid?>("ModeratedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ModeratedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModerationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ModerationStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Region")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ReviewRequestedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ReviewRequestedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("StreetAddress")
                         .HasColumnType("nvarchar(max)");
@@ -851,6 +1780,10 @@ namespace TrashMob.Migrations
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("LitterReportId");
+
+                    b.HasIndex("ModeratedByUserId");
+
+                    b.HasIndex("ReviewRequestedByUserId");
 
                     b.ToTable("LitterImages");
                 });
@@ -989,6 +1922,171 @@ namespace TrashMob.Migrations
                     b.ToTable("MessageRequests");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.Newsletter", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("BounceCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ClickCount")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("DeliveredCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HtmlContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("OpenCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PreviewText")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("RecipientCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("ScheduledDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("SentCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("SentDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Draft");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid?>("TargetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TargetType")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("All");
+
+                    b.Property<string>("TextContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UnsubscribeCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ScheduledDate")
+                        .HasDatabaseName("IX_Newsletters_Scheduled")
+                        .HasFilter("[Status] = 'Scheduled'");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_Newsletters_Status");
+
+                    b.ToTable("Newsletters");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.NewsletterCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NewsletterCategories");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.NewsletterTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HtmlContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TextContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NewsletterTemplates");
+                });
+
             modelBuilder.Entity("TrashMob.Models.NonEventUserNotification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1033,17 +2131,103 @@ namespace TrashMob.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("BannerImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("BoundaryGeoJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("BoundsEast")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BoundsNorth")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BoundsSouth")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BoundsWest")
+                        .HasColumnType("float");
+
+                    b.Property<string>("BrandingPrimaryColor")
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)");
+
+                    b.Property<string>("BrandingSecondaryColor")
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ContactEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("CountyName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<bool?>("DefaultAllowCoAdoption")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("DefaultCleanupFrequencyDays")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DefaultMinEventsPerYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DefaultSafetyRequirements")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<bool>("HomePageEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("HomePageEndDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("HomePageStartDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsFeatured")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset?>("LastUpdatedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("LogoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
 
                     b.Property<string>("Name")
                         .HasMaxLength(128)
@@ -1057,6 +2241,10 @@ namespace TrashMob.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(2);
 
+                    b.Property<string>("PhysicalAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("PrivateNotes")
                         .HasMaxLength(2048)
                         .HasColumnType("nvarchar(2048)");
@@ -1064,6 +2252,21 @@ namespace TrashMob.Migrations
                     b.Property<string>("PublicNotes")
                         .HasMaxLength(2048)
                         .HasColumnType("nvarchar(2048)");
+
+                    b.Property<string>("Region")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int?>("RegionType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Slug")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Tagline")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Website")
                         .HasColumnType("nvarchar(max)");
@@ -1077,6 +2280,11 @@ namespace TrashMob.Migrations
                     b.HasIndex("PartnerStatusId");
 
                     b.HasIndex("PartnerTypeId");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Partners_Slug")
+                        .HasFilter("[Slug] IS NOT NULL");
 
                     b.ToTable("Partners");
                 });
@@ -1208,11 +2416,30 @@ namespace TrashMob.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("BlobStoragePath")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
+
+                    b.Property<string>("ContentType")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("DocumentTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTimeOffset?>("ExpirationDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<long?>("FileSizeBytes")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
@@ -1229,7 +2456,6 @@ namespace TrashMob.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Url")
-                        .IsRequired()
                         .HasMaxLength(2048)
                         .HasColumnType("nvarchar(2048)");
 
@@ -1411,6 +2637,84 @@ namespace TrashMob.Migrations
                     b.HasIndex("ServiceTypeId");
 
                     b.ToTable("PartnerLocationServices");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerPhoto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Caption")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("InReview")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("ModeratedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ModeratedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModerationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ModerationStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<Guid>("PartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ReviewRequestedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ReviewRequestedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UploadedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UploadedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ModeratedByUserId");
+
+                    b.HasIndex("PartnerId");
+
+                    b.HasIndex("ReviewRequestedByUserId");
+
+                    b.HasIndex("UploadedByUserId");
+
+                    b.ToTable("PartnerPhotos");
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerRequest", b =>
@@ -1678,7 +2982,125 @@ namespace TrashMob.Migrations
                             DisplayOrder = 2,
                             IsActive = true,
                             Name = "Business"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Community organization with branded page and volunteer tools",
+                            DisplayOrder = 3,
+                            IsActive = true,
+                            Name = "Community"
                         });
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PhotoFlag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("FlagReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("FlaggedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("FlaggedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("PhotoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PhotoType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Resolution")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid?>("ResolvedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ResolvedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("FlaggedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ResolvedByUserId");
+
+                    b.ToTable("PhotoFlags");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PhotoModerationLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("PerformedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("PerformedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("PhotoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PhotoType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PerformedByUserId");
+
+                    b.ToTable("PhotoModerationLogs");
                 });
 
             modelBuilder.Entity("TrashMob.Models.PickupLocation", b =>
@@ -1759,6 +3181,294 @@ namespace TrashMob.Migrations
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.ToTable("PickupLocations");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.ProfessionalCleanupLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("BagsCollected")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CleanupDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<Guid>("ProfessionalCompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SponsoredAdoptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal?>("WeightInKilograms")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal?>("WeightInPounds")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CleanupDate")
+                        .HasDatabaseName("IX_ProfessionalCleanupLogs_CleanupDate");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ProfessionalCompanyId")
+                        .HasDatabaseName("IX_ProfessionalCleanupLogs_ProfessionalCompanyId");
+
+                    b.HasIndex("SponsoredAdoptionId")
+                        .HasDatabaseName("IX_ProfessionalCleanupLogs_SponsoredAdoptionId");
+
+                    b.ToTable("ProfessionalCleanupLogs");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.ProfessionalCompany", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContactEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("PartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PartnerId")
+                        .HasDatabaseName("IX_ProfessionalCompanies_PartnerId");
+
+                    b.ToTable("ProfessionalCompanies");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.ProfessionalCompanyUser", b =>
+                {
+                    b.Property<Guid>("ProfessionalCompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("ProfessionalCompanyId", "UserId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProfessionalCompanyUsers");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.ProspectActivity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ActivityType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Details")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("ProspectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SentimentScore")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ProspectId");
+
+                    b.ToTable("ProspectActivities");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.ProspectOutreachEmail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CadenceStep")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("ClickedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("HtmlBody")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("OpenedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("ProspectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("SentDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ProspectId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("ProspectOutreachEmails");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.RoutePoint", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<double?>("Accuracy")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Altitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("RouteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RouteId")
+                        .HasDatabaseName("IX_RoutePoints_RouteId");
+
+                    b.HasIndex("RouteId", "Timestamp")
+                        .HasDatabaseName("IX_RoutePoints_RouteId_Timestamp");
+
+                    b.ToTable("RoutePoints");
                 });
 
             modelBuilder.Entity("TrashMob.Models.ServiceType", b =>
@@ -1910,10 +3620,653 @@ namespace TrashMob.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TrashMob.Models.Sponsor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContactEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LogoUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("PartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("ShowOnPublicMap")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PartnerId")
+                        .HasDatabaseName("IX_Sponsors_PartnerId");
+
+                    b.ToTable("Sponsors");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.SponsoredAdoption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AdoptableAreaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CleanupFrequencyDays")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(14);
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("ProfessionalCompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SponsorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Active");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdoptableAreaId")
+                        .HasDatabaseName("IX_SponsoredAdoptions_AdoptableAreaId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ProfessionalCompanyId")
+                        .HasDatabaseName("IX_SponsoredAdoptions_ProfessionalCompanyId");
+
+                    b.HasIndex("SponsorId")
+                        .HasDatabaseName("IX_SponsoredAdoptions_SponsorId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_SponsoredAdoptions_Status");
+
+                    b.ToTable("SponsoredAdoptions");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.StagedAdoptableArea", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AreaType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("BatchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("CenterLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("CenterLongitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Confidence")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Medium");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<string>("DuplicateOfName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("GeoJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPotentialDuplicate")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("OsmId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("OsmTags")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<Guid>("PartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReviewStatus")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Pending");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PartnerId")
+                        .HasDatabaseName("IX_StagedAdoptableAreas_PartnerId");
+
+                    b.HasIndex("BatchId", "ReviewStatus")
+                        .HasDatabaseName("IX_StagedAdoptableAreas_BatchId_ReviewStatus");
+
+                    b.ToTable("StagedAdoptableAreas");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.Team", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsPublic")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("LogoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("Region")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("RequiresApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Teams_Name");
+
+                    b.ToTable("Teams");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamAdoption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AdoptableAreaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly?>("AdoptionEndDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("AdoptionStartDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTimeOffset>("ApplicationDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ApplicationNotes")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("EventCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("IsCompliant")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTimeOffset?>("LastEventDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid?>("ReviewedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ReviewedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdoptableAreaId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ReviewedByUserId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_TeamAdoptions_Status");
+
+                    b.HasIndex("TeamId", "AdoptableAreaId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_TeamAdoptions_TeamId_AdoptableAreaId");
+
+                    b.ToTable("TeamAdoptions");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamAdoptionEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("TeamAdoptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("TeamAdoptionId", "EventId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_TeamAdoptionEvents_TeamAdoptionId_EventId");
+
+                    b.ToTable("TeamAdoptionEvents");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("TeamId", "EventId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_TeamEvents_TeamId_EventId");
+
+                    b.ToTable("TeamEvents");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamJoinRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("RequestDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("ReviewedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ReviewedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ReviewedByUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("TeamId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_TeamJoinRequests_TeamId_UserId");
+
+                    b.ToTable("TeamJoinRequests");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsTeamLead")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("JoinedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("TeamId", "IsTeamLead")
+                        .HasDatabaseName("IX_TeamMembers_TeamId_IsTeamLead");
+
+                    b.HasIndex("TeamId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_TeamMembers_TeamId_UserId");
+
+                    b.ToTable("TeamMembers");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamPhoto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Caption")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("InReview")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("ModeratedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ModeratedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModerationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ModerationStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<Guid?>("ReviewRequestedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ReviewRequestedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UploadedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UploadedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ModeratedByUserId");
+
+                    b.HasIndex("ReviewRequestedByUserId");
+
+                    b.HasIndex("TeamId");
+
+                    b.HasIndex("UploadedByUserId");
+
+                    b.ToTable("TeamPhotos");
+                });
+
             modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("AchievementNotificationsEnabled")
+                        .HasColumnType("bit");
 
                     b.Property<string>("City")
                         .HasMaxLength(64)
@@ -1931,7 +4284,14 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("DateAgreedToTrashMobWaiver")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTimeOffset?>("DateOfBirth")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Email")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("GivenName")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
@@ -1966,12 +4326,23 @@ namespace TrashMob.Migrations
                     b.Property<bool>("PrefersMetric")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProfilePhotoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Region")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ShowOnLeaderboards")
+                        .HasColumnType("bit");
 
                     b.Property<string>("SourceSystemUserName")
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
+
+                    b.Property<string>("Surname")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("TrashMobWaiverVersion")
                         .HasMaxLength(50)
@@ -2004,6 +4375,7 @@ namespace TrashMob.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000000"),
+                            AchievementNotificationsEnabled = true,
                             City = "Anytown",
                             Country = "AnyCountry",
                             CreatedByUserId = new Guid("00000000-0000-0000-0000-000000000000"),
@@ -2013,9 +4385,161 @@ namespace TrashMob.Migrations
                             ObjectId = new Guid("00000000-0000-0000-0000-000000000000"),
                             PrefersMetric = false,
                             Region = "AnyState",
+                            ShowOnLeaderboards = true,
                             TravelLimitForLocalEvents = 0,
                             UserName = "TrashMob"
                         });
+                });
+
+            modelBuilder.Entity("TrashMob.Models.UserAchievement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AchievementTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("EarnedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("NotificationSent")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AchievementTypeId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("UserId", "AchievementTypeId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UserAchievements_UserId_AchievementTypeId");
+
+                    b.ToTable("UserAchievements");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.UserFeedback", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("GitHubIssueUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<string>("InternalNotes")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("PageUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<Guid?>("ReviewedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ReviewedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ScreenshotUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("New");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ReviewedByUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserFeedback");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.UserNewsletterPreference", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsSubscribed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("SubscribedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("UnsubscribedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("UserId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_UserNewsletterPreferences_UserId");
+
+                    b.ToTable("UserNewsletterPreferences");
                 });
 
             modelBuilder.Entity("TrashMob.Models.UserNotification", b =>
@@ -2161,6 +4685,102 @@ namespace TrashMob.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TrashMob.Models.UserWaiver", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("AcceptedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DocumentUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<DateTimeOffset>("ExpiryDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("GuardianName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("GuardianRelationship")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("GuardianUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("IPAddress")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsMinor")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("SigningMethod")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TypedLegalName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid?>("UploadedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("WaiverTextSnapshot")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("WaiverVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("ExpiryDate")
+                        .HasDatabaseName("IX_UserWaivers_ExpiryDate");
+
+                    b.HasIndex("GuardianUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("UploadedByUserId");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_UserWaivers_UserId");
+
+                    b.HasIndex("WaiverVersionId")
+                        .HasDatabaseName("IX_UserWaivers_WaiverVersionId");
+
+                    b.HasIndex("UserId", "WaiverVersionId")
+                        .HasDatabaseName("IX_UserWaivers_UserId_WaiverVersionId");
+
+                    b.ToTable("UserWaivers");
+                });
+
             modelBuilder.Entity("TrashMob.Models.Waiver", b =>
                 {
                     b.Property<string>("Name")
@@ -2202,6 +4822,67 @@ namespace TrashMob.Migrations
                             IsWaiverEnabled = false,
                             LastUpdatedByUserId = new Guid("00000000-0000-0000-0000-000000000000")
                         });
+                });
+
+            modelBuilder.Entity("TrashMob.Models.WaiverVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("EffectiveDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ExpiryDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Scope")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("WaiverText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("Name", "Version")
+                        .IsUnique()
+                        .HasDatabaseName("IX_WaiverVersions_Name_Version");
+
+                    b.HasIndex("Scope", "IsActive")
+                        .HasDatabaseName("IX_WaiverVersions_Scope_IsActive");
+
+                    b.ToTable("WaiverVersions");
                 });
 
             modelBuilder.Entity("TrashMob.Models.WeightUnit", b =>
@@ -2254,6 +4935,124 @@ namespace TrashMob.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TrashMob.Models.AdoptableArea", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_AdoptableAreas_CreatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_AdoptableAreas_LastUpdatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany("AdoptableAreas")
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_AdoptableAreas_Partners");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Partner");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.AreaGenerationBatch", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_AreaGenerationBatches_CreatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_AreaGenerationBatches_LastUpdatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany()
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_AreaGenerationBatches_Partners");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Partner");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.CommunityProspect", b =>
+                {
+                    b.HasOne("TrashMob.Models.Partner", null)
+                        .WithMany()
+                        .HasForeignKey("ConvertedPartnerId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_CommunityProspects_Partner");
+
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_CommunityProspects_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_CommunityProspects_User_LastUpdatedBy");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.CommunityWaiver", b =>
+                {
+                    b.HasOne("TrashMob.Models.Partner", "Community")
+                        .WithMany("CommunityWaivers")
+                        .HasForeignKey("CommunityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_CommunityWaivers_Partner");
+
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("CommunityWaiversCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_CommunityWaivers_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("CommunityWaiversUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_CommunityWaivers_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.WaiverVersion", "WaiverVersion")
+                        .WithMany("CommunityWaivers")
+                        .HasForeignKey("WaiverVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_CommunityWaivers_WaiverVersion");
+
+                    b.Navigation("Community");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("WaiverVersion");
+                });
+
             modelBuilder.Entity("TrashMob.Models.ContactRequest", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -2271,6 +5070,86 @@ namespace TrashMob.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastUpdatedByUser");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.EmailInvite", b =>
+                {
+                    b.HasOne("TrashMob.Models.EmailInviteBatch", "Batch")
+                        .WithMany("Invites")
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_EmailInvites_Batch");
+
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EmailInvites_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EmailInvites_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "SignedUpUser")
+                        .WithMany()
+                        .HasForeignKey("SignedUpUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_EmailInvites_SignedUpUser");
+
+                    b.Navigation("Batch");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("SignedUpUser");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.EmailInviteBatch", b =>
+                {
+                    b.HasOne("TrashMob.Models.Partner", "Community")
+                        .WithMany()
+                        .HasForeignKey("CommunityId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_EmailInviteBatches_Community");
+
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EmailInviteBatches_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EmailInviteBatches_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "SenderUser")
+                        .WithMany()
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_EmailInviteBatches_SenderUser");
+
+                    b.HasOne("TrashMob.Models.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_EmailInviteBatches_Team");
+
+                    b.Navigation("Community");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("SenderUser");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("TrashMob.Models.Event", b =>
@@ -2304,6 +5183,12 @@ namespace TrashMob.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Events_ApplicationUser_LastUpdatedBy");
 
+                    b.HasOne("TrashMob.Models.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_Events_Teams_TeamId");
+
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("EventStatus");
@@ -2313,6 +5198,8 @@ namespace TrashMob.Migrations
                     b.Navigation("EventType");
 
                     b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("TrashMob.Models.EventAttendee", b =>
@@ -2346,6 +5233,64 @@ namespace TrashMob.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.EventAttendeeMetrics", b =>
+                {
+                    b.HasOne("TrashMob.Models.WeightUnit", "AdjustedPickedWeightUnit")
+                        .WithMany("AttendeeMetricsForAdjusted")
+                        .HasForeignKey("AdjustedPickedWeightUnitId")
+                        .HasConstraintName("FK_EventAttendeeMetrics_AdjustedPickedWeightUnit");
+
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventAttendeeMetrics_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.Event", "Event")
+                        .WithMany("AttendeeMetrics")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_EventAttendeeMetrics_Event");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventAttendeeMetrics_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.WeightUnit", "PickedWeightUnit")
+                        .WithMany("AttendeeMetricsForPicked")
+                        .HasForeignKey("PickedWeightUnitId")
+                        .HasConstraintName("FK_EventAttendeeMetrics_PickedWeightUnit");
+
+                    b.HasOne("TrashMob.Models.User", "ReviewedByUser")
+                        .WithMany()
+                        .HasForeignKey("ReviewedByUserId")
+                        .HasConstraintName("FK_EventAttendeeMetrics_ReviewedByUser");
+
+                    b.HasOne("TrashMob.Models.User", "User")
+                        .WithMany("AttendeeMetrics")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_EventAttendeeMetrics_User");
+
+                    b.Navigation("AdjustedPickedWeightUnit");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("PickedWeightUnit");
+
+                    b.Navigation("ReviewedByUser");
 
                     b.Navigation("User");
                 });
@@ -2472,6 +5417,58 @@ namespace TrashMob.Migrations
                     b.Navigation("ServiceType");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.EventPhoto", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("EventPhotosCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventPhotos_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.Event", "Event")
+                        .WithMany("EventPhotos")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_EventPhotos_Event");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("EventPhotosUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventPhotos_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "ModeratedByUser")
+                        .WithMany("EventPhotosModerated")
+                        .HasForeignKey("ModeratedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_EventPhotos_ModeratedByUser");
+
+                    b.HasOne("TrashMob.Models.User", "ReviewRequestedByUser")
+                        .WithMany("EventPhotosReviewRequested")
+                        .HasForeignKey("ReviewRequestedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_EventPhotos_ReviewRequestedByUser");
+
+                    b.HasOne("TrashMob.Models.User", "UploadedByUser")
+                        .WithMany("EventPhotosUploaded")
+                        .HasForeignKey("UploadedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventPhotos_UploadedByUser");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("ModeratedByUser");
+
+                    b.Navigation("ReviewRequestedByUser");
+
+                    b.Navigation("UploadedByUser");
+                });
+
             modelBuilder.Entity("TrashMob.Models.EventSummary", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -2570,11 +5567,27 @@ namespace TrashMob.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_LitterImage_LitterReports");
 
+                    b.HasOne("TrashMob.Models.User", "ModeratedByUser")
+                        .WithMany("LitterImagesModerated")
+                        .HasForeignKey("ModeratedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_LitterImage_ModeratedByUser");
+
+                    b.HasOne("TrashMob.Models.User", "ReviewRequestedByUser")
+                        .WithMany("LitterImagesReviewRequested")
+                        .HasForeignKey("ReviewRequestedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_LitterImage_ReviewRequestedByUser");
+
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastUpdatedByUser");
 
                     b.Navigation("LitterReport");
+
+                    b.Navigation("ModeratedByUser");
+
+                    b.Navigation("ReviewRequestedByUser");
                 });
 
             modelBuilder.Entity("TrashMob.Models.LitterReport", b =>
@@ -2618,6 +5631,34 @@ namespace TrashMob.Migrations
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_MessageRequests_LastUpdatedByUser_Id");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.Newsletter", b =>
+                {
+                    b.HasOne("TrashMob.Models.NewsletterCategory", "Category")
+                        .WithMany("Newsletters")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_Newsletters_NewsletterCategory");
+
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("NewslettersCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Newsletters_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("NewslettersUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Newsletters_User_LastUpdatedBy");
+
+                    b.Navigation("Category");
 
                     b.Navigation("CreatedByUser");
 
@@ -2914,6 +5955,58 @@ namespace TrashMob.Migrations
                     b.Navigation("ServiceType");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.PartnerPhoto", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("PartnerPhotosCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerPhotos_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("PartnerPhotosUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerPhotos_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "ModeratedByUser")
+                        .WithMany("PartnerPhotosModerated")
+                        .HasForeignKey("ModeratedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_PartnerPhotos_ModeratedByUser");
+
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany("Photos")
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerPhotos_Partner");
+
+                    b.HasOne("TrashMob.Models.User", "ReviewRequestedByUser")
+                        .WithMany("PartnerPhotosReviewRequested")
+                        .HasForeignKey("ReviewRequestedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_PartnerPhotos_ReviewRequestedByUser");
+
+                    b.HasOne("TrashMob.Models.User", "UploadedByUser")
+                        .WithMany("PartnerPhotosUploaded")
+                        .HasForeignKey("UploadedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerPhotos_UploadedByUser");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("ModeratedByUser");
+
+                    b.Navigation("Partner");
+
+                    b.Navigation("ReviewRequestedByUser");
+
+                    b.Navigation("UploadedByUser");
+                });
+
             modelBuilder.Entity("TrashMob.Models.PartnerRequest", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -2985,6 +6078,70 @@ namespace TrashMob.Migrations
                     b.Navigation("SocialMediaAccountType");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.PhotoFlag", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PhotoFlag_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "FlaggedByUser")
+                        .WithMany("PhotoFlagsFlagged")
+                        .HasForeignKey("FlaggedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_PhotoFlag_FlaggedByUser");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PhotoFlag_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "ResolvedByUser")
+                        .WithMany("PhotoFlagsResolved")
+                        .HasForeignKey("ResolvedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_PhotoFlag_ResolvedByUser");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("FlaggedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("ResolvedByUser");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PhotoModerationLog", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PhotoModerationLog_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PhotoModerationLog_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "PerformedByUser")
+                        .WithMany("PhotoModerationLogsPerformed")
+                        .HasForeignKey("PerformedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_PhotoModerationLog_PerformedByUser");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("PerformedByUser");
+                });
+
             modelBuilder.Entity("TrashMob.Models.PickupLocation", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -3013,6 +6170,175 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.ProfessionalCleanupLog", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProfessionalCleanupLogs_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProfessionalCleanupLogs_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.ProfessionalCompany", "ProfessionalCompany")
+                        .WithMany("CleanupLogs")
+                        .HasForeignKey("ProfessionalCompanyId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_ProfessionalCleanupLogs_ProfessionalCompany");
+
+                    b.HasOne("TrashMob.Models.SponsoredAdoption", "SponsoredAdoption")
+                        .WithMany("CleanupLogs")
+                        .HasForeignKey("SponsoredAdoptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ProfessionalCleanupLogs_SponsoredAdoption");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("ProfessionalCompany");
+
+                    b.Navigation("SponsoredAdoption");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.ProfessionalCompany", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProfessionalCompanies_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProfessionalCompanies_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany("ProfessionalCompanies")
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ProfessionalCompanies_Partners");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Partner");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.ProfessionalCompanyUser", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProfessionalCompanyUsers_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProfessionalCompanyUsers_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.ProfessionalCompany", "ProfessionalCompany")
+                        .WithMany("CompanyUsers")
+                        .HasForeignKey("ProfessionalCompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ProfessionalCompanyUsers_ProfessionalCompany");
+
+                    b.HasOne("TrashMob.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProfessionalCompanyUsers_User");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("ProfessionalCompany");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.ProspectActivity", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProspectActivities_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProspectActivities_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.CommunityProspect", "Prospect")
+                        .WithMany("Activities")
+                        .HasForeignKey("ProspectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ProspectActivities_CommunityProspect");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Prospect");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.ProspectOutreachEmail", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProspectOutreachEmails_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProspectOutreachEmails_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.CommunityProspect", "Prospect")
+                        .WithMany("OutreachEmails")
+                        .HasForeignKey("ProspectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ProspectOutreachEmails_CommunityProspect");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Prospect");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.RoutePoint", b =>
+                {
+                    b.HasOne("TrashMob.Models.EventAttendeeRoute", "Route")
+                        .WithMany("RoutePoints")
+                        .HasForeignKey("RouteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_RoutePoints_EventAttendeeRoutes");
+
+                    b.Navigation("Route");
+                });
+
             modelBuilder.Entity("TrashMob.Models.SiteMetric", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -3032,6 +6358,387 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.Sponsor", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Sponsors_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Sponsors_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany("Sponsors")
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Sponsors_Partners");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Partner");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.SponsoredAdoption", b =>
+                {
+                    b.HasOne("TrashMob.Models.AdoptableArea", "AdoptableArea")
+                        .WithMany("SponsoredAdoptions")
+                        .HasForeignKey("AdoptableAreaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_SponsoredAdoptions_AdoptableArea");
+
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_SponsoredAdoptions_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_SponsoredAdoptions_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.ProfessionalCompany", "ProfessionalCompany")
+                        .WithMany("SponsoredAdoptions")
+                        .HasForeignKey("ProfessionalCompanyId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_SponsoredAdoptions_ProfessionalCompany");
+
+                    b.HasOne("TrashMob.Models.Sponsor", "Sponsor")
+                        .WithMany("SponsoredAdoptions")
+                        .HasForeignKey("SponsorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_SponsoredAdoptions_Sponsor");
+
+                    b.Navigation("AdoptableArea");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("ProfessionalCompany");
+
+                    b.Navigation("Sponsor");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.StagedAdoptableArea", b =>
+                {
+                    b.HasOne("TrashMob.Models.AreaGenerationBatch", "Batch")
+                        .WithMany("StagedAreas")
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_StagedAdoptableAreas_AreaGenerationBatches");
+
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_StagedAdoptableAreas_CreatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_StagedAdoptableAreas_LastUpdatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany()
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_StagedAdoptableAreas_Partners");
+
+                    b.Navigation("Batch");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Partner");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.Team", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("TeamsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Teams_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("TeamsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Teams_User_LastUpdatedBy");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamAdoption", b =>
+                {
+                    b.HasOne("TrashMob.Models.AdoptableArea", "AdoptableArea")
+                        .WithMany("Adoptions")
+                        .HasForeignKey("AdoptableAreaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamAdoptions_AdoptableArea");
+
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamAdoptions_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamAdoptions_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "ReviewedByUser")
+                        .WithMany()
+                        .HasForeignKey("ReviewedByUserId")
+                        .HasConstraintName("FK_TeamAdoptions_ReviewedByUser");
+
+                    b.HasOne("TrashMob.Models.Team", "Team")
+                        .WithMany("Adoptions")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamAdoptions_Team");
+
+                    b.Navigation("AdoptableArea");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("ReviewedByUser");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamAdoptionEvent", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamAdoptionEvents_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.Event", "Event")
+                        .WithMany("AdoptionEvents")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamAdoptionEvents_Event");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamAdoptionEvents_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.TeamAdoption", "TeamAdoption")
+                        .WithMany("AdoptionEvents")
+                        .HasForeignKey("TeamAdoptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamAdoptionEvents_TeamAdoption");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("TeamAdoption");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamEvent", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("TeamEventsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamEvents_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamEvents_Event");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("TeamEventsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamEvents_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.Team", "Team")
+                        .WithMany("TeamEvents")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamEvents_Team");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamJoinRequest", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("TeamJoinRequestsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamJoinRequests_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("TeamJoinRequestsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamJoinRequests_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "ReviewedByUser")
+                        .WithMany()
+                        .HasForeignKey("ReviewedByUserId")
+                        .HasConstraintName("FK_TeamJoinRequests_ReviewedByUser");
+
+                    b.HasOne("TrashMob.Models.Team", "Team")
+                        .WithMany("JoinRequests")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamJoinRequests_Team");
+
+                    b.HasOne("TrashMob.Models.User", "User")
+                        .WithMany("TeamJoinRequests")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamJoinRequests_User");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("ReviewedByUser");
+
+                    b.Navigation("Team");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamMember", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("TeamMembersCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamMembers_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("TeamMembersUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamMembers_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.Team", "Team")
+                        .WithMany("Members")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamMembers_Team");
+
+                    b.HasOne("TrashMob.Models.User", "User")
+                        .WithMany("TeamMemberships")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamMembers_User");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Team");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamPhoto", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("TeamPhotosCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamPhotos_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("TeamPhotosUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamPhotos_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "ModeratedByUser")
+                        .WithMany("TeamPhotosModerated")
+                        .HasForeignKey("ModeratedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_TeamPhotos_ModeratedByUser");
+
+                    b.HasOne("TrashMob.Models.User", "ReviewRequestedByUser")
+                        .WithMany("TeamPhotosReviewRequested")
+                        .HasForeignKey("ReviewRequestedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_TeamPhotos_ReviewRequestedByUser");
+
+                    b.HasOne("TrashMob.Models.Team", "Team")
+                        .WithMany("Photos")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamPhotos_Team");
+
+                    b.HasOne("TrashMob.Models.User", "UploadedByUser")
+                        .WithMany()
+                        .HasForeignKey("UploadedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_TeamPhotos_UploadedByUser");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("ModeratedByUser");
+
+                    b.Navigation("ReviewRequestedByUser");
+
+                    b.Navigation("Team");
+
+                    b.Navigation("UploadedByUser");
+                });
+
             modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -3049,6 +6756,99 @@ namespace TrashMob.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastUpdatedByUser");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.UserAchievement", b =>
+                {
+                    b.HasOne("TrashMob.Models.AchievementType", "AchievementType")
+                        .WithMany("UserAchievements")
+                        .HasForeignKey("AchievementTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_UserAchievements_AchievementType");
+
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_UserAchievements_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_UserAchievements_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "User")
+                        .WithMany("Achievements")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_UserAchievements_User");
+
+                    b.Navigation("AchievementType");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.UserFeedback", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("UserFeedbackCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_UserFeedback_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("UserFeedbackUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_UserFeedback_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "ReviewedByUser")
+                        .WithMany("UserFeedbackReviewed")
+                        .HasForeignKey("ReviewedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_UserFeedback_ReviewedByUser");
+
+                    b.HasOne("TrashMob.Models.User", "User")
+                        .WithMany("UserFeedbackSubmitted")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_UserFeedback_User");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("ReviewedByUser");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.UserNewsletterPreference", b =>
+                {
+                    b.HasOne("TrashMob.Models.NewsletterCategory", "Category")
+                        .WithMany("UserPreferences")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_UserNewsletterPreferences_Category");
+
+                    b.HasOne("TrashMob.Models.User", "User")
+                        .WithMany("NewsletterPreferences")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_UserNewsletterPreferences_User");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TrashMob.Models.UserNotification", b =>
@@ -3094,6 +6894,59 @@ namespace TrashMob.Migrations
                     b.Navigation("UserNotificationType");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.UserWaiver", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("UserWaiversCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_UserWaivers_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "GuardianUser")
+                        .WithMany("UserWaiversAsGuardian")
+                        .HasForeignKey("GuardianUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_UserWaivers_GuardianUser");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("UserWaiversUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_UserWaivers_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "UploadedByUser")
+                        .WithMany("UserWaiversUploaded")
+                        .HasForeignKey("UploadedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_UserWaivers_UploadedByUser");
+
+                    b.HasOne("TrashMob.Models.User", "User")
+                        .WithMany("UserWaivers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_UserWaivers_User");
+
+                    b.HasOne("TrashMob.Models.WaiverVersion", "WaiverVersion")
+                        .WithMany("UserWaivers")
+                        .HasForeignKey("WaiverVersionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_UserWaivers_WaiverVersion");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("GuardianUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("UploadedByUser");
+
+                    b.Navigation("User");
+
+                    b.Navigation("WaiverVersion");
+                });
+
             modelBuilder.Entity("TrashMob.Models.Waiver", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -3113,17 +6966,76 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.WaiverVersion", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("WaiverVersionsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_WaiverVersions_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("WaiverVersionsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_WaiverVersions_User_LastUpdatedBy");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.AchievementType", b =>
+                {
+                    b.Navigation("UserAchievements");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.AdoptableArea", b =>
+                {
+                    b.Navigation("Adoptions");
+
+                    b.Navigation("SponsoredAdoptions");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.AreaGenerationBatch", b =>
+                {
+                    b.Navigation("StagedAreas");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.CommunityProspect", b =>
+                {
+                    b.Navigation("Activities");
+
+                    b.Navigation("OutreachEmails");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.EmailInviteBatch", b =>
+                {
+                    b.Navigation("Invites");
+                });
+
             modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
+                    b.Navigation("AdoptionEvents");
+
+                    b.Navigation("AttendeeMetrics");
+
                     b.Navigation("EventAttendeeRoutes");
 
                     b.Navigation("EventAttendees");
 
                     b.Navigation("EventLitterReports");
 
+                    b.Navigation("EventPhotos");
+
                     b.Navigation("PickupLocations");
 
                     b.Navigation("UserNotifications");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.EventAttendeeRoute", b =>
+                {
+                    b.Navigation("RoutePoints");
                 });
 
             modelBuilder.Entity("TrashMob.Models.EventPartnerLocationServiceStatus", b =>
@@ -3158,8 +7070,19 @@ namespace TrashMob.Migrations
                     b.Navigation("LitterReports");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.NewsletterCategory", b =>
+                {
+                    b.Navigation("Newsletters");
+
+                    b.Navigation("UserPreferences");
+                });
+
             modelBuilder.Entity("TrashMob.Models.Partner", b =>
                 {
+                    b.Navigation("AdoptableAreas");
+
+                    b.Navigation("CommunityWaivers");
+
                     b.Navigation("PartnerAdminInvitations");
 
                     b.Navigation("PartnerAdmins");
@@ -3171,6 +7094,12 @@ namespace TrashMob.Migrations
                     b.Navigation("PartnerLocations");
 
                     b.Navigation("PartnerSocialMediaAccounts");
+
+                    b.Navigation("Photos");
+
+                    b.Navigation("ProfessionalCompanies");
+
+                    b.Navigation("Sponsors");
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerLocation", b =>
@@ -3197,13 +7126,58 @@ namespace TrashMob.Migrations
                     b.Navigation("Partners");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.ProfessionalCompany", b =>
+                {
+                    b.Navigation("CleanupLogs");
+
+                    b.Navigation("CompanyUsers");
+
+                    b.Navigation("SponsoredAdoptions");
+                });
+
             modelBuilder.Entity("TrashMob.Models.SocialMediaAccountType", b =>
                 {
                     b.Navigation("PartnerSocialMediaAccounts");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.Sponsor", b =>
+                {
+                    b.Navigation("SponsoredAdoptions");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.SponsoredAdoption", b =>
+                {
+                    b.Navigation("CleanupLogs");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.Team", b =>
+                {
+                    b.Navigation("Adoptions");
+
+                    b.Navigation("JoinRequests");
+
+                    b.Navigation("Members");
+
+                    b.Navigation("Photos");
+
+                    b.Navigation("TeamEvents");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.TeamAdoption", b =>
+                {
+                    b.Navigation("AdoptionEvents");
+                });
+
             modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
+                    b.Navigation("Achievements");
+
+                    b.Navigation("AttendeeMetrics");
+
+                    b.Navigation("CommunityWaiversCreated");
+
+                    b.Navigation("CommunityWaiversUpdated");
+
                     b.Navigation("ContactRequestsCreated");
 
                     b.Navigation("ContactRequestsUpdated");
@@ -3228,6 +7202,16 @@ namespace TrashMob.Migrations
 
                     b.Navigation("EventPartnerLocationsUpdated");
 
+                    b.Navigation("EventPhotosCreated");
+
+                    b.Navigation("EventPhotosModerated");
+
+                    b.Navigation("EventPhotosReviewRequested");
+
+                    b.Navigation("EventPhotosUpdated");
+
+                    b.Navigation("EventPhotosUploaded");
+
                     b.Navigation("EventSummariesCreated");
 
                     b.Navigation("EventSummariesUpdated");
@@ -3246,6 +7230,10 @@ namespace TrashMob.Migrations
 
                     b.Navigation("LitterImagesCreated");
 
+                    b.Navigation("LitterImagesModerated");
+
+                    b.Navigation("LitterImagesReviewRequested");
+
                     b.Navigation("LitterImagesUpdated");
 
                     b.Navigation("LitterReportsCreated");
@@ -3255,6 +7243,12 @@ namespace TrashMob.Migrations
                     b.Navigation("MessageRequestsCreated");
 
                     b.Navigation("MessageRequestsUpdated");
+
+                    b.Navigation("NewsletterPreferences");
+
+                    b.Navigation("NewslettersCreated");
+
+                    b.Navigation("NewslettersUpdated");
 
                     b.Navigation("NonEventUserNotifications");
 
@@ -3290,6 +7284,16 @@ namespace TrashMob.Migrations
 
                     b.Navigation("PartnerLocationsUpdated");
 
+                    b.Navigation("PartnerPhotosCreated");
+
+                    b.Navigation("PartnerPhotosModerated");
+
+                    b.Navigation("PartnerPhotosReviewRequested");
+
+                    b.Navigation("PartnerPhotosUpdated");
+
+                    b.Navigation("PartnerPhotosUploaded");
+
                     b.Navigation("PartnerRequestsCreated");
 
                     b.Navigation("PartnerRequestsUpdated");
@@ -3302,6 +7306,12 @@ namespace TrashMob.Migrations
 
                     b.Navigation("PartnersUpdated");
 
+                    b.Navigation("PhotoFlagsFlagged");
+
+                    b.Navigation("PhotoFlagsResolved");
+
+                    b.Navigation("PhotoModerationLogsPerformed");
+
                     b.Navigation("PickupLocationsCreated");
 
                     b.Navigation("PickupLocationsUpdated");
@@ -3310,11 +7320,57 @@ namespace TrashMob.Migrations
 
                     b.Navigation("SiteMetricsUpdated");
 
+                    b.Navigation("TeamEventsCreated");
+
+                    b.Navigation("TeamEventsUpdated");
+
+                    b.Navigation("TeamJoinRequests");
+
+                    b.Navigation("TeamJoinRequestsCreated");
+
+                    b.Navigation("TeamJoinRequestsUpdated");
+
+                    b.Navigation("TeamMembersCreated");
+
+                    b.Navigation("TeamMembersUpdated");
+
+                    b.Navigation("TeamMemberships");
+
+                    b.Navigation("TeamPhotosCreated");
+
+                    b.Navigation("TeamPhotosModerated");
+
+                    b.Navigation("TeamPhotosReviewRequested");
+
+                    b.Navigation("TeamPhotosUpdated");
+
+                    b.Navigation("TeamsCreated");
+
+                    b.Navigation("TeamsUpdated");
+
+                    b.Navigation("UserFeedbackCreated");
+
+                    b.Navigation("UserFeedbackReviewed");
+
+                    b.Navigation("UserFeedbackSubmitted");
+
+                    b.Navigation("UserFeedbackUpdated");
+
                     b.Navigation("UserNotifications");
 
                     b.Navigation("UserNotificationsCreated");
 
                     b.Navigation("UserNotificationsUpdated");
+
+                    b.Navigation("UserWaivers");
+
+                    b.Navigation("UserWaiversAsGuardian");
+
+                    b.Navigation("UserWaiversCreated");
+
+                    b.Navigation("UserWaiversUpdated");
+
+                    b.Navigation("UserWaiversUploaded");
 
                     b.Navigation("UsersCreated");
 
@@ -3323,6 +7379,10 @@ namespace TrashMob.Migrations
                     b.Navigation("WaiverStatusesCreated");
 
                     b.Navigation("WaiverStatusesUpdated");
+
+                    b.Navigation("WaiverVersionsCreated");
+
+                    b.Navigation("WaiverVersionsUpdated");
                 });
 
             modelBuilder.Entity("TrashMob.Models.UserNotificationType", b =>
@@ -3332,8 +7392,19 @@ namespace TrashMob.Migrations
                     b.Navigation("UserNotifications");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.WaiverVersion", b =>
+                {
+                    b.Navigation("CommunityWaivers");
+
+                    b.Navigation("UserWaivers");
+                });
+
             modelBuilder.Entity("TrashMob.Models.WeightUnit", b =>
                 {
+                    b.Navigation("AttendeeMetricsForAdjusted");
+
+                    b.Navigation("AttendeeMetricsForPicked");
+
                     b.Navigation("EventSummaries");
                 });
 #pragma warning restore 612, 618

@@ -11,24 +11,19 @@
     /// <summary>
     /// Notification engine that reminds event hosts to complete their event summary after an event.
     /// </summary>
-    public class EventSummaryHostReminderNotifier : NotificationEngineBase, INotificationEngine
+    public class EventSummaryHostReminderNotifier(
+        IEventManager eventManager,
+        IKeyedManager<User> userManager,
+        IEventAttendeeManager eventAttendeeManager,
+        IKeyedManager<UserNotification> userNotificationManager,
+        INonEventUserNotificationManager nonEventUserNotificationManager,
+        IEmailSender emailSender,
+        IEmailManager emailManager,
+        IMapManager mapRepository,
+        ILogger logger)
+        : NotificationEngineBase(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+            nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger), INotificationEngine
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventSummaryHostReminderNotifier"/> class.
-        /// </summary>
-        public EventSummaryHostReminderNotifier(IEventManager eventManager,
-            IKeyedManager<User> userManager,
-            IEventAttendeeManager eventAttendeeManager,
-            IKeyedManager<UserNotification> userNotificationManager,
-            INonEventUserNotificationManager nonEventUserNotificationManager,
-            IEmailSender emailSender,
-            IEmailManager emailManager,
-            IMapManager mapRepository,
-            ILogger logger) :
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
-                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-        }
 
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryHostReminder;
 
@@ -42,18 +37,18 @@
         /// <inheritdoc />
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
-            Logger.LogInformation("Generating Notifications for {0}", NotificationType);
+            Logger.LogInformation("Generating Notifications for {NotificationType}", NotificationType);
 
             // Get list of users who have notifications turned on for locations
             var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
             var notificationCounter = 0;
 
-            Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
+            Logger.LogInformation("Generating {NotificationType} Notifications for {UserCount} total users", NotificationType, users.Count());
 
             // for each user
             foreach (var user in users)
             {
-                var eventsToNotifyUserFor = new List<Event>();
+                List<Event> eventsToNotifyUserFor = [];
 
                 // Get list of active events
                 var events = await EventManager.GetCompletedEventsAsync(cancellationToken).ConfigureAwait(false);
@@ -74,7 +69,7 @@
                     .ConfigureAwait(false);
             }
 
-            Logger.LogInformation("Generating {0} Total {1} Notifications", notificationCounter, NotificationType);
+            Logger.LogInformation("Generating {NotificationCount} Total {NotificationType} Notifications", notificationCounter, NotificationType);
         }
     }
 }

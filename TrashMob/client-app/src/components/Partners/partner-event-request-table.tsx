@@ -1,4 +1,4 @@
-import { Ellipsis, Loader2, SquareCheck, SquareX } from 'lucide-react';
+import { AlertCircle, Ellipsis, Loader2, SquareCheck, SquareX } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import moment from 'moment';
@@ -35,8 +35,15 @@ const useGetEventPartnerLocationServiceStatuses = () => {
 interface PartnerEventRequestTableProps {
     isLoading: boolean;
     data?: DisplayPartnerLocationEventServiceData[];
+    hasError?: boolean;
+    hasAuthError?: boolean;
 }
-export const PartnerEventRequestTable = ({ isLoading, data }: PartnerEventRequestTableProps) => {
+export const PartnerEventRequestTable = ({
+    isLoading,
+    data,
+    hasError,
+    hasAuthError,
+}: PartnerEventRequestTableProps) => {
     const queryClient = useQueryClient();
     const { currentUser } = useLogin();
     const [isUpdating, setIsUpdating] = useState<string | null>(null);
@@ -107,7 +114,28 @@ export const PartnerEventRequestTable = ({ isLoading, data }: PartnerEventReques
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {isLoading ? (
+                {hasAuthError ? (
+                    <TableRow>
+                        <TableCell colSpan={7} className='text-center'>
+                            <div className='flex flex-col items-center gap-2 mx-auto my-4 text-destructive'>
+                                <AlertCircle className='h-8 w-8' />
+                                <span>
+                                    You do not have permission to view event requests for this partner. Please contact a
+                                    site administrator if you believe this is an error.
+                                </span>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                ) : hasError ? (
+                    <TableRow>
+                        <TableCell colSpan={7} className='text-center'>
+                            <div className='flex flex-col items-center gap-2 mx-auto my-4 text-destructive'>
+                                <AlertCircle className='h-8 w-8' />
+                                <span>An error occurred while loading event requests. Please try again later.</span>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                ) : isLoading ? (
                     <TableRow>
                         <TableCell colSpan={7} className='text-center'>
                             <Loader2 className='animate-spin mx-auto my-4' />

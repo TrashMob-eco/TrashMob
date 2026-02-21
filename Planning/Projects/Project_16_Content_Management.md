@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (PR #2364) |
+| **Status** | Complete |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -25,10 +25,9 @@ Allow non-developers to update home page and partner content with preview, sched
 - **Non-developer content editing** for marketing/admin team
 
 ### Secondary Goals
-- Multi-language content support (future)
-- Content approval workflows
-- A/B testing support
-- Content analytics
+- Content analytics (view counts, engagement)
+- A/B testing support (future)
+- Content scheduling (future dates)
 
 ---
 
@@ -36,7 +35,7 @@ Allow non-developers to update home page and partner content with preview, sched
 
 ### Phase 1 - Infrastructure
 - ✅ Deploy Strapi as Azure Container App
-- ✅ Configure Azure SQL database for Strapi
+- ⚠️ Configure Azure SQL database for Strapi *(Bicep template exists but dev uses SQLite - see Phase 5)*
 - ✅ Set up internal-only ingress (security)
 - ✅ GitHub Actions deployment workflow
 
@@ -51,11 +50,19 @@ Allow non-developers to update home page and partner content with preview, sched
 - ✅ Link to Strapi admin panel
 - ✅ Content type documentation
 
-### Phase 4 - Expansion (Future)
-- ❓ Community page content
-- ❓ Team page branding
-- ❓ Partner page customization
-- ❓ News/announcements
+### Phase 4 - Home Page Expansion
+- ✅ News/announcements section
+- ✅ Sponsors section
+- ✅ Featured partners carousel/list
+- ✅ Featured communities carousel/list
+- ✅ Featured teams carousel/list
+
+### Phase 5 - Database Migration (SQLite → Azure SQL)
+- ✅ Wire up `Deploy/sqlDatabaseStrapi.bicep` to container app deployment
+- ✅ Update `containerAppStrapi.bicep` to use Azure SQL connection string
+- ✅ Migrate existing content from SQLite to Azure SQL
+- ✅ Validate Strapi functions correctly with Azure SQL
+- ✅ Enable Azure SQL backup policies (see Project 32)
 
 ---
 
@@ -64,7 +71,11 @@ Allow non-developers to update home page and partner content with preview, sched
 - ❌ Full website CMS (blog, etc.)
 - ❌ User-generated content management
 - ❌ Event content (managed through app)
-- ❌ Multi-tenant CMS for communities (future)
+- ❌ Multi-tenant CMS for communities
+- ❌ Multi-language support (i18n)
+- ❌ Community page content (managed via dedicated admin pages - Project 10)
+- ❌ Team page branding (managed via dedicated admin pages - Project 9)
+- ❌ Partner page customization (managed via dedicated admin pages)
 
 ---
 
@@ -88,9 +99,8 @@ Allow non-developers to update home page and partner content with preview, sched
 None - independent infrastructure
 
 ### Enables
-- **Project 2 (Home Page):** Dynamic content for news, partners
-- **Project 10 (Community Pages):** Community-specific content
-- **Marketing velocity:** Faster content iterations
+- **Project 2 (Home Page):** Dynamic content for news, sponsors, featured content
+- **Marketing velocity:** Faster content iterations without developer involvement
 
 ---
 
@@ -263,39 +273,94 @@ Strapi/
 - Admin content page
 - Documentation
 
-### Phase 4: Expansion (Future)
-- Community content
-- Partner content
-- News/announcements
+### Phase 4: Home Page Expansion
+- News/announcements content type
+- Sponsors content type
+- Featured partners/communities/teams content types
+- React components for new home page sections
+- Preview API endpoint for draft content
+
+### Phase 5: Database Migration (SQLite → Azure SQL) ✅
+- ✅ Update `containerAppStrapi.bicep` to use Azure SQL connection string
+- ✅ Add `tedious` package to Strapi for MSSQL support
+- ✅ Update `database.ts` to support both SQLite (local) and MSSQL (deployed)
+- ✅ Update GitHub workflow to deploy database and create SQL user
+- ✅ Validate Strapi admin and API functionality
+
+**Implementation:** Deployed environments now use Azure SQL (`db-strapi-{env}-{region}`) with the `strapi-{env}` SQL user. Local development still uses SQLite for simplicity. The workflow automatically deploys the database via `sqlDatabaseStrapi.bicep` and creates the SQL user with db_owner permissions.
 
 ---
 
-## Future Phases
+## Phase 4 Content Types
 
-This CMS foundation enables:
-- **Community Pages (Project 10):** Custom content per community
-- **Teams (Project 9):** Team branding and descriptions
-- **Partner Pages:** Partner-managed content
-- **Dynamic News:** Home page announcements
+Phase 4 expands home page CMS content to include:
+
+**News/Announcements:**
+- `headline` (string)
+- `body` (rich text)
+- `publishDate` (date)
+- `expirationDate` (date, optional)
+- `priority` (enum: normal, featured, urgent)
+- `link` (string, optional)
+
+**Sponsors (Collection Type):**
+- `name` (string)
+- `logo` (media)
+- `websiteUrl` (string)
+- `tier` (enum: platinum, gold, silver, bronze)
+- `displayOrder` (number)
+- `isActive` (boolean)
+
+**Featured Partners (Collection Type):**
+- `partnerId` (relation to Partner entity)
+- `headline` (string)
+- `description` (text)
+- `displayOrder` (number)
+- `featuredUntil` (date)
+
+**Featured Communities (Collection Type):**
+- `communityId` (relation to Community/Partner entity)
+- `headline` (string)
+- `description` (text)
+- `displayOrder` (number)
+- `featuredUntil` (date)
+
+**Featured Teams (Collection Type):**
+- `teamId` (relation to Team entity)
+- `headline` (string)
+- `description` (text)
+- `displayOrder` (number)
+- `featuredUntil` (date)
+
+**Note:** Community, Team, and Partner pages have their own dedicated admin pages (Projects 9, 10). The CMS only manages their featured display on the home page.
 
 ---
 
 ## Open Questions
 
-1. **Content preview environment?**
-   **Recommendation:** Use Strapi draft/publish; add preview API endpoint
-   **Owner:** Engineering
-   **Due:** Phase 4
+1. ~~**Content preview environment?**~~
+   **Decision:** Use Strapi's built-in draft/publish functionality with a preview API endpoint for content editors
+   **Status:** ✅ Resolved
 
-2. **Multi-language support?**
-   **Recommendation:** Strapi i18n plugin when needed
-   **Owner:** Product Lead
-   **Due:** When international expansion planned
+2. ~~**Multi-language support?**~~
+   **Decision:** Out of scope for this project
+   **Status:** ✅ Resolved
 
-3. **Content approval workflow?**
-   **Recommendation:** Simple for now; Strapi workflows for enterprise needs
-   **Owner:** Product Lead
-   **Due:** When team grows
+3. ~~**Content approval workflow?**~~
+   **Decision:** Keep simple - no formal approval workflow; editors publish directly
+   **Status:** ✅ Resolved
+
+4. ~~**Phase 4 scope?**~~
+   **Decision:** Phase 4 focuses only on home page content (news, sponsors, featured partners/communities/teams). Community and Team pages managed via dedicated admin pages in their respective projects.
+   **Status:** ✅ Resolved
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2237](https://github.com/trashmob/TrashMob/issues/2237)** - Project 16: Page Content Management (tracking issue)
 
 ---
 
@@ -307,7 +372,14 @@ This CMS foundation enables:
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** February 1, 2026
 **Owner:** Engineering Team
-**Status:** In Progress (PR #2364)
-**Next Review:** After PR merge
+**Status:** Complete
+**Next Review:** N/A
+
+---
+
+## Changelog
+
+- **2026-02-01:** Phase 5 complete - Migrated Strapi from SQLite to Azure SQL; added tedious package; updated workflow
+- **2026-01-31:** Added Phase 5 (SQLite → Azure SQL migration); noted dev uses SQLite with ephemeral storage

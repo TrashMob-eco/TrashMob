@@ -14,26 +14,15 @@
     /// <summary>
     /// Manages IFTTT query requests for retrieving event data based on location filters.
     /// </summary>
-    internal class QueriesManager : BaseManager<IftttTrigger>, IQueriesManager
+    internal class QueriesManager(IBaseRepository<IftttTrigger> repository, IKeyedRepository<Event> eventRepository)
+        : BaseManager<IftttTrigger>(repository), IQueriesManager
     {
-        private readonly IKeyedRepository<Event> eventRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QueriesManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for IFTTT trigger data access.</param>
-        /// <param name="eventRepository">The repository for event data access.</param>
-        public QueriesManager(IBaseRepository<IftttTrigger> repository, IKeyedRepository<Event> eventRepository) :
-            base(repository)
-        {
-            this.eventRepository = eventRepository;
-        }
 
         /// <inheritdoc />
         public async Task<List<IftttEventResponse>> GetEventsQueryDataAsync(QueriesRequest queryRequest, Guid userId,
             CancellationToken cancellationToken)
         {
-            if (queryRequest == null)
+            if (queryRequest is null)
             {
                 throw new ArgumentNullException(nameof(queryRequest));
             }
@@ -42,7 +31,7 @@
             var trigger = Repository.Get(t => t.TriggerId == queryRequest.trigger_identity).FirstOrDefault();
 
             // Store Trigger in database if it does not exist
-            if (trigger == null)
+            if (trigger is null)
             {
                 trigger = new IftttTrigger
                 {
@@ -66,7 +55,7 @@
             IQueryable<Event> events;
 
             // Return all events
-            if (eventFields == null)
+            if (eventFields is null)
             {
                 events = eventRepository.Get();
             }
@@ -80,10 +69,10 @@
             }
 
 
-            var triggersResponses = new List<IftttEventResponse>();
+            List<IftttEventResponse> triggersResponses = [];
 
             // Get all the public events in the future
-            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow)
+            foreach (var mobEvent in events.Where(e => e.EventVisibilityId == (int)EventVisibilityEnum.Public && e.EventDate >= DateTimeOffset.UtcNow)
                          .ToList())
             {
                 var triggersResponse = new IftttEventResponse();

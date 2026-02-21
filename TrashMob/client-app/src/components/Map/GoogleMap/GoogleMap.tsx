@@ -10,16 +10,19 @@ export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
 
     const defaultCenter = defaultCenterProps || userDefaultCenter;
 
-    // Move Map when receiving new defaultCenterProps
+    // Move Map when the center coordinates actually change (not just the object reference)
     const map = useMap(id);
+    const centerLat = defaultCenter?.lat;
+    const centerLng = defaultCenter?.lng;
     useEffect(() => {
-        if (map && defaultCenter) {
-            map.panTo(defaultCenter);
+        if (map && centerLat != null && centerLng != null) {
+            map.panTo({ lat: centerLat, lng: centerLng });
         }
-    }, [map, defaultCenter]);
+    }, [map, centerLat, centerLng]);
 
     return (
         <Map
+            id={id}
             mapId='6f295631d841c617'
             gestureHandling={props.gestureHandling ?? 'greedy'}
             disableDefaultUI
@@ -39,7 +42,7 @@ export const GoogleMapWithKey = (props: PropsWithChildren<MapProps>) => {
     if (isLoading) return null;
 
     return (
-        <APIProvider apiKey={googleApiKey || ''}>
+        <APIProvider apiKey={googleApiKey || ''} libraries={['drawing', 'geometry']}>
             <GoogleMap {...props} />
         </APIProvider>
     );

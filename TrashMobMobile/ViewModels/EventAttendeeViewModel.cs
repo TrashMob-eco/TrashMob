@@ -18,4 +18,16 @@ public partial class EventAttendeeViewModel : ObservableObject
 
     [ObservableProperty]
     private string role = string.Empty;
+
+    [ObservableProperty]
+    private bool isEventCreator;
+
+    [ObservableProperty]
+    private bool isEventLead;
+
+    [ObservableProperty]
+    private bool canPromote;
+
+    [ObservableProperty]
+    private bool canDemote;
 }

@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phase 1 Complete) |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -30,6 +30,14 @@ Reduce regression risk, enable confident releases, and replace manual test scena
 - Performance/load testing
 - API contract testing
 - Accessibility testing automation
+
+### Future Improvements
+- **Adversarial/bug-finding unit tests** - Current unit tests verify code does what it does, not what it *should* do. Add:
+  - Property-based testing (generate random inputs, verify invariants)
+  - Mutation testing (verify tests fail when code is deliberately broken)
+  - Edge case coverage (nulls, empty collections, boundary values, concurrent access)
+  - Tests written from specifications before reading implementation
+  - Integration tests with real database/service interactions
 
 ---
 
@@ -415,27 +423,61 @@ jobs:
 
 ---
 
-## Open Questions
+## Current Implementation (Phase 1 Complete)
+
+### Infrastructure
+- ✅ **Playwright installed** and configured in `TrashMob/client-app/`
+- ✅ **GitHub Actions workflow** (`.github/workflows/e2e-tests.yml`) runs on PRs
+- ✅ **Tests run against dev.trashmob.eco** with Chromium browser
+- ✅ **Test reports** uploaded as artifacts on failure
+
+### Files Created
+```
+TrashMob/client-app/
+├── playwright.config.ts          # Multi-browser config (Chromium, Firefox, Mobile)
+├── e2e/
+│   ├── fixtures/
+│   │   ├── auth.fixture.ts       # Authentication helpers
+│   │   └── base.fixture.ts       # Base test fixture
+│   ├── pages/
+│   │   ├── home.page.ts          # Home page object
+│   │   ├── contact.page.ts       # Contact page object
+│   │   └── events.page.ts        # Events page object
+│   ├── tests/
+│   │   ├── public-pages.spec.ts  # Public page navigation tests
+│   │   └── contact.spec.ts       # Contact form tests
+│   └── utils/
+│       └── helpers.ts            # Shared utilities
+```
+
+### Tests Implemented
+| Test File | Coverage |
+|-----------|----------|
+| `public-pages.spec.ts` | Home page, navigation, About menu, static pages (Teams, Partnerships, Help, FAQ, Getting Started, About Us, Privacy Policy, Terms of Service), keyboard accessibility |
+| `contact.spec.ts` | Contact form validation, submission |
+
+### Next Steps (Phase 2)
+- [ ] Add authenticated test user flow
+- [ ] Event CRUD tests (`events.spec.ts`)
+- [ ] Litter report tests
+- [ ] Partner management tests
+- [ ] Dashboard tests
+
+---
+
+## Decisions
 
 1. **Test data management strategy?**
-   **Recommendation:** Seed data before tests; cleanup after; isolated test users
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+   **Decision:** Seed data before tests; cleanup after; use isolated test users per test run
 
 2. **Test environment?**
-   **Recommendation:** Use dev environment with test tenant; consider ephemeral environments
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+   **Decision:** Use dev environment with test tenant; consider ephemeral environments for PR isolation in future
 
 3. **Required vs optional PR checks?**
-   **Recommendation:** Start optional; make required after 2 weeks stability
-   **Owner:** Engineering Lead
-   **Due:** After Phase 2
+   **Decision:** Start as optional checks; promote to required after 2 weeks of stability (< 5% flaky rate)
 
 4. **Browser/device matrix?**
-   **Recommendation:** Chrome + Firefox for web; Android for mobile; expand later
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+   **Decision:** Chrome + Firefox for web; Android-first for mobile; expand to iOS after Android stable
 
 ---
 
@@ -447,7 +489,14 @@ jobs:
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** February 5, 2026
 **Owner:** Engineering Team
-**Status:** Not Started
-**Next Review:** When CI/CD stabilized
+**Status:** In Progress (Phase 1 Complete)
+**Next Review:** After Phase 2 completion
+
+---
+
+## Changelog
+
+- **2026-02-05:** Updated status to "In Progress (Phase 1 Complete)". Playwright framework installed, GitHub Actions workflow running on PRs, page objects and initial tests implemented.
+- **2026-01-31:** Converted open questions to decisions; confirmed all scope items

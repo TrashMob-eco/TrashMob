@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -14,22 +14,11 @@
     /// </summary>
     [Authorize]
     [Route("api/partnersocialmediaaccounts")]
-    public class PartnerSocialMediaAccountController : SecureController
+    public class PartnerSocialMediaAccountController(
+        IPartnerSocialMediaAccountManager manager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly IPartnerSocialMediaAccountManager manager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerSocialMediaAccountController"/> class.
-        /// </summary>
-        /// <param name="partnerSocialMediaAccountManager">The partner social media account manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        public PartnerSocialMediaAccountController(IPartnerSocialMediaAccountManager partnerSocialMediaAccountManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            manager = partnerSocialMediaAccountManager;
-            this.partnerManager = partnerManager;
-        }
 
         /// <summary>
         /// Gets all social media accounts for a given partner.
@@ -42,10 +31,7 @@
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -80,15 +66,12 @@
             PartnerSocialMediaAccount partnerSocialMediaAccount, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerSocialMediaAccount.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            await manager.AddAsync(partnerSocialMediaAccount, UserId, cancellationToken).ConfigureAwait(false);
+            await manager.AddAsync(partnerSocialMediaAccount, UserId, cancellationToken);
             TrackEvent(nameof(AddPartnerSocialMediaAccount));
 
             return Ok();
@@ -106,16 +89,12 @@
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
             var partner = await partnerManager.GetAsync(partnerSocialMediaAccount.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            var result = await manager.UpdateAsync(partnerSocialMediaAccount, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await manager.UpdateAsync(partnerSocialMediaAccount, UserId, cancellationToken);
             TrackEvent(nameof(UpdatePartnerSocialMediaAccount));
 
             return Ok(result);
@@ -132,18 +111,15 @@
             CancellationToken cancellationToken)
         {
             var partner = await manager.GetPartnerForSocialMediaAccount(partnerSocialMediaAccountId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            await manager.DeleteAsync(partnerSocialMediaAccountId, cancellationToken).ConfigureAwait(false);
+            await manager.DeleteAsync(partnerSocialMediaAccountId, cancellationToken);
             TrackEvent(nameof(DeletePartnerSocialMediaAccount));
 
-            return Ok(partnerSocialMediaAccountId);
+            return NoContent();
         }
     }
 }

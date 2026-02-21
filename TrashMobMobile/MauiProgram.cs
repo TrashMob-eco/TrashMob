@@ -66,6 +66,9 @@ public static class MauiProgram
         builder.Services.AddTransient<CreateEventPage>();
         builder.Services.AddTransient<CreateLitterReportPage>();
         builder.Services.AddTransient<EditEventPage>();
+        builder.Services.AddTransient<ExplorePage>();
+        builder.Services.AddTransient<HomeFeedPage>();
+        builder.Services.AddTransient<ImpactPage>();
         builder.Services.AddTransient<EditEventPartnerLocationServicesPage>();
         builder.Services.AddTransient<EditEventSummaryPage>();
         builder.Services.AddTransient<EditLitterReportPage>();
@@ -74,15 +77,26 @@ public static class MauiProgram
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<ManageEventPartnersPage>();
         builder.Services.AddTransient<MyDashboardPage>();
+        builder.Services.AddTransient<ProfilePage>();
+        builder.Services.AddTransient<QuickActionPlaceholderPage>();
         builder.Services.AddTransient<SearchEventsPage>();
         builder.Services.AddTransient<SearchLitterReportsPage>();
         builder.Services.AddTransient<SetUserLocationPreferencePage>();
+        builder.Services.AddTransient<AchievementsPage>();
+        builder.Services.AddTransient<BrowseCommunitiesPage>();
+        builder.Services.AddTransient<BrowseTeamsPage>();
+        builder.Services.AddTransient<LeaderboardsPage>();
+        builder.Services.AddTransient<NewsletterPreferencesPage>();
         builder.Services.AddTransient<ViewEventPage>();
         builder.Services.AddTransient<ViewEventSummaryPage>();
         builder.Services.AddTransient<ViewLitterReportPage>();
         builder.Services.AddTransient<ViewPickupLocationPage>();
+        builder.Services.AddTransient<ViewCommunityPage>();
+        builder.Services.AddTransient<ViewTeamPage>();
+        builder.Services.AddTransient<WaiverListPage>();
         builder.Services.AddTransient<WaiverPage>();
         builder.Services.AddTransient<WelcomePage>();
+        builder.Services.AddTransient<AgeGatePage>();
 
         // ViewModels
         builder.Services.AddTransient<CreatePickupLocationViewModel>();
@@ -96,28 +110,39 @@ public static class MauiProgram
         builder.Services.AddTransient<EditLitterReportViewModel>();
         builder.Services.AddTransient<EditPickupLocationViewModel>();
         builder.Services.AddTransient<EventSummaryViewModel>();
+        builder.Services.AddTransient<ExploreViewModel>();
+        builder.Services.AddTransient<HomeFeedViewModel>();
+        builder.Services.AddTransient<ImpactViewModel>();
         builder.Services.AddTransient<LogoutViewModel>();
         builder.Services.AddTransient<MainViewModel>();
         builder.Services.AddTransient<ManageEventPartnersViewModel>();
         builder.Services.AddTransient<MyDashboardViewModel>();
+        builder.Services.AddTransient<ProfileViewModel>();
         builder.Services.AddTransient<SearchEventsViewModel>();
         builder.Services.AddTransient<SearchLitterReportsViewModel>();
         builder.Services.AddTransient<SocialMediaShareViewModel>();
         builder.Services.AddTransient<UserLocationPreferenceViewModel>();
+        builder.Services.AddTransient<AchievementsViewModel>();
+        builder.Services.AddTransient<BrowseCommunitiesViewModel>();
+        builder.Services.AddTransient<BrowseTeamsViewModel>();
+        builder.Services.AddTransient<LeaderboardsViewModel>();
+        builder.Services.AddTransient<NewsletterPreferencesViewModel>();
         builder.Services.AddTransient<ViewEventViewModel>();
         builder.Services.AddTransient<ViewEventSummaryViewModel>();
         builder.Services.AddTransient<ViewLitterReportViewModel>();
         builder.Services.AddTransient<ViewPickupLocationViewModel>();
+        builder.Services.AddTransient<ViewCommunityViewModel>();
+        builder.Services.AddTransient<ViewTeamViewModel>();
+        builder.Services.AddTransient<WaiverListViewModel>();
         builder.Services.AddTransient<WaiverViewModel>();
         builder.Services.AddTransient<WelcomeViewModel>();
+        builder.Services.AddTransient<AgeGateViewModel>();
 
 #if USETEST
         builder.Logging.AddDebug();
         builder.Services.AddSingleton<ILoggingService, DebugLoggingService>();
 #else
-		builder.Services.AddSingleton<ILoggingService, DebugLoggingService>();
-		// use the following for Sentry builds
-		//builder.Services.AddSingleton<ILoggingService, LoggingService>();
+        builder.Services.AddSingleton<ILoggingService, LoggingService>();
 #endif
 
         return builder.Build();

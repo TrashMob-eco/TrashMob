@@ -1,9 +1,10 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SendGrid;
     using SendGrid.Helpers.Mail;
     using TrashMob.Shared.Engine;
@@ -14,7 +15,7 @@
     /// <summary>
     /// Sends emails using the SendGrid API for both plain text and templated emails.
     /// </summary>
-    public class EmailSender : IEmailSender
+    public class EmailSender(ILogger<EmailSender> logger) : IEmailSender
     {
         /// <inheritdoc />
         public string ApiKey { get; set; }
@@ -30,7 +31,7 @@
 
             var from = new EmailAddress(Constants.TrashMobEmailAddress, Constants.TrashMobEmailName);
 
-            var tos = new List<EmailAddress>();
+            List<EmailAddress> tos = [];
             foreach (var address in email.Addresses)
             {
                 tos.Add(new EmailAddress(address.Email, address.Name));
@@ -41,12 +42,12 @@
                 var client = new SendGridClient(ApiKey);
                 var message = MailHelper.CreateSingleEmailToMultipleRecipients(from, tos, email.Subject, email.Message,
                     email.HtmlMessage);
-                var response = await client.SendEmailAsync(message, cancellationToken).ConfigureAwait(false);
-                Console.WriteLine(response);
+                var response = await client.SendEmailAsync(message, cancellationToken);
+                logger.LogInformation("SendGrid response: {StatusCode}", response.StatusCode);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                logger.LogError(ex, "Failed to send email");
             }
         }
 
@@ -61,7 +62,7 @@
 
             var from = new EmailAddress(Constants.TrashMobEmailAddress, Constants.TrashMobEmailName);
 
-            var tos = new List<EmailAddress>();
+            List<EmailAddress> tos = [];
             foreach (var address in email.Addresses)
             {
                 tos.Add(new EmailAddress(address.Email, address.Name));
@@ -77,19 +78,19 @@
                 message.Asm = new ASM
                 {
                     GroupId = email.GroupId,
-                    GroupsToDisplay = new List<int>
-                    {
+                    GroupsToDisplay =
+                    [
                         SendGridEmailGroupId.EventRelated,
                         SendGridEmailGroupId.General,
-                    },
+                    ],
                 };
 
-                var response = await client.SendEmailAsync(message, cancellationToken).ConfigureAwait(false);
-                Console.WriteLine(response);
+                var response = await client.SendEmailAsync(message, cancellationToken);
+                logger.LogInformation("SendGrid templated email response: {StatusCode}", response.StatusCode);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                logger.LogError(ex, "Failed to send templated email");
             }
         }
     }

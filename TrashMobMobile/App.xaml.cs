@@ -18,12 +18,15 @@ public partial class App : Application
             this.loggingService.LogError(exception);
         };
 
-        AppDomain.CurrentDomain.FirstChanceException += (sender, args) =>
+        TaskScheduler.UnobservedTaskException += (sender, args) =>
         {
             this.loggingService.LogError(args.Exception);
+            args.SetObserved();
         };
 
+#pragma warning disable CS0618
         MainPage = new AppShell();
+#pragma warning restore CS0618
     }
 
     public static User? CurrentUser { get; set; }

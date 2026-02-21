@@ -12,35 +12,30 @@
     /// <summary>
     /// Base class for notification engines that notify users about upcoming events in their geographic area.
     /// </summary>
-    public abstract class UpcomingEventsInYourAreaBaseNotifier : NotificationEngineBase, INotificationEngine
+    public abstract class UpcomingEventsInYourAreaBaseNotifier(
+        IEventManager eventManager,
+        IKeyedManager<User> userManager,
+        IEventAttendeeManager eventAttendeeManager,
+        IKeyedManager<UserNotification> userNotificationManager,
+        INonEventUserNotificationManager nonEventUserNotificationManager,
+        IEmailSender emailSender,
+        IEmailManager emailManager,
+        IMapManager mapRepository,
+        ILogger logger)
+        : NotificationEngineBase(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+            nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger), INotificationEngine
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UpcomingEventsInYourAreaBaseNotifier"/> class.
-        /// </summary>
-        public UpcomingEventsInYourAreaBaseNotifier(IEventManager eventManager,
-            IKeyedManager<User> userManager,
-            IEventAttendeeManager eventAttendeeManager,
-            IKeyedManager<UserNotification> userNotificationManager,
-            INonEventUserNotificationManager nonEventUserNotificationManager,
-            IEmailSender emailSender,
-            IEmailManager emailManager,
-            IMapManager mapRepository,
-            ILogger logger) :
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
-                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-        }
 
         /// <inheritdoc />
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
-            Logger.LogInformation("Generating Notifications for {0}", NotificationType);
+            Logger.LogInformation("Generating Notifications for {NotificationType}", NotificationType);
 
             // Get list of users who have notifications turned on for locations
             var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
             var notificationCounter = 0;
 
-            Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
+            Logger.LogInformation("Generating {NotificationType} Notifications for {UserCount} total users", NotificationType, users.Count());
 
             // for each user
             foreach (var user in users)
@@ -51,10 +46,10 @@
                     continue;
                 }
 
-                var eventsToNotifyUserFor = new List<Event>();
+                List<Event> eventsToNotifyUserFor = [];
 
                 // Get list of active events
-                var events = await EventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
+                var events = await EventManager.GetActiveEventsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Get list of events user is already attending
                 var eventsUserIsAttending = await EventAttendeeManager
@@ -65,8 +60,8 @@
                              e.EventDate <= DateTimeOffset.UtcNow.AddHours(MaxNumberOfHoursInWindow) &&
                              e.EventDate > DateTimeOffset.UtcNow.AddHours(MinNumberOfHoursInWindow)))
                 {
-                    // Skip private events
-                    if (!mobEvent.IsEventPublic)
+                    // Skip non-public events (team-only and private)
+                    if (mobEvent.EventVisibilityId != (int)EventVisibilityEnum.Public)
                     {
                         continue;
                     }
@@ -84,8 +79,8 @@
                     }
 
                     // Get the distance from the User's home location to the event location
-                    var userLocation = new Tuple<double, double>(user.Latitude.Value, user.Longitude.Value);
-                    var eventLocation = new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
+                    var userLocation = (user.Latitude.Value, user.Longitude.Value);
+                    var eventLocation = (mobEvent.Latitude.Value, mobEvent.Longitude.Value);
 
                     var distance = await MapRepository
                         .GetDistanceBetweenTwoPointsAsync(userLocation, eventLocation, user.PrefersMetric)
@@ -112,7 +107,7 @@
                     .ConfigureAwait(false);
             }
 
-            Logger.LogInformation("Generating {0} Total {1} Notifications", notificationCounter, NotificationType);
+            Logger.LogInformation("Generating {NotificationCount} Total {NotificationType} Notifications", notificationCounter, NotificationType);
         }
     }
 }

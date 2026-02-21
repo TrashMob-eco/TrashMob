@@ -29,6 +29,11 @@ namespace TrashMob.Models
             PartnersUpdated = new HashSet<Partner>();
             EventAttendees = new HashSet<EventAttendee>();
             EventAttendeeRoutes = new HashSet<EventAttendeeRoute>();
+            AttendeeMetrics = new HashSet<EventAttendeeMetrics>();
+            NewsletterPreferences = new HashSet<UserNewsletterPreference>();
+            NewslettersCreated = new HashSet<Newsletter>();
+            NewslettersUpdated = new HashSet<Newsletter>();
+            Achievements = new HashSet<UserAchievement>();
         }
 
         /// <summary>
@@ -92,6 +97,16 @@ namespace TrashMob.Models
         public bool PrefersMetric { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the user appears on public leaderboards.
+        /// </summary>
+        public bool ShowOnLeaderboards { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user receives achievement notifications.
+        /// </summary>
+        public bool AchievementNotificationsEnabled { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the maximum travel distance (in miles or kilometers) the user is willing to travel for local events.
         /// </summary>
         public int TravelLimitForLocalEvents { get; set; }
@@ -112,6 +127,26 @@ namespace TrashMob.Models
         public string TrashMobWaiverVersion { get; set; }
 
         /// <summary>
+        /// Gets or sets the user's given (first) name.
+        /// </summary>
+        public string GivenName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's surname (last name).
+        /// </summary>
+        public string Surname { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's date of birth (used for age verification).
+        /// </summary>
+        public DateTimeOffset? DateOfBirth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of the user's profile photo (auto-populated from social IDP or uploaded).
+        /// </summary>
+        public string ProfilePhotoUrl { get; set; }
+
+        /// <summary>
         /// Gets or sets the date when the user became a member.
         /// </summary>
         public DateTimeOffset? MemberSince { get; set; }
@@ -125,6 +160,11 @@ namespace TrashMob.Models
         /// Gets or sets the collection of routes the user has taken during events.
         /// </summary>
         public virtual ICollection<EventAttendeeRoute> EventAttendeeRoutes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of metrics submitted by this user for events.
+        /// </summary>
+        public virtual ICollection<EventAttendeeMetrics> AttendeeMetrics { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of events created by this user.
@@ -415,5 +455,247 @@ namespace TrashMob.Models
         /// Gets or sets the collection of litter images last updated by this user.
         /// </summary>
         public virtual ICollection<LitterImage> LitterImagesUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team memberships for this user.
+        /// </summary>
+        public virtual ICollection<TeamMember> TeamMemberships { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team join requests made by this user.
+        /// </summary>
+        public virtual ICollection<TeamJoinRequest> TeamJoinRequests { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of teams created by this user.
+        /// </summary>
+        public virtual ICollection<Team> TeamsCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of teams last updated by this user.
+        /// </summary>
+        public virtual ICollection<Team> TeamsUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team members created by this user.
+        /// </summary>
+        public virtual ICollection<TeamMember> TeamMembersCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team members last updated by this user.
+        /// </summary>
+        public virtual ICollection<TeamMember> TeamMembersUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team join requests created by this user.
+        /// </summary>
+        public virtual ICollection<TeamJoinRequest> TeamJoinRequestsCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team join requests last updated by this user.
+        /// </summary>
+        public virtual ICollection<TeamJoinRequest> TeamJoinRequestsUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team events created by this user.
+        /// </summary>
+        public virtual ICollection<TeamEvent> TeamEventsCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team events last updated by this user.
+        /// </summary>
+        public virtual ICollection<TeamEvent> TeamEventsUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team photos created by this user.
+        /// </summary>
+        public virtual ICollection<TeamPhoto> TeamPhotosCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team photos last updated by this user.
+        /// </summary>
+        public virtual ICollection<TeamPhoto> TeamPhotosUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of user feedback submitted by this user.
+        /// </summary>
+        public virtual ICollection<UserFeedback> UserFeedbackSubmitted { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of user feedback reviewed by this user.
+        /// </summary>
+        public virtual ICollection<UserFeedback> UserFeedbackReviewed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of user feedback created by this user.
+        /// </summary>
+        public virtual ICollection<UserFeedback> UserFeedbackCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of user feedback last updated by this user.
+        /// </summary>
+        public virtual ICollection<UserFeedback> UserFeedbackUpdated { get; set; }
+
+        #region Photo Moderation Collections
+
+        /// <summary>
+        /// Gets or sets the collection of litter images flagged for review by this user.
+        /// </summary>
+        public virtual ICollection<LitterImage> LitterImagesReviewRequested { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of litter images moderated by this user.
+        /// </summary>
+        public virtual ICollection<LitterImage> LitterImagesModerated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team photos flagged for review by this user.
+        /// </summary>
+        public virtual ICollection<TeamPhoto> TeamPhotosReviewRequested { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team photos moderated by this user.
+        /// </summary>
+        public virtual ICollection<TeamPhoto> TeamPhotosModerated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of event photos created by this user.
+        /// </summary>
+        public virtual ICollection<EventPhoto> EventPhotosCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of event photos last updated by this user.
+        /// </summary>
+        public virtual ICollection<EventPhoto> EventPhotosUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of event photos uploaded by this user.
+        /// </summary>
+        public virtual ICollection<EventPhoto> EventPhotosUploaded { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of event photos flagged for review by this user.
+        /// </summary>
+        public virtual ICollection<EventPhoto> EventPhotosReviewRequested { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of event photos moderated by this user.
+        /// </summary>
+        public virtual ICollection<EventPhoto> EventPhotosModerated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of partner photos created by this user.
+        /// </summary>
+        public virtual ICollection<PartnerPhoto> PartnerPhotosCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of partner photos last updated by this user.
+        /// </summary>
+        public virtual ICollection<PartnerPhoto> PartnerPhotosUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of partner photos uploaded by this user.
+        /// </summary>
+        public virtual ICollection<PartnerPhoto> PartnerPhotosUploaded { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of partner photos flagged for review by this user.
+        /// </summary>
+        public virtual ICollection<PartnerPhoto> PartnerPhotosReviewRequested { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of partner photos moderated by this user.
+        /// </summary>
+        public virtual ICollection<PartnerPhoto> PartnerPhotosModerated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of photo flags submitted by this user.
+        /// </summary>
+        public virtual ICollection<PhotoFlag> PhotoFlagsFlagged { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of photo flags resolved by this user.
+        /// </summary>
+        public virtual ICollection<PhotoFlag> PhotoFlagsResolved { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of photo moderation actions performed by this user.
+        /// </summary>
+        public virtual ICollection<PhotoModerationLog> PhotoModerationLogsPerformed { get; set; }
+
+        #endregion
+
+        #region Waiver V3 Collections
+
+        /// <summary>
+        /// Gets or sets the collection of waivers accepted by this user.
+        /// </summary>
+        public virtual ICollection<UserWaiver> UserWaivers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of paper waivers uploaded by this user.
+        /// </summary>
+        public virtual ICollection<UserWaiver> UserWaiversUploaded { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of waivers where this user is the guardian.
+        /// </summary>
+        public virtual ICollection<UserWaiver> UserWaiversAsGuardian { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of waiver versions created by this user.
+        /// </summary>
+        public virtual ICollection<WaiverVersion> WaiverVersionsCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of waiver versions last updated by this user.
+        /// </summary>
+        public virtual ICollection<WaiverVersion> WaiverVersionsUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of community waivers created by this user.
+        /// </summary>
+        public virtual ICollection<CommunityWaiver> CommunityWaiversCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of community waivers last updated by this user.
+        /// </summary>
+        public virtual ICollection<CommunityWaiver> CommunityWaiversUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of user waivers created by this user.
+        /// </summary>
+        public virtual ICollection<UserWaiver> UserWaiversCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of user waivers last updated by this user.
+        /// </summary>
+        public virtual ICollection<UserWaiver> UserWaiversUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of achievements earned by this user.
+        /// </summary>
+        public virtual ICollection<UserAchievement> Achievements { get; set; }
+
+        #endregion
+
+        #region Newsletter Collections
+
+        /// <summary>
+        /// Gets or sets the collection of newsletter preferences for this user.
+        /// </summary>
+        public virtual ICollection<UserNewsletterPreference> NewsletterPreferences { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of newsletters created by this user.
+        /// </summary>
+        public virtual ICollection<Newsletter> NewslettersCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of newsletters last updated by this user.
+        /// </summary>
+        public virtual ICollection<Newsletter> NewslettersUpdated { get; set; }
+
+        #endregion
     }
 }

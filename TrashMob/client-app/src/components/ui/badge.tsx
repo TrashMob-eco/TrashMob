@@ -60,4 +60,40 @@ function HostingBadge(props: BadgeProps) {
     );
 }
 
-export { Badge, AttendingBadge, HostingBadge, badgeVariants };
+function TeamOnlyBadge(props: BadgeProps) {
+    return (
+        <Badge variant='outline' className='bg-blue-100 text-blue-800 border-blue-300' {...props}>
+            <svg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <path
+                    d='M7 1.75C5.067 1.75 3.5 3.317 3.5 5.25C3.5 7.183 5.067 8.75 7 8.75C8.933 8.75 10.5 7.183 10.5 5.25C10.5 3.317 8.933 1.75 7 1.75ZM5.25 5.25C5.25 4.284 6.034 3.5 7 3.5C7.966 3.5 8.75 4.284 8.75 5.25C8.75 6.216 7.966 7 7 7C6.034 7 5.25 6.216 5.25 5.25ZM3.5 10.5C2.534 10.5 1.75 11.284 1.75 12.25H12.25C12.25 11.284 11.466 10.5 10.5 10.5H3.5Z'
+                    fill='#1e40af'
+                />
+            </svg>
+            Team Only
+        </Badge>
+    );
+}
+
+function PrivateBadge(props: BadgeProps) {
+    return (
+        <Badge variant='outline' className='bg-gray-100 text-gray-800 border-gray-300' {...props}>
+            <svg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <path
+                    fill-rule='evenodd'
+                    clip-rule='evenodd'
+                    d='M3.5 5.25V4.375C3.5 2.441 5.067 0.875 7 0.875C8.933 0.875 10.5 2.441 10.5 4.375V5.25C11.19 5.25 11.75 5.81 11.75 6.5V11.375C11.75 12.065 11.19 12.625 10.5 12.625H3.5C2.81 12.625 2.25 12.065 2.25 11.375V6.5C2.25 5.81 2.81 5.25 3.5 5.25ZM5.25 4.375C5.25 3.409 6.034 2.625 7 2.625C7.966 2.625 8.75 3.409 8.75 4.375V5.25H5.25V4.375Z'
+                    fill='#4b5563'
+                />
+            </svg>
+            Private
+        </Badge>
+    );
+}
+
+function EventVisibilityBadge({ eventVisibilityId, ...props }: BadgeProps & { eventVisibilityId: number }) {
+    if (eventVisibilityId === 2) return <TeamOnlyBadge {...props} />;
+    if (eventVisibilityId === 3) return <PrivateBadge {...props} />;
+    return null;
+}
+
+export { Badge, AttendingBadge, HostingBadge, TeamOnlyBadge, PrivateBadge, EventVisibilityBadge, badgeVariants };

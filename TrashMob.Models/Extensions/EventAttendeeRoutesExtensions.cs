@@ -22,6 +22,32 @@
                 UserId = eventAttendeeRoute.UserId,
                 EndTime = eventAttendeeRoute.EndTime,
                 StartTime = eventAttendeeRoute.StartTime,
+                TotalDistanceMeters = eventAttendeeRoute.TotalDistanceMeters,
+                DurationMinutes = eventAttendeeRoute.DurationMinutes,
+                PrivacyLevel = eventAttendeeRoute.PrivacyLevel,
+                IsTrimmed = eventAttendeeRoute.IsTrimmed,
+                TrimStartMeters = eventAttendeeRoute.TrimStartMeters,
+                TrimEndMeters = eventAttendeeRoute.TrimEndMeters,
+                BagsCollected = eventAttendeeRoute.BagsCollected,
+                WeightCollected = eventAttendeeRoute.WeightCollected,
+                Notes = eventAttendeeRoute.Notes,
+                ExpiresDate = eventAttendeeRoute.ExpiresDate,
+                Locations = GetSortedLocations(eventAttendeeRoute.UserPath)
+            };
+        }
+
+        public static DisplayAnonymizedRoute ToDisplayAnonymizedRoute(this EventAttendeeRoute eventAttendeeRoute)
+        {
+            return new DisplayAnonymizedRoute
+            {
+                Id = eventAttendeeRoute.Id,
+                EventId = eventAttendeeRoute.EventId,
+                StartTime = eventAttendeeRoute.StartTime,
+                EndTime = eventAttendeeRoute.EndTime,
+                TotalDistanceMeters = eventAttendeeRoute.TotalDistanceMeters,
+                DurationMinutes = eventAttendeeRoute.DurationMinutes,
+                BagsCollected = eventAttendeeRoute.BagsCollected,
+                WeightCollected = eventAttendeeRoute.WeightCollected,
                 Locations = GetSortedLocations(eventAttendeeRoute.UserPath)
             };
         }

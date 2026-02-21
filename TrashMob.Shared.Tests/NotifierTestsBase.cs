@@ -31,8 +31,8 @@
             Logger = new Mock<ILogger>();
 
             // Setup a default return of distance between User and Event of 10 (in whatever units)
-            MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPointsAsync(It.IsAny<Tuple<double, double>>(),
-                It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(10);
+            MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPointsAsync(It.IsAny<(double, double)>(),
+                It.IsAny<(double, double)>(), It.IsAny<bool>())).ReturnsAsync(10);
             EmailManager.Setup(em => em.GetHtmlEmailCopy(It.IsAny<string>())).Returns("Test");
         }
 
@@ -156,7 +156,7 @@
                 PostalCode = "98040",
                 Region = "Washington",
                 StreetAddress = "1 King Street",
-                IsEventPublic = true,
+                EventVisibilityId = (int)EventVisibilityEnum.Public,
             };
 
             var events = new List<Event>
@@ -189,7 +189,7 @@
                 PostalCode = "98040",
                 Region = "Washington",
                 StreetAddress = "1 King Street",
-                IsEventPublic = true,
+                EventVisibilityId = (int)EventVisibilityEnum.Public,
             };
 
             var relevantEvent2 = new Event
@@ -212,7 +212,7 @@
                 PostalCode = "98040",
                 Region = "Washington",
                 StreetAddress = "1 Queen Street",
-                IsEventPublic = true,
+                EventVisibilityId = (int)EventVisibilityEnum.Public,
             };
 
             var events = new List<Event>

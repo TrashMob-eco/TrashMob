@@ -56,18 +56,18 @@ jobs:
 
         steps:
         - name: Checkout
-          uses: actions/checkout@v4
+          uses: actions/checkout@v6
           with:
             fetch-depth: 0
 
         - name: Install GitVersion
-          uses: gittools/actions/gitversion/setup@v3.1.11
+          uses: gittools/actions/gitversion/setup@v3.2.1
           with:
             versionSpec: '5.x'
     
         - name: Determine Version
           id: version_step # step id used as reference for output values
-          uses: gittools/actions/gitversion/execute@v3.1.11
+          uses: gittools/actions/gitversion/execute@v3.2.1
 
         - name: Update Build Number
           run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>${{ env.semVer }}</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
@@ -82,7 +82,7 @@ jobs:
           run: sed -i '' "s|<DefineConstants>USETEST</DefineConstants>|<DefineConstants>${{ inputs.define_constants }}</DefineConstants>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
-          uses: actions/setup-dotnet@v4
+          uses: actions/setup-dotnet@v5
           with:
             dotnet-version: ${{ inputs.dotnet_version }}
 
@@ -109,13 +109,13 @@ jobs:
             xcode-version: '26.2'
 
         - name: Import Code-Signing Certificates
-          uses: Apple-Actions/import-codesign-certs@v3
+          uses: Apple-Actions/import-codesign-certs@v6
           with:
             p12-file-base64: ${{ secrets.ios_signing_certificate }}
             p12-password: ${{ secrets.ios_signing_certificate_password }}
 
         - name: Download Apple Provisioning Profiles
-          uses: Apple-Actions/download-provisioning-profiles@v3
+          uses: Apple-Actions/download-provisioning-profiles@v5
           with:
             bundle-id: ${{ inputs.bundle_id }}
             profile-type: ${{ inputs.ios_provisioning_profile_type }}

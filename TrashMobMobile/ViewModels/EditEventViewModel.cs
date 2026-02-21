@@ -1,10 +1,13 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using System.Collections.ObjectModel;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Sentry;
 using TrashMob.Models;
 using TrashMob.Models.Extensions;
+using TrashMobMobile.Controls;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -15,7 +18,8 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     IUserManager userManager,
     IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
     ILitterReportManager litterReportManager,
-    IEventLitterReportManager eventLitterReportManager)
+    IEventLitterReportManager eventLitterReportManager,
+    ITeamManager teamManager)
     : BaseViewModel(notificationService)
 {
     private const int NewLitterReportStatus = 1;
@@ -26,20 +30,22 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     private readonly ILitterReportManager litterReportManager = litterReportManager;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
     private readonly IMobEventManager mobEventManager = mobEventManager;
-    private EventPartnerLocationViewModel selectedEventPartnerLocation;
-    
+    private readonly ITeamManager teamManager = teamManager;
+    private EventPartnerLocationViewModel selectedEventPartnerLocation = null!;
+
     private List<LitterReport> RawLitterReports { get; set; } = [];
+    private List<Team> UserTeams { get; set; } = [];
 
     [ObservableProperty]
-    private EventViewModel eventViewModel;
+    private EventViewModel eventViewModel = null!;
 
     [ObservableProperty]
-    private string selectedEventType;
+    private string selectedEventType = string.Empty;
 
     [ObservableProperty]
-    private AddressViewModel userLocation;
+    private AddressViewModel userLocation = null!;
 
-    private Event MobEvent { get; set; }
+    private Event MobEvent { get; set; } = null!;
 
     [ObservableProperty] 
     private bool arePartnersAvailable;
@@ -58,6 +64,67 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     [ObservableProperty]
     private bool isLitterReportListSelected;
+
+    [ObservableProperty]
+    private bool isTeamPickerVisible;
+
+    public ObservableCollection<string> VisibilityOptions { get; set; } = ["Public", "Team Only", "Private"];
+
+    public ObservableCollection<string> TeamNames { get; set; } = [];
+
+    private string selectedVisibility = "Public";
+
+    public string SelectedVisibility
+    {
+        get => selectedVisibility;
+        set
+        {
+            if (value == null)
+                return;
+
+            if (selectedVisibility != value)
+            {
+                selectedVisibility = value;
+                OnPropertyChanged();
+
+                IsTeamPickerVisible = value == "Team Only";
+
+                EventViewModel.EventVisibilityId = value switch
+                {
+                    "Team Only" => (int)EventVisibilityEnum.TeamOnly,
+                    "Private" => (int)EventVisibilityEnum.Private,
+                    _ => (int)EventVisibilityEnum.Public,
+                };
+
+                if (value != "Team Only")
+                {
+                    EventViewModel.TeamId = null;
+                    SelectedTeam = string.Empty;
+                }
+            }
+        }
+    }
+
+    private string selectedTeam = string.Empty;
+
+    public string SelectedTeam
+    {
+        get => selectedTeam;
+        set
+        {
+            if (value == null)
+                return;
+
+            if (selectedTeam != value)
+            {
+                selectedTeam = value;
+                OnPropertyChanged();
+
+                var team = UserTeams.FirstOrDefault(t => t.Name == value);
+                EventViewModel.TeamId = team?.Id;
+            }
+        }
+    }
 
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
 
@@ -90,19 +157,24 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
 
-    public Action UpdateMapLocation { get; set; }
+    public Action UpdateMapLocation { get; set; } = null!;
 
     public async Task Init(Guid eventId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
             MobEvent = await mobEventManager.GetEventAsync(eventId);
-            
+
+            UserTeams = (await teamManager.GetMyTeamsAsync()).ToList();
+            TeamNames.Clear();
+            foreach (var team in UserTeams)
+            {
+                TeamNames.Add(team.Name);
+            }
+
             foreach (var eventType in EventTypes)
             {
                 ETypes.Add(eventType.Name);
@@ -111,20 +183,29 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             SelectedEventType = EventTypes.First(et => et.Id == MobEvent.EventTypeId).Name;
 
             EventViewModel = MobEvent.ToEventViewModel(userManager.CurrentUser.Id);
-            
+
+            // Set initial visibility selection from loaded event
+            SelectedVisibility = MobEvent.EventVisibilityId switch
+            {
+                (int)EventVisibilityEnum.TeamOnly => "Team Only",
+                (int)EventVisibilityEnum.Private => "Private",
+                _ => "Public",
+            };
+
+            if (MobEvent.TeamId != null)
+            {
+                var team = UserTeams.FirstOrDefault(t => t.Id == MobEvent.TeamId);
+                if (team != null)
+                {
+                    SelectedTeam = team.Name;
+                }
+            }
+
             await LoadPartners();
             await LoadLitterReports();
 
             Events.Add(EventViewModel);
-            
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while loading the event. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while loading the event. Please wait and try again in a moment.");
     }
 
     public async Task UpdateLitterAssignment(Guid litterReportId)
@@ -156,15 +237,48 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     }
 
     [RelayCommand]
+    private async Task SelectEventType()
+    {
+        var popup = new ListSelectorPopup("Event Type", ETypes);
+        var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        var selected = popupResult?.Result;
+        if (!string.IsNullOrEmpty(selected))
+        {
+            SelectedEventType = selected;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SelectVisibility()
+    {
+        var popup = new ListSelectorPopup("Visibility", VisibilityOptions);
+        var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        var selected = popupResult?.Result;
+        if (!string.IsNullOrEmpty(selected))
+        {
+            SelectedVisibility = selected;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SelectTeam()
+    {
+        var popup = new ListSelectorPopup("Select Team", TeamNames);
+        var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        var selected = popupResult?.Result;
+        if (!string.IsNullOrEmpty(selected))
+        {
+            SelectedTeam = selected;
+        }
+    }
+
+    [RelayCommand]
     private async Task SaveEvent()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             if (!await Validate())
             {
-                IsBusy = false;
                 return;
             }
 
@@ -186,7 +300,8 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             MobEvent.DurationMinutes = EventViewModel.DurationMinutes;
             MobEvent.EventDate = EventViewModel.EventDate;
             MobEvent.EventTypeId = EventViewModel.EventTypeId;
-            MobEvent.IsEventPublic = EventViewModel.IsEventPublic;
+            MobEvent.EventVisibilityId = EventViewModel.EventVisibilityId;
+            MobEvent.TeamId = EventViewModel.TeamId;
             MobEvent.Latitude = EventViewModel.Address.Latitude;
             MobEvent.Longitude = EventViewModel.Address.Longitude;
             MobEvent.MaxNumberOfParticipants = EventViewModel.MaxNumberOfParticipants;
@@ -201,16 +316,9 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             Events.Clear();
             Events.Add(EventViewModel);
 
-            IsBusy = false;
-
             await NotificationService.Notify("Event has been saved.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while saving the event. Please wait and try again in a moment.");
-        }
+            await Shell.Current.GoToAsync("..");
+        }, "An error has occurred while saving the event. Please wait and try again in a moment.");
     }
 
     public async Task ChangeLocation(Microsoft.Maui.Devices.Sensors.Location location)
@@ -236,9 +344,15 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     private async Task<bool> Validate()
     {
-        if (EventViewModel.IsEventPublic && EventViewModel.EventDate < DateTimeOffset.Now)
+        if (EventViewModel.EventVisibilityId == (int)EventVisibilityEnum.Public && EventViewModel.EventDate < DateTimeOffset.Now)
         {
             await NotificationService.NotifyError("Event Dates for new public events must be in the future.");
+            return false;
+        }
+
+        if (EventViewModel.EventVisibilityId == (int)EventVisibilityEnum.TeamOnly && EventViewModel.TeamId == null)
+        {
+            await NotificationService.NotifyError("A team must be selected for Team Only events.");
             return false;
         }
 
@@ -339,8 +453,15 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
     {
-        await Shell.Current.GoToAsync(
-            $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        try
+        {
+            await Shell.Current.GoToAsync(
+                $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     [RelayCommand]

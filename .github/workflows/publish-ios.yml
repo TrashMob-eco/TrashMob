@@ -6,6 +6,9 @@ on:
             artifact_name:
                 required: true
                 type: string
+            environment:
+                required: true
+                type: string
         secrets:
             APPSTORE_ISSUER_ID:
                 required: true
@@ -18,8 +21,8 @@ on:
 jobs:
     deploy-ios:
         name: Deploy iOS to TestFlight
-        runs-on: macos-14
-        environment: production
+        runs-on: macos-15
+        environment: ${{ inputs.environment }}
         steps:
             - name: Download artifact
               uses: actions/download-artifact@v4
@@ -29,10 +32,26 @@ jobs:
             - name: Get ipa filename
               run: echo "IPA_FILENAME=$(ls -R *.ipa)" > $GITHUB_ENV
 
-            - name: Upload signed IPA
-              uses: apple-actions/upload-testflight-build@v1
-              with:
-                    app-path: ${{ env.IPA_FILENAME }}
-                    issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-                    api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
-                    api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+            - name: Setup API key
+              run: |
+                mkdir -p ~/private_keys
+                echo "$API_PRIVATE_KEY" > ~/private_keys/AuthKey_${API_KEY_ID}.p8
+              env:
+                API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+                API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
+            - name: Upload to TestFlight
+              run: |
+                xcrun altool --upload-app \
+                  -f "$IPA_FILENAME" \
+                  -t ios \
+                  --apiKey "$API_KEY_ID" \
+                  --apiIssuer "$API_ISSUER_ID"
+              env:
+                IPA_FILENAME: ${{ env.IPA_FILENAME }}
+                API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+                API_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+
+            - name: Cleanup
+              if: always()
+              run: rm -rf ~/private_keys

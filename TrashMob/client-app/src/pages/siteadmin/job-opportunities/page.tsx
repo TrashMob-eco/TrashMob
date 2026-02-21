@@ -46,7 +46,13 @@ export const SiteAdminJobOpportunities = () => {
                 <CardTitle>Opportunities ({len}) </CardTitle>
             </CardHeader>
             <CardContent>
-                <DataTable columns={columns} data={opportunities || []} />
+                <DataTable
+                    columns={columns}
+                    data={opportunities || []}
+                    enableSearch
+                    searchPlaceholder='Search opportunities...'
+                    searchColumns={['name', 'description', 'city', 'region']}
+                />
                 <Button variant='ghost' className='w-full' asChild>
                     <Link to='create'>
                         <Plus /> Add Job Opportunity

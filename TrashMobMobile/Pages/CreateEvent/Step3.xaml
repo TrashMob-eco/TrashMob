@@ -10,51 +10,128 @@
                            x:Class="TrashMobMobile.Pages.CreateEvent.Step3">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Label
-                    Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
-                    VerticalOptions="Center"
-                    Margin="5" />
+            <VerticalStackLayout Spacing="0" Padding="0,4">
 
-                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+                <!-- Event Name Header -->
+                <Label Text="{Binding EventViewModel.Name}"
+                       FontFamily="LexendSemibold"
+                       FontSize="Large"
+                       Margin="8,4,8,0"
+                       LineBreakMode="WordWrap" />
 
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
-                      ColumnDefinitions="*, 2*">
-                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small"
-                           Margin="10, 0, 10, 0" Grid.ColumnSpan="2" />
-                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}"
-                           FontAttributes="Bold" Margin="10, 0, 10, 0" Grid.ColumnSpan="2" />
-                    <Label Grid.Row="2" Grid.Column="0" Text="{Binding EventViewModel.DisplayTime}" FontSize="Micro"
-                           Margin="10, 0, 10, 0" />
-                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding FormattedEventDuration}" FontSize="Micro"
-                           Margin="10, 0, 10, 0" />
-                    <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
-                           Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold"
-                           Margin="10, 0, 10, 0" />
-                    <controls:CustomMap Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap"
-                              ItemsSource="{Binding Events}">
-                        <maps:Map.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:EventViewModel">
-                                <controls:CustomPin Location="{Binding Address.Location}"
-                                          Address="{Binding Address.StreetAddress}"
-                                          ImageSource="{Binding Address.IconFile}"
-                                          Label="{Binding Name}" />
-                            </DataTemplate>
-                        </maps:Map.ItemTemplate>
-                    </controls:CustomMap>
-                    <Label Grid.Row="5" 
-                           Grid.Column="0" 
-                           Text="About this event" 
-                           FontAttributes="Bold"
-                           Margin="10, 0, 10, 0"
-                           Grid.ColumnSpan="2" />
-                    <Label Grid.Row="6" 
-                           Grid.Column="0" 
-                           Grid.ColumnSpan="2" 
-                           Margin="10, 0, 10,0"
-                           Text="{Binding EventViewModel.Description}"
-                           FontSize="Micro" />
-                 </Grid>
+                <!-- Event Details Card -->
+                <Border Style="{StaticResource RoundBorder}" Margin="4,8,4,4">
+                    <VerticalStackLayout Spacing="8">
+                        <HorizontalStackLayout Spacing="8">
+                            <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                     Glyph="{StaticResource IconCalendarCheck}"
+                                                     Size="20"
+                                                     Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Event Details"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Small"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+
+                        <!-- Event Type -->
+                        <Label Text="{Binding SelectedEventType}"
+                               FontSize="Small"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                        <!-- Date -->
+                        <Label Text="{Binding EventViewModel.DisplayDate}"
+                               FontFamily="LexendSemibold"
+                               FontSize="Small" />
+
+                        <!-- Time & Duration -->
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="Time" Style="{StaticResource FieldLabel}"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Label Text="{Binding EventViewModel.DisplayTime}" FontSize="Small" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Duration" Style="{StaticResource FieldLabel}"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Label Text="{Binding EventViewModel.DisplayDuration}" FontSize="Small" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Location Card -->
+                <Border Style="{StaticResource RoundBorder}" Margin="4,4">
+                    <VerticalStackLayout Spacing="8">
+                        <HorizontalStackLayout Spacing="8">
+                            <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                     Glyph="{StaticResource IconMapMarkerOutline}"
+                                                     Size="20"
+                                                     Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Location"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Small"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="{Binding EventViewModel.Address.DisplayAddress}"
+                               FontSize="Small"
+                               LineBreakMode="WordWrap" />
+
+                        <!-- Map -->
+                        <Border StrokeShape="RoundRectangle 10"
+                                StrokeThickness="0"
+                                Padding="0">
+                            <controls:CustomMap x:Name="eventLocationMap"
+                                                ItemsSource="{Binding Events}"
+                                                HeightRequest="200">
+                                <maps:Map.ItemTemplate>
+                                    <DataTemplate x:DataType="viewModels:EventViewModel">
+                                        <controls:CustomPin Location="{Binding Address.Location}"
+                                                            Address="{Binding Address.StreetAddress}"
+                                                            ImageSource="{Binding Address.IconFile}"
+                                                            Label="{Binding Name}" />
+                                    </DataTemplate>
+                                </maps:Map.ItemTemplate>
+                            </controls:CustomMap>
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Description Card -->
+                <Border Style="{StaticResource RoundBorder}" Margin="4,4">
+                    <VerticalStackLayout Spacing="8">
+                        <HorizontalStackLayout Spacing="8">
+                            <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                     Glyph="{StaticResource IconFileDocument}"
+                                                     Size="20"
+                                                     Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                </Image.Source>
+                            </Image>
+                            <Label Text="About This Event"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Small"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="{Binding EventViewModel.Description}"
+                               FontSize="Small"
+                               LineBreakMode="WordWrap"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <BoxView HeightRequest="12" BackgroundColor="Transparent" />
+
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />

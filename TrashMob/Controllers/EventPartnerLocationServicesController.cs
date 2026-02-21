@@ -1,10 +1,11 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
@@ -15,26 +16,12 @@
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/eventpartnerlocationservices")]
-    public class EventPartnerLocationServicesController : SecureController
+    public class EventPartnerLocationServicesController(
+        IKeyedManager<Event> eventManager,
+        IEventPartnerLocationServiceManager eventPartnerLocationServiceManager,
+        IPartnerLocationManager partnerLocationManager)
+        : SecureController
     {
-        private readonly IKeyedManager<Event> eventManager;
-        private readonly IEventPartnerLocationServiceManager eventPartnerLocationServiceManager;
-        private readonly IPartnerLocationContactManager partnerLocationContactManager;
-        private readonly IPartnerLocationManager partnerLocationManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        public EventPartnerLocationServicesController(IKeyedManager<Event> eventManager,
-            IKeyedManager<Partner> partnerManager,
-            IEventPartnerLocationServiceManager eventPartnerLocationServiceManager,
-            IPartnerLocationManager partnerLocationManager,
-            IPartnerLocationContactManager partnerLocationContactManager)
-        {
-            this.eventPartnerLocationServiceManager = eventPartnerLocationServiceManager;
-            this.eventManager = eventManager;
-            this.partnerManager = partnerManager;
-            this.partnerLocationManager = partnerLocationManager;
-            this.partnerLocationContactManager = partnerLocationContactManager;
-        }
 
         /// <summary>
         /// Gets a list of all event partner location services for a given event.
@@ -92,6 +79,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated event partner location service.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -101,21 +89,18 @@
         {
             var mobEvent = await eventManager.GetAsync(eventPartnerLocationService.EventId, cancellationToken);
 
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
 
             var updatedEventPartnerLocationService = await eventPartnerLocationServiceManager
-                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
+                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken);
 
             TrackEvent(nameof(UpdateEventPartnerLocationService));
 
@@ -131,6 +116,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The approved event partner location service.</remarks>
         [HttpPut("accept/{eventId}/{partnerLocationId}/{serviceId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -140,7 +126,7 @@
         {
             var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationId, cancellationToken);
 
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -148,16 +134,13 @@
             var eventPartnerLocationServices =
                 await eventPartnerLocationServiceManager.GetCurrentPartnersAsync(eventId, cancellationToken);
 
-            if (eventPartnerLocationServices == null || !eventPartnerLocationServices.Any(epls =>
+            if (eventPartnerLocationServices is null || !eventPartnerLocationServices.Any(epls =>
                     epls.ServiceTypeId == serviceId && epls.PartnerLocationId == partnerLocationId))
             {
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -168,7 +151,7 @@
                 (int)EventPartnerLocationServiceStatusEnum.Accepted;
 
             var updatedEventPartnerLocationService = await eventPartnerLocationServiceManager
-                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
+                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken);
 
             TrackEvent(nameof(ApproveEventPartnerLocationService));
 
@@ -184,6 +167,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The declined event partner location service.</remarks>
         [HttpPut("decline/{eventId}/{partnerLocationId}/{serviceId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -193,7 +177,7 @@
         {
             var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationId, cancellationToken);
 
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -201,16 +185,13 @@
             var eventPartnerLocationServices =
                 await eventPartnerLocationServiceManager.GetCurrentPartnersAsync(eventId, cancellationToken);
 
-            if (eventPartnerLocationServices == null || !eventPartnerLocationServices.Any(epls =>
+            if (eventPartnerLocationServices is null || !eventPartnerLocationServices.Any(epls =>
                     epls.ServiceTypeId == serviceId && epls.PartnerLocationId == partnerLocationId))
             {
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -221,7 +202,7 @@
                 (int)EventPartnerLocationServiceStatusEnum.Declined;
 
             var updatedEventPartnerLocationService = await eventPartnerLocationServiceManager
-                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
+                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken);
 
             TrackEvent(nameof(ApproveEventPartnerLocationService));
 
@@ -235,6 +216,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Returns the newly created event partner location service.</remarks>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -244,21 +226,18 @@
         {
             var mobEvent = await eventManager.GetAsync(eventPartnerLocationService.EventId, cancellationToken);
 
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
 
             var result = await eventPartnerLocationServiceManager
-                .AddAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
+                .AddAsync(eventPartnerLocationService, UserId, cancellationToken);
 
             TrackEvent(nameof(AddEventPartnerLocationService));
 
@@ -274,8 +253,9 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Returns the number of entities deleted.</remarks>
         [HttpDelete("{eventId}/{partnerLocationId}/{serviceTypeId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteEventPartnerLocationService(Guid eventId, Guid partnerLocationId,
@@ -283,25 +263,22 @@
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
 
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
 
-            var result = await eventPartnerLocationServiceManager
-                .DeleteAsync(eventId, partnerLocationId, serviceTypeId, cancellationToken).ConfigureAwait(false);
+            await eventPartnerLocationServiceManager
+                .DeleteAsync(eventId, partnerLocationId, serviceTypeId, cancellationToken);
 
             TrackEvent(nameof(DeleteEventPartnerLocationService));
 
-            return Ok(result);
+            return NoContent();
         }
     }
 }

@@ -1,8 +1,8 @@
-# Project 4 � Mobile App Robustness
+# Project 4 — Mobile App Robustness & UX Improvements
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Developers Engaged |
+| **Status** | In Progress (Phases 1-2 Complete, Phases 3-5 Substantial Progress) |
 | **Priority** | Critical |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -12,87 +12,132 @@
 
 ## Business Rationale
 
-Stabilize the .NET MAUI mobile application to ensure reliable user experience, increase app store ratings, and enable future feature development. Current issues include inconsistent error handling, app crashes, outdated toolchain, and lack of telemetry for debugging production issues.
+Stabilize and significantly improve the .NET MAUI mobile application to ensure reliable user experience, increase app store ratings, and enable future feature development. Current issues include inconsistent error handling, app crashes, outdated toolchain, lack of telemetry for debugging production issues, and a UX that needs substantial improvement in look and flow.
 
-Mobile app quality directly impacts user retention and app store visibility. A crash-free rate below 99% results in poor store rankings and negative reviews.
+Mobile app quality directly impacts user retention and app store visibility. A crash-free rate below 99% results in poor store rankings and negative reviews. Additionally, a polished, intuitive UX is essential for volunteer engagement and adoption.
 
 ---
 
 ## Objectives
 
 ### Primary Goals
-- **Achieve** ?99.5% crash-free sessions across iOS and Android
+- **Achieve** ≥99.5% crash-free sessions across iOS and Android
 - **Upgrade** to latest .NET 10 and MAUI versions
 - **Implement** comprehensive error handling with user-friendly messages
 - **Integrate** Sentry.io for crash reporting and APM
 - **Define** supported OS ranges (iOS 15+, Android 8.0+)
-- **Increase** unit test coverage to ? 60%
+- **Increase** unit test coverage to ≥ 60%
+- **Redesign** app navigation and flow for improved usability
+- **Refresh** visual design for modern, polished appearance
+- **Improve** key user journeys (event discovery, registration, litter reporting)
 
 ### Secondary Goals
 - Establish automated UI test framework
 - Create debugging runbooks for common issues
 - Improve app startup performance
 - Reduce app size where possible
+- Consistent design language across all screens
+- Improve app store presence (screenshots, descriptions, metadata)
 
 ---
 
 ## Scope
 
-### Phase 1 - Stabilization
-- ? Upgrade to .NET 10 and latest MAUI stable version
-- ? Fix all known crash bugs (priority: critical ? high ? medium)
-- ? Implement global error handling with retry logic
-- ? Add network failure handling (offline mode where appropriate)
-- ? Validate all async/await patterns for proper error propagation
+### Phase 1 - Stabilization ✅
 
-### Phase 2 - Observability
-- ? Integrate Sentry.io SDK for iOS and Android
-- ? Configure breadcrumbs for user actions
-- ? Set up performance monitoring (app startup, API calls)
-- ? Create alerts for crash rate spikes
-- ? Build Grafana dashboards for mobile metrics
+- [x] Upgrade to .NET 10 and latest MAUI stable version
+- [x] Fix known crash bugs (PR #2571 — Google Mobile Usability issues)
+- [x] Implement global error handling with retry logic (PR #2588 — `BaseViewModel.ExecuteAsync` pattern with structured error handling)
+- [x] Add network failure handling (PR #2588 — `HttpRequestException` and `TaskCanceledException` handling in `ExecuteAsync`)
+- [x] Validate all async/await patterns for proper error propagation (PR #2590 — migrated all ViewModels to `ExecuteAsync`)
 
-### Phase 3 - Testing
-- ? Add unit tests for ViewModels and critical business logic
-- ? Create manual test matrix for devices and OS versions
-- ? Perform regression testing on physical devices
-- ? Load test API integrations
-- ? Accessibility audit (TalkBack, VoiceOver)
+### Phase 2 - Observability ✅
 
-### Phase 4 - Documentation
-- ? Document supported device matrix
-- ? Create troubleshooting guide for common errors
-- ? Write runbook for investigating Sentry errors
-- ? Update developer onboarding documentation
+- [x] Integrate Sentry.io SDK for iOS and Android (Sentry.Maui 6.0.0 — production DSN configured)
+- [x] Configure breadcrumbs for user actions (`SentryHttpMessageHandler` on all HTTP clients)
+- [x] Set up performance monitoring (app startup, API calls) (`TracesSampleRate=1.0`, `CaptureFailedRequests=true`)
+- [ ] Create alerts for crash rate spikes (Sentry project ops task)
+- [ ] Build Grafana dashboards for mobile metrics (ops task)
+
+### Phase 3 - Testing (Substantial)
+
+- [x] Add unit tests for ViewModels and critical business logic (PR #2593 — 33 ViewModel tests)
+- [x] Add comprehensive mobile ViewModel unit tests — 170 new tests (PR #2686)
+- [x] Add Appium UI test project for mobile app (PR #2691)
+- [ ] Create manual test matrix for devices and OS versions
+- [ ] Perform regression testing on physical devices
+- [ ] Load test API integrations
+- [ ] Accessibility audit (TalkBack, VoiceOver)
+
+### Phase 4 - UX Improvements (Substantial)
+
+- [ ] UX audit of current app (identify pain points and friction)
+- [x] Redesign navigation structure (PR #2606 — 5-tab layout; PR #2496 — bottom tab navigation)
+- [x] Refresh visual design (PR #2586 — align mobile styling with web design system)
+- [x] Standardize mobile page layouts with card styling (PR #2700)
+- [x] Refine mobile Explore page with filters and user location (PR #2729)
+- [x] Move action buttons below content on mobile detail pages (PR #2728)
+- [x] Fix navigation bugs, route simulation, and mobile UI improvements (PR #2741)
+- [x] Fix async void crashes, static coupling, and code duplication (PR #2689)
+- [x] Multi-waiver flow, styled popup, thumbnails, and UI fixes (PR #2752)
+- [x] Fix litter report create/update and improve mobile error handling (PR #2737)
+- [x] Add event visibility support to mobile app (PR #2732)
+- [x] Fix mobile auth token refresh, UI consistency, and server-side auth bugs (PR #2714)
+- [x] Add map circle, user location pin, and litter report filters (PR #2716)
+- [ ] Streamline event registration flow
+- [ ] Enhance dashboard/home screen with clear calls to action
+- [ ] Add lightweight API endpoint for litter report list views with first-image thumbnail URL (avoids N+1 image URL fetches per report; relates to #2340)
+- [x] Consistent loading states and feedback throughout app (PR #2588 — `IsBusy` state + user-friendly error messages)
+- [x] Add required field indicators to all forms (PR #2591)
+
+### Phase 5 - Documentation (Partial)
+
+- [x] Document Android emulator setup (PR #2584 — MAUI Android dev setup and Google Maps key injection)
+- [ ] Document supported device matrix
+- [ ] Create troubleshooting guide for common errors
+- [ ] Write runbook for investigating Sentry errors
+- [ ] Update developer onboarding documentation
+
+### Phase 6 - App Store Presence
+
+- [ ] Create new screenshots showcasing improved UX
+- [ ] Update app store descriptions and feature highlights
+- [ ] Refresh app icon and promotional graphics (if needed)
+- [ ] Improve App Store (iOS) and Play Store (Android) metadata
+- [ ] Add/update app preview video (optional)
+- [ ] Respond to and address existing user reviews
 
 ---
 
 ## Out-of-Scope
 
-- ? New feature development (focus on stability only)
-- ? UI/UX redesign (cosmetic changes deferred)
-- ? Complete offline mode (partial offline handling only)
-- ? Apple Watch or Android Wear apps
-- ? Tablet-optimized layouts
-- ? Performance optimization beyond critical issues
+- ❌ Major new feature development (focus on stability and UX polish)
+- ❌ Complete offline mode (partial offline handling only)
+- ❌ Apple Watch or Android Wear apps
+- ❌ Tablet-optimized layouts
+- ❌ Performance optimization beyond critical issues
 
 ---
 
 ## Success Metrics
 
 ### Quantitative
-- **Crash-free rate:** ? 99.5% (currently ~97%)
-- **App startup time:** ? 2 seconds (p95)
+- **Crash-free rate:** ≥ 99.5% (currently ~97%)
+- **App startup time:** ≤ 2 seconds (p95)
 - **API call failures handled gracefully:** 100%
-- **Unit test coverage:** ? 60% (currently ~20%)
-- **App store rating:** ? 4.0 stars (iOS and Android)
+- **Unit test coverage:** ≥ 60% (currently ~20%)
+- **App store rating:** ≥ 4.0 stars (iOS and Android)
 - **Sentry error rate:** < 1% of sessions
+- **Task completion rate:** Improved for key flows (event registration, litter reporting)
 
 ### Qualitative
 - Zero critical or high-severity bugs in production after release
 - Positive developer feedback on debugging capabilities
 - Successful release to both app stores
 - User reviews mention improved stability
+- User reviews mention improved look and feel
+- Navigation feels intuitive and consistent
+- Visual design feels modern and polished
 
 ---
 
@@ -340,25 +385,79 @@ public static MauiApp CreateMauiApp()
 
 ## Open Questions
 
-1. **What's the minimum iOS version to support?**  
-   **Recommendation:** iOS 15+ (covers 95%+ of active devices)  
-   **Owner:** Product Lead  
+1. **What's the minimum iOS version to support?**
+   **Recommendation:** iOS 15+ (covers 95%+ of active devices)
+   **Owner:** Product Lead
    **Due:** Early in project
 
-2. **Should we drop support for Android 7 and below?**  
-   **Recommendation:** Yes, Android 8.0+ (97%+ of active devices)  
-   **Owner:** Product Lead  
+2. **Should we drop support for Android 7 and below?**
+   **Recommendation:** Yes, Android 8.0+ (97%+ of active devices)
+   **Owner:** Product Lead
    **Due:** Early in project
 
-3. **How many beta testers do we need?**  
-   **Recommendation:** 50-100 covering diverse devices and OS versions  
-   **Owner:** Product Lead  
+3. **How many beta testers do we need?**
+   **Recommendation:** 50-100 covering diverse devices and OS versions
+   **Owner:** Product Lead
    **Due:** Before beta phase
 
-4. **Should we implement automatic crash reporting opt-out?**  
-   **Recommendation:** Opt-in by default with privacy policy disclosure  
-   **Owner:** Legal + Product  
-   **Due:** Before Sentry phase
+4. ~~**Should we implement automatic crash reporting opt-out?**~~
+   **Decision:** Opt-in by default with privacy policy disclosure
+   **Status:** ✅ Resolved
+
+5. ~~**Should we implement biometric authentication for returning users?**~~
+   **Decision:** Low priority, future feature
+   **Status:** ✅ Resolved
+
+6. ~~**What is our push notification strategy (types, frequency, opt-in)?**~~
+   **Decision:** See Project 12 for push notification strategy
+   **Status:** ✅ Resolved
+
+7. ~~**How do we force critical app updates?**~~
+   **Decision:** Minimum version check on app launch via API endpoint; block app usage until updated for critical security patches; soft reminder for feature updates
+   **Status:** ✅ Resolved
+
+8. ~~**What data should be cached for offline viewing?**~~
+   **Decision:** Future update, low priority
+   **Status:** ✅ Resolved
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+**Completed (Closed):**
+- ~~**[#2243](https://github.com/trashmob/TrashMob/issues/2243)** - Convert Mobile app to .NET 10~~ ✅
+- ~~**[#1204](https://github.com/trashmob/TrashMob/issues/1204)** - Google Mobile Usability Issues detected~~ ✅ (PR #2571)
+- ~~**[#1438](https://github.com/trashmob/TrashMob/issues/1438)** - Add Required field indicators to all Mobile app pages~~ ✅ (PR #2591)
+- ~~**[#1470](https://github.com/trashmob/TrashMob/issues/1470)** - All pages - Save change should close page~~ ✅ (PR #2590)
+- ~~**[#2249](https://github.com/trashmob/TrashMob/issues/2249)** - Ensure exceptions in mobile app do not cause app crash~~ ✅ (PR #2588 + #2590)
+- ~~**[#2248](https://github.com/trashmob/TrashMob/issues/2248)** - Review design patterns used in the mobile app~~ ✅ (PR #2590)
+- ~~**[#2246](https://github.com/trashmob/TrashMob/issues/2246)** - Add Unit Tests for the Mobile App where needed~~ ✅ (PR #2593)
+- ~~**[#2244](https://github.com/trashmob/TrashMob/issues/2244)** - Document and test how to set up Android Mobile Emulator~~ ✅ (PR #2584)
+- ~~**[#1471](https://github.com/trashmob/TrashMob/issues/1471)** - Properly handle exceptions for GetLocation calls~~ ✅ (PR #2588)
+- ~~**[#2247](https://github.com/trashmob/TrashMob/issues/2247)** - Ensure user metrics are gathered appropriately from the mobile app~~ ✅ (Sentry.Maui fully configured)
+
+**Open — Infrastructure & Quality:**
+- **[#2226](https://github.com/trashmob/TrashMob/issues/2226)** - Project 4: Mobile App Robustness (tracking issue)
+- **[#2245](https://github.com/trashmob/TrashMob/issues/2245)** - Document and Test how to set up the iOS Emulator
+- **[#2250](https://github.com/trashmob/TrashMob/issues/2250)** - Document minimum iOS and Android versions which can run the app
+- **[#2251](https://github.com/trashmob/TrashMob/issues/2251)** - Review Apple Store settings
+- **[#2252](https://github.com/trashmob/TrashMob/issues/2252)** - Review Android Store settings
+- **[#2219](https://github.com/trashmob/TrashMob/issues/2219)** - Mobile App - Add way to see app version number in app
+- **[#1291](https://github.com/trashmob/TrashMob/issues/1291)** - [Mobile] A better way of managing secrets and config
+
+**Open — Mobile Bug Issues:**
+- **[#2534](https://github.com/trashmob/TrashMob/issues/2534)** - Oversized TrashMob logo on app launch does not fit screen (iOS)
+- **[#2340](https://github.com/trashmob/TrashMob/issues/2340)** - Home screen loads very slowly
+- **[#2339](https://github.com/trashmob/TrashMob/issues/2339)** - Home screen not visible on iOS
+- **[#2337](https://github.com/trashmob/TrashMob/issues/2337)** - Add a Search / Apply Filters button to the Events search screen
+- **[#2335](https://github.com/trashmob/TrashMob/issues/2335)** - iOS: Cannot create Litter Report — photos not saved
+- **[#2332](https://github.com/trashmob/TrashMob/issues/2332)** - Problem with sign out on iOS
+- **[#1466](https://github.com/trashmob/TrashMob/issues/1466)** - View Event - Format What to Expect
+- **[#1465](https://github.com/trashmob/TrashMob/issues/1465)** - View Event - Registered Pop up
+- **[#1464](https://github.com/trashmob/TrashMob/issues/1464)** - View Event - Fix Duration versus end time
+- **[#1459](https://github.com/trashmob/TrashMob/issues/1459)** - Edit Litter Report - Prevent deletion of last image
 
 ---
 
@@ -371,7 +470,7 @@ public static MauiApp CreateMauiApp()
 
 ---
 
-**Last Updated:** January 24, 2026  
-**Owner:** Mobile Product Lead + MAUI Developers  
-**Status:** Active Development  
-**Next Review:** Regular standups during development
+**Last Updated:** February 15, 2026
+**Owner:** Mobile Product Lead + MAUI Developers
+**Status:** In Progress (Phases 1-2 Complete, Phases 3-4 Substantial Progress — 203 ViewModel tests, Appium UI tests, extensive UX improvements across 15+ PRs, Entra auth switch, Phase 5 Partial, Phase 6 Not Started)
+**Next Review:** After remaining iOS bugs are triaged

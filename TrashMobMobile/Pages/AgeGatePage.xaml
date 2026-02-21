@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="vm:AgeGateViewModel"
+             x:Class="TrashMobMobile.Pages.AgeGatePage"
+             Shell.NavBarIsVisible="False">
+    <ScrollView>
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="16"
+                             VerticalOptions="Center">
+
+            <!-- Logo -->
+            <Image Source="{AppThemeBinding Light=bannerlogo_light.png, Dark=bannerlogo_dark.png}"
+                   MaximumHeightRequest="72"
+                   HorizontalOptions="Center"
+                   Margin="0,24,0,0" />
+
+            <!-- Blocked state -->
+            <VerticalStackLayout Spacing="16" IsVisible="{Binding IsBlocked}">
+                <Label Text="Unable to Create Account"
+                       FontFamily="LexendSemibold"
+                       FontSize="Large"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{StaticResource Destructive}" />
+
+                <Label Text="{Binding BlockMessage}"
+                       FontSize="Body"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                       Margin="20,0" />
+
+                <Button Text="Go Back"
+                        MaximumWidthRequest="200"
+                        Command="{Binding GoBackCommand}" />
+            </VerticalStackLayout>
+
+            <!-- Age verification form -->
+            <VerticalStackLayout Spacing="16" IsVisible="{Binding IsNotBlocked}">
+                <Label Text="Create Account"
+                       FontFamily="LexendSemibold"
+                       FontSize="Large"
+                       HorizontalTextAlignment="Center" />
+
+                <Label Text="Please enter your date of birth to continue. This is required for age verification."
+                       FontSize="Body"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                       Margin="20,0" />
+
+                <DatePicker Date="{Binding DateOfBirth}"
+                            MaximumDate="{Binding MaxDate}"
+                            MinimumDate="{Binding MinDate}"
+                            HorizontalOptions="Center"
+                            Format="d" />
+
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="12">
+                    <Button Text="Cancel"
+                            MaximumWidthRequest="140"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            BorderWidth="1"
+                            Command="{Binding GoBackCommand}" />
+
+                    <Button Text="Continue"
+                            MaximumWidthRequest="140"
+                            Command="{Binding ContinueCommand}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

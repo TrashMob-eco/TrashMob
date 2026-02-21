@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:ViewTeamViewModel"
+             x:Class="TrashMobMobile.Pages.ViewTeamPage"
+             Title="Team Details">
+
+    <ScrollView>
+        <Grid>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
+
+                <!-- Team Header -->
+                <Border Style="{x:StaticResource RoundBorder}" Margin="10,8,10,0">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{Binding Team.Name}"
+                               FontFamily="LexendSemibold"
+                               FontSize="Title" />
+                        <Label Text="{Binding Team.Description}"
+                               FontSize="Small"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        <Label Text="{Binding Team.Location}"
+                               FontSize="Micro"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        <Label Text="{Binding Team.MemberCountDisplay}"
+                               FontSize="Micro"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                        <!-- Join Button -->
+                        <Button Text="{Binding JoinButtonText}"
+                                Command="{Binding JoinTeamCommand}"
+                                IsVisible="{Binding CanJoin}"
+                                Style="{StaticResource PrimarySmallButton}"
+                                Margin="0,4,0,0"
+                                ContentLayout="Left, 8"
+                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconAccountPlus}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
+
+                        <HorizontalStackLayout IsVisible="{Binding IsUserMember}" Spacing="6" Margin="0,4,0,0">
+                            <Image WidthRequest="18" HeightRequest="18">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                     Glyph="{StaticResource IconCheckCircle}"
+                                                     Size="18"
+                                                     Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                </Image.Source>
+                            </Image>
+                            <Label Text="You are a member of this team"
+                                   FontSize="Small"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Members Section -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Members" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Label Text="No members found"
+                               IsVisible="{Binding AreNoMembersFound}"
+                               FontSize="Small"
+                               Margin="0,4"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        <CollectionView ItemsSource="{Binding Members}"
+                                        SelectionMode="None"
+                                        IsVisible="{Binding AreMembersFound}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:TeamMemberViewModel">
+                                    <Border Style="{x:StaticResource RoundBorder}" Margin="0,3">
+                                        <HorizontalStackLayout Padding="10,8" Spacing="8">
+                                            <Label Text="{Binding UserName}"
+                                                   FontFamily="LexendSemibold"
+                                                   FontSize="Small"
+                                                   VerticalOptions="Center" />
+                                            <Label Text="{Binding Role}"
+                                                   FontSize="Micro"
+                                                   VerticalOptions="Center"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                            <Label Text="{Binding JoinedDate, StringFormat='Joined {0}'}"
+                                                   FontSize="Micro"
+                                                   VerticalOptions="Center"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Upcoming Events Section -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Grid.Column="0" Text="Upcoming Events"
+                                   Style="{StaticResource SectionHeader}" Margin="0" />
+                            <Button Grid.Column="1"
+                                    Text="Link Event"
+                                    Command="{Binding LinkEventCommand}"
+                                    IsVisible="{Binding IsTeamLead}"
+                                    Style="{StaticResource SecondarySmallButton}"
+                                    FontSize="Micro"
+                                    HeightRequest="32"
+                                    Padding="10,0"
+                                    ContentLayout="Left, 4"
+                                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconLink}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+                        </Grid>
+                        <Label Text="No upcoming events"
+                               IsVisible="{Binding AreNoUpcomingEventsFound}"
+                               FontSize="Small"
+                               Margin="0,4"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        <CollectionView ItemsSource="{Binding UpcomingEvents}"
+                                        SelectionMode="None"
+                                        IsVisible="{Binding AreUpcomingEventsFound}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:EventViewModel">
+                                    <Border Style="{x:StaticResource RoundBorder}" Margin="0,3">
+                                        <Grid ColumnDefinitions="*, Auto" Padding="10,10">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                                <Label Text="{Binding Name}"
+                                                       FontFamily="LexendSemibold"
+                                                       FontSize="Small" />
+                                                <Label Text="{Binding DisplayDate}"
+                                                       FontSize="Micro"
+                                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                                <Label Text="{Binding Address.DisplayAddress}"
+                                                       FontSize="Micro"
+                                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                            </VerticalStackLayout>
+                                            <Button Grid.Column="1"
+                                                    Text="Unlink"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ViewTeamViewModel}}, Path=UnlinkEventCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ViewTeamViewModel}}, Path=IsTeamLead}"
+                                                    Style="{StaticResource SecondarySmallButton}"
+                                                    FontSize="Micro"
+                                                    HeightRequest="30"
+                                                    Padding="8,0"
+                                                    VerticalOptions="Center"
+                                                    ContentLayout="Left, 4"
+                                                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconLinkOff}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+                                        </Grid>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ViewTeamViewModel}}, Path=ViewEventCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+                               HorizontalOptions="Center" />
+        </Grid>
+    </ScrollView>
+</ContentPage>

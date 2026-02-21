@@ -6,7 +6,7 @@ export const GetTrashMobWaivers = () => ({
     key: ['/waivers/trashmob'],
     service: async () =>
         ApiService('protected').fetchData<GetTrashMobWaivers_Response>({
-            url: '/waivers/trashmob',
+            url: '/waivers/by-name/trashmob',
             method: 'get',
         }),
 });

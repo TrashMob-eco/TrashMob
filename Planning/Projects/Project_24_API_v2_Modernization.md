@@ -15,7 +15,7 @@ Create a modern, scalable, and developer-friendly API layer (v2) that improves r
 
 ### Core Improvements:
 - Implement pagination on all collection endpoints (cursor and offset-based)
-- Standardized error responses (RFC 7807 Problem Details)
+- Standardized error responses (RFC 9457 Problem Details)
 - Auto-generate TypeScript clients for React app
 - Auto-generate .NET clients for MAUI mobile app
 - Comprehensive OpenAPI 3.1 documentation
@@ -38,36 +38,42 @@ Create a modern, scalable, and developer-friendly API layer (v2) that improves r
 ## Scope
 
 ### Phase 1 - Foundation (Q2 2026):
-- ? API versioning infrastructure
-- ? Pagination framework (cursor + offset)
-- ? Problem Details error responses
-- ? OpenAPI 3.1 specification
-- ? NSwag/Kiota setup for client generation
-- ? Response wrapper pattern
-- ? Correlation ID middleware
+- ✅ API versioning infrastructure
+- ✅ V2 DTO layer (decoupled from entity models, enables MCP server reuse)
+- ✅ Manual entity-to-DTO mapping (no AutoMapper)
+- ✅ Pagination framework (offset default, cursor optional)
+- ✅ Problem Details error responses (RFC 9457, formerly RFC 7807)
+- ✅ OpenAPI 3.1 specification
+- ✅ NSwag (TypeScript) + Kiota (.NET) for client generation
+- ✅ Response wrapper pattern
+- ✅ Correlation ID middleware
 
 ### Phase 2 - Core Endpoints (Q3 2026):
-- ? Events v2 endpoints with pagination
-- ? Users v2 endpoints
-- ? Partners v2 endpoints
-- ? EventAttendees v2 endpoints
-- ? EventSummaries v2 endpoints
-- ? LitterReports v2 endpoints
-- ? Auto-generated TypeScript client
-- ? Auto-generated .NET MAUI client
+- ✅ Events v2 endpoints with pagination
+- ✅ Users v2 endpoints
+- ✅ Partners v2 endpoints
+- ✅ EventAttendees v2 endpoints
+- ✅ EventSummaries v2 endpoints
+- ✅ LitterReports v2 endpoints
+- ✅ Auto-generated TypeScript client (NSwag)
+- ✅ Auto-generated .NET MAUI client (Kiota)
 
 ### Phase 3 - Advanced Features (Q4 2026):
-- ? Response compression
-- ? ETags and conditional requests
-- ? Bulk operations (batch create/update)
-- ? Webhook infrastructure
-- ? Field filtering
-- ? Sorting
-- ? Advanced filtering
+- ✅ Response compression (Gzip/Brotli)
+- ✅ ETags and conditional requests
+- ✅ Bulk operations (batch create/update)
+- ✅ Webhook infrastructure
+- ✅ Field filtering (`?fields=name,date`)
+- ✅ Sorting (`?sort=-date,name`)
+- ✅ Advanced filtering (OData subset)
 
 ## Out-of-Scope
 
-- ? v1 endpoint removal (maintain both versions until mobile apps updated)
+- ❌ v1 endpoint removal (maintain both versions until mobile apps updated)
+- ❌ GraphQL API (evaluate separately if demand exists)
+- ❌ API Gateway (defer until microservices architecture needed)
+- ❌ gRPC endpoints (not needed for current use cases)
+- ❌ External API access (public developer API) - internal use only for now
 
 ## Success Metrics
 
@@ -132,7 +138,70 @@ public class CursorPagedResponse<T>
 }
 ```
 
-### Error Models (RFC 7807)
+### V2 DTO Pattern (Manual Mapping)
+
+```csharp
+// TrashMob.Shared/DTOs/V2/EventDto.cs
+namespace TrashMob.Shared.DTOs.V2
+{
+    /// <summary>
+    /// Event data transfer object for API v2.
+    /// Decoupled from Event entity; reusable for MCP server tools.
+    /// </summary>
+    public class EventDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public DateTimeOffset EventDate { get; set; }
+        public string City { get; set; }
+        public string Region { get; set; }
+        public string Country { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public int MaxNumberOfParticipants { get; set; }
+        public bool IsEventPublic { get; set; }
+        public Guid CreatedByUserId { get; set; }
+        public string CreatedByUserName { get; set; }
+        public int AttendeeCount { get; set; }
+    }
+}
+
+// TrashMob.Shared/DTOs/V2/Mappings/EventMappings.cs
+namespace TrashMob.Shared.DTOs.V2.Mappings
+{
+    public static class EventMappings
+    {
+        public static EventDto ToDto(this Event entity, User createdBy = null, int? attendeeCount = null)
+        {
+            return new EventDto
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Description = entity.Description,
+                EventDate = entity.EventDate,
+                City = entity.City,
+                Region = entity.Region,
+                Country = entity.Country,
+                Latitude = entity.Latitude,
+                Longitude = entity.Longitude,
+                MaxNumberOfParticipants = entity.MaxNumberOfParticipants,
+                IsEventPublic = entity.IsEventPublic,
+                CreatedByUserId = entity.CreatedByUserId,
+                CreatedByUserName = createdBy?.UserName,
+                AttendeeCount = attendeeCount ?? 0
+            };
+        }
+
+        public static IEnumerable<EventDto> ToDtos(this IEnumerable<Event> entities)
+        {
+            return entities.Select(e => e.ToDto());
+        }
+    }
+}
+```
+
+### Error Models (RFC 9457 Problem Details)
 
 ```csharp
 public class ProblemDetailsExtension : ProblemDetails
@@ -386,48 +455,43 @@ jobs:
 
 ## Rollout Plan
 
-### Phase 1 - Infrastructure (Weeks 1-2):
+### Step 1 - Infrastructure
 1. Set up API versioning middleware
-2. Implement pagination framework
-3. Configure OpenAPI 3.1
-4. Add Problem Details error handling
-5. Deploy correlation ID middleware
+2. Create v2 DTO layer (`TrashMob.Shared/DTOs/V2/`)
+3. Establish manual mapping pattern with extension methods
+4. Implement pagination framework
+5. Configure OpenAPI 3.1
+6. Add Problem Details error handling
+7. Deploy correlation ID middleware
 
-### Phase 2 - Pilot Endpoints (Weeks 3-4):
+### Step 2 - Pilot Endpoint
 1. Create Events v2 controller as pilot
 2. Generate and test TypeScript client
 3. Generate and test .NET client
 4. Migrate one web page to use v2
 5. Migrate one mobile screen to use v2
-6. Gather developer feedback
 
-### Phase 3 - Core Endpoints (Weeks 5-8):
+### Step 3 - Core Endpoints
 1. Create remaining v2 controllers (Users, Partners, etc.)
-2. Comprehensive testing
-3. Update documentation
-4. Developer training sessions
+2. Update documentation
 
-### Phase 4 - Web Migration (Weeks 9-12):
+### Step 4 - Web Migration
 1. Migrate all React pages to v2 incrementally
 2. Remove manual API service code
-3. Performance testing
 
-### Phase 5 - Mobile Migration (Weeks 13-16):
+### Step 5 - Mobile Migration
 1. Migrate all mobile screens to v2
 2. Remove manual DTO classes
-3. Performance testing
 
-### Phase 6 - Advanced Features (Weeks 17-20):
+### Step 6 - Advanced Features
 1. Add response compression
 2. Implement ETags
 3. Add bulk operations
 4. Webhook infrastructure
 
-### Phase 7 - Stabilization (Weeks 21-24):
-1. Bug fixes
-2. Performance optimization
-3. Documentation finalization
-4. v1 deprecation announcements
+### Step 7 - Stabilization
+1. Bug fixes and performance optimization
+2. v1 deprecation announcements
 
 ## Monitoring & Observability
 
@@ -462,22 +526,37 @@ jobs:
 - Postman collection
 - OpenAPI specification JSON/YAML
 
-## Open Questions
+## Decisions
 
-1. **Should we use Kiota (Microsoft) or NSwag for client generation?**  
-   **Recommendation:** Kiota for .NET, NSwag for TypeScript
+1. **Client generation tools?**
+   **Decision:** NSwag for TypeScript (React), Kiota for .NET (MAUI) - best of both worlds
 
-2. **OData query syntax vs custom filtering?**  
-   **Recommendation:** Simplified OData subset for consistency with industry standards
+2. **Query filtering syntax?**
+   **Decision:** Simplified OData subset for consistency with industry standards (Azure APIs)
 
-3. **Cursor vs offset pagination default?**  
-   **Recommendation:** Offset for simplicity, cursor optional for real-time feeds
+3. **Pagination default?**
+   **Decision:** Offset-based default for simplicity; cursor-based available as option for real-time feeds
 
-4. **API Gateway evaluation timeline?**
-   **Recommendation:** Defer until microservices architecture needed
+4. **API Gateway?**
+   **Decision:** Defer until microservices architecture needed (out of scope for v2)
+
+5. **DTO mapping approach?**
+   **Decision:** Manual mapping (no AutoMapper) - clearer code, better performance, easier debugging, and avoids magic/conventions
+
+6. **Should DTOs be reused for MCP server?**
+   **Decision:** Yes - v2 DTOs designed for reuse as MCP tool schemas; provides stable contracts for both REST API and AI tool interfaces
 
 ---
 
-**Last Updated:** January 23, 2026  
-**Owner:** Engineering Team  
-**Next Review:** Quarterly
+**Last Updated:** January 31, 2026
+**Owner:** Engineering Team
+**Status:** Not Started
+**Next Review:** Before Phase 1 kickoff
+
+---
+
+## Changelog
+
+- **2026-01-31:** Added v2 DTO layer requirement with manual mapping (MCP server reuse)
+- **2026-01-31:** Removed week-based schedule from rollout plan (agile approach)
+- **2026-01-31:** Resolved open questions; confirmed all Phase 1-3 scope items; added out-of-scope items

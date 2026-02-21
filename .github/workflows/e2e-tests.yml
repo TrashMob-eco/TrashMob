@@ -1,0 +1,74 @@
+name: E2E Tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'TrashMob/client-app/**'
+      - '.github/workflows/e2e-tests.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'TrashMob/client-app/**'
+      - '.github/workflows/e2e-tests.yml'
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: 'Enable debug mode'
+        required: false
+        default: 'false'
+
+jobs:
+  e2e-tests:
+    name: Playwright E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd TrashMob/client-app
+          # Remove lockfile to regenerate for Linux platform (handles cross-platform native deps like rollup)
+          rm -f package-lock.json
+          npm install
+
+      - name: Install Playwright browsers
+        run: |
+          cd TrashMob/client-app
+          npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: |
+          cd TrashMob/client-app
+          npm run e2e -- --project=chromium
+        env:
+          CI: true
+          BASE_URL: ${{ vars.DEV_URL || 'https://dev.trashmob.eco' }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+          E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: TrashMob/client-app/playwright-report/
+          retention-days: 7
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TrashMob/client-app/test-results/
+          retention-days: 7

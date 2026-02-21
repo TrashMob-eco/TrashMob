@@ -16,7 +16,7 @@ public partial class ViewEventSummaryPage : ContentPage
         BindingContext = this.viewModel;
     }
 
-    public string EventId { get; set; }
+    public string EventId { get; set; } = string.Empty;
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
@@ -36,7 +36,7 @@ public partial class ViewEventSummaryPage : ContentPage
         var p = (Pin)sender;
 
         var pickupLocationId = p.AutomationId;
-        await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?LitterReportId={pickupLocationId}");
+        await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?PickupLocationId={pickupLocationId}");
     }
 
     private void UpdateRoutes()

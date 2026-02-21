@@ -23,6 +23,6 @@ public class UserService : IUserService
         var httpClient = httpClientFactory.CreateClient(AuthConstants.AuthenticatedClient);
         var user = await httpClient.GetFromJsonAsync<User>($"users/getuserbyemail/{email}");
 
-        return user;
+        return user!;
     }
 }

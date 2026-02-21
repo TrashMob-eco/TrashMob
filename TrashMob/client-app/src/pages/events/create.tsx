@@ -3,8 +3,11 @@ import { ManageEventDashboardLayout } from './_layout';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
+import { CharacterCounter } from '@/components/ui/character-counter';
+import { useQuery } from '@tanstack/react-query';
+import { GetMyTeams } from '@/services/teams';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DatePicker } from '@/components/ui/datepicker';
@@ -27,13 +30,18 @@ import moment from 'moment';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CreateEvent, GetUserEvents } from '@/services/events';
 import EventData from '@/components/Models/EventData';
+import LitterReportData from '@/components/Models/LitterReportData';
+import { AddEventLitterReport, GetEventLitterReports } from '@/services/event-litter-reports';
 import { AzureMapSearchAddressReverse, AzureMapSearchAddressReverse_Params } from '@/services/maps';
 import { useGetAzureKey } from '@/hooks/useGetAzureKey';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router';
+import { useFeatureMetrics } from '@/hooks/useFeatureMetrics';
+import { useLocation, useNavigate } from 'react-router';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
+import { GetRequiredWaivers } from '@/services/user-waivers';
+import { WaiverSigningFlow } from '@/components/Waivers';
 
 const createMomentFromDateAndTime = (eventDate: Date, eventTimeStart: string) => {
     const eventDateMoment = moment(eventDate);
@@ -66,7 +74,8 @@ const createEventSchema = z.object({
     latitude: z.number(),
     longitude: z.number(),
     maxNumberOfParticipants: z.number().min(0),
-    isEventPublic: z.boolean(),
+    eventVisibilityId: z.string(),
+    teamId: z.string().nullable().optional(),
     createdByUserId: z.string(),
     eventStatusId: z.number(),
     locationConfirmed: z.boolean(),
@@ -78,19 +87,72 @@ export const CreateEventPage = () => {
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const location = useLocation();
+    const { trackEventAction } = useFeatureMetrics();
+
+    // Check if we're creating an event from a litter report
+    const { fromLitterReport } = (location.state || {}) as { fromLitterReport?: LitterReportData };
 
     const { data: eventTypes } = useGetEventTypes();
+    const { data: myTeams } = useQuery({ queryKey: GetMyTeams().key, queryFn: GetMyTeams().service });
     const steps = [
         { key: 'pick-location', label: 'Pick Location' },
         { key: 'edit-detail', label: 'Edit Detail' },
         { key: 'review', label: 'Review' },
     ];
-    const [step, setStep] = useState<string>('pick-location');
+    const [step, setStep] = useState<string>(fromLitterReport ? 'edit-detail' : 'pick-location');
+
+    // Fetch required waivers for the current user
+    const { data: requiredWaivers, refetch: refetchWaivers } = useQuery({
+        queryKey: GetRequiredWaivers().key,
+        queryFn: GetRequiredWaivers().service,
+        select: (res) => res.data,
+        enabled: !!currentUser.id,
+    });
+
+    // Show waiver flow immediately on page load if there are unsigned waivers
+    const hasPendingWaivers = requiredWaivers && requiredWaivers.length > 0;
+    const [showWaiverFlow, setShowWaiverFlow] = useState(false);
+
+    useEffect(() => {
+        if (hasPendingWaivers) {
+            setShowWaiverFlow(true);
+        }
+    }, [hasPendingWaivers]);
+
+    const addEventLitterReport = useMutation({
+        mutationKey: AddEventLitterReport().key,
+        mutationFn: AddEventLitterReport().service,
+    });
 
     const createEvent = useMutation({
         mutationKey: CreateEvent().key,
         mutationFn: CreateEvent().service,
-        onSuccess: (data, variable) => {
+        onSuccess: async (response, variable) => {
+            // Track event creation
+            if (response.data?.id) {
+                trackEventAction('Create', response.data.id, {
+                    eventTypeId: variable.eventTypeId,
+                    fromLitterReport: !!fromLitterReport,
+                });
+            }
+
+            // If this event was created from a litter report, associate them
+            if (fromLitterReport && response.data?.id) {
+                try {
+                    await addEventLitterReport.mutateAsync({
+                        eventId: response.data.id,
+                        litterReportId: fromLitterReport.id,
+                    });
+                    await queryClient.invalidateQueries({
+                        queryKey: GetEventLitterReports({ eventId: response.data.id }).key,
+                    });
+                } catch {
+                    // Don't fail event creation if association fails
+                    console.error('Failed to associate litter report with event');
+                }
+            }
+
             toast({
                 duration: 10000,
                 variant: 'primary',
@@ -116,7 +178,8 @@ export const CreateEventPage = () => {
             eventDate: moment().add(1, 'day').toDate(),
             eventTimeStart: '9:00',
             eventTimeEnd: '11:00',
-            isEventPublic: true,
+            eventVisibilityId: '1',
+            teamId: null,
             maxNumberOfParticipants: 10,
             locationConfirmed: false,
             createdByUserId: currentUser.id,
@@ -125,6 +188,27 @@ export const CreateEventPage = () => {
     });
 
     const [previewValues, setPreviewValues] = useState<z.infer<typeof createEventSchema> | null>(null);
+
+    // Pre-populate form when creating from a litter report
+    useEffect(() => {
+        if (fromLitterReport) {
+            const firstImage = fromLitterReport.litterImages?.[0];
+            if (firstImage) {
+                form.setValue('latitude', firstImage.latitude || 0);
+                form.setValue('longitude', firstImage.longitude || 0);
+                form.setValue('streetAddress', firstImage.streetAddress || '');
+                form.setValue('city', firstImage.city || '');
+                form.setValue('region', firstImage.region || '');
+                form.setValue('country', firstImage.country || '');
+                form.setValue('postalCode', firstImage.postalCode || '');
+                form.setValue('locationConfirmed', true);
+            }
+            form.setValue('name', `Clean up: ${fromLitterReport.name || 'Reported Litter'}`);
+            if (fromLitterReport.description) {
+                form.setValue('description', fromLitterReport.description);
+            }
+        }
+    }, [fromLitterReport, form]);
 
     const saveDetail = async () => {
         // Validate location & detail
@@ -135,7 +219,7 @@ export const CreateEventPage = () => {
             'eventTimeStart',
             'eventTimeEnd',
             'maxNumberOfParticipants',
-            'isEventPublic',
+            'eventVisibilityId',
             'latitude',
             'longitude',
         ]);
@@ -147,7 +231,7 @@ export const CreateEventPage = () => {
         }
     };
 
-    function onSubmit(formValues: z.infer<typeof createEventSchema>) {
+    function buildEventBody(formValues: z.infer<typeof createEventSchema>) {
         const body = new EventData();
 
         const start = createMomentFromDateAndTime(formValues.eventDate, formValues.eventTimeStart);
@@ -169,12 +253,29 @@ export const CreateEventPage = () => {
         body.latitude = formValues.latitude ?? 0;
         body.longitude = formValues.longitude ?? 0;
         body.maxNumberOfParticipants = formValues.maxNumberOfParticipants ?? 0;
-        body.isEventPublic = formValues.isEventPublic;
+        body.eventVisibilityId = Number(formValues.eventVisibilityId);
+        body.teamId = formValues.eventVisibilityId === '2' ? (formValues.teamId ?? null) : null;
         body.createdByUserId = currentUser.id;
         body.eventStatusId = formValues.eventStatusId;
-
-        createEvent.mutate(body);
+        return body;
     }
+
+    function onSubmit(formValues: z.infer<typeof createEventSchema>) {
+        createEvent.mutate(buildEventBody(formValues));
+    }
+
+    const handleWaiverFlowComplete = useCallback(
+        (allSigned: boolean) => {
+            setShowWaiverFlow(false);
+            if (allSigned) {
+                refetchWaivers();
+            } else {
+                // User dismissed waivers without signing — navigate to home since waivers are required
+                navigate('/');
+            }
+        },
+        [refetchWaivers, navigate],
+    );
 
     const map = useMap('locationPicker');
 
@@ -210,6 +311,7 @@ export const CreateEventPage = () => {
 
     const eventName = form.watch('name');
     const eventDescription = form.watch('description');
+    const eventVisibilityId = form.watch('eventVisibilityId');
     const latitude = form.watch('latitude');
     const longitude = form.watch('longitude');
 
@@ -270,33 +372,39 @@ export const CreateEventPage = () => {
                                         />
                                     </FormControl>
                                 </FormItem>
-                                {latitude && longitude ? (
-                                    <>
-                                        <FormItem className='col-span-12'>
-                                            <GoogleMap
-                                                id='locationPicker'
-                                                defaultCenter={{ lat: latitude, lng: longitude }}
-                                                defaultZoom={16}
-                                                style={{ width: '100%', height: '300px' }}
-                                                onClick={handleClickMap}
-                                            >
-                                                <Marker
-                                                    position={{ lat: latitude, lng: longitude }}
-                                                    draggable
-                                                    onDragEnd={handleMarkerDragEnd}
-                                                />
-                                            </GoogleMap>
-                                            <FormDescription>
-                                                Drag marker or click on map to move marker to precise location.
-                                            </FormDescription>
-                                        </FormItem>
-                                        <div className='col-span-12 flex gap-2 justify-end'>
-                                            <Button type='button' onClick={() => setStep('edit-detail')}>
-                                                Next
-                                            </Button>
-                                        </div>
-                                    </>
-                                ) : null}
+                                <FormItem className='col-span-12'>
+                                    <GoogleMap
+                                        id='locationPicker'
+                                        defaultCenter={
+                                            latitude && longitude ? { lat: latitude, lng: longitude } : undefined
+                                        }
+                                        defaultZoom={latitude && longitude ? 16 : undefined}
+                                        style={{ width: '100%', height: '300px' }}
+                                        onClick={handleClickMap}
+                                    >
+                                        {latitude && longitude ? (
+                                            <Marker
+                                                position={{ lat: latitude, lng: longitude }}
+                                                draggable
+                                                onDragEnd={handleMarkerDragEnd}
+                                            />
+                                        ) : null}
+                                    </GoogleMap>
+                                    <FormDescription>
+                                        {latitude && longitude
+                                            ? 'Drag the marker or click elsewhere on the map to fine-tune the location.'
+                                            : 'Search for an address above, or click on the map to set the location.'}
+                                    </FormDescription>
+                                </FormItem>
+                                <div className='col-span-12 flex gap-2 justify-end'>
+                                    <Button
+                                        type='button'
+                                        disabled={!latitude || !longitude}
+                                        onClick={() => setStep('edit-detail')}
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
                             </div>
                         </TabsContent>
                         <TabsContent value='edit-detail'>
@@ -306,22 +414,18 @@ export const CreateEventPage = () => {
                                     name='name'
                                     render={({ field }) => (
                                         <FormItem className='col-span-12'>
-                                            <FormLabel>Event Name</FormLabel>
+                                            <FormLabel required>Event Name</FormLabel>
                                             <FormControl>
-                                                <Input placeholder='New Event' {...field} />
+                                                <Input
+                                                    placeholder='New Event'
+                                                    maxLength={MAX_EVENT_NAME_LENGTH}
+                                                    {...field}
+                                                />
                                             </FormControl>
-                                            <div className='flex justify-between'>
-                                                <div className='grow'>
-                                                    <FormMessage />
-                                                </div>
-                                                <FormDescription
-                                                    className={cn('text-right', {
-                                                        'text-destructive': eventName.length > MAX_EVENT_NAME_LENGTH,
-                                                    })}
-                                                >
-                                                    {eventName.length}/{MAX_EVENT_NAME_LENGTH}
-                                                </FormDescription>
-                                            </div>
+                                            <CharacterCounter
+                                                currentLength={eventName?.length || 0}
+                                                maxLength={MAX_EVENT_NAME_LENGTH}
+                                            />
                                         </FormItem>
                                     )}
                                 />
@@ -330,7 +434,7 @@ export const CreateEventPage = () => {
                                     name='eventTypeId'
                                     render={({ field }) => (
                                         <FormItem className='col-span-6'>
-                                            <FormLabel>Event Type</FormLabel>
+                                            <FormLabel required>Event Type</FormLabel>
                                             <FormControl>
                                                 <Select value={field.value} onValueChange={field.onChange}>
                                                     <SelectTrigger className='w-full'>
@@ -351,25 +455,58 @@ export const CreateEventPage = () => {
                                 />
                                 <FormField
                                     control={form.control}
-                                    name='isEventPublic'
+                                    name='eventVisibilityId'
                                     render={({ field }) => (
                                         <FormItem className='col-span-3'>
-                                            <FormLabel>Is Public Event</FormLabel>
+                                            <FormLabel>Visibility</FormLabel>
                                             <FormControl>
-                                                <div className='flex h-[36px] items-center'>
-                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                                </div>
+                                                <Select value={field.value} onValueChange={field.onChange}>
+                                                    <SelectTrigger className='w-full'>
+                                                        <SelectValue placeholder='Visibility' />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value='1'>Public</SelectItem>
+                                                        <SelectItem value='2'>Team Only</SelectItem>
+                                                        <SelectItem value='3'>Private</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
+                                {eventVisibilityId === '2' && (
+                                    <FormField
+                                        control={form.control}
+                                        name='teamId'
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-3'>
+                                                <FormLabel>Team</FormLabel>
+                                                <FormControl>
+                                                    <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                                                        <SelectTrigger className='w-full'>
+                                                            <SelectValue placeholder='Select team' />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {(myTeams?.data || []).map((team) => (
+                                                                <SelectItem key={team.id} value={team.id}>
+                                                                    {team.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                )}
                                 <FormField
                                     control={form.control}
                                     name='maxNumberOfParticipants'
                                     render={({ field }) => (
                                         <FormItem className='col-span-3'>
-                                            <FormLabel>Max attendees</FormLabel>
+                                            <FormLabel required>Max attendees</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type='number'
@@ -386,7 +523,7 @@ export const CreateEventPage = () => {
                                     name='eventDate'
                                     render={({ field }) => (
                                         <FormItem className='col-span-6'>
-                                            <FormLabel>Date</FormLabel>
+                                            <FormLabel required>Date</FormLabel>
                                             <FormControl>
                                                 <DatePicker {...field} />
                                             </FormControl>
@@ -399,7 +536,7 @@ export const CreateEventPage = () => {
                                     name='eventTimeStart'
                                     render={({ field }) => (
                                         <FormItem className='col-span-3'>
-                                            <FormLabel>Start time</FormLabel>
+                                            <FormLabel required>Start time</FormLabel>
                                             <FormControl>
                                                 <TimePicker {...field} />
                                             </FormControl>
@@ -412,7 +549,7 @@ export const CreateEventPage = () => {
                                     name='eventTimeEnd'
                                     render={({ field }) => (
                                         <FormItem className='col-span-3'>
-                                            <FormLabel>End time</FormLabel>
+                                            <FormLabel required>End time</FormLabel>
                                             <FormControl>
                                                 <TimePicker {...field} />
                                             </FormControl>
@@ -428,24 +565,16 @@ export const CreateEventPage = () => {
                                             <FormLabel>Description</FormLabel>
                                             <FormControl>
                                                 <Textarea
-                                                    placeholder='Type your message here.'
+                                                    placeholder='Describe the event, what to bring, meeting point, etc.'
                                                     className='resize-none'
+                                                    maxLength={MAX_EVENT_DESC_LENGTH}
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <div className='flex justify-between'>
-                                                <div className='grow'>
-                                                    <FormMessage />
-                                                </div>
-                                                <FormDescription
-                                                    className={cn('text-right', {
-                                                        'text-destructive':
-                                                            (eventDescription || '').length > MAX_EVENT_DESC_LENGTH,
-                                                    })}
-                                                >
-                                                    {(eventDescription || '').length}/{MAX_EVENT_DESC_LENGTH}
-                                                </FormDescription>
-                                            </div>
+                                            <CharacterCounter
+                                                currentLength={(eventDescription || '').length}
+                                                maxLength={MAX_EVENT_DESC_LENGTH}
+                                            />
                                         </FormItem>
                                     )}
                                 />
@@ -504,6 +633,14 @@ export const CreateEventPage = () => {
                     </Tabs>
                 </form>
             </Form>
+
+            {requiredWaivers ? (
+                <WaiverSigningFlow
+                    waivers={requiredWaivers}
+                    open={showWaiverFlow}
+                    onComplete={handleWaiverFlowComplete}
+                />
+            ) : null}
         </ManageEventDashboardLayout>
     );
 };

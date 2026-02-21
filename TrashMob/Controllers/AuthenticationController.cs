@@ -11,16 +11,11 @@ namespace TrashMob.Controllers
 
     [Route("api/authentication")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController(
+        IActiveDirectoryManager activeDirectoryManager,
+        ILogger<AuthenticationController> logger)
+        : ControllerBase
     {
-        private readonly IActiveDirectoryManager activeDirectoryManager;
-        private readonly ILogger<AuthenticationController> logger;
-
-        public AuthenticationController(IActiveDirectoryManager activeDirectoryManager, ILogger<AuthenticationController> logger)
-        {
-            this.activeDirectoryManager = activeDirectoryManager;
-            this.logger = logger;
-        }
 
         /// <summary>Validates whether a new user can be created in Active Directory.</summary>
         /// <param name="request">The new user details to validate.</param>

@@ -1,15 +1,23 @@
 import { useRef, useState } from 'react';
 import { AdvancedMarker, InfoWindow, MapProps } from '@vis.gl/react-google-maps';
 import { GoogleMapWithKey as GoogleMap } from '../Map/GoogleMap';
+import { MapCircle } from '../Map/MapCircle';
 import { EventDetailInfoWindowHeader, EventDetailInfoWindowContent } from '../Map/EventInfoWindowContent';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
+import LitterReportData from '../Models/LitterReportData';
+import { LitterReportStatusEnum } from '../Models/LitterReportStatus';
 import { useQuery } from '@tanstack/react-query';
 import { GetAllEventsBeingAttendedByUser } from '@/services/events';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
 import { cn } from '@/lib/utils';
 import moment from 'moment';
 import { EventPin } from './event-pin';
+import { LitterReportPin, litterReportColors } from '../litterreports/litter-report-pin';
+import {
+    LitterReportInfoWindowHeader,
+    LitterReportInfoWindowContent,
+} from '../litterreports/litter-report-info-window';
 
 const colors = {
     upcoming: '#1D4ED8',
@@ -17,15 +25,53 @@ const colors = {
     canceled: '#B52D2D',
 };
 
+const getLitterReportColor = (statusId: number): string => {
+    switch (statusId) {
+        case LitterReportStatusEnum.New:
+            return litterReportColors.new;
+        case LitterReportStatusEnum.Assigned:
+            return litterReportColors.assigned;
+        case LitterReportStatusEnum.Cleaned:
+            return litterReportColors.cleaned;
+        case LitterReportStatusEnum.Cancelled:
+            return litterReportColors.cancelled;
+        default:
+            return litterReportColors.new;
+    }
+};
+
+/** Home icon pin for user's preferred location */
+const UserLocationPin = () => (
+    <div className='flex items-center justify-center w-10 h-10 rounded-full bg-white border-2 border-[#005C4C] shadow-md'>
+        <svg width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#005C4C' strokeWidth='2'>
+            <path d='M3 12l9-9 9 9' />
+            <path d='M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7' />
+        </svg>
+    </div>
+);
+
 interface EventsMapProps extends MapProps {
     id?: string;
     events: EventData[];
     isUserLoaded: boolean;
     currentUser: UserData;
+    litterReports?: LitterReportData[];
+    showLitterReports?: boolean;
+    showUserLocation?: boolean;
 }
 
 export const EventsMap = (props: EventsMapProps) => {
-    const { id, events, isUserLoaded, currentUser, gestureHandling, ...rest } = props;
+    const {
+        id,
+        events,
+        isUserLoaded,
+        currentUser,
+        gestureHandling,
+        litterReports,
+        showLitterReports,
+        showUserLocation,
+        ...rest
+    } = props;
 
     // Load and add user's attendance to events
     const { data: myAttendanceList } = useQuery({
@@ -43,35 +89,100 @@ export const EventsMap = (props: EventsMapProps) => {
      *  Show Event InfoWindow when user hover marker
      *  Note: Use shared infoWindow to prevent multiple InfoWindow opening at the same time.
      */
-    const markersRef = useRef<Record<string, google.maps.marker.AdvancedMarkerElement>>({});
+    const eventMarkersRef = useRef<Record<string, google.maps.marker.AdvancedMarkerElement>>({});
+    const litterReportMarkersRef = useRef<Record<string, google.maps.marker.AdvancedMarkerElement>>({});
     const [showingEventId, setShowingEventId] = useState<string>('');
+    const [showingLitterReportId, setShowingLitterReportId] = useState<string>('');
     const showingEvent = eventsWithAttendance.find((event) => event.id === showingEventId);
+    const showingLitterReport = (litterReports || []).find((report) => report.id === showingLitterReportId);
     const { ref, isInViewPort } = useIsInViewport();
+
+    // Get first image with coordinates for each litter report (for pin placement)
+    const litterReportsWithLocation = (litterReports || [])
+        .map((report) => {
+            const imageWithLocation = report.litterImages?.find((img) => img.latitude && img.longitude);
+            if (!imageWithLocation) return null;
+            return {
+                ...report,
+                latitude: imageWithLocation.latitude!,
+                longitude: imageWithLocation.longitude!,
+            };
+        })
+        .filter(Boolean) as (LitterReportData & { latitude: number; longitude: number })[];
+
+    const handleEventMarkerHover = (eventId: string) => {
+        setShowingEventId(eventId);
+        setShowingLitterReportId('');
+    };
+
+    const handleLitterReportMarkerHover = (reportId: string) => {
+        setShowingLitterReportId(reportId);
+        setShowingEventId('');
+    };
 
     return (
         <div ref={ref}>
             <GoogleMap id={id} gestureHandling={gestureHandling} {...rest}>
+                {/* Event Markers */}
                 {eventsWithAttendance.map((event) => {
                     const isCompleted = moment(event.eventDate).isBefore(new Date());
                     return (
                         <AdvancedMarker
                             key={event.id}
                             ref={(el) => {
-                                markersRef.current[event.id] = el!;
+                                eventMarkersRef.current[event.id] = el!;
                             }}
                             className={cn({
                                 'animate-[bounce_1s_both_3s]': isInViewPort,
                             })}
                             position={{ lat: event.latitude, lng: event.longitude }}
-                            onMouseEnter={(e) => setShowingEventId(event.id)}
+                            onMouseEnter={() => handleEventMarkerHover(event.id)}
                         >
                             <EventPin color={isCompleted ? colors.completed : colors.upcoming} size={48} />
                         </AdvancedMarker>
                     );
                 })}
+
+                {/* Litter Report Markers */}
+                {showLitterReports
+                    ? litterReportsWithLocation.map((report) => (
+                          <AdvancedMarker
+                              key={`litter-${report.id}`}
+                              ref={(el) => {
+                                  litterReportMarkersRef.current[report.id] = el!;
+                              }}
+                              className={cn({
+                                  'animate-[bounce_1s_both_3s]': isInViewPort,
+                              })}
+                              position={{ lat: report.latitude, lng: report.longitude }}
+                              onMouseEnter={() => handleLitterReportMarkerHover(report.id)}
+                          >
+                              <LitterReportPin color={getLitterReportColor(report.litterReportStatusId)} size={32} />
+                          </AdvancedMarker>
+                      ))
+                    : null}
+
+                {/* User Location Pin + Travel Radius */}
+                {showUserLocation && currentUser.latitude && currentUser.longitude ? (
+                    <>
+                        <AdvancedMarker position={{ lat: currentUser.latitude, lng: currentUser.longitude }} zIndex={0}>
+                            <UserLocationPin />
+                        </AdvancedMarker>
+                        {currentUser.travelLimitForLocalEvents > 0 ? (
+                            <MapCircle
+                                center={{ lat: currentUser.latitude, lng: currentUser.longitude }}
+                                radiusMeters={
+                                    currentUser.travelLimitForLocalEvents * (currentUser.prefersMetric ? 1000 : 1609.34)
+                                }
+                            />
+                        ) : null}
+                    </>
+                ) : null}
+
+                {/* Event Info Window */}
                 {showingEvent ? (
                     <InfoWindow
-                        anchor={markersRef.current[showingEventId]}
+                        anchor={eventMarkersRef.current[showingEventId]}
                         headerContent={<EventDetailInfoWindowHeader {...showingEvent} />}
                         onClose={() => setShowingEventId('')}
                     >
@@ -81,6 +192,17 @@ export const EventsMap = (props: EventsMapProps) => {
                             isUserLoaded={isUserLoaded}
                             currentUser={currentUser}
                         />
+                    </InfoWindow>
+                ) : null}
+
+                {/* Litter Report Info Window */}
+                {showingLitterReport ? (
+                    <InfoWindow
+                        anchor={litterReportMarkersRef.current[showingLitterReportId]}
+                        headerContent={<LitterReportInfoWindowHeader name={showingLitterReport.name} />}
+                        onClose={() => setShowingLitterReportId('')}
+                    >
+                        <LitterReportInfoWindowContent report={showingLitterReport} />
                     </InfoWindow>
                 ) : null}
             </GoogleMap>

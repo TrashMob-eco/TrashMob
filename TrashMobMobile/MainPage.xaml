@@ -230,14 +230,6 @@
             </CollectionView>
 
         </VerticalStackLayout>
-        <BoxView BackgroundColor="{StaticResource TransparentBlack}"
-                 HorizontalOptions="Fill"
-                 IsVisible="{Binding IsBusy}"
-                 VerticalOptions="Fill" />
-        <ActivityIndicator HorizontalOptions="Center"
-                           IsRunning="{Binding IsBusy}"
-                           IsVisible="{Binding IsBusy}"
-                           VerticalOptions="Center" />
     </Grid>
 
 </ContentPage>

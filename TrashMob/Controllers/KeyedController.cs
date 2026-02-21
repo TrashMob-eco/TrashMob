@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -12,21 +12,13 @@
     /// <summary>
     /// Abstract controller for keyed entities, providing add, get, and delete operations.
     /// </summary>
-    public abstract class KeyedController<T> : SecureController where T : KeyedModel
+    public abstract class KeyedController<T>(IKeyedManager<T> manager)
+        : SecureController where T : KeyedModel
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeyedController{T}"/> class.
-        /// </summary>
-        /// <param name="manager">The keyed manager.</param>
-        public KeyedController(IKeyedManager<T> manager)
-        {
-            Manager = manager;
-        }
-
         /// <summary>
         /// Gets the keyed manager.
         /// </summary>
-        protected IKeyedManager<T> Manager { get; }
+        protected IKeyedManager<T> Manager { get; } = manager;
 
         /// <summary>
         /// Adds a new entity. Requires a valid user.
@@ -38,11 +30,11 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public virtual async Task<IActionResult> Add(T instance, CancellationToken cancellationToken)
         {
-            await Manager.AddAsync(instance, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.AddAsync(instance, UserId, cancellationToken);
 
             TrackEvent("Add" + nameof(T));
 
-            return Ok();
+            return CreatedAtAction(nameof(Get), result);
         }
 
         /// <summary>
@@ -53,7 +45,7 @@
         [HttpGet]
         public virtual async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            var results = await Manager.GetAsync(cancellationToken).ConfigureAwait(false);
+            var results = await Manager.GetAsync(cancellationToken);
 
             TrackEvent("Get" + nameof(T));
 
@@ -69,21 +61,18 @@
         [HttpDelete("{id}")]
         public virtual async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            var entity = Manager.GetAsync(id, cancellationToken);
+            var entity = await Manager.GetAsync(id, cancellationToken);
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, entity, AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntity))
             {
                 return Forbid();
             }
 
-            var results = await Manager.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
+            await Manager.DeleteAsync(id, cancellationToken);
 
             TrackEvent("Delete" + nameof(T));
 
-            return Ok(results);
+            return NoContent();
         }
     }
 }

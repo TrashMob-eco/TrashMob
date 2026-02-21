@@ -4,35 +4,29 @@ namespace TrashMobDailyJobs
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.Data.SqlClient;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Poco;
 
-    public class StatGenerator
+    public class StatGenerator(ILogger<StatGenerator> logger, ILoggerFactory loggerFactory, IConfiguration configuration)
     {
-        private readonly ILogger<StatGenerator> logger;
-
-        public StatGenerator(ILogger<StatGenerator> logger)
-        {
-            this.logger = logger;
-        }
-
         public async Task RunAsync()
         {
             logger.LogInformation("StatGenerator job started at: {Time}", DateTime.UtcNow);
-            var connectionString = Environment.GetEnvironmentVariable("TMDBServerConnectionString");
-            var sendGridApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
-            var instanceName = Environment.GetEnvironmentVariable("InstanceName");
+            var connectionString = configuration["TMDBServerConnectionString"];
+            var sendGridApiKey = configuration["SendGridApiKey"];
+            var instanceName = configuration["InstanceName"];
 
-            if (sendGridApiKey == null)
+            if (sendGridApiKey is null)
             {
                 logger.LogError("SendGrid API Key is not configured. Cannot send summary report email.");
                 return;
             }
 
-            if (instanceName == null)
+            if (instanceName is null)
             {
                 logger.LogError("Instance Name is not configured. Cannot send summary report email.");
                 return;
@@ -273,7 +267,7 @@ namespace TrashMobDailyJobs
             }
         }
 
-        private static Task SendSummaryReport(SiteStats siteStats, string instanceName, string sendGridApiKey)
+        private Task SendSummaryReport(SiteStats siteStats, string instanceName, string sendGridApiKey)
         {
             var sb = new StringBuilder();
 
@@ -300,7 +294,7 @@ namespace TrashMobDailyJobs
 
             email.Addresses.Add(new EmailAddress { Email = Constants.TrashMobEmailAddress, Name = Constants.TrashMobEmailName });
 
-            var emailSender = new EmailSender { ApiKey = sendGridApiKey };
+            var emailSender = new EmailSender(loggerFactory.CreateLogger<EmailSender>()) { ApiKey = sendGridApiKey };
             return emailSender.SendEmailAsync(email);
         }
     }

@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
 using TrashMobMobile.Authentication;
+using Sentry;
 using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
@@ -16,7 +17,8 @@ public partial class MainViewModel(IAuthService authService,
     IMobEventManager mobEventManager,
     ILitterReportManager litterReportManager,
     INotificationService notificationService,
-    IUserManager userManager) : BaseViewModel(notificationService)
+    IUserManager userManager,
+    IWaiverManager waiverManager) : BaseViewModel(notificationService)
 {
     private readonly IAuthService authService = authService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
@@ -25,6 +27,7 @@ public partial class MainViewModel(IAuthService authService,
     private readonly IUserRestService userRestService = userRestService;
     private readonly INotificationService notificationService = notificationService;
     private readonly IUserManager userManager = userManager;
+    private readonly IWaiverManager waiverManager = waiverManager;
 
 #nullable disable
     private EventViewModel selectedEvent;
@@ -79,21 +82,26 @@ public partial class MainViewModel(IAuthService authService,
 
     private async void PerformNavigation(EventViewModel eventViewModel)
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
+        try
+        {
+            await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     public async Task Init()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var signedIn = await authService.SignInSilentAsync();
 
             if (signedIn.Succeeded)
             {
                 var email = authService.GetUserEmail();
-                var user = await userRestService.GetUserByEmailAsync(email, UserState.UserContext);
+                var user = await userRestService.GetUserByEmailAsync(email);
 
                 WelcomeMessage = $"Welcome, {user.UserName}!";
 
@@ -122,22 +130,14 @@ public partial class MainViewModel(IAuthService authService,
 
                 IsMapSelected = true;
                 IsListSelected = false;
-
-                IsBusy = false;
             }
             else
             {
-                await Shell.Current.GoToAsync($"{nameof(WelcomePage)}");
+                await Shell.Current.GoToAsync($"//{nameof(WelcomePage)}");
             }
 
             await RefreshStatistics();
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError($"An error occurred while initializing the application. Please wait and try again in a moment.");
-        }
+        }, "An error occurred while initializing the application. Please wait and try again in a moment.");
     }
 
     private async Task RefreshStatistics()
@@ -168,7 +168,7 @@ public partial class MainViewModel(IAuthService authService,
             var vm = litterReport.ToLitterReportViewModel(notificationService);
             LitterReports.Add(vm);
 
-            foreach (var litterImageViewModel in vm.LitterImageViewModels)
+            foreach (var litterImageViewModel in vm.LitterImageViewModels.Where(i => i.Address.Location != null))
             {
                 Addresses.Add(litterImageViewModel.Address);
             }
@@ -242,6 +242,12 @@ public partial class MainViewModel(IAuthService authService,
     [RelayCommand]
     private async Task CreateEvent()
     {
+        if (!await waiverManager.HasUserSignedAllRequiredWaiversAsync())
+        {
+            await Shell.Current.GoToAsync(nameof(WaiverListPage));
+            return;
+        }
+
         await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={Guid.Empty}");
     }
 

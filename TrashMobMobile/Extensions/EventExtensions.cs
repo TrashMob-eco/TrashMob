@@ -1,5 +1,6 @@
 ﻿namespace TrashMobMobile.Extensions
 {
+    using System.Linq;
     using TrashMob.Models;
 
     public static class EventExtensions
@@ -40,10 +41,14 @@
             return localDateTime.ToShortTimeString();
         }
 
-        public static string GetPublicEventText(this Event mobEvent)
+        public static string GetVisibilityText(this Event mobEvent)
         {
-            //TODO: move hard code string to resource file
-            return mobEvent.IsEventPublic ? "Yes" : "No";
+            return mobEvent.EventVisibilityId switch
+            {
+                (int)EventVisibilityEnum.TeamOnly => "Team Only",
+                (int)EventVisibilityEnum.Private => "Private",
+                _ => "Public",
+            };
         }
 
         public static string GetEventStatusText(this Event mobEvent)
@@ -74,7 +79,23 @@
 
         public static bool IsEventLead(this Event mobEvent, Guid userId)
         {
-            return mobEvent.CreatedByUserId == userId;
+            // Check if user is the event creator
+            if (mobEvent.CreatedByUserId == userId)
+            {
+                return true;
+            }
+
+            // Check if user is marked as an event lead in EventAttendees
+            if (mobEvent.EventAttendees != null)
+            {
+                var attendee = mobEvent.EventAttendees.FirstOrDefault(ea => ea.UserId == userId);
+                if (attendee != null && attendee.IsEventLead)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static bool IsCompleted(this Event mobEvent)
@@ -110,7 +131,8 @@
                 EventDate = mobEvent.EventDate,
                 EventStatusId = mobEvent.EventStatusId,
                 EventTypeId = mobEvent.EventTypeId,
-                IsEventPublic = mobEvent.IsEventPublic,
+                EventVisibilityId = mobEvent.EventVisibilityId,
+                TeamId = mobEvent.TeamId,
                 MaxNumberOfParticipants = mobEvent.MaxNumberOfParticipants,
                 Name = mobEvent.Name,
                 UserRoleForEvent = mobEvent.IsEventLead(userId) ? "Lead" : "Attendee",
@@ -134,7 +156,7 @@
                 PostalCode = mobEvent.PostalCode,
                 Region = mobEvent.Region,
                 StreetAddress = mobEvent.StreetAddress,
-                Location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value),
+                Location = new Location(mobEvent.Latitude.GetValueOrDefault(), mobEvent.Longitude.GetValueOrDefault()),
                 IconFile = GetMapIcon(mobEvent.IsCompleted()),
             };
         }

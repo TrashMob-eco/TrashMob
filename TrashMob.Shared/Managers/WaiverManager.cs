@@ -10,15 +10,9 @@
     /// <summary>
     /// Manages waiver documents and user waiver agreements.
     /// </summary>
-    public class WaiverManager : KeyedManager<Waiver>, IWaiverManager
+    public class WaiverManager(IKeyedRepository<Waiver> repository)
+        : KeyedManager<Waiver>(repository), IWaiverManager
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaiverManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for waiver data access.</param>
-        public WaiverManager(IKeyedRepository<Waiver> repository) : base(repository)
-        {
-        }
 
         /// <inheritdoc />
         public async Task<Waiver> GetByNameAsync(string waiverName, CancellationToken cancellationToken = default)

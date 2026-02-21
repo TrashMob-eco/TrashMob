@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Collections.Generic;
@@ -14,49 +14,22 @@
     /// <summary>
     /// Manages user accounts including creation, updates, deletion, and related cascade operations.
     /// </summary>
-    public class UserManager : KeyedManager<User>, IUserManager
+    public class UserManager(
+        IKeyedRepository<User> repository,
+        IBaseRepository<EventAttendee> eventAttendeesRepository,
+        IKeyedRepository<UserNotification> userNotificationRepository,
+        IKeyedRepository<NonEventUserNotification> nonEventUserNotificationRepository,
+        IKeyedRepository<PartnerRequest> partnerRequestRepository,
+        IBaseRepository<EventSummary> eventSummaryRepository,
+        IBaseRepository<EventPartnerLocationService> eventPartnerRepository,
+        IKeyedRepository<Event> eventRepository,
+        IKeyedRepository<Partner> partnerRepository,
+        IBaseRepository<PartnerAdmin> partnerAdminRepository,
+        IKeyedRepository<PartnerLocation> partnerLocationRepository,
+        IEmailManager emailManager)
+        : KeyedManager<User>(repository), IUserManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly IBaseRepository<EventAttendee> eventAttendeesRepository;
-        private readonly IBaseRepository<EventPartnerLocationService> eventPartnerRepository;
-        private readonly IKeyedRepository<Event> eventRepository;
-        private readonly IBaseRepository<EventSummary> eventSummaryRepository;
-        private readonly IKeyedRepository<NonEventUserNotification> nonEventUserNotificationRepository;
-        private readonly IBaseRepository<PartnerAdmin> partnerAdminRepository;
-        private readonly IKeyedRepository<PartnerLocation> partnerLocationRepository;
-        private readonly IKeyedRepository<Partner> partnerRepository;
-        private readonly IKeyedRepository<PartnerRequest> partnerRequestRepository;
         private readonly Guid TrashMobUserId = Guid.Empty;
-        private readonly IKeyedRepository<UserNotification> userNotificationRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserManager"/> class.
-        /// </summary>
-        public UserManager(IKeyedRepository<User> repository,
-            IBaseRepository<EventAttendee> eventAttendeesRepository,
-            IKeyedRepository<UserNotification> userNotificationRepository,
-            IKeyedRepository<NonEventUserNotification> nonEventUserNotificationRepository,
-            IKeyedRepository<PartnerRequest> partnerRequestRepository,
-            IBaseRepository<EventSummary> eventSummaryRepository,
-            IBaseRepository<EventPartnerLocationService> eventPartnerRepository,
-            IKeyedRepository<Event> eventRepository,
-            IKeyedRepository<Partner> partnerRepository,
-            IBaseRepository<PartnerAdmin> partnerUserRepository,
-            IKeyedRepository<PartnerLocation> partnerLocationRepository,
-            IEmailManager emailManager) : base(repository)
-        {
-            this.eventAttendeesRepository = eventAttendeesRepository;
-            this.userNotificationRepository = userNotificationRepository;
-            this.nonEventUserNotificationRepository = nonEventUserNotificationRepository;
-            this.partnerRequestRepository = partnerRequestRepository;
-            this.eventSummaryRepository = eventSummaryRepository;
-            this.eventPartnerRepository = eventPartnerRepository;
-            this.eventRepository = eventRepository;
-            this.partnerRepository = partnerRepository;
-            partnerAdminRepository = partnerUserRepository;
-            this.partnerLocationRepository = partnerLocationRepository;
-            this.emailManager = emailManager;
-        }
 
         /// <inheritdoc />
         public async Task<User> GetUserByNameIdentifierAsync(string nameIdentifier,
@@ -93,7 +66,7 @@
         public override async Task<User> UpdateAsync(User user, CancellationToken cancellationToken = default)
         {
             // The IsSiteAdmin flag can only be changed directly in the database, so once set, we need to preserve that, no matter what the user passes in
-            var matchedUser = await GetUserByInternalIdAsync(user.Id, cancellationToken).ConfigureAwait(false);
+            var matchedUser = await GetUserByInternalIdAsync(user.Id, cancellationToken);
             user.IsSiteAdmin = matchedUser.IsSiteAdmin;
 
             return await base.UpdateAsync(user, cancellationToken);
@@ -266,7 +239,7 @@
             }
 
             // Remove the user's profile
-            var user = await Repo.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            var user = await Repo.GetAsync(id, cancellationToken);
             var result = await Repo.DeleteAsync(user);
 
             return result;
@@ -294,14 +267,13 @@
                 subject,
             };
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-            };
+            ];
 
             await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None);
 
             // Send welcome email to new User
             var welcomeMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.WelcomeToTrashMob.ToString());
@@ -314,14 +286,13 @@
                 subject = welcomeSubject,
             };
 
-            var welcomeRecipients = new List<EmailAddress>
-            {
+            List<EmailAddress> welcomeRecipients =
+            [
                 new() { Name = user.UserName, Email = user.Email },
-            };
+            ];
 
             await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None);
 
             return addedUser;
         }

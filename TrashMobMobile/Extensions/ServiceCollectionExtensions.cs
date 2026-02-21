@@ -16,18 +16,28 @@
             
             services.AddSingleton<INotificationService, NotificationService>();
 
+            services.AddSingleton<IAchievementManager, AchievementManager>();
+            services.AddSingleton<IAchievementRestService, AchievementRestService>();
+            services.AddSingleton<ICommunityManager, CommunityManager>();
+            services.AddSingleton<ICommunityRestService, CommunityRestService>();
             services.AddSingleton<IContactRequestManager, ContactRequestManager>();
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
             services.AddSingleton<IEventAttendeeRestService, EventAttendeeRestService>();
             services.AddSingleton<IEventAttendeeRouteRestService, EventAttendeeRouteRestService>();
             services.AddSingleton<IEventLitterReportManager, EventLitterReportManager>();
             services.AddSingleton<IEventLitterReportRestService, EventLitterReportRestService>();
+            services.AddSingleton<IEventPhotoManager, EventPhotoManager>();
+            services.AddSingleton<IEventPhotoRestService, EventPhotoRestService>();
             services.AddSingleton<IEventPartnerLocationServiceRestService, EventPartnerLocationServiceRestService>();
             services
                 .AddSingleton<IEventPartnerLocationServiceStatusRestService,
                     EventPartnerLocationServiceStatusRestService>();
             services.AddSingleton<IEventSummaryRestService, EventSummaryRestService>();
             services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
+            services.AddSingleton<ILeaderboardManager, LeaderboardManager>();
+            services.AddSingleton<ILeaderboardRestService, LeaderboardRestService>();
+            services.AddSingleton<INewsletterPreferenceManager, NewsletterPreferenceManager>();
+            services.AddSingleton<INewsletterPreferenceRestService, NewsletterPreferenceRestService>();
             services.AddSingleton<ILitterReportManager, LitterReportManager>();
             services.AddSingleton<ILitterReportRestService, LitterReportRestService>();
             services.AddSingleton<IMapRestService, MapRestService>();
@@ -37,6 +47,8 @@
             services.AddSingleton<IPickupLocationRestService, PickupLocationRestService>();
             services.AddSingleton<IServiceTypeRestService, ServiceTypeRestService>();
             services.AddSingleton<IStatsRestService, StatsRestService>();
+            services.AddSingleton<ITeamManager, TeamManager>();
+            services.AddSingleton<ITeamRestService, TeamRestService>();
             services.AddSingleton<IUserManager, UserManager>();
             services.AddSingleton<IUserRestService, UserRestService>();
             services.AddSingleton<IWaiverManager, WaiverManager>();
@@ -53,10 +65,10 @@
              * Use your correct FairPlayTube API port
              * */
             //ngrok.exe http https://localhost:44373 -host-header="localhost:44373"
-            services.AddScoped<BaseAddressAuthorizationMessageHandler>();
+            services.AddScoped<AuthHandler>();
             services.AddHttpClient($"ServerAPI", client =>
                     client.BaseAddress = new Uri(Settings.ApiBaseUrl))
-                .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>()
+                .AddHttpMessageHandler<AuthHandler>()
                 .AddHttpMessageHandler<SentryHttpMessageHandler>()
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5)) //Set lifetime to five minutes
                 .AddPolicyHandler(GetRetryPolicy());
@@ -74,8 +86,7 @@
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
-                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-                .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
                     retryAttempt)));
         }
     }

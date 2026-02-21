@@ -1,4 +1,4 @@
-# Project 2 � Home Page Improvements
+# Project 2 � Home Page Improvements
 
 | Attribute | Value |
 |-----------|-------|
@@ -35,22 +35,26 @@ Increase engagement and value communication by surfacing dynamic content, highli
 ## Scope
 
 ### Phase 1 - Dynamic Content
-- ? Integrate with CMS for dynamic news/announcements
-- ? Featured entity carousel (teams, communities, partners)
-- ? Impact photo gallery with recent event photos
-- ? Dynamic statistics dashboard
+- ☐ Integrate with CMS for dynamic news/announcements
+- ☐ Featured entity carousel (teams, communities, partners)
+- ☐ Impact photo gallery with recent event/community photos (moved from Project 18)
+- ☐ Dynamic statistics dashboard
 
 ### Phase 2 - Map Enhancements
 - ? New event pin icons (upcoming vs past, with/without summary)
 - ? Map legend with toggle controls
 - ? Litter report pins integration
 - ? Filter controls (event type, date range, etc.)
+- ? Map view: independent toggles for events and litter reports (show one, both, or neither)
+- ? List view: mutually exclusive selection (events OR litter reports)
+- ? Litter report date filter: historical only (last day, week, month, year, all)
 
 ### Phase 3 - Sponsorship Integration
-- ? Sponsor banner zones (top, sidebar, bottom)
-- ? Rotation logic for multiple sponsors
-- ? Click tracking and analytics
-- ? Admin UI for sponsor management
+- ☐ Sponsor banner zones (top, sidebar, bottom)
+- ☐ Rotation logic for multiple sponsors
+- ☐ Click tracking and analytics
+- ☐ Admin UI for sponsor management
+- ☐ **Feature flag entire sponsorship feature** (disabled until sponsors acquired)
 
 ### Phase 4 - Quick Actions
 - ? "Report Litter" quick action button
@@ -92,8 +96,8 @@ Increase engagement and value communication by surfacing dynamic content, highli
 
 ### Blockers
 - **Project 16 (CMS):** Required for dynamic content management
+- **Project 31 (Feature Flags):** Required for sponsorship feature toggle
 - **Design approval:** Mockups and sponsor placement guidelines
-- **Sponsor contracts:** At least 2-3 sponsors lined up
 
 ### Enables
 - **Project 10 (Community Pages):** Links from home page
@@ -159,7 +163,9 @@ public async Task<ActionResult<FeaturedContentDto>> GetFeaturedContent()
 3. **Events Map** (Enhanced)
    - Improved pins and legends
    - Filter controls
-   - Toggle for litter reports
+   - **Map view:** Toggle to show events, litter reports, or both (independent toggles)
+   - **List view:** Must select either events OR litter reports (mutually exclusive)
+   - **Litter report date filter:** Historical only (last day, week, month, year, all)
 
 4. **Featured Content** (New)
    - Rotating carousel
@@ -168,6 +174,8 @@ public async Task<ActionResult<FeaturedContentDto>> GetFeaturedContent()
 
 5. **Impact Statistics** (Dynamic)
    - Total bags, volunteers, events
+   - Total weight picked up
+   - Total litter reports submitted
    - Real-time or daily refresh
 
 6. **Sponsor Banner** (New)
@@ -271,10 +279,39 @@ No mobile app changes required (web-only improvements).
    **Owner:** Security + Privacy team  
    **Due:** Before sponsorship phase
 
-4. **Should featured content be curated or algorithmic?**  
-   **Recommendation:** Manual curation for now (2-3 features per week), algorithmic in future  
-   **Owner:** Product team  
+4. **Should featured content be curated or algorithmic?**
+   **Recommendation:** Manual curation for now (2-3 features per week), algorithmic in future
+   **Owner:** Product team
    **Due:** Early in project
+
+5. **Should we use a carousel for featured content?**
+   **Context:** Carousels have fallen out of favor in UX design due to low engagement (users rarely interact beyond first slide), accessibility challenges, and mobile usability issues. Alternatives include static featured cards, tabbed content, or a vertical feed.
+   **Recommendation:** Research current best practices; consider static grid or single featured item with "see more" link
+   **Owner:** UX Designer
+   **Due:** Design phase
+
+6. **What personalization should logged-in users see on the home page?**
+   **Recommendation:** Show nearby events based on home location, teams user might be interested in (by location), and progress toward personal impact goals
+   **Owner:** UX Designer + Product Lead
+   **Due:** Design phase
+
+7. **What are the specific performance budget targets?**
+   **Recommendation:** LCP < 2.5s, CLS < 0.1, FID < 100ms (Core Web Vitals thresholds)
+   **Owner:** Engineering Team
+   **Due:** Before implementation
+
+8. **How do we handle CMS downtime gracefully?**
+   **Recommendation:** Cache last-known-good content with configurable TTL; show static fallback content if cache empty; add monitoring alerts for CMS availability
+   **Owner:** Engineering Team
+   **Due:** Before Phase 1
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2225](https://github.com/trashmob/TrashMob/issues/2225)** - Project 2: Home Page Improvements (tracking issue)
 
 ---
 
@@ -284,10 +321,11 @@ No mobile app changes required (web-only improvements).
 - **[Project 3 - Litter Reporting Web](./Project_03_Litter_Reporting_Web.md)** - Report creation flow
 - **[Project 9 - Teams](./Project_09_Teams.md)** - Team discovery links
 - **[Project 10 - Community Pages](./Project_10_Community_Pages.md)** - Community discovery links
+- **[Project 18 - Before & After Photos](./Project_18_Before_After_Photos.md)** - Photo gallery feature (featured photos moved here)
 
 ---
 
-**Last Updated:** January 24, 2026  
-**Owner:** Web Product Lead + UX Designer  
-**Status:** Ready for Design Review  
+**Last Updated:** February 3, 2026
+**Owner:** Web Product Lead + UX Designer
+**Status:** Ready for Design Review
 **Next Review:** Before implementation begins

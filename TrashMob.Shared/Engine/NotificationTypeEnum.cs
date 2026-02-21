@@ -129,5 +129,110 @@
         /// Notification sent when a partner request is automatically approved.
         /// </summary>
         EventPartnerRequestAutoApproved = 25,
+
+        /// <summary>
+        /// Notification sent to the creator when their litter report is marked as cleaned.
+        /// </summary>
+        LitterReportCleaned = 26,
+
+        /// <summary>
+        /// Weekly digest notification about new litter reports in the user's area.
+        /// </summary>
+        WeeklyLitterReportDigest = 27,
+
+        /// <summary>
+        /// Notification sent when a user is promoted to event co-lead.
+        /// </summary>
+        EventCoLeadAdded = 28,
+
+        /// <summary>
+        /// Notification sent when a user is removed as event co-lead.
+        /// </summary>
+        EventCoLeadRemoved = 29,
+
+        /// <summary>
+        /// Notification sent to admins when user feedback is submitted.
+        /// </summary>
+        UserFeedbackReceived = 30,
+
+        /// <summary>
+        /// Notification sent to the photo uploader when their photo is removed by moderation.
+        /// </summary>
+        PhotoRemoved = 31,
+
+        /// <summary>
+        /// Notification sent to admins when a photo is flagged for review.
+        /// </summary>
+        PhotoFlagged = 32,
+
+        /// <summary>
+        /// Notification sent to community admins when a team submits an adoption application.
+        /// </summary>
+        AdoptionApplicationSubmitted = 33,
+
+        /// <summary>
+        /// Notification sent to team leads when their adoption application is approved.
+        /// </summary>
+        AdoptionApplicationApproved = 34,
+
+        /// <summary>
+        /// Notification sent to team leads when their adoption application is rejected.
+        /// </summary>
+        AdoptionApplicationRejected = 35,
+
+        /// <summary>
+        /// Reminder notification sent to users when their waiver is expiring soon.
+        /// </summary>
+        WaiverExpiringReminder = 36,
+
+        /// <summary>
+        /// Invitation sent to potential volunteers to join TrashMob.
+        /// </summary>
+        InviteToJoinTrashMob = 37,
+
+        /// <summary>
+        /// Invitation sent to potential volunteers to join a specific community.
+        /// </summary>
+        InviteToJoinCommunity = 38,
+
+        /// <summary>
+        /// Invitation sent to potential volunteers to join a specific team.
+        /// </summary>
+        InviteToJoinTeam = 39,
+
+        /// <summary>
+        /// Initial outreach email sent to a community prospect introducing TrashMob.
+        /// </summary>
+        ProspectOutreachInitial = 40,
+
+        /// <summary>
+        /// Follow-up outreach email sent to a community prospect.
+        /// </summary>
+        ProspectOutreachFollowUp = 41,
+
+        /// <summary>
+        /// Value-add outreach email sharing stats and impact data with a community prospect.
+        /// </summary>
+        ProspectOutreachValueAdd = 42,
+
+        /// <summary>
+        /// Final gentle follow-up outreach email sent to a community prospect.
+        /// </summary>
+        ProspectOutreachFinal = 43,
+
+        /// <summary>
+        /// Welcome email sent to a community partner after prospect-to-partner conversion.
+        /// </summary>
+        CommunityWelcome = 44,
+
+        /// <summary>
+        /// Notification sent to team members about upcoming team events this week.
+        /// </summary>
+        UpcomingTeamEventsThisWeek = 45,
+
+        /// <summary>
+        /// Notification sent to team members about upcoming team events soon (within 24 hours).
+        /// </summary>
+        UpcomingTeamEventsSoon = 46,
     }
 }

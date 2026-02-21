@@ -10,55 +10,64 @@
              xmlns:tabs="http://sharpnado.com"
              xmlns:views="clr-namespace:TrashMobMobile.Views.ViewEvent"
              Title="Event Details">
-    <Grid>
-        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Margin="10">
-            <Label
-                    Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
-                    VerticalOptions="Center"
-                    Margin="4" />
+    <Grid RowDefinitions="Auto,Auto,*" Margin="10">
+        <Label Grid.Row="0"
+               Text="{Binding EventViewModel.Name}"
+               FontFamily="LexendSemibold"
+               FontSize="Title"
+               HorizontalOptions="Start"
+               VerticalOptions="Center"
+               Margin="4,4,4,8" />
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+        <tabs:TabHostView Grid.Row="1"
+                          Padding="0"
+                          Orientation="Horizontal"
+                          TabType="Fixed"
+                          SelectedIndex="{Binding Source={x:Reference Switcher},
+                                      Path=SelectedIndex, Mode=TwoWay}">
+            <tabs:BottomTabItem Label="Details"  SelectedTabColor="{StaticResource Primary}" />
+            <tabs:BottomTabItem Label="Partners" SelectedTabColor="{StaticResource Primary}" />
+            <tabs:BottomTabItem Label="People" SelectedTabColor="{StaticResource Primary}" />
+            <tabs:BottomTabItem Label="Litter" SelectedTabColor="{StaticResource Primary}" />
+            <tabs:BottomTabItem Label="Photos" SelectedTabColor="{StaticResource Primary}" />
+            <tabs:BottomTabItem Label="Routes" SelectedTabColor="{StaticResource Primary}" />
+        </tabs:TabHostView>
 
-            <tabs:TabHostView Padding="10" 
-                              Orientation="Horizontal" 
-                              TabType="Fixed"
-                              SelectedIndex="{Binding Source={x:Reference Switcher}, 
-                                          Path=SelectedIndex, Mode=TwoWay}">
-                <tabs:BottomTabItem Label="Details"  SelectedTabColor="{StaticResource Primary}" />
-
-                <tabs:BottomTabItem Label="Partners" SelectedTabColor="{StaticResource Primary}" />
-
-                <tabs:BottomTabItem Label="Attendees" SelectedTabColor="{StaticResource Primary}" />
-
-                <tabs:BottomTabItem Label="Litter Reports" SelectedTabColor="{StaticResource Primary}" />
-
-            </tabs:TabHostView>
-
-            <tabs:ViewSwitcher x:Name="Switcher"
+        <tabs:ViewSwitcher Grid.Row="2"
+                           x:Name="Switcher"
                            Margin="0"
                            Animate="True">
-                <tabs:DelayedView x:TypeArguments="views:TabDetails" x:Name="tabDetails"
-                        AccentColor="{StaticResource Primary}"
-                        Animate="True"
-                        UseActivityIndicator="True" />
-                <tabs:DelayedView x:TypeArguments="views:TabPartners" x:Name="tabPartners"
-                        AccentColor="{StaticResource Primary}"
-                        Animate="True"
-                        UseActivityIndicator="True" />
-                <tabs:DelayedView x:TypeArguments="views:TabAttendees"
-                        AccentColor="{StaticResource Primary}"
-                        Animate="True"
-                        UseActivityIndicator="True" />
-                <tabs:DelayedView x:TypeArguments="views:TabLitterReports"
-                        AccentColor="{StaticResource Primary}"
-                        Animate="True"
-                        UseActivityIndicator="True" />
-            </tabs:ViewSwitcher>
+            <tabs:DelayedView x:TypeArguments="views:TabDetails" x:Name="tabDetails"
+                    AccentColor="{StaticResource Primary}"
+                    Animate="True"
+                    UseActivityIndicator="True" />
+            <tabs:DelayedView x:TypeArguments="views:TabPartners" x:Name="tabPartners"
+                    AccentColor="{StaticResource Primary}"
+                    Animate="True"
+                    UseActivityIndicator="True" />
+            <tabs:DelayedView x:TypeArguments="views:TabAttendees"
+                    AccentColor="{StaticResource Primary}"
+                    Animate="True"
+                    UseActivityIndicator="True" />
+            <tabs:DelayedView x:TypeArguments="views:TabLitterReports"
+                    AccentColor="{StaticResource Primary}"
+                    Animate="True"
+                    UseActivityIndicator="True" />
+            <tabs:DelayedView x:TypeArguments="views:TabPhotos"
+                    AccentColor="{StaticResource Primary}"
+                    Animate="True"
+                    UseActivityIndicator="True" />
+            <tabs:DelayedView x:TypeArguments="views:TabRoutes"
+                    AccentColor="{StaticResource Primary}"
+                    Animate="True"
+                    UseActivityIndicator="True" />
+        </tabs:ViewSwitcher>
 
-        </VerticalStackLayout>
-        <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
-                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
-        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
-                               HorizontalOptions="Center" />
+        <BoxView Grid.RowSpan="3"
+                 BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                 VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
+        <ActivityIndicator Grid.RowSpan="3"
+                           IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+                           HorizontalOptions="Center" />
     </Grid>
 </ContentPage>

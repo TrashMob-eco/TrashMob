@@ -35,6 +35,37 @@ docker build -f TrashMobDailyJobs/Dockerfile -t trashmob-daily-jobs:latest .
 docker build -f TrashMobHourlyJobs/Dockerfile -t trashmob-hourly-jobs:latest .
 ```
 
+**Important:** Always use case-sensitive paths in Dockerfiles matching the actual filesystem. Verify casing of project names, folder names, and file references before building — case mismatches are a common source of Docker build failures on Linux containers built from Windows.
+
+### Strapi CMS (Local Development)
+```bash
+cd Strapi
+npm install
+
+# Create .env file with required secrets
+cat > .env << 'EOF'
+ADMIN_JWT_SECRET=local-dev-jwt-secret-32chars-min
+API_TOKEN_SALT=local-dev-api-token-salt-here
+APP_KEYS=key1-for-local-dev,key2-for-local-dev
+TRANSFER_TOKEN_SALT=local-dev-transfer-salt-here
+DATABASE_CLIENT=sqlite
+DATABASE_FILENAME=.tmp/data.db
+EOF
+
+# Create required directories
+mkdir -p public/uploads .tmp
+
+# Development mode (auto-reloads on changes)
+npm run develop
+# Strapi admin: http://localhost:1337/admin
+
+# Production mode
+npm run build
+npm run start
+```
+
+**Note:** Local Strapi uses SQLite for simplicity. Deployed environments (dev/prod) use Azure SQL for persistent storage. Data created locally will not sync to deployed environments.
+
 ## Architecture Overview
 
 **Solution Structure:**
@@ -128,9 +159,9 @@ npm start
 
 ## Technology Stack
 
-- **Backend:** .NET 10, EF Core 10, Azure SQL, Azure B2C (→ Entra External ID), SendGrid, Azure Maps
-- **Frontend:** React 18, TypeScript 5.8, Vite 7, Tailwind CSS 4, React Query
-- **Mobile:** .NET MAUI (MVVM pattern)
+- **Backend:** .NET 10, EF Core 10, Azure SQL, Entra External ID (migrating from Azure B2C), SendGrid, Azure Maps
+- **Frontend:** React 18, TypeScript 5.8, Vite 7, Tailwind CSS 4, TanStack React Query, Radix UI, Zod, React Hook Form
+- **Mobile:** .NET MAUI with CommunityToolkit.Mvvm (MVVM + source generators), Sentry.io for crash reporting
 - **Infrastructure:** Azure Container Apps, GitHub Actions, Bicep IaC
 
 ## Branching Strategy
@@ -139,21 +170,33 @@ npm start
 - `release` - Production releases
 - `dev/{developer}/{feature}` - Feature branches
 
+**IMPORTANT: Never push directly to main.** All changes must go through a pull request, even hotfixes. Create a feature branch, push it, and create a PR for review.
+
+## AI Assistant Boundaries
+
+- **Do not make autonomous structural changes** to project plans (e.g., moving features between projects, removing rollout strategies, reorganizing phases) unless explicitly asked. Suggest improvements first and wait for approval.
+- **Scope changes to what's requested.** A bug fix doesn't need surrounding code cleaned up. A planning doc update doesn't need other docs refactored.
+- **When debugging, explain reasoning before trying fixes.** List what you think the problem is and your proposed approach before making changes — especially for unfamiliar frameworks (Strapi, MAUI, Bicep).
+
 ## Coding Standards & Patterns
 
-### General Principles
-- Follow **.NET coding conventions** and C# style guidelines
-- Use **async/await** for all I/O operations
-- Implement proper **error handling** with meaningful messages
+### C# Conventions (Backend + Mobile)
+- Use **primary constructors** (C# 12) for all new classes — controllers, managers, ViewModels, repositories
+- Use **async/await** with **`CancellationToken`** on all async method signatures
+- Use **collection expressions** (`[item1, item2]`) instead of `new List<T> { }` or `.ToList()` where appropriate
+- Use **structured logging** with `LoggerMessage` source generators or message templates (not string interpolation)
+- Use `== null` / `!= null` in EF Core LINQ expressions (not `is null` / `is not null` — causes CS8122)
 - Add **XML documentation** for public APIs (required for Swagger)
-- Write **unit tests** for business logic (xUnit preferred)
+- Write **unit tests** for business logic (xUnit, 450+ tests)
 
 ### API Design
 - RESTful endpoints with proper HTTP verbs (GET, POST, PUT, DELETE)
 - Return appropriate HTTP status codes (200, 201, 400, 401, 403, 404, 500)
-- Use **DTOs** for request/response to decouple from database models
-- Implement **pagination** for list endpoints
-- Add **authentication/authorization** attributes where needed
+- Use **DTOs** (in `TrashMob.Models/Poco/`) for request/response to decouple from database models
+- Add **`[ProducesResponseType]`** attributes for all responses (required for Swagger)
+- Add **authentication/authorization** attributes: `[Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]`
+- Use **`[RequiredScope(Constants.TrashMobWriteScope)]`** on write endpoints
+- Call **`TrackEvent()`** for telemetry on mutation operations
 
 ### Database & EF Core
 - Use **migrations** for schema changes (never manual SQL)
@@ -169,9 +212,13 @@ npm start
 - Implement **retry logic** for transient failures
 
 ### Mobile (MAUI)
-- Follow **MVVM pattern** (Model-View-ViewModel)
+- Follow **MVVM pattern** using **CommunityToolkit.Mvvm** source generators
+- Use **`[ObservableProperty]`** for bindable properties, **`[RelayCommand]`** for commands
+- Use **primary constructors** for ViewModels: `public partial class XxxViewModel(...) : BaseViewModel(notificationService)`
+- Use **`[QueryProperty]`** on Pages for navigation parameters
+- Initialize ViewModel data in **`OnNavigatedTo`**, not in the constructor
+- Error handling via `BaseViewModel.ExecuteAsync()` which wraps Sentry capture
 - Use **platform-specific** code only when necessary
-- Implement **offline support** where feasible
 - Handle **network connectivity** gracefully
 - Target **crash-free sessions ≥ 99.5%**
 
@@ -205,22 +252,59 @@ npm start
 
 ## Key 2026 Initiatives
 
-Refer to `Planning/README.md` for detailed roadmap. Priority areas:
+Refer to `Planning/README.md` for detailed roadmap (47 projects, 25 complete). Active priority areas:
 
-1. **Project 1:** Auth migration (Azure B2C → Entra External ID)
-2. **Project 4:** Mobile stabilization and error handling
-3. **Project 7:** Event weight tracking (Phase 1 & 2)
-4. **Project 9:** Teams feature (MVP)
-5. **Project 10:** Community Pages (MVP)
+1. **Project 1:** Auth migration (Azure B2C → Entra External ID) — Phases 0-3 code complete, prod cutover remaining
+2. **Project 4:** Mobile stabilization — Phases 1-4 substantial progress, ViewModel tests + UX improvements
+3. **Project 8:** Waivers V3 — Phases 1-4, 6 complete, community waivers and minors coverage
+4. **Project 44:** Area Map Editor — Phases 1-4 complete, Phase 6 (AI bulk generation) planned
+5. **Project 45:** Community Showcase — Phases 1-4 complete, landing page and enrollment funnel
 
 ## Common Patterns
 
 ### Adding a new API endpoint
-1. Create/update model in `TrashMob.Models/`
-2. Add interface method to `IXxxManager` in `TrashMob.Shared/Managers/Interfaces/`
-3. Implement in manager class in `TrashMob.Shared/Managers/`
-4. Add controller method in `TrashMob/Controllers/`
-5. Add React Query service in `TrashMob/client-app/src/services/`
+1. Create/update model in `TrashMob.Models/` (inherit `KeyedModel` for entities with GUID Id)
+2. Add interface in `TrashMob.Shared/Managers/Interfaces/` (extend `IKeyedManager<T>`)
+3. Implement manager in `TrashMob.Shared/Managers/` (extend `KeyedManager<T>`, use primary constructor)
+4. Register in `TrashMob.Shared/ServiceBuilder.cs` (repositories are auto-resolved)
+5. Add controller in `TrashMob/Controllers/` (extend `KeyedController<T>` or `SecureController`, use primary constructor)
+6. Add React Query service in `TrashMob/client-app/src/services/` (factory returning `{ key, service }`)
+
+### Controller Template (Current Pattern)
+```csharp
+public class ThingsController(
+    IThingManager thingManager,
+    IOtherManager otherManager)
+    : KeyedController<Thing>(thingManager)
+{
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
+    {
+        return Ok(await Manager.GetAsync(id, cancellationToken));
+    }
+
+    [HttpPost]
+    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+    [RequiredScope(Constants.TrashMobWriteScope)]
+    public async Task<IActionResult> Add(Thing instance, CancellationToken cancellationToken)
+    {
+        var result = await Manager.AddAsync(instance, UserId, cancellationToken);
+        TrackEvent("AddThing");
+        return Ok(result);
+    }
+}
+```
+
+### Authorization Checks
+```csharp
+// Check entity ownership
+if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntity))
+    return Forbid();
+
+// Check event lead role
+if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+    return Forbid();
+```
 
 ### ServiceResult Pattern
 For operations needing specific error messages:
@@ -231,11 +315,35 @@ public async Task<ServiceResult<T>> DoSomethingAsync(...) {
 }
 ```
 
+### Adding a new frontend page
+1. Create page component in `TrashMob/client-app/src/pages/`
+2. Add lazy import and route in `App.tsx`
+3. Use React Query hooks with service factories from `services/`
+4. Use Zod + React Hook Form for forms, DataTable for lists
+5. See `TrashMob/CLAUDE.md` for detailed frontend patterns
+
+### Adding a new mobile screen
+1. Create ViewModel in `TrashMobMobile/ViewModels/` (extend `BaseViewModel`, use `partial class` + primary constructor)
+2. Create Page in `TrashMobMobile/Pages/` (XAML + code-behind with `[QueryProperty]`)
+3. Register both in `TrashMobMobile/MauiProgram.cs` DI container
+4. Add Shell route in `AppShell.xaml.cs`
+5. See `TrashMobMobile/CLAUDE.md` for detailed mobile patterns
+
 ## Troubleshooting
 
 **Data doesn't load locally:** Check Azure SQL firewall rules - your IP may have changed. Look for actual IP in VS Code debug output.
 
 **Email not sending:** `dotnet user-secrets set "sendGridApiKey" "x"` to disable, or use real key from dev KeyVault.
+
+### Windows Environment
+
+- **ImageMagick `convert.exe`** conflicts with the Windows disk conversion utility (`C:\Windows\System32\convert.exe`). Use PowerShell .NET methods (`System.Drawing`) or specify the full ImageMagick path explicitly.
+- **Android SDK paths:** When setting up MAUI, ensure `cmdline-tools` is in the correct subdirectory (`latest/`) and JDK 17+ is installed. Windows SDK paths differ from macOS/Linux documentation.
+
+### Azure Infrastructure
+
+- **Subscription tier matters:** Azure Sponsorship subscriptions have restricted API support (e.g., budget/billing APIs may not be available). Always confirm the target subscription tier before using budget or consumption APIs in Bicep templates.
+- **Bicep environment naming:** Use the exact environment suffix from our naming convention (`dev`, `pr`) — not alternatives like `test` or `staging`.
 
 ## Testing
 
@@ -335,10 +443,229 @@ az containerapp hostname bind \
 
 See `Deploy/CUSTOM_DOMAIN_MIGRATION.md` for full migration documentation.
 
+### Apex Domain (trashmob.eco) with Azure Front Door
+
+Azure Container Apps doesn't support apex/root domains with managed certificates directly. To handle both `trashmob.eco` and `www.trashmob.eco`, use Azure Front Door:
+
+**Deploy Front Door:**
+```bash
+# Deploy Front Door for production
+az deployment group create \
+  --resource-group rg-trashmob-pr-westus2 \
+  --template-file Deploy/frontDoor.bicep \
+  --parameters \
+    environment=pr \
+    containerAppFqdn=ca-tm-pr-westus2.greenground-fd8fc385.westus2.azurecontainerapps.io \
+    primaryDomain=www.trashmob.eco \
+    apexDomain=trashmob.eco
+```
+
+**DNS Configuration for Front Door:**
+
+| Record Type | Name | Value |
+|-------------|------|-------|
+| CNAME | `www` | `fde-tm-pr.azurefd.net` (Front Door endpoint) |
+| ALIAS/ANAME | `@` (apex) | `fde-tm-pr.azurefd.net` (requires Azure DNS or Cloudflare) |
+| TXT | `_dnsauth.www` | validation token from Azure Portal |
+| TXT | `_dnsauth` | validation token from Azure Portal |
+
+**Note:** Microsoft 365 DNS doesn't support ALIAS records for apex domains. Options:
+1. Migrate DNS to Azure DNS (supports alias records to Front Door)
+2. Use Cloudflare DNS (free, supports CNAME flattening for apex)
+3. Keep current setup with only `www.trashmob.eco` working
+
+**Bicep template:** `Deploy/frontDoor.bicep`
+
+### Azure DNS Migration (for Apex Domain Support)
+
+To support the apex domain (`trashmob.eco`) with Azure Front Door, migrate DNS from Microsoft 365 to Azure DNS:
+
+**Step 1: Deploy Azure DNS Zone**
+```bash
+az deployment group create \
+  --resource-group rg-trashmob-pr-westus2 \
+  --template-file Deploy/dnsZone.bicep \
+  --parameters \
+    zoneName=trashmob.eco \
+    environment=pr \
+    frontDoorEndpointHostname=fde-tm-pr.azurefd.net \
+    frontDoorEndpointId=/subscriptions/<sub-id>/resourceGroups/rg-trashmob-pr-westus2/providers/Microsoft.Cdn/profiles/fd-tm-pr/afdEndpoints/fde-tm-pr \
+    useFrontDoor=true
+```
+
+**Step 2: Note Azure Nameservers**
+The deployment outputs Azure's nameservers (e.g., `ns1-01.azure-dns.com`). You'll need all 4.
+
+**Step 3: Update Domain Registrar**
+Go to your domain registrar (where trashmob.eco was purchased) and update nameservers to Azure's:
+- `ns1-01.azure-dns.com`
+- `ns2-01.azure-dns.net`
+- `ns3-01.azure-dns.org`
+- `ns4-01.azure-dns.info`
+
+**Step 4: Wait for Propagation**
+DNS propagation can take 24-48 hours. Use `dig` or `nslookup` to verify.
+
+**Step 5: Update Validation Tokens**
+After Front Door is deployed, update the `_dnsauth` TXT records with actual validation tokens from Azure Portal.
+
+**Included Records:**
+- WWW CNAME → Front Door
+- Apex ALIAS → Front Door (Azure DNS alias record)
+- Dev CNAME → Dev Container App
+- MX, SPF, DKIM → Microsoft 365 email
+- Autodiscover CNAME → Outlook
+
+**Bicep template:** `Deploy/dnsZone.bicep`
+
+### Deployment Rollback Procedures
+
+Azure Container Apps keeps multiple revisions available. Use these procedures to roll back a deployment.
+
+**View available revisions:**
+```bash
+# Production
+az containerapp revision list --name ca-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 --output table
+
+# Development
+az containerapp revision list --name ca-tm-dev-westus2 --resource-group rg-trashmob-dev-westus2 --output table
+```
+
+**Roll back to a previous revision:**
+```bash
+# Production - activate a previous revision (replace <revision-name> with actual name from list)
+az containerapp revision activate --name ca-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 --revision <revision-name>
+
+# Then route 100% traffic to that revision
+az containerapp ingress traffic set --name ca-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 --revision-weight <revision-name>=100
+```
+
+**Roll back using a previous container image:**
+```bash
+# List images in Azure Container Registry
+az acr repository show-tags --name crtmprwestus2 --repository trashmob --orderby time_desc --output table
+
+# Deploy a specific image tag (e.g., a previous git SHA)
+az containerapp update --name ca-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 --image crtmprwestus2.azurecr.io/trashmob:<previous-tag>
+```
+
+**Rollback strategy:**
+- Keep 3 previous container images in ACR (automatic via GitHub Actions tagging)
+- Each deployment creates a new revision; old revisions remain available
+- Target rollback time: ≤ 5 minutes
+- Always verify rollback success by checking application health
+
+**Emergency rollback checklist:**
+1. Identify the issue (check Application Insights, user reports)
+2. List available revisions or images
+3. Execute rollback command
+4. Verify application is healthy (check `/health` endpoint or Swagger)
+5. Notify team of rollback
+6. Investigate root cause before redeploying
+
+### Database Backups & Restore
+
+Azure SQL databases have automated backup with the following retention policies:
+
+| Backup Type | Retention | Purpose |
+|-------------|-----------|---------|
+| **Point-in-Time (PITR)** | 14 days | Restore to any point within the retention window |
+| **Weekly LTR** | 4 weeks | Weekly full backups for longer-term recovery |
+| **Monthly LTR** | 12 months | Monthly backups for compliance and audit |
+
+**Backup configuration:** `Deploy/sqlDatabase.bicep` and `Deploy/sqlDatabaseStrapi.bicep`
+**Alerting:** `Deploy/backupAlerts.bicep` - Monitors database health and sends alerts to `info@trashmob.eco`
+
+**View current backup settings:**
+```bash
+# Short-term retention
+az sql db str-policy show --name db-tm-pr-westus2 --server sql-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2
+
+# Long-term retention
+az sql db ltr-policy show --name db-tm-pr-westus2 --server sql-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2
+```
+
+**Point-in-Time Restore (within 14 days):**
+```bash
+# Restore to a specific time (creates new database)
+az sql db restore --dest-name db-tm-pr-westus2-restored \
+  --name db-tm-pr-westus2 --server sql-tm-pr-westus2 \
+  --resource-group rg-trashmob-pr-westus2 \
+  --time "2026-01-25T12:00:00Z"
+```
+
+**Long-Term Retention Restore:**
+```bash
+# List available LTR backups
+az sql db ltr-backup list --location westus2 \
+  --server sql-tm-pr-westus2 --database db-tm-pr-westus2
+
+# Restore from LTR backup
+az sql db ltr-backup restore --dest-database db-tm-pr-westus2-restored \
+  --dest-server sql-tm-pr-westus2 \
+  --dest-resource-group rg-trashmob-pr-westus2 \
+  --backup-id "<backup-id-from-list>"
+```
+
+**Recovery objectives:**
+- **RPO (Recovery Point Objective):** < 1 hour
+- **RTO (Recovery Time Objective):** < 4 hours
+
+See Project 32 (Database Backups) for full documentation and runbook.
+
+### Key Vault Access (RBAC Authorization)
+
+TrashMob uses Azure Key Vault with **RBAC authorization** (not access policies). This means:
+
+1. **Managed Identities** (Container Apps, Container App Jobs) are granted the `Key Vault Secrets User` role to read secrets at runtime
+2. **Developers** need the `Key Vault Secrets Officer` role to create/update secrets
+3. **GitHub Actions** deployment workflows automatically grant RBAC roles to managed identities
+
+**Check your Key Vault permissions:**
+```bash
+# List your role assignments on the Key Vault
+az role assignment list --scope $(az keyvault show --name kv-tm-dev-westus2 --query id -o tsv) --assignee $(az account show --query user.name -o tsv) -o table
+```
+
+**Request access if needed:**
+Contact the engineering lead to be granted `Key Vault Secrets Officer` role for development environments.
+
+See `Deploy/keyVault.bicep` and Project 26 documentation for technical details on the RBAC model.
+
+### Strapi CMS Infrastructure
+
+The Strapi CMS runs as a separate Container App (`ca-strapi-tm-dev-westus2`) with external ingress for admin access. It uses Azure SQL (`db-strapi-dev-westus2`) for persistent storage. The workflow automatically deploys the database and creates the SQL user.
+
+**Note:** You need the `Key Vault Secrets Officer` RBAC role to create secrets (see Key Vault Access section above).
+
+| Secret Name | Purpose |
+|-------------|---------|
+| `strapi-db-password` | Password for Strapi's Azure SQL database |
+| `strapi-admin-jwt-secret` | JWT secret for admin panel authentication |
+| `strapi-api-token-salt` | Salt for API token generation |
+| `strapi-app-keys` | Application keys (comma-separated) |
+| `strapi-transfer-token-salt` | Salt for transfer tokens |
+
+**Create secrets for a new environment:**
+```bash
+# Replace kv-tm-dev-westus2 with appropriate Key Vault name
+az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
+az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-admin-jwt-secret --value "$(openssl rand -base64 32)"
+az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-api-token-salt --value "$(openssl rand -base64 32)"
+az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-app-keys --value "$(openssl rand -base64 32),$(openssl rand -base64 32)"
+az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-transfer-token-salt --value "$(openssl rand -base64 32)"
+```
+
+**Key files:**
+- Bicep template: `Deploy/containerAppStrapi.bicep`
+- Database template: `Deploy/sqlDatabaseStrapi.bicep`
+- Workflow: `.github/workflows/container_strapi-tm-dev-westus2.yml`
+- Source: `Strapi/`
+
 ## Additional Resources
 
 - **2026 Planning:** `Planning/README.md` - Navigation hub for all planning docs
-- **Individual Projects:** `Planning/Projects/` - 25 detailed project specifications
+- **Individual Projects:** `Planning/Projects/` - 46 detailed project specifications
 - **Product Plan:** `Planning/README.md` - Master roadmap document
 - **Domain Model:** `TrashMob.Models/TrashMob.Models.prd` - Entity relationships and business rules
 - **Test Scenarios:** `TestScenarios.md` - Manual test cases (automation planned)

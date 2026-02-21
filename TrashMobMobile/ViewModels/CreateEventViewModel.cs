@@ -6,6 +6,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Color = Microsoft.Maui.Graphics.Color;
+using Sentry;
 using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
@@ -20,23 +21,22 @@ public partial class CreateEventViewModel : BaseViewModel
     private readonly IMapRestService mapRestService;
 
     private readonly IMobEventManager mobEventManager;
-    private readonly IWaiverManager waiverManager;
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
     private readonly ILitterReportManager litterReportManager;
     private readonly IEventLitterReportManager eventLitterReportManager;
     private readonly IUserManager userManager;
+    private readonly ITeamManager teamManager;
     private readonly INotificationService notificationService;
-    private readonly IEventPartnerLocationServiceStatusRestService eventPartnerLocationServiceStatusRestService;
     private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
-    public ICommand PreviousCommand { get; set; }
-    public ICommand NextCommand { get; set; }
+    public ICommand PreviousCommand { get; set; } = null!;
+    public ICommand NextCommand { get; set; } = null!;
 
-    public ICommand CloseCommand { get; set; }
+    public ICommand CloseCommand { get; set; } = null!;
 
-    [ObservableProperty] private EventViewModel eventViewModel;
+    [ObservableProperty] private EventViewModel eventViewModel = null!;
 
-    [ObservableProperty] private AddressViewModel userLocation;
+    [ObservableProperty] private AddressViewModel userLocation = null!;
 
     [ObservableProperty] private bool isStepValid;
 
@@ -56,7 +56,70 @@ public partial class CreateEventViewModel : BaseViewModel
     [ObservableProperty]
     private bool isLitterReportListSelected;
 
-    private string selectedEventType;
+    [ObservableProperty]
+    private bool isTeamPickerVisible;
+
+    public ObservableCollection<string> VisibilityOptions { get; set; } = ["Public", "Team Only", "Private"];
+
+    public ObservableCollection<string> TeamNames { get; set; } = [];
+
+    private List<Team> UserTeams { get; set; } = [];
+
+    private string selectedVisibility = "Public";
+
+    public string SelectedVisibility
+    {
+        get => selectedVisibility;
+        set
+        {
+            if (value == null)
+                return;
+
+            if (selectedVisibility != value)
+            {
+                selectedVisibility = value;
+                OnPropertyChanged();
+
+                IsTeamPickerVisible = value == "Team Only";
+
+                EventViewModel.EventVisibilityId = value switch
+                {
+                    "Team Only" => (int)EventVisibilityEnum.TeamOnly,
+                    "Private" => (int)EventVisibilityEnum.Private,
+                    _ => (int)EventVisibilityEnum.Public,
+                };
+
+                if (value != "Team Only")
+                {
+                    EventViewModel.TeamId = null;
+                    SelectedTeam = string.Empty;
+                }
+            }
+        }
+    }
+
+    private string selectedTeam = string.Empty;
+
+    public string SelectedTeam
+    {
+        get => selectedTeam;
+        set
+        {
+            if (value == null)
+                return;
+
+            if (selectedTeam != value)
+            {
+                selectedTeam = value;
+                OnPropertyChanged();
+
+                var team = UserTeams.FirstOrDefault(t => t.Name == value);
+                EventViewModel.TeamId = team?.Id;
+            }
+        }
+    }
+
+    private string selectedEventType = string.Empty;
 
     public string SelectedEventType
     {
@@ -77,73 +140,26 @@ public partial class CreateEventViewModel : BaseViewModel
 
     private bool validating;
 
-    private TimeSpan startTime;
-    private TimeSpan endTime;
-
-    public TimeSpan StartTime
-    {
-        get => startTime;
-        set
-        {
-            if (startTime != value)
-            {
-                startTime = value;
-                UpdateDates(value, EndTime);
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(FormattedEventDuration));
-            }
-        }
-    }
-
-    public TimeSpan EndTime
-    {
-        get => endTime;
-        set
-        {
-            if (endTime != value)
-            {
-                endTime = value;
-                UpdateDates(StartTime, value);
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(FormattedEventDuration));
-            }
-        }
-    }
-
-    public string FormattedEventDuration
-    {
-        get
-        {
-            if (EventViewModel != null)
-            {
-                var duration = EndTime - StartTime;
-                return $"{duration.Hours} Hours and {duration.Minutes} Minutes";
-            }
-
-            return string.Empty;
-        }
-    }
-
     public CreateEventViewModel(IMobEventManager mobEventManager,
         IEventTypeRestService eventTypeRestService,
         IMapRestService mapRestService,
-        IWaiverManager waiverManager,
         INotificationService notificationService,
         IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
         ILitterReportManager litterReportManager,
         IEventLitterReportManager eventLitterReportRestService,
-        IUserManager userManager)
+        IUserManager userManager,
+        ITeamManager teamManager)
         : base(notificationService)
     {
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
-        this.waiverManager = waiverManager;
         this.notificationService = notificationService;
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
         this.litterReportManager = litterReportManager;
         this.eventLitterReportManager = eventLitterReportRestService;
         this.userManager = userManager;
+        this.teamManager = teamManager;
 
         NextCommand = new Command(async () =>
         {
@@ -171,16 +187,16 @@ public partial class CreateEventViewModel : BaseViewModel
             IsBusy = false;
         });
 
-        CloseCommand = new Command(() => { Shell.Current.GoToAsync(".."); });
+        CloseCommand = new Command(async () => { await Navigation.PopAsync(); });
     }
 
     public string DefaultEventName { get; } = "New Event";
 
     public int CurrentStep { get; set; }
 
-    [ObservableProperty] private IContentView currentView;
+    [ObservableProperty] private IContentView currentView = null!;
 
-    public IContentView[] Steps { get; set; }
+    public IContentView[] Steps { get; set; } = [];
 
     public enum StepType
     {
@@ -221,12 +237,14 @@ public partial class CreateEventViewModel : BaseViewModel
         EventDurationError = string.Empty;
         DescriptionRequiredError = string.Empty;
 
-        if ((EndTime - StartTime).TotalHours > 10)
+        var totalHours = EventViewModel.DurationHours + (EventViewModel.DurationMinutes / 60.0);
+
+        if (totalHours > 10)
         {
             EventDurationError = "Event maximum duration can only be 10 hours";
         }
 
-        if ((EndTime - StartTime).TotalHours < 1)
+        if (totalHours < 1)
         {
             EventDurationError = "Event minimum duration must be at least 1 hour";
         }
@@ -311,12 +329,14 @@ public partial class CreateEventViewModel : BaseViewModel
         if (CurrentView is BaseStepClass current)
             current.OnNavigated();
 
-        // TODO: reference these colors from the app styles
-        StepOneColor = CurrentStep == 0 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepFourColor = CurrentStep == 2 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepFiveColor = CurrentStep == 3 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepSixColor = CurrentStep == 4 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        var activeColor = GetThemeColor("Primary", "PrimaryDark");
+        var inactiveColor = GetThemeColor("BorderLight", "BorderDark");
+
+        StepOneColor = CurrentStep == 0 ? activeColor : inactiveColor;
+        StepTwoColor = CurrentStep == 1 ? activeColor : inactiveColor;
+        StepFourColor = CurrentStep == 2 ? activeColor : inactiveColor;
+        StepFiveColor = CurrentStep == 3 ? activeColor : inactiveColor;
+        StepSixColor = CurrentStep == 4 ? activeColor : inactiveColor;
     }
 
     public async Task SetCurrentStep(StepType step)
@@ -376,7 +396,7 @@ public partial class CreateEventViewModel : BaseViewModel
     public ObservableCollection<EventLitterReportViewModel> EventLitterReports { get; set; } = [];
 
     private List<EventType> EventTypes { get; set; } = [];
-    private EventPartnerLocationViewModel selectedEventPartnerLocation;
+    private EventPartnerLocationViewModel selectedEventPartnerLocation = null!;
 
     public ObservableCollection<string> ETypes { get; set; } = [];
 
@@ -402,16 +422,21 @@ public partial class CreateEventViewModel : BaseViewModel
 
     private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
     {
-        await Shell.Current.GoToAsync(
-            $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        try
+        {
+            await Shell.Current.GoToAsync(
+                $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private Guid? initialLitterReport = null;
 
     public async Task Init(Guid? litterReportId)
     {
-        IsBusy = true;
-
         initialLitterReport = litterReportId;
 
         SetCurrentView();
@@ -422,22 +447,42 @@ public partial class CreateEventViewModel : BaseViewModel
                 step.ViewModel = this;
         }
 
-        try
+        // Load event types first (anonymous endpoint, no auth required)
+        await ExecuteAsync(async () =>
         {
-            if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
-            {
-                await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
-            }
-
-            UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
+        }, "Failed to load event types. Please check your connection and try again.");
+
+        if (EventTypes.Count == 0)
+        {
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            UserLocation = userManager.CurrentUser.GetAddress();
+
+            // Load teams (requires auth) — non-fatal if it fails
+            try
+            {
+                UserTeams = (await teamManager.GetMyTeamsAsync()).ToList();
+                TeamNames.Clear();
+                foreach (var team in UserTeams)
+                {
+                    TeamNames.Add(team.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+            }
 
             // Set defaults
             EventViewModel = new EventViewModel
             {
                 Name = DefaultEventName,
                 EventDate = DateTime.Now.AddDays(1),
-                IsEventPublic = true,
+                EventVisibilityId = (int)EventVisibilityEnum.Public,
                 MaxNumberOfParticipants = 0,
                 DurationHours = 2,
                 DurationMinutes = 0,
@@ -463,7 +508,7 @@ public partial class CreateEventViewModel : BaseViewModel
                         EventViewModel.Address.PostalCode = address.PostalCode;
                         EventViewModel.Address.StreetAddress = address.StreetAddress;
                         EventViewModel.Address.AddressType = AddressType.Event;
-                        EventViewModel.Address.Location = new Microsoft.Maui.Devices.Sensors.Location(address.Latitude.Value, address.Longitude.Value);
+                        EventViewModel.Address.Location = new Microsoft.Maui.Devices.Sensors.Location(address.Latitude!.Value, address.Longitude!.Value);
                     }
                 }
             }
@@ -476,9 +521,7 @@ public partial class CreateEventViewModel : BaseViewModel
 
             await LoadPartners();
 
-            StartTime = TimeSpan.FromHours(9);
-
-            EndTime = TimeSpan.FromHours(11);
+            EventViewModel.EventTime = TimeSpan.FromHours(9);
 
             foreach (var eventType in EventTypes)
             {
@@ -492,39 +535,16 @@ public partial class CreateEventViewModel : BaseViewModel
             // We need to subscribe to both eventViewmodel and creatEventViewmodel propertyChanged to validate step
             EventViewModel.PropertyChanged += ValidateCurrentStep;
             PropertyChanged += ValidateCurrentStep;
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError(
-                $"An error has occurred while loading the page. Please wait and try again in a moment.");
-        }
-    }
-
-    private void UpdateDates(TimeSpan eventStartTime, TimeSpan eventEndTime)
-    {
-        var durationHours = (eventEndTime - eventStartTime).Hours;
-        var durationMinutes = (eventEndTime - eventStartTime).Minutes % 60;
-
-        EventViewModel.DurationHours = durationHours;
-        EventViewModel.DurationMinutes = durationMinutes;
-        var eventDate = EventViewModel.EventDateOnly.Date.Add(eventStartTime);
-        EventViewModel.EventDate = eventDate;
+        }, "An error has occurred while loading the page. Please wait and try again in a moment.");
     }
 
     [RelayCommand]
     private async Task<bool> SaveEvent()
     {
-        IsBusy = true;
-
-        try
+        var result = await ExecuteAsync<bool>(async () =>
         {
             if (!await Validate())
             {
-                IsBusy = false;
                 return false;
             }
 
@@ -555,20 +575,12 @@ public partial class CreateEventViewModel : BaseViewModel
                 });
             }
 
-            IsBusy = false;
-
             await notificationService.Notify("Event has been saved.");
 
             return true;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError(
-                $"An error has occurred while saving the event. Please wait and try again in a moment.");
-            return false;
-        }
+        }, "An error has occurred while saving the event. Please wait and try again in a moment.");
+
+        return result;
     }
 
     private async Task LoadPartners()
@@ -696,9 +708,15 @@ public partial class CreateEventViewModel : BaseViewModel
 
     private async Task<bool> Validate()
     {
-        if (EventViewModel.IsEventPublic && EventViewModel.EventDate < DateTimeOffset.Now)
+        if (EventViewModel.EventVisibilityId == (int)EventVisibilityEnum.Public && EventViewModel.EventDate < DateTimeOffset.Now)
         {
             await NotificationService.NotifyError("Event Dates for new public events must be in the future.");
+            return false;
+        }
+
+        if (EventViewModel.EventVisibilityId == (int)EventVisibilityEnum.TeamOnly && EventViewModel.TeamId == null)
+        {
+            await NotificationService.NotifyError("A team must be selected for Team Only events.");
             return false;
         }
 
@@ -712,29 +730,37 @@ public partial class CreateEventViewModel : BaseViewModel
 
     #region UI Related properties
 
-    [ObservableProperty] private string stepTitle;
+    [ObservableProperty] private string stepTitle = string.Empty;
 
     [ObservableProperty] private string nextStepText = "Next";
 
     //Event current step control
 
-    [ObservableProperty] private Color stepOneColor;
+    [ObservableProperty] private Color stepOneColor = null!;
 
-    [ObservableProperty] private Color stepTwoColor;
+    [ObservableProperty] private Color stepTwoColor = null!;
 
-    [ObservableProperty] private Color stepThreeColor;
+    [ObservableProperty] private Color stepThreeColor = null!;
 
-    [ObservableProperty] private Color stepFourColor;
+    [ObservableProperty] private Color stepFourColor = null!;
 
-    [ObservableProperty] private Color stepFiveColor;
+    [ObservableProperty] private Color stepFiveColor = null!;
 
-    [ObservableProperty] private Color stepSixColor;
+    [ObservableProperty] private Color stepSixColor = null!;
 
     //Validation Errors
 
-    [ObservableProperty] private string eventDurationError;
+    [ObservableProperty] private string eventDurationError = string.Empty;
 
-    [ObservableProperty] private string descriptionRequiredError;
+    [ObservableProperty] private string descriptionRequiredError = string.Empty;
 
     #endregion
+
+    private static Color GetThemeColor(string lightKey, string darkKey)
+    {
+        var key = Application.Current?.RequestedTheme == AppTheme.Dark ? darkKey : lightKey;
+        if (Application.Current?.Resources.TryGetValue(key, out var colorObj) == true && colorObj is Color color)
+            return color;
+        return Colors.Gray;
+    }
 }

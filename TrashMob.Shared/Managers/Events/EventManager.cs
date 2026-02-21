@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Events
+namespace TrashMob.Shared.Managers.Events
 {
     using System;
     using System.Collections.Generic;
@@ -24,26 +24,51 @@
     /// <param name="eventLitterReportManager">The manager for event litter reports.</param>
     /// <param name="mapManager">The map manager for timezone operations.</param>
     /// <param name="emailManager">The email manager for sending notifications.</param>
+    /// <param name="teamManager">The manager for team operations.</param>
     public class EventManager(
         IKeyedRepository<Event> repository,
         IEventAttendeeManager eventAttendeeManager,
         IBaseRepository<EventAttendee> eventAttendeeRepository,
         IEventLitterReportManager eventLitterReportManager,
         IMapManager mapManager,
-        IEmailManager emailManager)
+        IEmailManager emailManager,
+        ITeamManager teamManager)
         : KeyedManager<Event>(repository), IEventManager
     {
         private const int StandardEventWindowInMinutes = 120;
         private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
 
         /// <inheritdoc />
-        public async Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Event>> GetActiveEventsAsync(Guid? userId = null,
+            CancellationToken cancellationToken = default)
+        {
+            var userTeamIds = await GetUserTeamIdsAsync(userId, cancellationToken);
+
+            return await Repo.Get(e =>
+                    (e.EventStatusId == (int)EventStatusEnum.Active || e.EventStatusId == (int)EventStatusEnum.Full)
+                    && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes)
+                    && (
+                        e.EventVisibilityId == (int)EventVisibilityEnum.Public
+                        || (e.EventVisibilityId == (int)EventVisibilityEnum.TeamOnly
+                            && e.TeamId != null
+                            && userTeamIds.Contains(e.TeamId.Value))
+                        || (userId != null && e.CreatedByUserId == userId.Value)
+                    ))
+                .Include(e => e.CreatedByUser)
+                .ToListAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<Event>> GetActiveTeamEventsAsync(CancellationToken cancellationToken = default)
         {
             return await Repo.Get(e =>
                     (e.EventStatusId == (int)EventStatusEnum.Active || e.EventStatusId == (int)EventStatusEnum.Full)
-                    && e.IsEventPublic
-                    && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes))
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                    && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes)
+                    && e.EventVisibilityId == (int)EventVisibilityEnum.TeamOnly
+                    && e.TeamId != null)
+                .Include(e => e.CreatedByUser)
+                .Include(e => e.Team)
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -51,7 +76,8 @@
         {
             return await Repo.Get(e => e.EventDate < DateTimeOffset.UtcNow
                                        && e.EventStatusId != (int)EventStatusEnum.Canceled)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .Include(e => e.CreatedByUser)
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -61,7 +87,7 @@
             return await Repo.Get(e => e.CreatedByUserId == userId
                                        && e.EventStatusId != (int)EventStatusEnum.Canceled
                                        && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow))
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -72,7 +98,7 @@
                                        && e.EventStatusId != (int)EventStatusEnum.Canceled
                                        && (filter.StartDate == null || filter.StartDate <= e.EventDate)
                                        && (filter.EndDate == null || filter.EndDate >= e.EventDate))
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -82,25 +108,37 @@
             return await Repo.Get(e => e.CreatedByUserId == userId
                                        && e.EventStatusId == (int)EventStatusEnum.Canceled
                                        && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow))
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<Event>> GetFilteredEventsAsync(EventFilter filter,
+        public async Task<IEnumerable<Event>> GetFilteredEventsAsync(EventFilter filter, Guid? userId = null,
             CancellationToken cancellationToken = default)
         {
+            var userTeamIds = await GetUserTeamIdsAsync(userId, cancellationToken);
+
             return await Repo.Get(e => e.EventStatusId != (int)EventStatusEnum.Canceled &&
                                        (filter.StartDate == null || e.EventDate >= filter.StartDate) &&
                                        (filter.EndDate == null || e.EventDate <= filter.EndDate) &&
                                        (filter.Country == null || e.Country == filter.Country) &&
                                        (filter.Region == null || e.Region == filter.Region) &&
                                        (filter.City == null || e.City == filter.City) &&
-                                       (filter.CreatedByUserId == null || e.CreatedByUserId == filter.CreatedByUserId))
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                                       (filter.CreatedByUserId == null || e.CreatedByUserId == filter.CreatedByUserId) &&
+                                       (filter.EventStatusId == null || e.EventStatusId == filter.EventStatusId) &&
+                                       (filter.EventVisibilityId == null || e.EventVisibilityId == filter.EventVisibilityId) &&
+                                       (
+                                           e.EventVisibilityId == (int)EventVisibilityEnum.Public
+                                           || (e.EventVisibilityId == (int)EventVisibilityEnum.TeamOnly
+                                               && e.TeamId != null
+                                               && userTeamIds.Contains(e.TeamId.Value))
+                                           || (userId != null && e.CreatedByUserId == userId.Value)
+                                       ))
+                .Include(e => e.CreatedByUser)
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<Location>> GeEventLocationsByTimeRangeAsync(DateTimeOffset? startTime,
+        public async Task<IEnumerable<Location>> GetEventLocationsByTimeRangeAsync(DateTimeOffset? startTime,
             DateTimeOffset? endTime, CancellationToken cancellationToken = default)
         {
             var locations = await Repo.Get()
@@ -109,7 +147,7 @@
                 .GroupBy(e => new { e.Country, e.Region, e.City })
                 .Select(group => new Location
                     { Country = group.Key.Country, Region = group.Key.Region, City = group.Key.City })
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             return locations;
         }
@@ -118,18 +156,18 @@
         public async Task<int> DeleteAsync(Guid id, string cancellationReason, Guid userId,
             CancellationToken cancellationToken)
         {
-            var instance = await Repo.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            var instance = await Repo.GetAsync(id, cancellationToken);
 
             instance.EventStatusId = (int)EventStatusEnum.Canceled;
             instance.CancellationReason = cancellationReason;
 
             await base.UpdateAsync(instance, userId, cancellationToken);
 
-            var eventLitterReports = await eventLitterReportManager.GetByParentIdAsync(id, cancellationToken).ConfigureAwait(false);
+            var eventLitterReports = await eventLitterReportManager.GetByParentIdAsync(id, cancellationToken);
 
             foreach (var eventLitterReport in eventLitterReports)
             {
-                await eventLitterReportManager.Delete(id, eventLitterReport.LitterReportId, cancellationToken).ConfigureAwait(false);
+                await eventLitterReportManager.Delete(id, eventLitterReport.LitterReportId, cancellationToken);
             }
 
             var eventAttendees = eventAttendeeRepository.Get(e => e.EventId == id).Include(e => e.User);
@@ -139,7 +177,7 @@
             var emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventCancelledNotice.ToString());
             emailCopy = emailCopy.Replace("{CancellationReason}", cancellationReason);
 
-            var localDate = await instance.GetLocalEventTime(mapManager).ConfigureAwait(false);
+            var localDate = await instance.GetLocalEventTime(mapManager);
 
             foreach (var attendee in eventAttendees)
             {
@@ -147,8 +185,8 @@
                 {
                     username = attendee.User.UserName,
                     eventName = instance.Name,
-                    eventDate = localDate.Item1,
-                    eventTime = localDate.Item2,
+                    eventDate = localDate.Date,
+                    eventTime = localDate.Time,
                     eventAddress = instance.EventAddress(),
                     emailCopy,
                     subject,
@@ -156,14 +194,13 @@
                     googleMapsUrl = instance.GoogleMapsUrl(),
                 };
 
-                var recipients = new List<EmailAddress>
-                {
+                List<EmailAddress> recipients =
+                [
                     new() { Name = attendee.User.UserName, Email = attendee.User.Email },
-                };
+                ];
 
                 await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail,
-                        SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None)
-                    .ConfigureAwait(false);
+                        SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None);
             }
 
             return 1;
@@ -173,6 +210,8 @@
         public override async Task<Event> AddAsync(Event instance, Guid userId,
             CancellationToken cancellationToken = default)
         {
+            await ValidateEventVisibilityAsync(instance, userId, cancellationToken);
+
             var newEvent = await base.AddAsync(instance, userId, cancellationToken);
 
             var newEventAttendee = new EventAttendee
@@ -180,6 +219,7 @@
                 UserId = userId,
                 EventId = instance.Id,
                 SignUpDate = DateTime.UtcNow,
+                IsEventLead = true,
             };
 
             await eventAttendeeManager.AddAsync(newEventAttendee, userId, cancellationToken);
@@ -187,19 +227,19 @@
             var message = $"A new event: {instance.Name} in {instance.City} has been created on TrashMob.eco!";
             var subject = "New Event Alert";
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-            };
+            ];
 
-            var localTime = await instance.GetLocalEventTime(mapManager).ConfigureAwait(false);
+            var localTime = await instance.GetLocalEventTime(mapManager);
 
             var dynamicTemplateData = new
             {
                 username = Constants.TrashMobEmailName,
                 eventName = instance.Name,
-                eventDate = localTime.Item1,
-                eventTime = localTime.Item2,
+                eventDate = localTime.Date,
+                eventTime = localTime.Time,
                 eventAddress = instance.EventAddress(),
                 emailCopy = message,
                 subject,
@@ -208,8 +248,7 @@
             };
 
             await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail,
-                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None);
 
             return newEvent;
         }
@@ -218,7 +257,9 @@
         public override async Task<Event> UpdateAsync(Event instance, Guid userId,
             CancellationToken cancellationToken = default)
         {
-            var oldEvent = await Repo.GetWithNoTrackingAsync(instance.Id, cancellationToken).ConfigureAwait(false);
+            await ValidateEventVisibilityAsync(instance, userId, cancellationToken);
+
+            var oldEvent = await Repo.GetWithNoTrackingAsync(instance.Id, cancellationToken);
 
             var updatedEvent = await base.UpdateAsync(instance, userId, cancellationToken);
 
@@ -232,11 +273,11 @@
                 var emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventUpdatedNotice.ToString());
                 emailCopy = emailCopy.Replace("{EventName}", instance.Name);
 
-                var oldLocalDate = await oldEvent.GetLocalEventTime(mapManager).ConfigureAwait(false);
-                var newLocalDate = await instance.GetLocalEventTime(mapManager).ConfigureAwait(false);
+                var oldLocalDate = await oldEvent.GetLocalEventTime(mapManager);
+                var newLocalDate = await instance.GetLocalEventTime(mapManager);
 
-                emailCopy = emailCopy.Replace("{EventDate}", oldLocalDate.Item1);
-                emailCopy = emailCopy.Replace("{EventTime}", oldLocalDate.Item2);
+                emailCopy = emailCopy.Replace("{EventDate}", oldLocalDate.Date);
+                emailCopy = emailCopy.Replace("{EventTime}", oldLocalDate.Time);
 
                 var subject = "A TrashMob.eco event you were scheduled to attend has been updated!";
 
@@ -248,8 +289,8 @@
                     {
                         username = attendee.User.UserName,
                         eventName = instance.Name,
-                        eventDate = newLocalDate.Item1,
-                        eventTime = newLocalDate.Item2,
+                        eventDate = newLocalDate.Date,
+                        eventTime = newLocalDate.Time,
                         eventAddress = instance.EventAddress(),
                         emailCopy,
                         subject,
@@ -257,18 +298,52 @@
                         googleMapsUrl = instance.GoogleMapsUrl(),
                     };
 
-                    var recipients = new List<EmailAddress>
-                    {
+                    List<EmailAddress> recipients =
+                    [
                         new() { Name = attendee.User.UserName, Email = attendee.User.Email },
-                    };
+                    ];
 
                     await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail,
-                            SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None)
-                        .ConfigureAwait(false);
+                            SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None);
                 }
             }
 
             return updatedEvent;
+        }
+
+        private async Task<List<Guid>> GetUserTeamIdsAsync(Guid? userId,
+            CancellationToken cancellationToken = default)
+        {
+            if (userId == null)
+            {
+                return [];
+            }
+
+            var teams = await teamManager.GetTeamsByUserAsync(userId.Value, cancellationToken);
+            return teams.Select(t => t.Id).ToList();
+        }
+
+        private async Task ValidateEventVisibilityAsync(Event instance, Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            if (instance.EventVisibilityId == (int)EventVisibilityEnum.TeamOnly)
+            {
+                if (instance.TeamId == null)
+                {
+                    throw new InvalidOperationException("TeamId is required for team-only events.");
+                }
+
+                var teams = await teamManager.GetTeamsByUserAsync(userId, cancellationToken);
+                if (!teams.Any(t => t.Id == instance.TeamId.Value))
+                {
+                    throw new InvalidOperationException(
+                        "User must be a member of the specified team to create team-only events.");
+                }
+            }
+            else
+            {
+                instance.TeamId = null;
+            }
         }
     }
 }

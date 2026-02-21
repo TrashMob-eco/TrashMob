@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers.IFTTT
+namespace TrashMob.Controllers.IFTTT
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -11,19 +11,9 @@
     /// Controller for IFTTT user info, providing endpoints for user information retrieval.
     /// </summary>
     [Route("api/ifttt/v1/[controller]")]
-    [ApiController]
-    public class UserController : SecureController
+    public class UserController(IUserManager userManager)
+        : SecureController
     {
-        private readonly IUserManager userManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserController"/> class.
-        /// </summary>
-        /// <param name="userManager">The user manager.</param>
-        public UserController(IUserManager userManager)
-        {
-            this.userManager = userManager;
-        }
 
         /// <summary>
         /// Gets user info for IFTTT integration.
@@ -34,9 +24,9 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<ActionResult> GetInfo(CancellationToken cancellationToken)
         {
-            var user = await userManager.GetAsync(UserId, cancellationToken).ConfigureAwait(false);
+            var user = await userManager.GetAsync(UserId, cancellationToken);
 
-            if (user == null)
+            if (user is null)
             {
                 return NotFound();
             }

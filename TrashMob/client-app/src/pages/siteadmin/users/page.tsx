@@ -38,7 +38,13 @@ export const SiteAdminUsers = () => {
                 <CardTitle>Users ({len})</CardTitle>
             </CardHeader>
             <CardContent>
-                <DataTable columns={columns} data={users || []} />
+                <DataTable
+                    columns={columns}
+                    data={users || []}
+                    enableSearch
+                    searchPlaceholder='Search users...'
+                    searchColumns={['userName', 'email', 'city', 'region', 'country']}
+                />
             </CardContent>
         </Card>
     );

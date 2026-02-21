@@ -32,11 +32,11 @@
                 var emailAddressClaim = context.User.FindFirst(ClaimTypes.Email);
                 var emailClaim = context.User.FindFirst("email");
 
-                var email = emailAddressClaim == null ? emailClaim.Value : emailAddressClaim.Value;
+                var email = emailAddressClaim is null ? emailClaim?.Value : emailAddressClaim?.Value;
 
                 var user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
 
-                if (user == null)
+                if (user is null)
                 {
                     AuthorizationFailure.Failed(new List<AuthorizationFailureReason>
                         { new(this, $"User with email '{email}' not found.") });

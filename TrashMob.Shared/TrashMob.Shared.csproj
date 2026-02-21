@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <UserSecretsId>e9194805-8151-4a3b-8e48-089d7ba118f1</UserSecretsId>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,6 +32,26 @@
     <None Remove="Engine\EmailCopy\UserProfileUpdateLocation.html" />
     <None Remove="Engine\EmailCopy\WelcomeToTrashMob.html" />
     <None Remove="Engine\EmailCopy\EventCancelledNotice.html" />
+    <None Remove="Engine\EmailCopy\LitterReportCleaned.html" />
+    <None Remove="Engine\EmailCopy\WeeklyLitterReportDigest.html" />
+    <None Remove="Engine\EmailCopy\EventCoLeadAdded.html" />
+    <None Remove="Engine\EmailCopy\EventCoLeadRemoved.html" />
+    <None Remove="Engine\EmailCopy\UserFeedbackReceived.html" />
+    <None Remove="Engine\EmailCopy\PhotoRemoved.html" />
+    <None Remove="Engine\EmailCopy\PhotoFlagged.html" />
+    <None Remove="Engine\EmailCopy\AdoptionApplicationSubmitted.html" />
+    <None Remove="Engine\EmailCopy\AdoptionApplicationApproved.html" />
+    <None Remove="Engine\EmailCopy\AdoptionApplicationRejected.html" />
+    <None Remove="Engine\EmailCopy\WaiverExpiringReminder.html" />
+    <None Remove="Engine\EmailCopy\InviteToJoinTrashMob.html" />
+    <None Remove="Engine\EmailCopy\InviteToJoinCommunity.html" />
+    <None Remove="Engine\EmailCopy\InviteToJoinTeam.html" />
+    <None Remove="Engine\EmailCopy\ProspectOutreachInitial.html" />
+    <None Remove="Engine\EmailCopy\ProspectOutreachFollowUp.html" />
+    <None Remove="Engine\EmailCopy\ProspectOutreachValueAdd.html" />
+    <None Remove="Engine\EmailCopy\ProspectOutreachFinal.html" />
+    <None Remove="Engine\EmailCopy\UpcomingTeamEventsThisWeek.html" />
+    <None Remove="Engine\EmailCopy\UpcomingTeamEventsSoon.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,12 +80,35 @@
     <EmbeddedResource Include="Engine\EmailCopy\InviteBusinessPartner.html" />
     <EmbeddedResource Include="Engine\EmailCopy\WelcomeToTrashMob.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventCancelledNotice.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\LitterReportCleaned.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\WeeklyLitterReportDigest.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\EventCoLeadAdded.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\EventCoLeadRemoved.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\UserFeedbackReceived.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\PhotoRemoved.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\PhotoFlagged.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\AdoptionApplicationSubmitted.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\AdoptionApplicationApproved.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\AdoptionApplicationRejected.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\WaiverExpiringReminder.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\InviteToJoinTrashMob.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\InviteToJoinCommunity.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\InviteToJoinTeam.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachInitial.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachFollowUp.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachValueAdd.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachFinal.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\CommunityWelcome.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\UpcomingTeamEventsThisWeek.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\UpcomingTeamEventsSoon.html" />
   </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Anthropic" Version="12.3.0" />
+    <PackageReference Include="Azure.Identity" Version="1.17.1" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.8.0" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.26.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
     <PackageReference Include="AzureMapsRestToolkit" Version="7.1.0" />
     <PackageReference Include="EntityFramework" Version="6.5.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
@@ -79,6 +123,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Markdig" Version="0.44.0" />
+    <PackageReference Include="NetTopologySuite.IO.Esri.Shapefile" Version="1.2.0" />
+    <PackageReference Include="QuestPDF" Version="2025.12.3" />
     <PackageReference Include="SendGrid" Version="9.29.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>

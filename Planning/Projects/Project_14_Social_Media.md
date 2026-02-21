@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | ✅ Complete |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Small |
@@ -50,8 +50,11 @@ Modernize social integrations across key touchpoints with thoughtful UX. Easy sh
 ### Phase 3 - Platform Expansion
 - ✅ Instagram sharing (story, post)
 - ✅ LinkedIn sharing
+- ✅ Bluesky sharing
 - ✅ TikTok integration (if applicable)
 - ✅ WhatsApp/Messenger sharing
+- ✅ Reddit sharing
+- ✅ Discord integration (TrashMob Discord server)
 
 ---
 
@@ -62,6 +65,7 @@ Modernize social integrations across key touchpoints with thoughtful UX. Easy sh
 - ❌ Social listening/monitoring
 - ❌ Influencer management
 - ❌ Paid social advertising integration
+- ❌ Social login expansion (current auth options sufficient)
 
 ---
 
@@ -149,7 +153,7 @@ public async Task<ActionResult> TrackShare([FromBody] ShareTrackRequest request)
   url={eventUrl}
   title={eventTitle}
   description={eventDescription}
-  platforms={['facebook', 'twitter', 'linkedin', 'instagram', 'whatsapp', 'copy']}
+  platforms={['facebook', 'twitter', 'bluesky', 'linkedin', 'instagram', 'whatsapp', 'reddit', 'discord', 'copy']}
   onShare={(platform) => trackShare(platform)}
 />
 ```
@@ -201,6 +205,11 @@ public async Task<ActionResult> TrackShare([FromBody] ShareTrackRequest request)
 - Tweet intent URL
 - Twitter cards meta tags
 
+### Bluesky
+- Post intent URL (similar to Twitter)
+- Growing platform with environmental community
+- AT Protocol-based sharing
+
 ### Instagram
 - Stories via mobile app only
 - Link in bio tracking
@@ -217,24 +226,41 @@ public async Task<ActionResult> TrackShare([FromBody] ShareTrackRequest request)
 - Limited share API
 - QR code focus
 
+### Reddit
+- Share to subreddits (r/DeTrashed, local community subreddits)
+- Cross-post to relevant environmental/volunteer communities
+- Submit link with pre-filled title
+
+### Discord
+- TrashMob Discord server for community engagement
+- Share event links to Discord channels
+- Webhook integration for event notifications
+- Invite link on website/mobile app
+
 ---
 
 ## Open Questions
 
-1. **Priority platforms?**
-   **Recommendation:** Facebook, Twitter, LinkedIn, WhatsApp, Copy Link (core)
-   **Owner:** Marketing + Product
-   **Due:** Before Phase 1
+1. ~~**Priority platforms?**~~
+   **Decision:** All platforms equal priority: Facebook, Twitter/X, Bluesky, LinkedIn, WhatsApp, Instagram, Reddit, Discord, TikTok, Copy Link
+   **Status:** ✅ Resolved
 
-2. **Instagram story templates?**
-   **Recommendation:** Design branded story templates; implement if resources allow
-   **Owner:** Design Team
-   **Due:** Before Phase 3
+2. ~~**Instagram story templates?**~~
+   **Decision:** Design branded story templates; implement if resources allow (nice-to-have, not blocking)
+   **Status:** ✅ Resolved
 
-3. **Social login expansion?**
-   **Recommendation:** Separate from this project; tied to auth revamp
-   **Owner:** Product Lead
-   **Due:** N/A
+3. ~~**Social login expansion?**~~
+   **Decision:** Out of scope; current auth options are sufficient
+   **Status:** ✅ Resolved
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2236](https://github.com/trashmob/TrashMob/issues/2236)** - Project 14: Improve Social Media Integration (tracking issue)
+- **[#206](https://github.com/trashmob/TrashMob/issues/206)** - Allow users to post an event to their Instagram page
 
 ---
 
@@ -246,7 +272,7 @@ public async Task<ActionResult> TrackShare([FromBody] ShareTrackRequest request)
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** February 4, 2026
 **Owner:** Web Team
-**Status:** Not Started
-**Next Review:** When prioritized
+**Status:** ✅ Complete
+**Completed:** February 4, 2026 (PR #2558)

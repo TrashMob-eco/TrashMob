@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:Class="TrashMobMobile.Views.ViewEvent.TabPhotos"
+             x:Name="TabPhotosView">
+    <Grid RowDefinitions="Auto, Auto, *">
+        <!-- Header with count and Add button -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10,5">
+            <Label Text="{Binding PhotoCountDisplay}"
+                   Style="{StaticResource FieldLabel}"
+                   VerticalOptions="Center" />
+            <Button Grid.Column="1"
+                    Text="Add Photo"
+                    Command="{Binding PickPhotoCommand}"
+                    IsVisible="{Binding CanUploadPhoto}"
+                    Style="{StaticResource PrimarySmallButton}"
+                    ContentLayout="Left, 8"
+                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCamera}, Size=18, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
+        </Grid>
+
+        <!-- Empty state -->
+        <VerticalStackLayout Grid.Row="1" Grid.RowSpan="2"
+                             VerticalOptions="Center" HorizontalOptions="Center"
+                             Spacing="8" Margin="40,20"
+                             IsVisible="{Binding AreNoPhotosFound}">
+            <Image MaximumWidthRequest="48" MaximumHeightRequest="48"
+                   HorizontalOptions="Center">
+                <Image.Source>
+                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                     Glyph="{StaticResource IconCamera}"
+                                     Size="48"
+                                     Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </Image.Source>
+            </Image>
+            <Label Text="No photos yet"
+                   FontFamily="LexendSemibold"
+                   FontSize="Small"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            <Label Text="Share before, during, and after photos to capture the impact of this cleanup."
+                   FontSize="Micro"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+        </VerticalStackLayout>
+
+        <!-- Photo grid -->
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding EventPhotos}"
+                        SelectionMode="None"
+                        IsVisible="{Binding ArePhotosFound}">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="4" VerticalItemSpacing="4" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:EventPhotoViewModel">
+                    <Border Style="{StaticResource RoundBorder}" Margin="4">
+                        <VerticalStackLayout Spacing="2">
+                            <Image Source="{Binding ThumbnailUrl}"
+                                   Aspect="AspectFill"
+                                   HeightRequest="140" />
+                            <Label Text="{Binding PhotoTypeDisplay}"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Micro"
+                                   Margin="6,2,6,0" />
+                            <Label Text="{Binding Caption}"
+                                   FontSize="Micro"
+                                   MaxLines="2"
+                                   Margin="6,0,6,2"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            <Label Text="{Binding UploadedDateDisplay}"
+                                   FontSize="Micro"
+                                   Margin="6,0,6,4"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            <Button Text="Delete"
+                                    Command="{Binding Source={x:Reference TabPhotosView}, Path=BindingContext.DeletePhotoCommand}"
+                                    CommandParameter="{Binding .}"
+                                    IsVisible="{Binding CanDelete}"
+                                    Style="{StaticResource SecondarySmallButton}"
+                                    Margin="6,0,6,4" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentView>

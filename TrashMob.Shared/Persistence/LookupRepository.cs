@@ -13,27 +13,10 @@
     /// Provides read-only data access implementation for lookup entities derived from <see cref="LookupModel"/>.
     /// </summary>
     /// <typeparam name="T">The lookup entity type that derives from <see cref="LookupModel"/>.</typeparam>
-    public class LookupRepository<T> : ILookupRepository<T> where T : LookupModel
+    public class LookupRepository<T>(MobDbContext mobDbContext)
+        : ILookupRepository<T> where T : LookupModel
     {
-        /// <summary>
-        /// The database set for the lookup entity type.
-        /// </summary>
-        protected readonly DbSet<T> dbSet;
-
-        /// <summary>
-        /// The database context.
-        /// </summary>
-        protected readonly MobDbContext mobDbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LookupRepository{T}"/> class.
-        /// </summary>
-        /// <param name="mobDbContext">The database context to use for data access.</param>
-        public LookupRepository(MobDbContext mobDbContext)
-        {
-            this.mobDbContext = mobDbContext;
-            dbSet = mobDbContext.Set<T>();
-        }
+        protected readonly DbSet<T> dbSet = mobDbContext.Set<T>();
 
         /// <inheritdoc />
         public IQueryable<T> Get()

@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers.IFTTT
+namespace TrashMob.Controllers.IFTTT
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -15,19 +15,9 @@
     /// </summary>
     [Route("api/ifttt/v1/[controller]")]
     [RequiredScope(Constants.TrashMobIFTTTScope)]
-    [ApiController]
-    public class TriggersController : SecureController
+    public class TriggersController(ITriggersManager triggersManager)
+        : SecureController
     {
-        private readonly ITriggersManager triggersManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TriggersController"/> class.
-        /// </summary>
-        /// <param name="triggersManager">The triggers manager.</param>
-        public TriggersController(ITriggersManager triggersManager)
-        {
-            this.triggersManager = triggersManager;
-        }
 
         /// <summary>
         /// Gets all new events created (IFTTT trigger).
@@ -41,7 +31,7 @@
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.All);
 
-            if (error != null)
+            if (error is not null)
             {
                 return BadRequest(error);
             }
@@ -69,7 +59,7 @@
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByCountry);
 
-            if (error != null)
+            if (error is not null)
             {
                 return BadRequest(error);
             }
@@ -97,7 +87,7 @@
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByRegion);
 
-            if (error != null)
+            if (error is not null)
             {
                 return BadRequest(error);
             }
@@ -124,7 +114,7 @@
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByCity);
 
-            if (error != null)
+            if (error is not null)
             {
                 return BadRequest(error);
             }
@@ -152,7 +142,7 @@
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByPostalCode);
 
-            if (error != null)
+            if (error is not null)
             {
                 return BadRequest(error);
             }

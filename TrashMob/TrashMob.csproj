@@ -9,13 +9,14 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
     <PackageReference Include="Azure.Identity" Version="1.17.1" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.8.0" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.26.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
     <PackageReference Include="EntityFramework" Version="6.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.2" />
@@ -32,7 +33,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.13.1" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="4.2.0" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="4.3.0" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.9.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -41,15 +42,15 @@
     <PackageReference Include="NetTopologySuite.IO.GeoJSON4STJ" Version="4.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="SendGrid" Version="9.29.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.2" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
 
     <!-- OpenTelemetry packages for observability -->
-    <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.4.0" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.12.0" />
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.6.0" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.10.0-beta.1" />
 
   </ItemGroup>
@@ -63,17 +64,6 @@
 
   <ItemGroup>
     <None Remove="client-app\public\TME_FB_SharedImage4_1200x630.png" />
-    <None Remove="client-app\src\components\assets\brian-yurasits-0G2jF-c704s-unsplash.jpg" />
-    <None Remove="client-app\src\components\assets\brian-yurasits-43upsZNmy9Q-unsplash.jpg" />
-    <None Remove="client-app\src\components\assets\brian-yurasits-AANTeiHQmRU-unsplash.jpg" />
-    <None Remove="client-app\src\components\assets\brian-yurasits-euyUAlyZxTo-unsplash.jpg" />
-    <None Remove="client-app\src\components\assets\brian-yurasits-IvWEUvMwmlg-unsplash.jpg" />
-    <None Remove="client-app\src\components\assets\brian-yurasits-nwS3b_s-IRs-unsplash.jpg" />
-    <None Remove="client-app\src\components\assets\cmophoto-net-4ANtcRmvgE4-unsplash.jpg" />
-    <None Remove="client-app\src\components\assets\javardh-l0Yt7XMw-yk-unsplash.jpg" />
-    <None Remove="client-app\src\components\assets\manny-becerra-7FkFJqJ2fmw-unsplash.jpg" />
-    <None Remove="client-app\src\components\assets\muhammad-numan-ZVgxiKJlMk0-unsplash.jpg" />
-    <None Remove="client-app\src\components\assets\paige-cody-G8VOA-BrnHo-unsplash.jpg" />
     <None Remove="client-app\src\components\Customization\HeroSection.tsx" />
     <None Remove="MobileAppUserStories.md" />
     <None Remove="README.md" />
@@ -82,75 +72,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="client-app\src\components\Models\WeightUnit.tsx" />
+    <TypeScriptCompile Remove="client-app\src\services\weight-units.tsx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="client-app\public\TME_FB_SharedImage4_1200x630.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\beachlitter.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\litter.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\sign.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\trash1000miles.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MobileAppUserStories.md" />
     <Content Include="README.md" />
     <Content Include="robots.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\brian-yurasits-0G2jF-c704s-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\brian-yurasits-43upsZNmy9Q-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\brian-yurasits-AANTeiHQmRU-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\brian-yurasits-euyUAlyZxTo-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\brian-yurasits-IvWEUvMwmlg-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\brian-yurasits-nwS3b_s-IRs-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\cmophoto-net-4ANtcRmvgE4-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\equipment.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\jared-murray-NSuufgf-BME-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\javardh-l0Yt7XMw-yk-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\jeshoots-com--2vD8lIhdnw-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\lance-grandahl-Z2JPWzWGih4-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\manny-becerra-7FkFJqJ2fmw-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\muhammad-numan-ZVgxiKJlMk0-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\paige-cody-G8VOA-BrnHo-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\picker.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="client-app\src\components\assets\tim-mossholder-vdhNO4mGQ14-unsplash.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

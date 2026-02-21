@@ -1,797 +1,337 @@
-﻿# TrashMob Web API & Frontend — AI Assistant Context
+# TrashMob Web API & Frontend — AI Assistant Context
 
-> **Note:** This document provides context specific to the TrashMob web application and API. For overall project context, see `/claude.md` at the repository root.
+> **Note:** For overall project context, architecture, and coding standards, see [/CLAUDE.md](../CLAUDE.md) at the repository root. This document covers patterns specific to the web application.
 
 ## Application Overview
 
-This folder contains the main TrashMob web application, which includes:
+This folder contains the main TrashMob web application:
 - **ASP.NET Core Web API** — Backend services and REST endpoints
 - **React SPA (TypeScript)** — Client-side web application in `client-app/`
-- **Shared Models** — DTOs and domain models
-- **Services** — Business logic layer
-- **Database Context** — Entity Framework Core
 
 ## Folder Structure
 
 ```
 TrashMob/
 ├── Controllers/              # API endpoints (REST controllers)
-├── Models/                   # Domain models and DTOs
-├── Services/                 # Business logic and external service integrations
-├── Persistence/              # EF Core DbContext and configurations
-├── Extensions/               # Extension methods and helpers
-├── Filters/                  # Action filters and middleware
 ├── client-app/               # React TypeScript SPA
 │   ├── src/
 │   │   ├── components/       # Reusable React components
-│   │   ├── pages/            # Page components
+│   │   │   ├── ui/           # Radix UI primitives (shadcn/ui)
+│   │   │   │   └── custom/   # Extended UI components (EnhancedFormLabel, etc.)
+│   │   │   └── Models/       # TypeScript model classes with defaults
+│   │   ├── pages/            # Page components (file-based routing convention)
+│   │   │   └── siteadmin/    # Admin pages (DataTable + columns pattern)
 │   │   ├── lib/              # Utilities and helpers
 │   │   ├── hooks/            # Custom React hooks
-│   │   └── services/         # API client services
+│   │   └── services/         # API client service factories
 │   ├── package.json
 │   └── vite.config.ts
-├── wwwroot/                  # Static assets served by backend
+├── wwwroot/                  # Static assets
 ├── appsettings.json          # Configuration (DO NOT commit secrets)
-└── Program.cs                # Application startup and configuration
+└── Program.cs                # Application startup
 ```
 
 ## Controller Patterns
 
+### Controller Hierarchy
+
+- `BaseController` — Provides `Logger` property (lazy-loaded)
+- `SecureController : BaseController` — Adds `UserId`, `AuthorizationService`, `IsAuthorizedAsync()`
+- `KeyedController<T> : SecureController` — Generic CRUD for entities with GUID keys (provides `Manager` property)
+
 ### Standard REST Controller Template
 
 ```csharp
-[ApiController]
-[Route("api/[controller]")]
-[Authorize]
-public class ExampleController : ControllerBase
+// Use primary constructors — this is the current standard pattern
+public class ThingsController(
+    IThingManager thingManager,
+    IOtherManager otherManager)
+    : KeyedController<Thing>(thingManager)
 {
-    private readonly IExampleService _service;
-    private readonly ILogger<ExampleController> _logger;
-
-    public ExampleController(
-        IExampleService service,
-        ILogger<ExampleController> logger)
-    {
-        _service = service;
-        _logger = logger;
-    }
-
     /// <summary>
-    /// Gets an item by ID
+    /// Gets a thing by ID.
     /// </summary>
-    /// <param name="id">The unique identifier</param>
-    /// <returns>The requested item</returns>
-    [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(ExampleDto), StatusCodes.Status200OK)]
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(Thing), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ExampleDto>> Get(Guid id)
+    public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
     {
-        try
-        {
-            var result = await _service.GetAsync(id);
-            return result == null ? NotFound() : Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving item {Id}", id);
-            return StatusCode(500, "An error occurred processing your request");
-        }
+        return Ok(await Manager.GetAsync(id, cancellationToken));
     }
 
     /// <summary>
-    /// Creates a new item
+    /// Creates a new thing.
     /// </summary>
-    /// <param name="request">The item to create</param>
-    /// <returns>The created item</returns>
     [HttpPost]
-    [ProducesResponseType(typeof(ExampleDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ExampleDto>> Create([FromBody] CreateExampleRequest request)
+    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+    [RequiredScope(Constants.TrashMobWriteScope)]
+    [ProducesResponseType(typeof(Thing), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Add(Thing instance, CancellationToken cancellationToken)
     {
-        if (!ModelState.IsValid)
+        // Authorization check (if entity-level access control needed)
+        var parent = await otherManager.GetAsync(instance.ParentId, cancellationToken);
+        if (!await IsAuthorizedAsync(parent, AuthorizationPolicyConstants.UserIsEventLead))
         {
-            return BadRequest(ModelState);
+            return Forbid();
         }
 
-        try
-        {
-            var userId = User.GetUserId(); // Extension method
-            var result = await _service.CreateAsync(request, userId);
-            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error creating item");
-            return StatusCode(500, "An error occurred processing your request");
-        }
+        var result = await Manager.AddAsync(instance, UserId, cancellationToken);
+        TrackEvent("AddThing");
+        return Ok(result);
     }
 }
 ```
 
-### Controller Guidelines
+### Controller Checklist (New Endpoints)
 
-1. **Always use XML comments** for Swagger documentation
-2. **Include ProducesResponseType attributes** for all possible responses
-3. **Use proper HTTP status codes**:
-   - 200 OK — Successful GET/PUT
-   - 201 Created — Successful POST with Location header
-   - 204 No Content — Successful DELETE
-   - 400 Bad Request — Validation errors
-   - 401 Unauthorized — Missing/invalid auth token
-   - 403 Forbidden — Insufficient permissions
-   - 404 Not Found — Resource doesn't exist
-   - 500 Internal Server Error — Unexpected errors
-4. **Log errors with context** but never expose details to clients
-5. **Validate input** using ModelState and data annotations
-6. **Use async/await** throughout
-7. **Extract user identity** early: `var userId = User.GetUserId()`
-
-## Service Layer Patterns
-
-### Service Interface & Implementation
-
-```csharp
-public interface IEventService
-{
-    Task<EventDto?> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default);
-    Task<IEnumerable<EventDto>> GetUpcomingEventsAsync(double latitude, double longitude, int radiusMiles, CancellationToken cancellationToken = default);
-    Task<EventDto> CreateEventAsync(CreateEventRequest request, Guid userId, CancellationToken cancellationToken = default);
-    Task<EventDto> UpdateEventAsync(Guid eventId, UpdateEventRequest request, Guid userId, CancellationToken cancellationToken = default);
-    Task DeleteEventAsync(Guid eventId, Guid userId, CancellationToken cancellationToken = default);
-}
-
-public class EventService : IEventService
-{
-    private readonly TrashMobDbContext _context;
-    private readonly IMapper _mapper;
-    private readonly IEmailService _emailService;
-    private readonly ILogger<EventService> _logger;
-
-    public EventService(
-        TrashMobDbContext context,
-        IMapper mapper,
-        IEmailService emailService,
-        ILogger<EventService> logger)
-    {
-        _context = context;
-        _mapper = mapper;
-        _emailService = emailService;
-        _logger = logger;
-    }
-
-    public async Task<EventDto?> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default)
-    {
-        var evt = await _context.Events
-            .Include(e => e.EventAttendees)
-            .Include(e => e.EventPartners)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Id == eventId && !e.IsDeleted, cancellationToken);
-
-        return evt == null ? null : _mapper.Map<EventDto>(evt);
-    }
-
-    // Additional methods...
-}
-```
-
-### Service Guidelines
-
-1. **Accept CancellationToken** on all async methods
-2. **Use Include/ThenInclude** for eager loading related data
-3. **Use AsNoTracking()** for read-only queries
-4. **Implement soft deletes** — check `!IsDeleted` in queries
-5. **Validate business rules** before database operations
-6. **Use transactions** for multi-step operations
-7. **Map domain models to DTOs** — never return entities directly
-8. **Handle concurrency** with optimistic locking where needed
-
-## Database & Entity Framework
-
-### Entity Base Class Pattern
-
-```csharp
-public abstract class BaseEntity
-{
-    public Guid Id { get; set; }
-    public DateTimeOffset CreatedDate { get; set; }
-    public Guid? CreatedByUserId { get; set; }
-    public DateTimeOffset? LastUpdatedDate { get; set; }
-    public Guid? LastUpdatedByUserId { get; set; }
-    public bool IsDeleted { get; set; }
-}
-```
-
-### DbContext Configuration
-
-```csharp
-protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    base.OnModelCreating(modelBuilder);
-
-    modelBuilder.Entity<Event>(entity =>
-    {
-        entity.HasKey(e => e.Id);
-        entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
-        entity.Property(e => e.Description).HasMaxLength(2000);
-        entity.HasIndex(e => e.EventDate);
-        entity.HasIndex(e => new { e.Latitude, e.Longitude });
-        entity.HasQueryFilter(e => !e.IsDeleted); // Global query filter
-
-        entity.HasOne(e => e.CreatedByUser)
-            .WithMany()
-            .HasForeignKey(e => e.CreatedByUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-    });
-}
-```
-
-### Migration Best Practices
-
-1. **Name migrations descriptively**: `Add_EventWeights_To_EventSummary`
-2. **Review generated migrations** before applying
-3. **Test rollback** scenarios
-4. **Never edit applied migrations** — create new ones
-5. **Use data migrations** for seeding/transforming data
-6. **Add indexes** for foreign keys and query columns
-
-```bash
-# Create new migration
-dotnet ef migrations add Add_EventWeights_To_EventSummary
-
-# Apply migrations
-dotnet ef database update
-
-# Rollback to specific migration
-dotnet ef database update Previous_Migration_Name
-```
-
-## Authentication & Authorization
-
-### Current State (Azure B2C)
-```csharp
-[Authorize] // Requires valid JWT token
-public class SecureController : ControllerBase
-{
-    [HttpGet]
-    public async Task<ActionResult> GetData()
-    {
-        var userId = User.GetUserId(); // ClaimsPrincipal extension
-        var email = User.GetEmail();
-        var isAdmin = User.IsInRole("Admin");
-        
-        // Use userId for queries...
-    }
-}
-```
-
-### User Context Extensions
-
-```csharp
-public static class ClaimsPrincipalExtensions
-{
-    public static Guid GetUserId(this ClaimsPrincipal principal)
-    {
-        var claim = principal.FindFirst(ClaimTypes.NameIdentifier) 
-                 ?? principal.FindFirst("sub");
-        return Guid.Parse(claim?.Value ?? throw new UnauthorizedAccessException("User ID not found"));
-    }
-
-    public static string GetEmail(this ClaimsPrincipal principal)
-    {
-        return principal.FindFirst(ClaimTypes.Email)?.Value 
-            ?? throw new UnauthorizedAccessException("Email not found");
-    }
-}
-```
-
-### Authorization Patterns
-
-```csharp
-// Check event ownership
-var evt = await _context.Events.FindAsync(eventId);
-if (evt.CreatedByUserId != userId && !User.IsInRole("Admin"))
-{
-    return Forbid();
-}
-
-// Check team membership
-var isMember = await _context.TeamMembers
-    .AnyAsync(tm => tm.TeamId == teamId && tm.UserId == userId);
-if (!isMember)
-{
-    return Forbid();
-}
-```
+- [ ] Use **primary constructor** (not field injection)
+- [ ] Add **`CancellationToken cancellationToken`** as last parameter on all async methods
+- [ ] Add **XML doc comments** on all public methods (Swagger requires them)
+- [ ] Add **`[ProducesResponseType]`** attributes for every possible response
+- [ ] Add **`[Authorize]`** + **`[RequiredScope]`** on write operations
+- [ ] Call **`TrackEvent()`** on mutations for telemetry
+- [ ] Use **`IsAuthorizedAsync()`** for entity-level authorization (not manual `UserId` comparison)
 
 ## React Frontend Patterns
 
-### Component Example (TypeScript + React)
+### Service Factory Pattern (API Calls)
+
+All API calls use a factory pattern returning `{ key, service }` for TanStack React Query:
+
+```typescript
+// src/services/things.ts
+export type GetThing_Params = { id: string };
+
+export const GetThing = (params: GetThing_Params) => ({
+    key: ['/things', params.id],
+    service: async () =>
+        ApiService('protected').fetchData<ThingData>({
+            url: `/things/${params.id}`,
+            method: 'get',
+        }),
+});
+
+export const CreateThing = () => ({
+    key: ['/things/create'],
+    service: async (body: ThingData) =>
+        ApiService('protected').fetchData<ThingData>({
+            url: '/things',
+            method: 'post',
+            data: body,
+        }),
+});
+```
+
+### List Page Pattern (DataTable)
+
+Admin and list pages use a DataTable + columns factory pattern:
 
 ```tsx
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
-import { eventService } from '@/services/eventService';
-import { EventDto } from '@/models';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { NotFound } from '@/components/NotFound';
-import { EventMap } from '@/components/EventMap';
-import { AttendeeList } from '@/components/AttendeeList';
+// pages/siteadmin/things/columns.tsx
+interface GetColumnsProps {
+    onDelete: (id: string, name: string) => void;
+}
 
-export const EventDetails = () => {
-    const { eventId } = useParams<{ eventId: string }>();
-    const navigate = useNavigate();
+export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<ThingData>[] => [
+    {
+        accessorKey: 'name',
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
+        cell: ({ row }) => (
+            <Link to={`/siteadmin/things/${row.original.id}`} className='font-medium hover:underline'>
+                {row.getValue('name')}
+            </Link>
+        ),
+    },
+    {
+        accessorKey: 'status',
+        header: 'Status',
+        cell: ({ row }) => <StatusBadge status={row.getValue('status')} />,
+    },
+    // Actions column with dropdown menu...
+];
 
-    const { data: event, isLoading, error } = useQuery({
-        queryKey: ['event', eventId],
-        queryFn: () => eventService.getEvent(eventId!),
-        enabled: !!eventId,
+// pages/siteadmin/things/page.tsx
+export const SiteAdminThings = () => {
+    const { data: things } = useQuery({
+        queryKey: GetThings().key,
+        queryFn: GetThings().service,
+        select: (res) => res.data,
     });
 
-    if (isLoading) {
-        return <LoadingSpinner />;
-    }
-
-    if (error || !event) {
-        return <NotFound />;
-    }
+    const columns = getColumns({ onDelete: handleDelete });
 
     return (
-        <div className="event-details">
-            <h1>{event.name}</h1>
-            <p>{event.description}</p>
-            <EventMap latitude={event.latitude} longitude={event.longitude} />
-            <AttendeeList eventId={eventId!} />
+        <Card>
+            <CardHeader><CardTitle>Things</CardTitle></CardHeader>
+            <CardContent>
+                <DataTable columns={columns} data={things || []} enableSearch searchPlaceholder='Search...' />
+            </CardContent>
+        </Card>
+    );
+};
+```
+
+### Detail Page Pattern
+
+```tsx
+// pages/siteadmin/things/$thingId.tsx
+export const SiteAdminThingDetail = () => {
+    const { thingId } = useParams<{ thingId: string }>() as { thingId: string };
+
+    const { data: thing } = useQuery({
+        queryKey: GetThing({ id: thingId }).key,
+        queryFn: GetThing({ id: thingId }).service,
+        select: (res) => res.data,
+        enabled: !!thingId,
+    });
+
+    if (!thing) return null;
+
+    return (
+        <div className='space-y-6'>
+            <div className='flex items-center gap-2'>
+                <Button variant='ghost' size='sm' asChild>
+                    <Link to='/siteadmin/things'><ArrowLeft className='mr-2 h-4 w-4' /> Back</Link>
+                </Button>
+            </div>
+            <Card>
+                <CardHeader><CardTitle>{thing.name}</CardTitle></CardHeader>
+                <CardContent>
+                    <dl className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                        <div><dt className='text-sm font-medium text-muted-foreground'>Field</dt>
+                             <dd className='mt-1'>{thing.field}</dd></div>
+                    </dl>
+                </CardContent>
+            </Card>
         </div>
     );
 };
 ```
 
-### React/TypeScript Guidelines
+### Form Pattern (Zod + React Hook Form)
 
-1. **Use TypeScript** for all new code
-2. **Use functional components** with hooks
-3. **Use TanStack Query** for server state management
-4. **Handle loading states** explicitly with `isLoading`
-5. **Handle errors** gracefully with error boundaries or UI feedback
-6. **Use React Router** for navigation
-7. **Follow component composition** patterns
-8. **Use Radix UI** for accessible components
-9. **Style with Tailwind CSS** utility classes
-10. **Custom hooks** for reusable logic
+```tsx
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 
-## API Documentation (Swagger)
-
-### XML Documentation Requirements
-
-All public API endpoints must have:
-- `<summary>` — Brief description
-- `<param>` — Parameter descriptions
-- `<returns>` — Return value description
-- `<response>` — Possible HTTP responses
-
-Enable XML docs in `.csproj`:
-```xml
-<PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591</NoWarn>
-</PropertyGroup>
-```
-
-## Error Handling Strategy
-
-### Global Exception Handler
-
-```csharp
-app.UseExceptionHandler(errorApp =>
-{
-    errorApp.Run(async context =>
-    {
-        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-        var exception = exceptionHandlerPathFeature?.Error;
-
-        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-        logger.LogError(exception, "Unhandled exception occurred");
-
-        context.Response.StatusCode = 500;
-        context.Response.ContentType = "application/json";
-
-        await context.Response.WriteAsJsonAsync(new
-        {
-            error = "An unexpected error occurred. Please try again later.",
-            requestId = Activity.Current?.Id ?? context.TraceIdentifier
-        });
-    });
+const schema = z.object({
+    name: z.string().min(3, 'Name must be at least 3 characters.').max(100),
+    description: z.string().max(500).optional(),
+    isPublic: z.boolean(),
 });
-```
 
-### Custom Exceptions
+type FormValues = z.infer<typeof schema>;
 
-```csharp
-public class ValidationException : Exception
-{
-    public ValidationException(string message) : base(message) { }
-    public IDictionary<string, string[]>? Errors { get; set; }
-}
+export const CreateThing = () => {
+    const form = useForm<FormValues>({
+        resolver: zodResolver(schema),
+        defaultValues: { name: '', description: '', isPublic: true },
+    });
 
-public class NotFoundException : Exception
-{
-    public NotFoundException(string entity, Guid id) 
-        : base($"{entity} with ID {id} was not found") { }
-}
-```
+    const createThing = useMutation({
+        mutationKey: CreateThing().key,
+        mutationFn: CreateThing().service,
+        onSuccess: () => { toast({ variant: 'primary', title: 'Created!' }); navigate('/things'); },
+    });
 
-## Configuration Management
-
-### appsettings.json Structure
-
-```json
-{
-  "ConnectionStrings": {
-    "TrashMobDatabase": "Server=..."
-  },
-  "AzureAdB2C": {
-    "Instance": "https://...",
-    "ClientId": "...",
-    "Domain": "...",
-    "SignUpSignInPolicyId": "..."
-  },
-  "SendGrid": {
-    "ApiKey": "USE_USER_SECRETS_OR_ENV_VAR"
-  },
-  "GoogleMaps": {
-    "ApiKey": "USE_USER_SECRETS_OR_ENV_VAR"
-  },
-  "Sentry": {
-    "Dsn": "..."
-  }
-}
-```
-
-### User Secrets (Development)
-
-```bash
-# Set user secrets
-dotnet user-secrets init
-dotnet user-secrets set "SendGrid:ApiKey" "your-key"
-dotnet user-secrets set "GoogleMaps:ApiKey" "your-key"
-```
-
-## Testing
-
-### Unit Test Example (xUnit)
-
-```csharp
-public class EventServiceTests
-{
-    private readonly Mock<TrashMobDbContext> _contextMock;
-    private readonly Mock<IMapper> _mapperMock;
-    private readonly Mock<ILogger<EventService>> _loggerMock;
-    private readonly EventService _sut;
-
-    public EventServiceTests()
-    {
-        _contextMock = new Mock<TrashMobDbContext>();
-        _mapperMock = new Mock<IMapper>();
-        _loggerMock = new Mock<ILogger<EventService>>();
-        _sut = new EventService(_contextMock.Object, _mapperMock.Object, null, _loggerMock.Object);
-    }
-
-    [Fact]
-    public async Task GetEventAsync_WhenEventExists_ReturnsEventDto()
-    {
-        // Arrange
-        var eventId = Guid.NewGuid();
-        var evt = new Event { Id = eventId, Name = "Test Event" };
-        var eventDto = new EventDto { Id = eventId, Name = "Test Event" };
-        
-        // Mock DbSet setup...
-        _mapperMock.Setup(m => m.Map<EventDto>(evt)).Returns(eventDto);
-
-        // Act
-        var result = await _sut.GetEventAsync(eventId);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(eventId, result.Id);
-    }
-}
-```
-
-## Performance Considerations
-
-### Query Optimization
-
-```csharp
-// ✅ GOOD: Single query with includes
-var events = await _context.Events
-    .Include(e => e.EventAttendees)
-    .Include(e => e.EventPartners)
-    .Where(e => e.EventDate >= DateTime.UtcNow)
-    .AsNoTracking()
-    .ToListAsync();
-
-// ❌ BAD: N+1 query problem
-var events = await _context.Events.ToListAsync();
-foreach (var evt in events)
-{
-    var attendees = await _context.EventAttendees
-        .Where(a => a.EventId == evt.Id)
-        .ToListAsync(); // Executes query for each event
-}
-```
-
-### Pagination Pattern
-
-```csharp
-public async Task<PagedResult<EventDto>> GetEventsAsync(int page, int pageSize)
-{
-    var query = _context.Events.Where(e => !e.IsDeleted);
-    
-    var total = await query.CountAsync();
-    var items = await query
-        .OrderByDescending(e => e.EventDate)
-        .Skip((page - 1) * pageSize)
-        .Take(pageSize)
-        .AsNoTracking()
-        .ToListAsync();
-
-    return new PagedResult<EventDto>
-    {
-        Items = _mapper.Map<List<EventDto>>(items),
-        TotalCount = total,
-        Page = page,
-        PageSize = pageSize
+    const onSubmit = (values: FormValues) => {
+        const model = new ThingData();
+        model.name = values.name;
+        // ... map form values to model
+        createThing.mutate(model);
     };
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+                <FormField control={form.control} name='name' render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Name *</FormLabel>
+                        <FormControl><Input {...field} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                <Button type='submit' disabled={createThing.isPending}>Create</Button>
+            </form>
+        </Form>
+    );
+};
+```
+
+### TypeScript Model Pattern
+
+```typescript
+// components/Models/ThingData.ts — classes with defaults, not interfaces
+class ThingData {
+    id: string = Guid.createEmpty().toString();
+    name: string = '';
+    description: string = '';
+    isPublic: boolean = true;
+    createdDate: Date = new Date();
+    latitude?: number;  // Optional fields use ?
+    longitude?: number;
 }
 ```
 
-## Common Issues & Solutions
+### Frontend Checklist (New Pages)
 
-| Issue | Solution |
-|-------|----------|
-| **Circular references in JSON** | Use `[JsonIgnore]` or DTOs to break cycles |
-| **Timezone issues** | Always use `DateTimeOffset` or store UTC |
-| **N+1 queries** | Use `.Include()` for eager loading |
-| **Tracking overhead** | Use `.AsNoTracking()` for read-only queries |
-| **Large result sets** | Implement pagination |
-| **Sensitive data in logs** | Use structured logging with filters |
-| **Concurrent updates** | Use optimistic concurrency with `RowVersion` |
+- [ ] Use **`@/` path alias** for imports (not relative `../../../`)
+- [ ] Use **service factory pattern** (`{ key, service }`) for API calls
+- [ ] Use **Zod** for form validation, **React Hook Form** with `zodResolver`
+- [ ] Use **Radix UI** components from `@/components/ui/` (Card, Button, Input, etc.)
+- [ ] Use **Tailwind CSS** utility classes for styling
+- [ ] Use **DataTable** + **columns factory** for list pages
+- [ ] Use **`useMutation`** with `onSuccess` for toast notifications and query invalidation
+- [ ] Add route in `App.tsx` with lazy import
+- [ ] Handle loading and error states
 
-## Project-Specific Patterns
+## Authentication
 
-### Minors Protection (2026 Initiative)
+### Getting User Context (Backend)
 
 ```csharp
-// Check if user is a minor
-public static bool IsMinor(this User user)
-{
-    return user.DateOfBirth.HasValue 
-        && user.DateOfBirth.Value.AddYears(18) > DateTimeOffset.UtcNow;
-}
+// In SecureController-derived classes
+var userId = UserId;  // From SecureController base class (extracted from JWT claims)
 
-// Ensure event visibility restrictions for minors
-if (currentUser.IsMinor())
-{
-    // Don't expose contact info
-    eventDto.ContactEmail = null;
-    eventDto.ContactPhone = null;
-    
-    // Filter attendee list
-    eventDto.Attendees = eventDto.Attendees
-        .Select(a => new AttendeeDto { FirstName = "Volunteer" })
-        .ToList();
-}
+// Use authorization handler (preferred over manual comparison)
+if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntity))
+    return Forbid();
 ```
 
-### Waiver Validation
+### Getting User Context (Frontend)
 
-```csharp
-public async Task<bool> HasValidWaiverAsync(Guid userId, Guid? communityId = null)
-{
-    var now = DateTimeOffset.UtcNow;
-    
-    return await _context.UserWaivers
-        .AnyAsync(w => w.UserId == userId
-            && (communityId == null || w.CommunityId == communityId)
-            && w.EffectiveDate <= now
-            && w.ExpirationDate >= now
-            && w.IsActive);
-}
-```
+```tsx
+import { useGetCurrentUser } from '@/hooks/useGetCurrentUser';
 
-## Deployment Notes
-
-### Environment Variables (Production)
-
-Set in Azure App Service Configuration:
-- `ConnectionStrings__TrashMobDatabase`
-- `AzureAdB2C__ClientId`
-- `SendGrid__ApiKey`
-- `GoogleMaps__ApiKey`
-- `Sentry__Dsn`
-- `ASPNETCORE_ENVIRONMENT` (Production)
-
-### Health Checks
-
-```csharp
-builder.Services.AddHealthChecks()
-    .AddDbContextCheck<TrashMobDbContext>()
-    .AddUrlGroup(new Uri("https://api.sendgrid.com/v3"), "SendGrid");
-
-app.MapHealthChecks("/health");
+const { currentUser } = useGetCurrentUser();
+// currentUser.id, currentUser.isSiteAdmin, currentUser.userName, etc.
 ```
 
 ## Quick Reference
 
-### Useful Commands
+### Run Locally
 
 ```bash
-# Run locally
-dotnet run
+# Backend (from TrashMob folder)
+dotnet run --environment Development
 
-# Watch mode (auto-reload)
-dotnet watch run
-
-# Run tests
-dotnet test
-
-# Create migration
-dotnet ef migrations add MigrationName
-
-# Update database
-dotnet ef database update
-
-# Generate EF model from database
-dotnet ef dbcontext scaffold "ConnectionString" Microsoft.EntityFrameworkCore.SqlServer
-
-# Build for production
-dotnet publish -c Release
+# Frontend (from TrashMob/client-app folder)
+npm start
 ```
+
+### Local URLs
+- API: https://localhost:44332
+- Swagger: https://localhost:44332/swagger/index.html
+- Frontend: http://localhost:3000
 
 ---
 
 **Related Documentation:**
-- Root `/claude.md` — Overall project context
-- `/Planning/README.md` — 2026 roadmap and priorities
-- `/README.md` — Project setup and getting started
+- [Root CLAUDE.md](../CLAUDE.md) — Architecture, patterns, coding standards
+- [Planning/README.md](../Planning/README.md) — 2026 roadmap
+- [TrashMob.prd](./TrashMob.prd) — Product requirements
 
-**Last Updated:** January 23, 2026
-
-
-## Accessibility
-
-- Commit to **WCAG 2.2 AA** compliance
-- Semantic HTML on web
-- Proper screen reader support on mobile
-- Keyboard navigation on web
-- Sufficient color contrast ratios
-
-## Key 2026 Initiatives
-
-Refer to `Planning/README.md` for detailed roadmap. Priority areas:
-
-1. **Project 1:** Auth migration (Azure B2C → Entra External ID)
-2. **Project 4:** Mobile stabilization and error handling
-3. **Project 7:** Event weight tracking (Phase 1 & 2)
-4. **Project 9:** Teams feature (MVP)
-5. **Project 10:** Community Pages (MVP)
-
-## Development Workflow
-
-### Branching Strategy
-- `main` — production-ready code
-- `dev` — integration branch
-- `dev/{developer}/{feature}` — feature branches
-
-### Commit Messages
-- Use clear, descriptive messages
-- Reference issue numbers where applicable
-
-### Pull Requests
-- Require review before merge
-- Must pass all CI checks
-- Include tests for new features
-
-## Common Patterns & Examples
-
-### Controller Example
-
-````````
-{
-  "Event": {
-    "Id": "123",
-    "Title": "River Cleanup",
-    "Description": "Join us for a cleanup of the local river.",
-    "Location": {
-      "Latitude": 34.0522,
-      "Longitude": -118.2437
-    },
-    "Date": "2023-10-01T10:00:00Z",
-    "Duration": 120,
-    "VolunteersNeeded": 10,
-    "Status": "Upcoming",
-    "CreatedDate": "2023-09-01T12:00:00Z",
-    "CreatedByUserId": "456",
-    "LastUpdatedDate": "2023-09-15T12:00:00Z",
-    "LastUpdatedByUserId": "456"
-  },
-  "Volunteer": {
-    "Id": "456",
-    "FirstName": "John",
-    "LastName": "Doe",
-    "Email": "john.doe@example.com",
-    "Phone": "555-1234",
-    "IsAdmin": false,
-    "CommunityId": "789",
-    "ConsentToContact": true,
-    "CreatedDate": "2023-09-01T12:00:00Z",
-    "LastLoginDate": "2023-09-20T12:00:00Z"
-  }
-}
-````````
-
-### Service Example
-
-
-````````
-
-## Testing
-
-- **Unit Tests:** Business logic in services
-- **Integration Tests:** API endpoints with test database
-- **Manual Testing:** Mobile apps on physical devices
-- Target **change failure rate ≤ 10%**
-
-## Performance Goals
-
-- **P95 API latency:** ≤ 300ms
-- **Crash-free sessions (mobile):** ≥ 99.5%
-- **Database queries:** Use proper indexing, avoid N+1 queries
-- **Caching:** Implement where appropriate (Redis consideration)
-
-## Observability
-
-- **Sentry.io** for error tracking
-- **Structured logging** with context
-- **Business event tracking** (signups, event creation, attendance)
-- **Dashboards** for key metrics
-- **Alerting** for critical issues
-
-## Cost Optimization
-
-Monitor and optimize:
-- Azure App Service costs
-- Database DTU/vCore usage
-- Google Maps API calls
-- SendGrid email volume
-
-## Getting Help
-
-- **Product Plan:** `Planning/README.md`
-- **GitHub Issues:** Track bugs and features
-- **Project Wiki:** (if available)
-- **Code Comments:** Check inline documentation
-
-## AI Assistant Guidelines
-
-When working with this codebase:
-
-1. **Respect existing patterns** — maintain consistency with current code style
-2. **Consider volunteer context** — code should be maintainable by contributors with varying experience
-3. **Think security-first** — especially for auth, minors protection, and data privacy
-4. **Plan for scale** — features should work for 1 event or 10,000 events
-5. **Mobile-first considerations** — ensure features work well on mobile devices
-6. **Accessibility by default** — build inclusive features from the start
-7. **Document as you go** — clear comments and XML docs are essential
-8. **Test thoroughly** — volunteer-run project needs reliable code
-
----
-
-**Last Updated:** January 23, 2026  
-**For Questions:** Refer to product engineering plan or project maintainers
-
+**Last Updated:** February 15, 2026

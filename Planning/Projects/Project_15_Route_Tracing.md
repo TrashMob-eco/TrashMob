@@ -2,11 +2,11 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning in Progress |
+| **Status** | In Progress (Backend & Website Complete) |
 | **Priority** | Medium |
 | **Risk** | High (privacy) |
 | **Size** | Large |
-| **Dependencies** | Project 4 (Mobile Robustness) |
+| **Dependencies** | Project 4 (Mobile Robustness), Project 22 (Attendee Metrics) |
 
 ---
 
@@ -88,10 +88,10 @@ Record and share anonymized routes that attendees walk during cleanup events; en
 
 ### Blockers
 - **Project 4 (Mobile Robustness):** Stable mobile app for GPS tracking
+- **Project 22 (Attendee Metrics):** Required for route-associated litter volume tracking (bags, weight per route segment)
 
 ### Enables
 - **Project 20 (Gamification):** Distance-based achievements
-- **Project 22 (Attendee Metrics):** Route-associated metrics
 
 ---
 
@@ -111,52 +111,158 @@ Record and share anonymized routes that attendees walk during cleanup events; en
 
 ### Data Model Changes
 
-```sql
--- Event attendee routes
-CREATE TABLE EventAttendeeRoutes (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    -- Route data (compressed GeoJSON or encoded polyline)
-    RouteData NVARCHAR(MAX) NOT NULL,
-    TotalDistanceMeters INT NOT NULL DEFAULT 0,
-    DurationMinutes INT NOT NULL DEFAULT 0,
-    -- Privacy settings
-    PrivacyLevel NVARCHAR(20) NOT NULL DEFAULT 'EventOnly', -- Private, EventOnly, Public
-    IsTrimmed BIT NOT NULL DEFAULT 0,
-    TrimStartMeters INT NOT NULL DEFAULT 0,
-    TrimEndMeters INT NOT NULL DEFAULT 0,
-    -- Metrics
-    BagsCollected INT NULL,
-    WeightCollected DECIMAL(10,2) NULL,
-    Notes NVARCHAR(MAX) NULL,
-    -- Decay
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    ExpiresDate DATETIMEOFFSET NULL, -- For decay
-    -- Audit
-    CreatedByUserId UNIQUEIDENTIFIER NOT NULL,
-    LastUpdatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    FOREIGN KEY (CreatedByUserId) REFERENCES Users(Id)
-);
+> **Note:** `EventAttendeeRoute` already exists in `TrashMob.Models/EventAttendeeRoute.cs` with basic fields.
+> The following shows additional properties needed for the full feature set.
 
--- Route points (for detailed analytics, optional)
-CREATE TABLE RoutePoints (
-    Id BIGINT PRIMARY KEY IDENTITY(1,1),
-    RouteId UNIQUEIDENTIFIER NOT NULL,
-    Latitude DECIMAL(9,6) NOT NULL,
-    Longitude DECIMAL(9,6) NOT NULL,
-    Altitude DECIMAL(8,2) NULL,
-    Timestamp DATETIMEOFFSET NOT NULL,
-    Accuracy DECIMAL(6,2) NULL,
-    FOREIGN KEY (RouteId) REFERENCES EventAttendeeRoutes(Id) ON DELETE CASCADE
-);
+**Modification: EventAttendeeRoute (add new properties)**
+```csharp
+// Add to existing TrashMob.Models/EventAttendeeRoute.cs
+#region Distance & Duration
 
-CREATE INDEX IX_EventAttendeeRoutes_EventId ON EventAttendeeRoutes(EventId);
-CREATE INDEX IX_EventAttendeeRoutes_UserId ON EventAttendeeRoutes(UserId);
-CREATE INDEX IX_EventAttendeeRoutes_PrivacyLevel ON EventAttendeeRoutes(PrivacyLevel);
-CREATE INDEX IX_RoutePoints_RouteId ON RoutePoints(RouteId);
+/// <summary>
+/// Gets or sets the total distance in meters.
+/// </summary>
+public int TotalDistanceMeters { get; set; }
+
+/// <summary>
+/// Gets or sets the duration in minutes.
+/// </summary>
+public int DurationMinutes { get; set; }
+
+#endregion
+
+#region Privacy Settings
+
+/// <summary>
+/// Gets or sets the privacy level (Private, EventOnly, Public).
+/// </summary>
+public string PrivacyLevel { get; set; } = "EventOnly";
+
+/// <summary>
+/// Gets or sets whether the route has been trimmed for privacy.
+/// </summary>
+public bool IsTrimmed { get; set; }
+
+/// <summary>
+/// Gets or sets meters trimmed from the start.
+/// </summary>
+public int TrimStartMeters { get; set; }
+
+/// <summary>
+/// Gets or sets meters trimmed from the end.
+/// </summary>
+public int TrimEndMeters { get; set; }
+
+#endregion
+
+#region Route Metrics
+
+/// <summary>
+/// Gets or sets bags collected along this route.
+/// </summary>
+public int? BagsCollected { get; set; }
+
+/// <summary>
+/// Gets or sets weight collected along this route.
+/// </summary>
+public decimal? WeightCollected { get; set; }
+
+/// <summary>
+/// Gets or sets notes about this route.
+/// </summary>
+public string Notes { get; set; }
+
+#endregion
+
+#region Decay
+
+/// <summary>
+/// Gets or sets when this route expires for public viewing.
+/// </summary>
+public DateTimeOffset? ExpiresDate { get; set; }
+
+#endregion
+
+// Navigation property for route points
+public virtual ICollection<RoutePoint> RoutePoints { get; set; }
+```
+
+**New Entity: RoutePoint (optional detailed tracking)**
+```csharp
+// New file: TrashMob.Models/RoutePoint.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a single GPS point along an attendee's route.
+    /// </summary>
+    public class RoutePoint
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier.
+        /// </summary>
+        public long Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent route identifier.
+        /// </summary>
+        public Guid RouteId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the latitude.
+        /// </summary>
+        public double Latitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the longitude.
+        /// </summary>
+        public double Longitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the altitude in meters.
+        /// </summary>
+        public double? Altitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timestamp of this point.
+        /// </summary>
+        public DateTimeOffset Timestamp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the GPS accuracy in meters.
+        /// </summary>
+        public double? Accuracy { get; set; }
+
+        // Navigation property
+        public virtual EventAttendeeRoute Route { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<EventAttendeeRoute>(entity =>
+{
+    // Add to existing configuration
+    entity.Property(e => e.PrivacyLevel).HasMaxLength(20);
+    entity.Property(e => e.WeightCollected).HasPrecision(10, 2);
+
+    entity.HasIndex(e => e.EventId);
+    entity.HasIndex(e => e.UserId);
+    entity.HasIndex(e => e.PrivacyLevel);
+});
+
+modelBuilder.Entity<RoutePoint>(entity =>
+{
+    entity.HasKey(e => e.Id);
+    entity.Property(e => e.Id).UseIdentityColumn();
+
+    entity.HasOne(e => e.Route)
+        .WithMany(r => r.RoutePoints)
+        .HasForeignKey(e => e.RouteId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasIndex(e => e.RouteId);
+});
 ```
 
 ### API Changes
@@ -250,11 +356,12 @@ public class RouteRecordingService
 - Trim controls (slider for start/end)
 - Privacy level selector
 
-### Web UX Changes
+### Web UX Changes (Read-Only)
+
+> **Note:** Web is view-only for routes. All route recording, editing, and privacy controls happen in the mobile app.
 
 - Event map showing combined routes
 - Individual route viewer (for own routes)
-- Privacy settings in user preferences
 - Route statistics in event summary
 - Heat map visualization (admin/community)
 
@@ -284,6 +391,44 @@ public class RouteRecordingService
 
 **Note:** Privacy is critical; extensive testing and user feedback required.
 
+### Phase 5: Route Simulation (Dev/QA Tool)
+
+Enable testing the full route pipeline without physically walking routes. The simulation endpoint lives in the backend but is gated to non-production environments. The mobile app gets a dev-only "Simulate Route" button.
+
+**Backend — `POST /api/routes/simulate` (dev/local only):**
+- Gated by environment check (`IHostEnvironment.IsProduction()` → 404)
+- Accepts: `eventId`, `distanceMeters` (default 1000), `durationMinutes` (default 30), `pointCount` (default 50), `gpsJitterMeters` (default 3)
+- Generates realistic GPS waypoints in a loop/path radiating from the event's lat/lon
+- Creates a full `EventAttendeeRoute` with `RoutePoints`, auto-calculated metrics, default privacy
+- Returns the created `DisplayEventAttendeeRoute`
+
+**Mobile app — "Simulate Route" button (debug builds only):**
+- Visible on ViewEventPage only when `Settings.IsDevEnvironment` is true
+- Calls `POST /api/routes/simulate` with event ID and default parameters
+- On success, shows notification and refreshes route display
+- Hidden in release/production builds via `#if DEBUG` or settings check
+
+**Website — no changes needed:**
+- Routes created by simulation appear automatically on EventDetails (map + stats card) and MyDashboard (route history)
+
+**Testing enabled by simulation:**
+- Mobile route upload pipeline (without GPS hardware)
+- Web route map rendering with multiple routes
+- Privacy filtering and trimming behavior
+- Route statistics aggregation
+- Heat map visualization seeding (Phase 4)
+- Various GPS conditions (configurable jitter parameter)
+
+### Current Implementation State
+- **Backend:** ✅ Complete — Models (EventAttendeeRoute extended, RoutePoint), DbContext, DTOs, manager business logic (privacy filtering, Haversine distance, auto-trim, decay), 3 new API controllers + existing controller updated
+- **Website:** ✅ Complete — TypeScript models, API service, EventRoutesMap (polylines on Google Maps), EventRouteStatsCard, MyRoutesCard (user route history), integrated into event detail page and MyDashboard
+- **Database migration:** ✅ Applied to dev (AddRouteTracingProperties)
+- **Route simulation:** ✅ Complete — `RouteSimulationController` (backend, production-gated), mobile "Simulate Route" button (`#if USETEST` gated), REST service method
+- **Mobile route sharing (Phase 3):** ✅ Complete — TabRoutes view with route map (polylines), aggregate stats (distance/duration/bags), per-route cards with privacy picker, delete button, route metadata update REST service (`UpdateRouteMetadataAsync`), `EventAttendeeRouteViewModel` display model, 6th tab on ViewEventPage
+- **Heat map & coverage (Phase 4):** ✅ Complete — Google Maps HeatmapLayer toggle on EventRoutesMap (client-side from existing anonymized routes), 25m grid coverage area calculation in route manager, coverage stat in EventRouteStatsCard
+- **Mobile app:** REST service layer complete; route recording/upload exists but untested on device
+- **Remaining:** Mobile app recording/upload device testing
+
 ---
 
 ## Privacy Considerations
@@ -300,25 +445,29 @@ public class RouteRecordingService
 
 ## Open Questions
 
-1. **Default decay period?**
-   **Recommendation:** 90 days for public routes; indefinite for private
-   **Owner:** Product + Legal
-   **Due:** Before Phase 3
+1. ~~**Default decay period?**~~
+   **Decision:** 2 years for public routes (enables year-over-year comparison); indefinite for private routes
+   **Status:** ✅ Resolved
 
-2. **GPS sampling rate?**
-   **Recommendation:** Adaptive: 10s stationary, 5s walking, 3s running
-   **Owner:** Mobile Team
-   **Due:** Before Phase 1
+2. ~~**GPS sampling rate?**~~
+   **Decision:** Adaptive rate: 10s stationary, 5s walking, 3s running (balances accuracy and battery)
+   **Status:** ✅ Resolved
 
-3. **Route data format?**
-   **Recommendation:** Encoded polyline (compact); GeoJSON for detailed analysis
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+3. ~~**Route data format?**~~
+   **Decision:** Encoded polyline for compact storage; GeoJSON for detailed analysis/export
+   **Status:** ✅ Resolved
 
-4. **Heat map granularity?**
-   **Recommendation:** 50m grid cells; aggregate minimum 5 routes
-   **Owner:** Product Lead
-   **Due:** Before Phase 4
+4. ~~**Heat map granularity?**~~
+   **Decision:** 25m grid cells; minimum 10 routes to display (finer detail, more privacy-preserving)
+   **Status:** ✅ Resolved
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#1202](https://github.com/trashmob/TrashMob/issues/1202)** - Project 15: Map Route Tracing with Decay (tracking issue)
 
 ---
 
@@ -330,7 +479,7 @@ public class RouteRecordingService
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** February 9, 2026
 **Owner:** Mobile Team + Backend
-**Status:** Planning in Progress
-**Next Review:** When Project 4 complete
+**Status:** In Progress (Backend, Website, Route Simulation, Mobile Route Sharing & Heat Map Complete)
+**Next Step:** Mobile device testing (route recording/upload)

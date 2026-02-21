@@ -1,5 +1,3 @@
-﻿using Microsoft.AspNetCore.Http;
-
 namespace TrashMob.Controllers
 {
     using System;
@@ -8,6 +6,7 @@ namespace TrashMob.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
@@ -20,26 +19,12 @@ namespace TrashMob.Controllers
     /// </summary>
     [Authorize]
     [Route("api/partneradmins")]
-    public class PartnerAdminsController : SecureController
+    public class PartnerAdminsController(
+        IKeyedManager<User> userManager,
+        IPartnerAdminManager partnerAdminManager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly IPartnerAdminManager partnerAdminManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IKeyedManager<User> userManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerAdminsController"/> class.
-        /// </summary>
-        /// <param name="userManager">The user manager.</param>
-        /// <param name="partnerAdminManager">The partner admin manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        public PartnerAdminsController(IKeyedManager<User> userManager,
-            IPartnerAdminManager partnerAdminManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            this.partnerManager = partnerManager;
-            this.userManager = userManager;
-            this.partnerAdminManager = partnerAdminManager;
-        }
 
         /// <summary>
         /// Gets all partner admins for a given partner.
@@ -52,10 +37,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetPartnerAdmins(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -78,6 +60,20 @@ namespace TrashMob.Controllers
         }
 
         /// <summary>
+        /// Gets all partners (communities) where the current user is an admin.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>List of partners the current user administers.</returns>
+        [HttpGet("my")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [ProducesResponseType(typeof(IEnumerable<Partner>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMyPartners(CancellationToken cancellationToken)
+        {
+            var partners = await partnerAdminManager.GetPartnersByUserIdAsync(UserId, cancellationToken);
+            return Ok(partners);
+        }
+
+        /// <summary>
         /// Retrieves a specific user associated with a partner.
         /// </summary>
         /// <param name="partnerId">The unique identifier of the partner the user belongs to.</param>
@@ -94,10 +90,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -106,7 +99,7 @@ namespace TrashMob.Controllers
                 (await partnerAdminManager.GetByParentIdAsync(partnerId, cancellationToken)).FirstOrDefault(pu =>
                     pu.UserId == userId);
 
-            if (partnerUser == null)
+            if (partnerUser is null)
             {
                 return NotFound();
             }
@@ -131,26 +124,23 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetUsers(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
             var partnerAdmins = await partnerAdminManager.GetByParentIdAsync(partnerId, cancellationToken);
 
-            if (partnerAdmins == null || !partnerAdmins.Any())
+            if (partnerAdmins is null || !partnerAdmins.Any())
             {
                 return NotFound();
             }
 
-            var users = new List<DisplayUser>();
+            List<DisplayUser> users = [];
 
             foreach (var pu in partnerAdmins)
             {
-                var user = await userManager.GetAsync(pu.UserId, cancellationToken).ConfigureAwait(false);
+                var user = await userManager.GetAsync(pu.UserId, cancellationToken);
                 users.Add(user.ToDisplayUser());
             }
 
@@ -171,10 +161,7 @@ namespace TrashMob.Controllers
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -192,8 +179,7 @@ namespace TrashMob.Controllers
                 LastUpdatedByUserId = UserId,
             };
 
-            var result = await partnerAdminManager.AddAsync(partnerUser, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await partnerAdminManager.AddAsync(partnerUser, UserId, cancellationToken);
             TrackEvent(nameof(AddPartnerUser));
 
             return CreatedAtAction(nameof(GetPartnerUser), new { partnerId, userId }, result);

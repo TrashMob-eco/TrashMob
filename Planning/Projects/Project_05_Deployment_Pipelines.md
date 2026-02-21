@@ -1,4 +1,4 @@
-# Project 5 � Deployment Pipelines & Infrastructure
+# Project 5 � Deployment Pipelines & Infrastructure
 
 | Attribute | Value |
 |-----------|-------|
@@ -22,7 +22,6 @@ Restore and modernize CI/CD pipelines to enable reliable, frequent deployments. 
 - **Restore GitHub Actions** workflows for web, API, and function apps
 - **Automate mobile app store** deployments (TestFlight, Google Play Beta)
 - **Containerize applications** (web API, hourly jobs, daily jobs)
-- **Implement init containers** for database migrations
 - **Set up dashboards and alerts** for deployment health
 
 ### Secondary Goals
@@ -35,23 +34,24 @@ Restore and modernize CI/CD pipelines to enable reliable, frequent deployments. 
 ## Scope
 
 ### Phase 1 - Fix Existing Pipelines
-- ? Fix GitHub Actions workflows for web/API deployment
-- ? Fix Azure Function App deployments (hourly/daily jobs)
-- ? Resolve secret management issues
-- ? Update Node.js and .NET versions in workflows
+- ✅ Fix GitHub Actions workflows for web/API deployment
+- ✅ Fix Azure Function App deployments (hourly/daily jobs)
+- ✅ Resolve secret management issues
+- ✅ Update Node.js and .NET versions in workflows
+- ☐ Automate Renovate/Dependabot PR handling (see Dependency Automation section below)
 
 ### Phase 2 - Containerization
-- ? Create Dockerfiles for web API project
-- ? Create Dockerfiles for function apps
-- ? Set up Azure Container Registry
-- ? Deploy to Azure Container Apps (ACA) instead of App Service
-- ? Configure init containers for DB migrations
+- ✅ Create Dockerfiles for web API project
+- ✅ Create Dockerfiles for function apps
+- ✅ Set up Azure Container Registry
+- ✅ Deploy to Azure Container Apps (ACA) instead of App Service
 
-### Phase 3 - Mobile Automation
-- ? Automate iOS build and TestFlight upload
-- ? Automate Android build and Google Play Beta upload
-- ? Implement versioning strategy (semantic versioning)
-- ? Code signing certificate management
+### Phase 3 - Mobile Automation Review
+- ☐ Review existing iOS build and TestFlight upload workflow
+- ☐ Review existing Android build and Google Play Beta upload workflow
+- ☐ Verify versioning strategy is working correctly
+- ☐ Verify code signing certificate management
+- ☐ Document current workflows and identify any improvements
 
 ### Phase 4 - Monitoring
 - ? Deployment health dashboards (Grafana or Azure Monitor)
@@ -64,6 +64,15 @@ Restore and modernize CI/CD pipelines to enable reliable, frequent deployments. 
 - ? Right-size container resources
 - ? Implement auto-scaling policies
 - ? Set up budget alerts
+
+### Phase 6 - Security Scanning (Issue #989)
+- ☐ Set up OWASP ZAP for periodic DAST scanning of live site
+- ☐ Enable GitHub CodeQL for SAST analysis on PRs
+- ☐ Add Trivy container image scanning to CI pipeline
+- ☐ Configure dependency vulnerability scanning (npm audit + dotnet)
+- ☐ Set up GitHub secret scanning
+- ☐ Create security scanning dashboard/alerts
+- ☐ Schedule weekly automated security scans
 
 ---
 
@@ -111,9 +120,11 @@ None (this is a foundational project)
 |------|------------|--------|------------|
 | **Containerization breaks existing functionality** | Medium | High | Thorough testing in staging; maintain App Service as fallback |
 | **Mobile code signing issues** | High | High | Early setup of certificates; backup manual process |
-| **Database migration failures** | Low | Critical | Init container with retry logic; manual rollback procedure |
+| **Database migration failures** | Low | Critical | Pre-deployment validation; manual rollback procedure |
 | **Cost savings don't materialize** | Medium | Low | Monitor closely; adjust resources; consider reserved instances |
 | **GitHub Actions outage** | Low | High | Have manual deployment procedure documented |
+| **Security scan false positives** | Medium | Low | Configure rule exclusions; regular review of findings |
+| **Security findings backlog** | Medium | Medium | Prioritize by severity; integrate into sprint planning |
 
 ---
 
@@ -131,7 +142,6 @@ GitHub ? GitHub Actions ? Azure App Service (web/API)
 ```
 GitHub ? GitHub Actions ? Docker Build ? Azure Container Registry
                                     ? Azure Container Apps (web/API/jobs)
-                                    ? Init Container (DB migrations)
 ```
 
 **Bicep Files (Infrastructure as Code):**
@@ -155,18 +165,6 @@ resource webApi 'Microsoft.App/containerApps@2023-05-01' = {
       ]
     }
     template: {
-      initContainers: [
-        {
-          name: 'db-migrator'
-          image: '${acrName}.azurecr.io/trashmob-migrator:${imageTag}'
-          env: [
-            {
-              name: 'ConnectionStrings__TrashMobDatabase'
-              secretRef: 'connection-string'
-            }
-          ]
-        }
-      ]
       containers: [
         {
           name: 'web-api'
@@ -213,20 +211,6 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "TrashMob.dll"]
-```
-
-**DB Migrator Init Container:**
-
-```dockerfile
-# Deploy/Dockerfile.migrator
-FROM mcr.microsoft.com/dotnet/sdk:10.0
-WORKDIR /app
-COPY ["TrashMob.Shared/TrashMob.Shared.csproj", "./"]
-RUN dotnet restore
-COPY TrashMob.Shared/ ./
-RUN dotnet tool install --global dotnet-ef
-ENV PATH="${PATH}:/root/.dotnet/tools"
-CMD ["dotnet", "ef", "database", "update", "--project", "TrashMob.Shared.csproj"]
 ```
 
 ### GitHub Actions Workflows
@@ -321,6 +305,343 @@ jobs:
             --password "$APPLE_PASSWORD"
 ```
 
+### Dependency Automation Workflow
+
+**Goal:** Automatically handle Renovate and Dependabot PRs with zero manual intervention for non-breaking updates.
+
+**Workflow Steps:**
+
+1. **Renovate/Dependabot creates PR** with dependency update
+2. **CI runs full build and test suite** on the PR
+3. **If build/tests pass:**
+   - Auto-approve and merge (for patch/minor updates)
+   - For major updates: create summary comment, await manual review
+4. **If build/tests fail:**
+   - Use Claude agent to analyze the failure
+   - Agent attempts to fix breaking changes automatically
+   - Agent commits fixes to the PR branch
+   - Re-run CI to verify fixes
+   - If fixed: auto-merge; if not: flag for manual review
+
+**GitHub Actions Workflow:**
+
+```yaml
+name: Dependency Update Automation
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  check-dependency-pr:
+    if: github.actor == 'renovate[bot]' || github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build and Test
+        id: build
+        continue-on-error: true
+        run: |
+          dotnet build --configuration Release
+          dotnet test --configuration Release --no-build
+
+      - name: Auto-fix Breaking Changes
+        if: steps.build.outcome == 'failure'
+        uses: anthropics/claude-code-action@v1
+        with:
+          prompt: |
+            The dependency update PR has build/test failures.
+            Analyze the errors and fix any breaking changes.
+            Common fixes include:
+            - Updating API calls for new library versions
+            - Fixing type signature changes
+            - Updating deprecated method calls
+            - Adjusting configuration for new package versions
+            Do not change functionality, only fix compatibility issues.
+          allowed_tools: "Edit,Read,Bash"
+
+      - name: Commit Fixes
+        if: steps.build.outcome == 'failure'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "fix: Auto-fix breaking changes from dependency update"
+          git push
+
+      - name: Re-run Build After Fixes
+        if: steps.build.outcome == 'failure'
+        run: |
+          dotnet build --configuration Release
+          dotnet test --configuration Release --no-build
+
+      - name: Auto-merge on Success
+        if: success()
+        uses: pascalgn/automerge-action@v0.16.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_METHOD: squash
+          MERGE_COMMIT_MESSAGE: "chore: Update dependencies"
+```
+
+**Configuration (renovate.json):**
+
+```json
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "automerge": true,
+  "automergeType": "pr",
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["major-update", "needs-review"]
+    }
+  ],
+  "schedule": ["before 6am on Monday"]
+}
+```
+
+**Safety Checks:**
+- All tests must pass before auto-merge
+- Major version updates always require human review
+- Security updates prioritized and processed immediately
+- Failed auto-fix attempts are flagged for manual intervention
+- Maintain audit log of all automated merges
+
+### Security Scanning Workflows (Issue #989)
+
+**Goal:** Periodically scan the application for security vulnerabilities using multiple complementary tools.
+
+#### Recommended Tools
+
+| Tool | Type | Cost | Purpose |
+|------|------|------|---------|
+| **OWASP ZAP** | DAST | Free | Dynamic scanning of live web app |
+| **GitHub CodeQL** | SAST | Free for public repos | Static code analysis |
+| **Trivy** | Container | Free | Container image vulnerability scanning |
+| **npm audit** | Dependency | Free | JavaScript dependency vulnerabilities |
+| **dotnet list package --vulnerable** | Dependency | Free | .NET dependency vulnerabilities |
+| **GitHub Secret Scanning** | Secrets | Free | Detect committed secrets |
+| **Gitleaks** | Secrets | Free | Pre-commit secret detection |
+
+#### DAST: OWASP ZAP Baseline Scan
+
+Runs a baseline security scan against the live dev site weekly.
+
+```yaml
+name: Security - OWASP ZAP Scan
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday at 6 AM UTC
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  zap-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: 'https://dev.trashmob.eco'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a -j'
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: report_html.html
+
+      - name: Create Issue on High Findings
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Security Alert: OWASP ZAP found vulnerabilities',
+              body: 'The weekly OWASP ZAP scan found security issues. See the workflow run for details.',
+              labels: ['security', 'automated']
+            })
+```
+
+**ZAP Rules Configuration (.zap/rules.tsv):**
+
+```tsv
+10038	IGNORE	(Content Security Policy - can have false positives)
+10109	WARN	(Modern Web Application - informational)
+```
+
+#### SAST: GitHub CodeQL Analysis
+
+```yaml
+name: Security - CodeQL Analysis
+
+on:
+  push:
+    branches: [main, release]
+  pull_request:
+    branches: [main, release]
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly on Monday
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      matrix:
+        language: ['csharp', 'javascript-typescript']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+```
+
+#### Container Scanning: Trivy
+
+Add to existing container build workflow:
+
+```yaml
+      - name: Scan Container Image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: '${{ secrets.ACR_NAME }}.azurecr.io/trashmob-web-api:${{ github.sha }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy Results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+```
+
+#### Dependency Vulnerability Scanning
+
+```yaml
+name: Security - Dependency Scan
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly
+  pull_request:
+    paths:
+      - '**/package.json'
+      - '**/package-lock.json'
+      - '**/*.csproj'
+
+jobs:
+  npm-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        working-directory: TrashMob/client-app
+        run: npm ci
+
+      - name: Run npm audit
+        working-directory: TrashMob/client-app
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+  dotnet-vuln:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Check for vulnerable packages
+        run: |
+          dotnet restore
+          dotnet list package --vulnerable --include-transitive 2>&1 | tee vuln-report.txt
+          if grep -q "has the following vulnerable packages" vuln-report.txt; then
+            echo "::warning::Vulnerable packages found"
+          fi
+```
+
+#### Secret Scanning: Gitleaks Pre-commit
+
+```yaml
+name: Security - Secret Scanning
+
+on:
+  push:
+    branches: [main, release]
+  pull_request:
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+#### Security Dashboard & Alerting
+
+**Recommended Approach:**
+1. Use GitHub Security tab as the central dashboard (aggregates CodeQL, Dependabot, secret scanning)
+2. Configure email alerts for high/critical findings via GitHub notification settings
+3. Create a weekly security review checklist for the team
+
+**Security Alerts Configuration:**
+- High/Critical vulnerabilities: Immediate email + Slack notification
+- Medium vulnerabilities: Weekly digest
+- Low/Informational: Monthly review
+
 ---
 
 ## Implementation Phases
@@ -330,19 +651,19 @@ jobs:
 - Fix failing builds
 - Update dependencies
 - Test deployments to staging
+- Implement Renovate/Dependabot automation with auto-fix
 
 ### Phase 2: Containerization
 - Create Dockerfiles
 - Set up ACR
 - Deploy to ACA (staging)
-- Test init containers
 - Performance testing
 
 ### Phase 3: Mobile Automation
-- Set up code signing
-- Create iOS workflow
-- Create Android workflow
-- Test TestFlight/Beta uploads
+- Review existing iOS/Android build workflows
+- Verify TestFlight upload process
+- Verify Google Play Beta upload process
+- Document current workflow and any improvements needed
 
 ### Phase 4: Monitoring
 - Set up dashboards
@@ -356,31 +677,60 @@ jobs:
 - Implement auto-scaling
 - Set budget alerts
 
+### Phase 6: Security Scanning (Issue #989)
+- Configure OWASP ZAP for DAST
+- Enable CodeQL for SAST
+- Add container scanning with Trivy
+- Set up dependency vulnerability scanning
+- Configure alerts for findings
+
 **Note:** Pipeline fixes (Phase 1) are prerequisite for all other work.
 
 ---
 
 ## Open Questions
 
-1. **Should we migrate to Azure Container Apps or Azure Kubernetes Service (AKS)?**  
-   **Recommendation:** ACA for simplicity; AKS if need advanced orchestration  
-   **Owner:** DevOps Engineer  
-   **Due:** Before containerization phase
+1. **Should we migrate to Azure Container Apps or Azure Kubernetes Service (AKS)?**
+   **Decision:** Azure Container Apps (ACA) for simplicity. AKS would only be needed for advanced orchestration which is not required.
+   **Status:** Decided
 
-2. **What's our rollback strategy?**  
-   **Recommendation:** Keep 3 previous container images; script to redeploy previous version  
-   **Owner:** DevOps Engineer  
-   **Due:** Before monitoring phase
+2. **What's our rollback strategy?**
+   **Decision:** Keep 3 previous container images in ACR; redeploy previous revision using Azure CLI. Documentation added to root CLAUDE.md.
+   **Status:** Decided
 
-3. **Do we need staging and production environments?**  
-   **Recommendation:** Yes; deploy to staging first, then production after validation  
-   **Owner:** Product Lead  
-   **Due:** Early in project
+3. **Do we need staging and production environments?**
+   **Decision:** Yes. We have dev environment (dev.trashmob.eco) for staging and production (www.trashmob.eco). Deploy to dev first, then production after validation.
+   **Status:** Decided
 
-4. **What's the versioning strategy for mobile apps?**  
-   **Recommendation:** Semantic versioning; auto-increment build number  
-   **Owner:** Mobile Lead  
-   **Due:** Before mobile automation phase
+4. **What's the versioning strategy for mobile apps?**
+   **Decision:** Semantic versioning with auto-increment build number.
+   **Status:** Decided
+
+5. ~~**What is the secrets rotation policy and schedule?**~~
+   **Decision:** 90-day rotation for API keys; annual rotation for certificates; automated alerts 30 days before expiry; automate via GitHub Actions where possible
+   **Status:** ✅ Resolved
+
+6. ~~**How do we handle database migration rollback?**~~
+   **Decision:** All EF Core migrations must have a working `Down` method; test rollback in staging before production; take database snapshot before production deploys; document manual rollback procedures
+   **Status:** ✅ Resolved
+
+7. ~~**What health checks determine staged rollout progression (10% → 50% → 100%)?**~~
+   **Decision:** No staged rollout - single instance architecture currently. Revisit if scaling requirements change.
+   **Status:** ✅ Resolved
+
+8. ~~**How often do we test disaster recovery procedures?**~~
+   **Decision:** Out of scope for now. Revisit after all features shipped.
+   **Status:** ✅ Resolved
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2227](https://github.com/trashmob/TrashMob/issues/2227)** - Project 5: Improve Deployment Pipelines and Infrastructure (tracking issue)
+- **[#1519](https://github.com/trashmob/TrashMob/issues/1519)** - Dependency Dashboard
+- **[#989](https://github.com/trashmob/TrashMob/issues/989)** - Set up periodic web scanning of application (Phase 6)
 
 ---
 
@@ -392,7 +742,7 @@ jobs:
 
 ---
 
-**Last Updated:** January 24, 2026  
-**Owner:** DevOps/Build Engineer  
-**Status:** Ready for Dev Review  
-**Next Review:** When development begins
+**Last Updated:** February 5, 2026
+**Owner:** DevOps/Build Engineer
+**Status:** In Progress
+**Next Review:** Regular standups during development

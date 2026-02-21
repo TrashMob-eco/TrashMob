@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,6 +20,7 @@ import { useMutation } from '@tanstack/react-query';
 import * as ToolTips from '@/store/ToolTips';
 import PartnerRequestData from '@/components/Models/PartnerRequestData';
 import * as Constants from '@/components/Models/Constants';
+import { CharacterCounter } from '@/components/ui/character-counter';
 import * as MapStore from '@/store/MapStore';
 import { CreatePartnerRequest } from '@/services/partners';
 import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
@@ -56,13 +57,30 @@ interface FormInputs {
 }
 
 const formSchema = z.object({
-    name: z.string({ required_error: 'Name cannot be blank.' }),
+    name: z
+        .string({ required_error: 'Name cannot be blank.' })
+        .max(
+            Constants.MAX_PARTNER_NAME_LENGTH,
+            `Name must be less than ${Constants.MAX_PARTNER_NAME_LENGTH} characters`,
+        ),
     partnerTypeId: z.string(),
     email: z
         .string({ required_error: 'Email cannot be blank.' })
-        .email({ message: 'Please enter valid email address.' }),
+        .email({ message: 'Please enter valid email address.' })
+        .max(
+            Constants.MAX_CONTACT_EMAIL_LENGTH,
+            `Email must be less than ${Constants.MAX_CONTACT_EMAIL_LENGTH} characters`,
+        ),
     website: z.string().url({ message: 'Please enter valid website.' }).optional(),
     phone: z.string().regex(Constants.RegexPhoneNumber, { message: 'Please enter a valid phone number.' }).optional(),
+    notes: z
+        .string()
+        .max(
+            Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH,
+            `Notes must be less than ${Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH} characters`,
+        )
+        .optional()
+        .default(''),
     location: z.object({
         lat: z.number().optional(),
         lng: z.number().optional(),
@@ -78,7 +96,12 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
     const { mode } = props;
     const { toast } = useToast();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { currentUser } = useLogin();
+
+    // Pre-select Community type when arriving from /for-communities
+    const typeParam = searchParams.get('type');
+    const defaultPartnerType = typeParam === 'community' ? PartnerType.COMMUNITY : PartnerType.GOVERNMENT;
     const userPreferredLocation =
         currentUser.latitude && currentUser.longitude
             ? { lat: currentUser.latitude, lng: currentUser.longitude }
@@ -107,7 +130,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
     const form = useForm<FormInputs>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            partnerTypeId: PartnerType.GOVERNMENT,
+            partnerTypeId: defaultPartnerType,
         },
     });
 
@@ -136,6 +159,8 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
     );
 
     const location = form.watch('location');
+    const notes = form.watch('notes');
+    const selectedPartnerType = form.watch('partnerTypeId');
 
     const title =
         mode === PartnerRequestMode.SEND ? 'Send invite to join TrashMob as a partner' : 'Apply to become a partner';
@@ -201,35 +226,42 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
     }, [location]);
 
     // This will handle Cancel button click event.
-    function handleCancel(event: any) {
+    function handleCancel(event: React.MouseEvent<HTMLButtonElement>) {
         event.preventDefault();
         navigate('/partnerships');
     }
 
     return (
-        <div className='tailwind'>
-            <div className='container py-12!'>
-                <Card className=''>
-                    <CardHeader>
-                        <CardTitle className='text-4xl text-primary'>{title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {mode === PartnerRequestMode.SEND && (
-                            <p>
-                                Use this form to send an informational note to a potential TrashMob.eco partner in your
-                                community. Fill out as much detail as you can and TrashMob.eco will reach out to the
-                                email address provided with an information packet to see if they would like to become a
-                                TrashMob.eco Partner!
-                            </p>
-                        )}
-                        {mode === PartnerRequestMode.REQUEST && (
-                            <p>
-                                Use this form to request to become a TrashMob.eco partner. TrashMob.eco site
-                                adminsitrators will review your request, and either approve it, or reach out to you for
-                                more information. If approved, you will be sent a Welcome email with instructions on how
-                                to complete setup of your partnership.
-                            </p>
-                        )}
+        <div className='container py-12!'>
+            <Card className=''>
+                <CardHeader>
+                    <CardTitle className='text-4xl text-primary'>{title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {mode === PartnerRequestMode.SEND && (
+                        <p>
+                            Use this form to send an informational note to a potential TrashMob.eco partner in your
+                            community. Fill out as much detail as you can and TrashMob.eco will reach out to the email
+                            address provided with an information packet to see if they would like to become a
+                            TrashMob.eco Partner!
+                        </p>
+                    )}
+                    {mode === PartnerRequestMode.REQUEST && selectedPartnerType === PartnerType.COMMUNITY && (
+                        <p>
+                            Start your TrashMob community! Tell us about your organization and the area you'd like to
+                            cover. Our team will review your request and set up your branded community page with
+                            volunteer engagement tools, adoption programs, and analytics.
+                        </p>
+                    )}
+                    {mode === PartnerRequestMode.REQUEST && selectedPartnerType !== PartnerType.COMMUNITY && (
+                        <p>
+                            Use this form to request to become a TrashMob.eco partner. TrashMob.eco site administrators
+                            will review your request, and either approve it, or reach out to you for more information.
+                            If approved, you will be sent a Welcome email with instructions on how to complete setup of
+                            your partnership.
+                        </p>
+                    )}
+                    {selectedPartnerType === PartnerType.GOVERNMENT && (
                         <p>
                             If connecting with a government partner, the department responsible for managing waste and
                             maintaining cleanliness in a community is often a part of the public works department,
@@ -237,246 +269,278 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                             these organizations by searching online or by calling the city's main government phone
                             number and asking for the appropriate department.
                         </p>
-                    </CardContent>
-                    <CardContent>
-                        <TooltipProvider delayDuration={0}>
-                            <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
-                                    <FormField
-                                        control={form.control}
-                                        name='name'
-                                        render={({ field }) => (
-                                            <FormItem className='col-span-6'>
-                                                <Tooltip>
-                                                    <TooltipTrigger>
-                                                        <FormLabel>Partner Name</FormLabel>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent className='max-w-64'>
-                                                        {ToolTips.PartnerRequestName}
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='partnerTypeId'
-                                        render={({ field }) => (
-                                            <FormItem className='col-span-6'>
-                                                <Tooltip>
-                                                    <TooltipTrigger>
-                                                        <FormLabel>Type</FormLabel>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent className='max-w-64'>
-                                                        {ToolTips.PartnerType}
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                                <FormControl>
-                                                    <RadioGroup
-                                                        onValueChange={field.onChange}
-                                                        defaultValue={field.value}
-                                                        className='flex flex-row space-y-1 h-9 items-center'
+                    )}
+                </CardContent>
+                <CardContent>
+                    <TooltipProvider delayDuration={0}>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+                                <FormField
+                                    control={form.control}
+                                    name='name'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-6'>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <FormLabel>Partner Name</FormLabel>
+                                                </TooltipTrigger>
+                                                <TooltipContent className='max-w-64'>
+                                                    {ToolTips.PartnerRequestName}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <FormControl>
+                                                <Input {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='partnerTypeId'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-12'>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <FormLabel>Partner Type</FormLabel>
+                                                </TooltipTrigger>
+                                                <TooltipContent className='max-w-80'>
+                                                    {ToolTips.PartnerType}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <FormControl>
+                                                <RadioGroup
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                    className='grid grid-cols-1 sm:grid-cols-3 gap-3'
+                                                >
+                                                    <FormItem className='flex items-start space-x-3 space-y-0 rounded-md border p-4 cursor-pointer has-[button[data-state=checked]]:border-primary has-[button[data-state=checked]]:bg-primary/5'>
+                                                        <FormControl>
+                                                            <RadioGroupItem value={PartnerType.GOVERNMENT} />
+                                                        </FormControl>
+                                                        <div className='space-y-1'>
+                                                            <FormLabel className='font-medium cursor-pointer'>
+                                                                Government
+                                                            </FormLabel>
+                                                            <p className='text-sm text-muted-foreground'>
+                                                                {ToolTips.PartnerTypeGovernment}
+                                                            </p>
+                                                        </div>
+                                                    </FormItem>
+                                                    <FormItem className='flex items-start space-x-3 space-y-0 rounded-md border p-4 cursor-pointer has-[button[data-state=checked]]:border-primary has-[button[data-state=checked]]:bg-primary/5'>
+                                                        <FormControl>
+                                                            <RadioGroupItem value={PartnerType.BUSINESS} />
+                                                        </FormControl>
+                                                        <div className='space-y-1'>
+                                                            <FormLabel className='font-medium cursor-pointer'>
+                                                                Business
+                                                            </FormLabel>
+                                                            <p className='text-sm text-muted-foreground'>
+                                                                {ToolTips.PartnerTypeBusiness}
+                                                            </p>
+                                                        </div>
+                                                    </FormItem>
+                                                    <FormItem className='flex items-start space-x-3 space-y-0 rounded-md border p-4 cursor-pointer has-[button[data-state=checked]]:border-primary has-[button[data-state=checked]]:bg-primary/5'>
+                                                        <FormControl>
+                                                            <RadioGroupItem value={PartnerType.COMMUNITY} />
+                                                        </FormControl>
+                                                        <div className='space-y-1'>
+                                                            <FormLabel className='font-medium cursor-pointer'>
+                                                                Community
+                                                            </FormLabel>
+                                                            <p className='text-sm text-muted-foreground'>
+                                                                {ToolTips.PartnerTypeCommunity}
+                                                            </p>
+                                                        </div>
+                                                    </FormItem>
+                                                </RadioGroup>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='email'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-6'>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <FormLabel>Email</FormLabel>
+                                                </TooltipTrigger>
+                                                <TooltipContent className='max-w-64'>
+                                                    {mode === PartnerRequestMode.SEND
+                                                        ? ToolTips.PartnerRequestInviteEmail
+                                                        : ToolTips.PartnerRequestEmail}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <FormControl>
+                                                <Input {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='website'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-6'>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <FormLabel>Website</FormLabel>
+                                                </TooltipTrigger>
+                                                <TooltipContent className='max-w-64'>
+                                                    {ToolTips.PartnerRequestWebsite}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <FormControl>
+                                                <Input {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='phone'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-6'>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <FormLabel>Phone</FormLabel>
+                                                </TooltipTrigger>
+                                                <TooltipContent className='max-w-64'>
+                                                    {mode === PartnerRequestMode.SEND
+                                                        ? ToolTips.PartnerRequestInvitePhone
+                                                        : ToolTips.PartnerRequestPhone}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <FormControl>
+                                                <PhoneInput
+                                                    country='us'
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    inputClass='flex h-9 w-full! rounded-md border border-input bg-transparent pr-3 py-1 text-base shadow-xs '
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='notes'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-12'>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <FormLabel>Notes</FormLabel>
+                                                </TooltipTrigger>
+                                                <TooltipContent className='max-w-64'>
+                                                    {mode === PartnerRequestMode.SEND
+                                                        ? ToolTips.PartnerRequestInviteNotes
+                                                        : ToolTips.PartnerRequestNotes}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <FormControl>
+                                                <Textarea
+                                                    {...field}
+                                                    maxLength={Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH}
+                                                    className='h-24'
+                                                />
+                                            </FormControl>
+                                            <CharacterCounter
+                                                currentLength={notes?.length || 0}
+                                                maxLength={Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH}
+                                            />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='location'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-12'>
+                                            <FormLabel>Choose a location!</FormLabel>
+                                            <FormControl>
+                                                <div className='relative w-full'>
+                                                    <GoogleMap
+                                                        defaultCenter={userPreferredLocation ?? undefined}
+                                                        onClick={handleClickMap}
                                                     >
-                                                        <FormItem className='flex items-center space-x-3 space-y-0'>
-                                                            <FormControl>
-                                                                <RadioGroupItem value={PartnerType.GOVERNMENT} />
-                                                            </FormControl>
-                                                            <FormLabel className='font-normal'>Government</FormLabel>
-                                                        </FormItem>
-                                                        <FormItem className='flex items-center space-x-3 space-y-0'>
-                                                            <FormControl>
-                                                                <RadioGroupItem value={PartnerType.BUSINESS} />
-                                                            </FormControl>
-                                                            <FormLabel className='font-normal'>Business</FormLabel>
-                                                        </FormItem>
-                                                    </RadioGroup>
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='email'
-                                        render={({ field }) => (
-                                            <FormItem className='col-span-6'>
-                                                <Tooltip>
-                                                    <TooltipTrigger>
-                                                        <FormLabel>Email</FormLabel>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent className='max-w-64'>
-                                                        {mode === PartnerRequestMode.SEND
-                                                            ? ToolTips.PartnerRequestInviteEmail
-                                                            : ToolTips.PartnerRequestEmail}
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='website'
-                                        render={({ field }) => (
-                                            <FormItem className='col-span-6'>
-                                                <Tooltip>
-                                                    <TooltipTrigger>
-                                                        <FormLabel>Website</FormLabel>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent className='max-w-64'>
-                                                        {ToolTips.PartnerRequestWebsite}
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='phone'
-                                        render={({ field }) => (
-                                            <FormItem className='col-span-6'>
-                                                <Tooltip>
-                                                    <TooltipTrigger>
-                                                        <FormLabel>Phone</FormLabel>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent className='max-w-64'>
-                                                        {mode === PartnerRequestMode.SEND
-                                                            ? ToolTips.PartnerRequestInvitePhone
-                                                            : ToolTips.PartnerRequestPhone}
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                                <FormControl>
-                                                    <PhoneInput
-                                                        country='us'
-                                                        value={field.value}
-                                                        onChange={field.onChange}
-                                                        inputClass='flex h-9 w-full! rounded-md border border-input bg-transparent pr-3 py-1 text-base shadow-xs '
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='notes'
-                                        render={({ field }) => (
-                                            <FormItem className='col-span-12'>
-                                                <Tooltip>
-                                                    <TooltipTrigger>
-                                                        <FormLabel>Notes</FormLabel>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent className='max-w-64'>
-                                                        {mode === PartnerRequestMode.SEND
-                                                            ? ToolTips.PartnerRequestInviteNotes
-                                                            : ToolTips.PartnerRequestNotes}
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                                <FormControl>
-                                                    <Textarea {...field} maxLength={2048} className='h-24' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='location'
-                                        render={({ field }) => (
-                                            <FormItem className='col-span-12'>
-                                                <FormLabel>Choose a location!</FormLabel>
-                                                <FormControl>
-                                                    <div className='relative w-full'>
-                                                        <GoogleMap
-                                                            defaultCenter={userPreferredLocation ?? undefined}
-                                                            onClick={handleClickMap}
-                                                        >
-                                                            <Marker
-                                                                position={field.value}
-                                                                draggable
-                                                                onDragEnd={handleMarkerDragEnd}
+                                                        <Marker
+                                                            position={field.value}
+                                                            draggable
+                                                            onDragEnd={handleMarkerDragEnd}
+                                                        />
+                                                    </GoogleMap>
+                                                    {azureSubscriptionKey ? (
+                                                        <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                                            <AzureSearchLocationInput
+                                                                azureKey={azureSubscriptionKey}
+                                                                onSelectLocation={handleSelectSearchLocation}
                                                             />
-                                                        </GoogleMap>
-                                                        {azureSubscriptionKey ? (
-                                                            <div style={{ position: 'absolute', top: 8, left: 8 }}>
-                                                                <AzureSearchLocationInput
-                                                                    azureKey={azureSubscriptionKey}
-                                                                    onSelectLocation={handleSelectSearchLocation}
-                                                                />
-                                                            </div>
-                                                        ) : null}
-                                                    </div>
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='streetAddress'
-                                        render={({ field }) => (
-                                            <FormItem className='col-span-12'>
-                                                <FormLabel>Street Address</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} disabled />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='city'
-                                        render={({ field }) => (
-                                            <FormItem className='col-span-6'>
-                                                <FormLabel>City</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} disabled />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='postalCode'
-                                        render={({ field }) => (
-                                            <FormItem className='col-span-6'>
-                                                <FormLabel>Postal Code</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} disabled />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <div className='col-span-12 flex justify-end gap-2'>
-                                        <Button variant='secondary' onClick={handleCancel}>
-                                            Cancel
-                                        </Button>
-                                        <Button type='submit' disabled={createPartnerRequest.isLoading}>
-                                            {createPartnerRequest.isLoading ? (
-                                                <Loader2 className='animate-spin' />
-                                            ) : null}
-                                            Submit
-                                        </Button>
-                                    </div>
-                                </form>
-                            </Form>
-                        </TooltipProvider>
-                    </CardContent>
-                </Card>
-            </div>
+                                                        </div>
+                                                    ) : null}
+                                                </div>
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='streetAddress'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-12'>
+                                            <FormLabel>Street Address</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='city'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-6'>
+                                            <FormLabel>City</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='postalCode'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-6'>
+                                            <FormLabel>Postal Code</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <div className='col-span-12 flex justify-end gap-2'>
+                                    <Button variant='secondary' onClick={handleCancel}>
+                                        Cancel
+                                    </Button>
+                                    <Button type='submit' disabled={createPartnerRequest.isLoading}>
+                                        {createPartnerRequest.isLoading ? <Loader2 className='animate-spin' /> : null}
+                                        Submit
+                                    </Button>
+                                </div>
+                            </form>
+                        </Form>
+                    </TooltipProvider>
+                </CardContent>
+            </Card>
         </div>
     );
 };

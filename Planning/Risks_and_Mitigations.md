@@ -1,4 +1,4 @@
-# TrashMob.eco — 2026 Risks & Mitigations
+# TrashMob.eco ï¿½ 2026 Risks & Mitigations
 
 **Version:** 1.0  
 **Date:** January 24, 2026  
@@ -27,7 +27,7 @@ This document consolidates all risks across the 2026 product and engineering por
 - **Critical:** Delays > 4 weeks, project cancellation risk
 
 ### Risk Priority Matrix
-Priority = Likelihood × Impact
+Priority = Likelihood ï¿½ Impact
 
 | Likelihood ? Impact ? | Low | Medium | High | Critical |
 |----------------------|-----|--------|------|----------|
@@ -83,12 +83,11 @@ Migrating from Azure B2C to Entra External ID (or refactoring within B2C) is com
 - Project 23 (Parental Consent)
 
 **Mitigations:**
-1. **Canary Rollouts:** Deploy to 5% of users initially, monitor extensively
-2. **Rollback Plans:** Maintain hot rollback capability for at least 30 days
-3. **Load Testing:** Simulate 10× current traffic before production deployment
-4. **Shadow Deployment:** Run new auth system in parallel without routing traffic
-5. **Expert Assistance:** Contract Microsoft SME or experienced consultant
-6. **User Communication:** In-app notifications, help center updates, support team training
+1. **Rollback Plans:** Maintain hot rollback capability for at least 30 days
+2. **Load Testing:** Simulate 10Ã— current traffic before production deployment
+3. **Shadow Deployment:** Run new auth system in parallel without routing traffic
+4. **Expert Assistance:** Contract Microsoft SME or experienced consultant
+5. **User Communication:** In-app notifications, help center updates, support team training
 
 **Owner:** Security Engineer + Engineering Lead  
 **Status:** Planning phase (Q1 2026)
@@ -188,7 +187,6 @@ Rapid growth or inefficient usage could cause unexpected spikes in Azure, Google
 **Mitigations:**
 - Shared business logic layer for v1 and v2
 - Automated deprecation warnings in v1 responses
-- 12-month transition plan with clear milestones
 - Feature flags to control rollout pace
 - Comprehensive documentation for migration
 

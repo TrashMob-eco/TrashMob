@@ -14,7 +14,7 @@ public class LoggingService : ILoggingService
     public void LogError(Exception exception)
     {
         LogMessage(exception.Message);
-        LogMessage(exception.StackTrace);
+        LogMessage(exception.StackTrace ?? string.Empty);
         SentrySdk.CaptureException(exception);
     }
 

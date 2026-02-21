@@ -22,9 +22,7 @@ public partial class ViewPickupLocationViewModel(IPickupLocationManager pickupLo
 
     public async Task Init(Guid pickupLocationId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var pickupLocation =
                 await pickupLocationManager.GetPickupLocationImageAsync(pickupLocationId, ImageSizeEnum.Reduced);
@@ -55,14 +53,6 @@ public partial class ViewPickupLocationViewModel(IPickupLocationManager pickupLo
 
             PickupLocations.Clear();
             PickupLocations.Add(pickupLocationViewModel);
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while loading the pickup location. Please try again.");
-        }
+        }, "An error occurred while loading the pickup location. Please try again.");
     }
 }

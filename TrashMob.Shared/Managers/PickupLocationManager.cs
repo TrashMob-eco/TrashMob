@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Collections.Generic;
@@ -37,9 +37,8 @@
         public override async Task<IEnumerable<PickupLocation>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
-            return (await Repository.Get().Where(p => p.EventId == parentId)
-                    .ToListAsync(cancellationToken))
-                .AsEnumerable();
+            return await Repository.Get().Where(p => p.EventId == parentId)
+                    .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -49,7 +48,7 @@
             var partnerLocations =
                 await partnerAdminManager.GetHaulingPartnerLocationsByUserIdAsync(userId, cancellationToken);
 
-            var pickupLocations = new List<PickupLocation>();
+            List<PickupLocation> pickupLocations = [];
 
             // For each partner location
             foreach (var partnerLocation in partnerLocations)
@@ -83,7 +82,7 @@
         }
 
         /// <inheritdoc />
-        public async Task SubmitPickupLocations(Guid eventId, Guid userId, CancellationToken cancellationToken)
+        public async Task SubmitPickupLocationsAsync(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
             // Get the Event
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
@@ -91,7 +90,7 @@
             var partnerLocation =
                 await eventPartnerLocationServiceManager.GetHaulingPartnerLocationForEvent(eventId, cancellationToken);
 
-            if (partnerLocation == null)
+            if (partnerLocation is null)
             {
                 // Todo add error handling for this
                 return;
@@ -109,7 +108,7 @@
 
             var emailSubject = "A Trashmob.eco Event has pickups ready!";
 
-            var recipients = new List<EmailAddress>();
+            List<EmailAddress> recipients = [];
 
             foreach (var contact in contacts)
             {
@@ -144,8 +143,7 @@
             }
 
             await emailManager.SendTemplatedEmailAsync(emailSubject, SendGridEmailTemplateId.PickupEmail,
-                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None);
 
             // Update the submitted status
             foreach (var pickupLocation in pickupLocations)

@@ -1,0 +1,287 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# TrashMob Feature Usage Metrics\n\nThis workbook provides insights into feature adoption and user engagement across the TrashMob web application.\n\n---"
+      },
+      "name": "header"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "time-range",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                { "durationMs": 3600000, "displayName": "Last hour" },
+                { "durationMs": 86400000, "displayName": "Last 24 hours" },
+                { "durationMs": 604800000, "displayName": "Last 7 days" },
+                { "durationMs": 2592000000, "displayName": "Last 30 days" },
+                { "durationMs": 7776000000, "displayName": "Last 90 days" }
+              ],
+              "allowCustom": true
+            },
+            "value": { "durationMs": 604800000 }
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      },
+      "name": "parameters"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## Overview\n\nKey metrics at a glance for the selected time period."
+      },
+      "name": "overview-header"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents\n| where timestamp {TimeRange}\n| where name startswith \"Auth_\" or name startswith \"Event_\" or name startswith \"Attendance_\" or name startswith \"LitterReport_\"\n| summarize \n    TotalEvents = count(),\n    Logins = countif(name == \"Auth_Login_Success\"),\n    EventsCreated = countif(name == \"Event_Create_Submit\"),\n    Registrations = countif(name == \"Attendance_Register_Submit\"),\n    LitterReports = countif(name == \"LitterReport_Create_Submit\")\n| project TotalEvents, Logins, EventsCreated, Registrations, LitterReports",
+        "size": 4,
+        "title": "Feature Usage Summary",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "tiles",
+        "tileSettings": {
+          "titleContent": {
+            "columnMatch": "Column1",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "TotalEvents",
+            "formatter": 12,
+            "formatOptions": { "palette": "auto" }
+          },
+          "showBorder": true
+        }
+      },
+      "customWidth": "100",
+      "name": "overview-tiles"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents\n| where timestamp {TimeRange}\n| where name startswith \"Auth_\" or name startswith \"Event_\" or name startswith \"Attendance_\" or name startswith \"LitterReport_\"\n| summarize Count = count() by bin(timestamp, 1d), Category = case(\n    name startswith \"Auth_\", \"Authentication\",\n    name startswith \"Event_\", \"Events\",\n    name startswith \"Attendance_\", \"Attendance\",\n    name startswith \"LitterReport_\", \"Litter Reports\",\n    \"Other\")\n| order by timestamp asc",
+        "size": 0,
+        "title": "Feature Usage Over Time",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "linechart",
+        "chartSettings": {
+          "xAxis": "timestamp",
+          "yAxis": ["Count"],
+          "group": "Category",
+          "showLegend": true
+        }
+      },
+      "name": "usage-over-time"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "---\n## Authentication Metrics\n\nLogin and logout activity tracking."
+      },
+      "name": "auth-header"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents\n| where timestamp {TimeRange}\n| where name in (\"Auth_Login_Success\", \"Auth_Logout_Success\")\n| summarize Count = count() by bin(timestamp, 1h), Action = case(\n    name == \"Auth_Login_Success\", \"Login\",\n    name == \"Auth_Logout_Success\", \"Logout\",\n    \"Other\")\n| order by timestamp asc",
+        "size": 0,
+        "title": "Login/Logout Activity",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "linechart",
+        "chartSettings": {
+          "xAxis": "timestamp",
+          "yAxis": ["Count"],
+          "group": "Action",
+          "showLegend": true
+        }
+      },
+      "customWidth": "50",
+      "name": "auth-activity-chart"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents\n| where timestamp {TimeRange}\n| where name in (\"Auth_Login_Success\", \"Auth_Logout_Success\")\n| summarize Count = count() by name\n| project Action = case(\n    name == \"Auth_Login_Success\", \"Logins\",\n    name == \"Auth_Logout_Success\", \"Logouts\",\n    name), Count",
+        "size": 0,
+        "title": "Authentication Summary",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "piechart"
+      },
+      "customWidth": "50",
+      "name": "auth-pie-chart"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "---\n## Event Creation Metrics\n\nCleanup event creation tracking."
+      },
+      "name": "events-header"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents\n| where timestamp {TimeRange}\n| where name == \"Event_Create_Submit\"\n| summarize EventsCreated = count() by bin(timestamp, 1d)\n| order by timestamp asc",
+        "size": 0,
+        "title": "Events Created Per Day",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "barchart"
+      },
+      "customWidth": "50",
+      "name": "events-per-day"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents\n| where timestamp {TimeRange}\n| where name == \"Event_Create_Submit\"\n| extend EventTypeId = tostring(customDimensions.eventTypeId)\n| summarize Count = count() by EventTypeId\n| order by Count desc",
+        "size": 0,
+        "title": "Events by Type",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "piechart"
+      },
+      "customWidth": "50",
+      "name": "events-by-type"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents\n| where timestamp {TimeRange}\n| where name == \"Event_Create_Submit\"\n| extend FromLitterReport = tobool(customDimensions.fromLitterReport)\n| summarize Count = count() by Source = iif(FromLitterReport == true, \"From Litter Report\", \"Direct Creation\")\n| order by Count desc",
+        "size": 0,
+        "title": "Event Creation Source",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "piechart"
+      },
+      "customWidth": "50",
+      "name": "events-source"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "---\n## Attendance Metrics\n\nEvent registration tracking."
+      },
+      "name": "attendance-header"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents\n| where timestamp {TimeRange}\n| where name == \"Attendance_Register_Submit\"\n| summarize Registrations = count() by bin(timestamp, 1d)\n| order by timestamp asc",
+        "size": 0,
+        "title": "Event Registrations Per Day",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "barchart"
+      },
+      "customWidth": "50",
+      "name": "registrations-per-day"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents\n| where timestamp {TimeRange}\n| where name == \"Attendance_Register_Submit\"\n| extend EventId = tostring(customDimensions.eventId)\n| summarize Registrations = count() by EventId\n| top 10 by Registrations desc",
+        "size": 0,
+        "title": "Top 10 Events by Registrations",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table"
+      },
+      "customWidth": "50",
+      "name": "top-events-registrations"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "---\n## Litter Report Metrics\n\nLitter report submission tracking."
+      },
+      "name": "litter-reports-header"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents\n| where timestamp {TimeRange}\n| where name == \"LitterReport_Create_Submit\"\n| summarize Reports = count() by bin(timestamp, 1d)\n| order by timestamp asc",
+        "size": 0,
+        "title": "Litter Reports Per Day",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "barchart"
+      },
+      "customWidth": "50",
+      "name": "litter-reports-per-day"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents\n| where timestamp {TimeRange}\n| where name == \"LitterReport_Create_Submit\"\n| extend ImageCount = toint(customDimensions.imageCount)\n| summarize AvgImages = avg(ImageCount), MaxImages = max(ImageCount), TotalReports = count()",
+        "size": 4,
+        "title": "Litter Report Statistics",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "tiles",
+        "tileSettings": {
+          "showBorder": true
+        }
+      },
+      "customWidth": "50",
+      "name": "litter-report-stats"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "---\n## User Journey Funnel\n\nTracking user progression through key milestones."
+      },
+      "name": "funnel-header"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let logins = customEvents\n| where timestamp {TimeRange}\n| where name == \"Auth_Login_Success\"\n| summarize Logins = count();\nlet eventViews = pageViews\n| where timestamp {TimeRange}\n| where name contains \"event\"\n| summarize EventViews = dcount(session_Id);\nlet registrations = customEvents\n| where timestamp {TimeRange}\n| where name == \"Attendance_Register_Submit\"\n| summarize Registrations = count();\nlet eventsCreated = customEvents\n| where timestamp {TimeRange}\n| where name == \"Event_Create_Submit\"\n| summarize EventsCreated = count();\nlogins\n| extend dummy = 1\n| join kind=fullouter (eventViews | extend dummy = 1) on dummy\n| join kind=fullouter (registrations | extend dummy = 1) on dummy\n| join kind=fullouter (eventsCreated | extend dummy = 1) on dummy\n| project Step = pack_array(\"1. Logins\", \"2. Event Views\", \"3. Registrations\", \"4. Events Created\"), \n         Count = pack_array(Logins, EventViews, Registrations, EventsCreated)\n| mv-expand Step to typeof(string), Count to typeof(long)",
+        "size": 0,
+        "title": "User Journey Funnel",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "categoricalbar"
+      },
+      "name": "user-journey-funnel"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "---\n## Key Performance Indicators (KPIs)\n\n| KPI | Target | Description |\n|-----|--------|-------------|\n| **Daily Active Users** | Growing | Users who log in at least once per day |\n| **Events Created/Week** | 10+ | New cleanup events created weekly |\n| **Registration Rate** | 50%+ | Users who view events and register |\n| **Litter Reports/Week** | 20+ | New litter reports submitted weekly |\n| **Event Completion Rate** | 80%+ | Events that result in completed summaries |\n\n---\n\n*Last updated: Workbook auto-refreshes based on time range selection*"
+      },
+      "name": "kpi-documentation"
+    }
+  ],
+  "fallbackResourceIds": [],
+  "fromTemplateId": "community-Workbooks/TrashMob/FeatureMetrics",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

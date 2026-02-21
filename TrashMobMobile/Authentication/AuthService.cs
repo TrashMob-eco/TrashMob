@@ -1,6 +1,8 @@
 namespace TrashMobMobile.Authentication;
 
 using System.Diagnostics;
+using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json.Linq;
@@ -13,7 +15,7 @@ public class AuthService : IAuthService
     private string accessToken = string.Empty;
 
     private DateTimeOffset expiresOn;
-    private IPublicClientApplication pca;
+    private IPublicClientApplication pca = null!;
 
     private string userEmail = string.Empty;
 
@@ -30,7 +32,7 @@ public class AuthService : IAuthService
             InitializeClient();
         }
 
-        _ = await pca.GetAccountsAsync();
+        _ = await pca!.GetAccountsAsync();
 
         try
         {
@@ -84,7 +86,7 @@ public class AuthService : IAuthService
             InitializeClient();
         }
 
-        var accounts = await pca.GetAccountsAsync();
+        var accounts = await pca!.GetAccountsAsync();
         AuthenticationResult result;
 
         try
@@ -129,6 +131,15 @@ public class AuthService : IAuthService
             return accessToken;
         }
 
+#if IOS
+        // On simulator, MSAL silent acquisition won't work (no keychain).
+        // Return empty to trigger re-authentication when the token expires.
+        if (DeviceInfo.DeviceType == DeviceType.Virtual)
+        {
+            return string.Empty;
+        }
+#endif
+
         var accounts = await pca.GetAccountsAsync();
 
         try
@@ -148,6 +159,11 @@ public class AuthService : IAuthService
         }
     }
 
+    public async Task<SignInResult> SignUpInteractiveAsync()
+    {
+        return await SignInInteractive();
+    }
+
     public string GetUserEmail()
     {
         if (string.IsNullOrWhiteSpace(userEmail))
@@ -162,7 +178,7 @@ public class AuthService : IAuthService
     {
         var pcaBuilder = PublicClientApplicationBuilder
             .Create(AuthConstants.ClientId)
-            .WithAuthority(AuthConstants.AuthoritySignIn)
+            .WithAuthority(AuthConstants.Authority)
 #if IOS
             .WithIosKeychainSecurityGroup(AuthConstants.IosKeychainSecurityGroup)
 #elif ANDROID
@@ -175,6 +191,16 @@ public class AuthService : IAuthService
 
     private async Task<SignInResult> SignInInteractive()
     {
+#if IOS
+        // On iOS simulator, MSAL cannot save tokens to keychain without entitlements
+        // (which require a provisioning profile not available for simulator builds).
+        // Use a manual OAuth 2.0 + PKCE flow instead.
+        if (DeviceInfo.DeviceType == DeviceType.Virtual)
+        {
+            return await SignInInteractiveManual();
+        }
+#endif
+
         if (pca == null)
         {
             InitializeClient();
@@ -182,7 +208,7 @@ public class AuthService : IAuthService
 
         try
         {
-            var result = await pca
+            var result = await pca!
                 .AcquireTokenInteractive(AuthConstants.Scopes)
                 .ExecuteAsync();
 
@@ -207,6 +233,133 @@ public class AuthService : IAuthService
         };
     }
 
+    /// <summary>
+    /// Manual OAuth 2.0 Authorization Code + PKCE flow for iOS simulator,
+    /// bypassing MSAL's keychain-dependent token cache.
+    /// </summary>
+    private async Task<SignInResult> SignInInteractiveManual()
+    {
+        try
+        {
+            // Generate PKCE values
+            var codeVerifier = GenerateCodeVerifier();
+            var codeChallenge = GenerateCodeChallenge(codeVerifier);
+            var state = Guid.NewGuid().ToString("N");
+
+            var scopes = string.Join(" ", AuthConstants.Scopes);
+            var authorizeUrl = $"{AuthConstants.Authority}{AuthConstants.TenantDomain}/oauth2/v2.0/authorize" +
+                $"?client_id={Uri.EscapeDataString(AuthConstants.ClientId)}" +
+                $"&response_type=code" +
+                $"&redirect_uri={Uri.EscapeDataString(AuthConstants.RedirectUri)}" +
+                $"&scope={Uri.EscapeDataString(scopes)}" +
+                $"&state={state}" +
+                $"&code_challenge={codeChallenge}" +
+                $"&code_challenge_method=S256";
+
+            var callbackUri = new Uri(AuthConstants.RedirectUri);
+            var authResult = await WebAuthenticator.AuthenticateAsync(
+                new Uri(authorizeUrl),
+                callbackUri);
+
+            var code = authResult.Properties.TryGetValue("code", out var authCode) ? authCode : null;
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                Debug.WriteLine("Manual OAuth: No authorization code in callback");
+                return new SignInResult { Succeeded = false };
+            }
+
+            // Exchange authorization code for tokens
+            using var httpClient = new HttpClient();
+            var tokenEndpoint = $"{AuthConstants.Authority}{AuthConstants.TenantDomain}/oauth2/v2.0/token";
+            var tokenRequest = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                ["client_id"] = AuthConstants.ClientId,
+                ["grant_type"] = "authorization_code",
+                ["code"] = code,
+                ["redirect_uri"] = AuthConstants.RedirectUri,
+                ["code_verifier"] = codeVerifier,
+                ["scope"] = scopes,
+            });
+
+            var tokenResponse = await httpClient.PostAsync(tokenEndpoint, tokenRequest);
+            var tokenJson = await tokenResponse.Content.ReadAsStringAsync();
+
+            if (!tokenResponse.IsSuccessStatusCode)
+            {
+                Debug.WriteLine($"Manual OAuth: Token exchange failed: {tokenJson}");
+                return new SignInResult { Succeeded = false };
+            }
+
+            var tokenData = JObject.Parse(tokenJson);
+            var newAccessToken = tokenData["access_token"]?.ToString();
+            var idToken = tokenData["id_token"]?.ToString();
+            var expiresIn = tokenData["expires_in"]?.ToObject<int>() ?? 3600;
+
+            if (string.IsNullOrWhiteSpace(newAccessToken))
+            {
+                Debug.WriteLine("Manual OAuth: No access token in response");
+                return new SignInResult { Succeeded = false };
+            }
+
+            // Store tokens in memory
+            accessToken = newAccessToken;
+            expiresOn = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
+
+            // Parse ID token for user info
+            var userClaims = !string.IsNullOrWhiteSpace(idToken) ? ParseIdToken(idToken) : null;
+            var email = userClaims?["email"]?.ToString()
+                ?? userClaims?["emailAddress"]?.ToString()
+                ?? string.Empty;
+
+            var context = new UserContext
+            {
+                AccessToken = newAccessToken,
+                EmailAddress = email,
+                IsLoggedOn = true,
+            };
+
+            UserState.UserContext = context;
+
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                userEmail = email;
+                var user = await userManager.GetUserByEmailAsync(email);
+                App.CurrentUser = user;
+            }
+
+            return new SignInResult { Succeeded = true };
+        }
+        catch (TaskCanceledException)
+        {
+            Debug.WriteLine("Manual OAuth: User cancelled authentication");
+            return new SignInResult { Succeeded = false };
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine($"Manual OAuth error: {e}");
+            return new SignInResult { Succeeded = false };
+        }
+    }
+
+    private static string GenerateCodeVerifier()
+    {
+        var bytes = new byte[32];
+        RandomNumberGenerator.Fill(bytes);
+        return Convert.ToBase64String(bytes)
+            .TrimEnd('=')
+            .Replace('+', '-')
+            .Replace('/', '_');
+    }
+
+    private static string GenerateCodeChallenge(string codeVerifier)
+    {
+        var hash = SHA256.HashData(Encoding.ASCII.GetBytes(codeVerifier));
+        return Convert.ToBase64String(hash)
+            .TrimEnd('=')
+            .Replace('+', '-')
+            .Replace('/', '_');
+    }
+
     private async Task SetAuthenticated(AuthenticationResult result)
     {
         accessToken = result.AccessToken;
@@ -215,15 +368,16 @@ public class AuthService : IAuthService
         var emailClaim = result.ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email");
         var context = GetUserContext(result);
 
+        // Set user context first so AuthHandler can use the token for the API call below
+        UserState.UserContext = context;
+
         if (emailClaim != null)
         {
             userEmail = emailClaim.Value;
-            var user = await userManager.GetUserByEmailAsync(context.EmailAddress, context);
+            var user = await userManager.GetUserByEmailAsync(context.EmailAddress);
 
             App.CurrentUser = user;
         }
-
-        UserState.UserContext = context;
     }
 
     private bool IsTokenExpired()

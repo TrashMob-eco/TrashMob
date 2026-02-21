@@ -30,18 +30,18 @@ jobs:
       releaseNumber: ${{ steps.set_build_number.outputs.releaseNumber }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v3.1.11
+        uses: gittools/actions/gitversion/setup@v3.2.1
         with:
           versionSpec: '5.x'
 
       - name: Determine Version
         id: version_step # step id used as reference for output values
-        uses: gittools/actions/gitversion/execute@v3.1.11
+        uses: gittools/actions/gitversion/execute@v3.2.1
 
       - name: release number with offset
         env:
@@ -141,10 +141,11 @@ jobs:
 
   calliOSDeploy:
     name: Call iOS deploy workflow
-    needs: calliOSBuild
+    needs: [calliOSBuild, exposeEnvironmentVariables]
     uses: ./.github/workflows/publish-ios.yml
     with:
       artifact_name: ${{ needs.calliOSBuild.outputs.artifact_name }}
+      environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
     secrets:
       APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
       APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}

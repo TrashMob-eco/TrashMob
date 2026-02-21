@@ -3,25 +3,68 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:Class="TrashMobMobile.Views.ViewEvent.TabPartners">
-    <Grid RowDefinitions="Auto, Auto">
-        <Label Grid.Row="1" Text="We're sorry. There are currently no partners assigned to this event." IsVisible="{Binding AreNoPartnersAvailable}" />
+    <Grid RowDefinitions="Auto, *">
+        <!-- Empty state -->
+        <VerticalStackLayout Grid.RowSpan="2"
+                             VerticalOptions="Center" HorizontalOptions="Center"
+                             Spacing="8" Margin="40,20"
+                             IsVisible="{Binding AreNoPartnersAvailable}">
+            <Image MaximumWidthRequest="48" MaximumHeightRequest="48"
+                   HorizontalOptions="Center">
+                <Image.Source>
+                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                     Glyph="{StaticResource IconHandshake}"
+                                     Size="48"
+                                     Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </Image.Source>
+            </Image>
+            <Label Text="No partners yet"
+                   FontFamily="LexendSemibold"
+                   FontSize="Small"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            <Label Text="Partners provide supplies, disposal locations, or other support for cleanup events."
+                   FontSize="Micro"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+        </VerticalStackLayout>
 
-        <CollectionView Grid.Row="1" x:Name="AvailableEventPartners"
-                                    ItemsSource="{Binding AvailablePartners}"
-                                    SelectionMode="None" 
-                                    IsVisible="{Binding ArePartnersAvailable}">
+        <!-- Partner list -->
+        <CollectionView Grid.RowSpan="2"
+                        ItemsSource="{Binding AvailablePartners}"
+                        SelectionMode="None"
+                        IsVisible="{Binding ArePartnersAvailable}">
             <CollectionView.ItemTemplate>
-                <DataTemplate 
-                                x:DataType="viewModels:EventPartnerLocationViewModel">
-                    <Border Style="{StaticResource RoundBorder}" Margin="5">
-                        <Grid RowDefinitions="1*, 2*, 1*" ColumnDefinitions="*, *"
-                                          x:Name="PartnerLocationItem">
-                            <Label Text="Partner Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
-                            <Label Text="{Binding PartnerLocationName}" Grid.Column="1" Grid.Row="0" />
-                            <Label Text="Info" Style="{StaticResource FieldLabel}" Grid.Row="1" />
-                            <Label Text="{Binding PartnerLocationNotes}" Grid.Row="1" Grid.Column="1" />
-                            <Label Text="Services Requested" Style="{StaticResource FieldLabel}" Grid.Row="2" />
-                            <Label Text="{Binding PartnerServicesEngaged}" Grid.Row="2" Grid.Column="1" />
+                <DataTemplate x:DataType="viewModels:EventPartnerLocationViewModel">
+                    <Border Style="{StaticResource RoundBorder}" Margin="10,4">
+                        <Grid ColumnDefinitions="Auto, *" Padding="12,10" ColumnSpacing="12">
+                            <!-- Partner icon -->
+                            <Image Grid.Column="0" VerticalOptions="Start"
+                                   MaximumWidthRequest="28" MaximumHeightRequest="28"
+                                   Margin="0,2,0,0">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                     Glyph="{StaticResource IconHandshake}"
+                                                     Size="28"
+                                                     Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                </Image.Source>
+                            </Image>
+                            <!-- Partner details -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="{Binding PartnerLocationName}"
+                                       FontFamily="LexendSemibold"
+                                       FontSize="Small" />
+                                <Label Text="{Binding PartnerLocationNotes}"
+                                       FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Border Padding="8,4" StrokeShape="RoundRectangle 8"
+                                        HorizontalOptions="Start"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}"
+                                        Stroke="Transparent">
+                                    <Label Text="{Binding PartnerServicesEngaged}"
+                                           FontSize="Micro" />
+                                </Border>
+                            </VerticalStackLayout>
                         </Grid>
                     </Border>
                 </DataTemplate>

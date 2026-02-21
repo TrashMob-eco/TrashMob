@@ -144,17 +144,15 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     [RelayCommand]
     private async Task SaveLitterReport()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             if (!ReportIsValid)
             {
-                IsBusy = false;
                 return;
             }
 
             var litterReport = LitterReportViewModel.ToLitterReport();
+            litterReport.Id = Guid.NewGuid();
             litterReport.Name = Name;
             litterReport.Description = Description;
 
@@ -165,7 +163,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
                     Id = Guid.NewGuid(),
                     City = litterImageViewModel.Address.City,
                     Country = litterImageViewModel.Address.Country,
-                    LitterReportId = litterImageViewModel.LitterReportId,
+                    LitterReportId = litterReport.Id,
                     Latitude = litterImageViewModel.Address.Latitude,
                     Longitude = litterImageViewModel.Address.Longitude,
                     PostalCode = litterImageViewModel.Address.PostalCode,
@@ -181,18 +179,10 @@ public partial class CreateLitterReportViewModel : BaseViewModel
 
             await litterReportManager.AddLitterReportAsync(litterReport);
 
-            IsBusy = false;
-
             await NotificationService.Notify("Litter Report has been submitted.");
 
             await Navigation.PopAsync();
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError($"An error has occurred while saving the litter report. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while saving the litter report. Please wait and try again in a moment.");
     }
 
     public void ValidateReport()

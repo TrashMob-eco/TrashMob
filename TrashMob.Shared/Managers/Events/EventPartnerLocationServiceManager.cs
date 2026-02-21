@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Events
+namespace TrashMob.Shared.Managers.Events
 {
     using System;
     using System.Collections.Generic;
@@ -16,38 +16,16 @@
     /// <summary>
     /// Manages event partner location services including partnership requests and approvals.
     /// </summary>
-    public class EventPartnerLocationServiceManager : BaseManager<EventPartnerLocationService>,
-        IEventPartnerLocationServiceManager
+    public class EventPartnerLocationServiceManager(
+        IBaseRepository<EventPartnerLocationService> repository,
+        IKeyedRepository<Event> eventRepository,
+        IKeyedRepository<PartnerLocation> partnerLocationRepository,
+        IBaseRepository<PartnerLocationService> partnerLocationServiceRepository,
+        IKeyedRepository<User> userRepository,
+        IBaseRepository<PartnerAdmin> partnerAdminRepository,
+        IEmailManager emailManager)
+        : BaseManager<EventPartnerLocationService>(repository), IEventPartnerLocationServiceManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly IKeyedRepository<Event> eventRepository;
-        private readonly IBaseRepository<PartnerAdmin> partnerAdminRepository;
-        private readonly IKeyedRepository<PartnerLocation> partnerLocationRepository;
-        private readonly IBaseRepository<PartnerLocationService> partnerLocationServiceRepository;
-        private readonly IKeyedRepository<Partner> partnerRepository;
-        private readonly IKeyedRepository<User> userRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventPartnerLocationServiceManager"/> class.
-        /// </summary>
-        public EventPartnerLocationServiceManager(IBaseRepository<EventPartnerLocationService> repository,
-            IKeyedRepository<Event> eventRepository,
-            IKeyedRepository<Partner> partnerRepository,
-            IKeyedRepository<PartnerLocation> partnerLocationRepository,
-            IBaseRepository<PartnerLocationService> partnerLocationServiceRepository,
-            IKeyedRepository<User> userRepository,
-            IBaseRepository<PartnerAdmin> partnerAdminRepository,
-            IEmailManager emailManager)
-            : base(repository)
-        {
-            this.eventRepository = eventRepository;
-            this.partnerRepository = partnerRepository;
-            this.partnerLocationRepository = partnerLocationRepository;
-            this.partnerLocationServiceRepository = partnerLocationServiceRepository;
-            this.userRepository = userRepository;
-            this.partnerAdminRepository = partnerAdminRepository;
-            this.emailManager = emailManager;
-        }
 
         /// <inheritdoc />
         public override async Task<EventPartnerLocationService> AddAsync(EventPartnerLocationService instance,
@@ -72,10 +50,10 @@
             var subject = "A New Partner Request for an Event has been made!";
             var message = $"A new partner request for an event has been made for event {existingService.Event.Name}!";
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-            };
+            ];
 
             var adminDynamicTemplateData = new
             {
@@ -85,8 +63,7 @@
             };
 
             await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.EventRelated, adminDynamicTemplateData, recipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.EventRelated, adminDynamicTemplateData, recipients, CancellationToken.None);
 
             var partnerMessage = pls.IsAutoApproved
                 ? emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventPartnerRequest.ToString())
@@ -102,7 +79,7 @@
                 subject,
             };
 
-            var partnerRecipients = new List<EmailAddress>();
+            List<EmailAddress> partnerRecipients = [];
 
             foreach (var contact in existingService.PartnerLocation.PartnerLocationContacts)
             {
@@ -111,13 +88,12 @@
             }
 
             await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None);
 
             if (pls.IsAutoApproved)
             {
                 instance.EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Accepted;
-                await UpdateAsync(instance, userId, cancellationToken).ConfigureAwait(false);
+                await UpdateAsync(instance, userId, cancellationToken);
             }
 
             return existingService;
@@ -138,18 +114,17 @@
                 .Include(ep => ep.PartnerLocation.Partner)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            var user = await userRepository.GetAsync(existingService.CreatedByUserId, cancellationToken)
-                .ConfigureAwait(false);
+            var user = await userRepository.GetAsync(existingService.CreatedByUserId, cancellationToken);
 
             // Notify Admins that a partner request has been responded to
             var subject = "A partner request for an event has been responded to!";
             var message =
                 $"A partner request for an event has been responded to for event {existingService.Event.Name}!";
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-            };
+            ];
 
             var adminDynamicTemplateData = new
             {
@@ -159,22 +134,20 @@
             };
 
             await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.EventRelated, adminDynamicTemplateData, recipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.EventRelated, adminDynamicTemplateData, recipients, CancellationToken.None);
 
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventPartnerResponse.ToString());
             var partnerSubject = "A TrashMob.eco Partner has responded to your request!";
 
             partnerMessage = partnerMessage.Replace("{UserName}", user.UserName);
 
-            var dashboardLink =
-                string.Format("https://www.trashmob.eco/events/{0}/edit", existingService.EventId);
+            var dashboardLink = $"https://www.trashmob.eco/events/{existingService.EventId}/edit";
             partnerMessage = partnerMessage.Replace("{PartnerResponseUrl}", dashboardLink);
 
-            var partnerRecipients = new List<EmailAddress>
-            {
+            List<EmailAddress> partnerRecipients =
+            [
                 new() { Name = user.UserName, Email = user.Email },
-            };
+            ];
 
             var dynamicTemplateData = new
             {
@@ -184,8 +157,7 @@
             };
 
             await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None);
 
             return existingService;
         }
@@ -194,7 +166,7 @@
         public async Task<IEnumerable<DisplayPartnerLocationServiceEvent>> GetByPartnerLocationAsync(
             Guid partnerLocationId, CancellationToken cancellationToken = default)
         {
-            var displayEventPartners = new List<DisplayPartnerLocationServiceEvent>();
+            List<DisplayPartnerLocationServiceEvent> displayEventPartners = [];
 
             var currentPartnerLocations = await Repository.Get(p => p.PartnerLocation.Id == partnerLocationId)
                 .Include(p => p.PartnerLocation)
@@ -236,7 +208,7 @@
         public async Task<IEnumerable<DisplayPartnerLocationServiceEvent>> GetByUserAsync(Guid userId,
             CancellationToken cancellationToken = default)
         {
-            var displayEventPartners = new List<DisplayPartnerLocationServiceEvent>();
+            List<DisplayPartnerLocationServiceEvent> displayEventPartners = [];
 
             // Get list of partners for a user
             var partners = await partnerAdminRepository.Get(p => p.UserId == userId)
@@ -298,7 +270,7 @@
                 .Include(p => p.PartnerLocation.Partner)
                 .ToListAsync(cancellationToken);
 
-            var displayEventPartnerLocationServices = new List<DisplayEventPartnerLocationService>();
+            List<DisplayEventPartnerLocationService> displayEventPartnerLocationServices = [];
 
             foreach (var service in existingServices)
             {
@@ -351,7 +323,7 @@
                 .Include(p => p.PartnerLocation)
                 .Include(p => p.PartnerLocation.PartnerLocationContacts)
                 .Select(p => p.PartnerLocation)
-                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
             return partnerLocation;
         }
 
@@ -359,12 +331,12 @@
         public async Task<IEnumerable<DisplayEventPartnerLocation>> GetByEventAsync(Guid eventId,
             CancellationToken cancellationToken = default)
         {
-            var displayEventPartners = new List<DisplayEventPartnerLocation>();
+            List<DisplayEventPartnerLocation> displayEventPartners = [];
             var currentPartners =
-                (await GetCurrentPartnersAsync(eventId, cancellationToken).ConfigureAwait(false)).DistinctBy(p =>
+                (await GetCurrentPartnersAsync(eventId, cancellationToken)).DistinctBy(p =>
                     new { p.EventId, p.PartnerLocationId });
             var possiblePartners =
-                await GetPotentialPartnerLocationsAsync(eventId, cancellationToken).ConfigureAwait(false);
+                await GetPotentialPartnerLocationsAsync(eventId, cancellationToken);
 
             // Convert the current list of partners for the event to a display partner (reduces round trips)
             foreach (var cp in currentPartners.ToList())
@@ -438,7 +410,7 @@
             var eventPartners = await Repository.Get(ea => ea.EventId == eventId)
                 .Include(p => p.PartnerLocation)
                 .Include(p => p.PartnerLocation.Partner)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             return eventPartners;
         }

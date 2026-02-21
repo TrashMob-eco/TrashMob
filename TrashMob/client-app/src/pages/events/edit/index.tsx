@@ -8,7 +8,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
+import { useQuery } from '@tanstack/react-query';
+import { GetMyTeams } from '@/services/teams';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
@@ -24,8 +25,9 @@ import * as Constants from '@/components/Models/Constants';
 import EventData from '@/components/Models/EventData';
 import { AzureMapSearchAddressReverse, AzureMapSearchAddressReverse_Params } from '@/services/maps';
 import { useGetAzureKey } from '@/hooks/useGetAzureKey';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, CircleDashed, Loader2, UserRoundCheck } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Check, CircleDashed, Crown, Loader2, UserRoundCheck } from 'lucide-react';
 import EventPartnerLocationServiceData from '@/components/Models/EventPartnerLocationServiceData';
 import { useEditEventPageQueries } from './useEditEventPageQueries';
 import { useEditEventPageMutations } from './useEditEventPageMutations';
@@ -54,7 +56,8 @@ const updateEventSchema = z.object({
     latitude: z.number(),
     longitude: z.number(),
     maxNumberOfParticipants: z.number().min(0),
-    isEventPublic: z.boolean(),
+    eventVisibilityId: z.string(),
+    teamId: z.string().nullable().optional(),
     createdByUserId: z.string(),
     eventStatusId: z.number(),
 });
@@ -73,12 +76,22 @@ export const EditEventPage = () => {
         // Event data
         event,
         eventAttendees,
+        eventLeads,
         eventPartnerLocations,
         servicesByLocation,
     } = useEditEventPageQueries(eventId);
 
-    const { updateEvent, createEventPartnerLocationService, deleteEventPartnerLocationService } =
-        useEditEventPageMutations();
+    const {
+        updateEvent,
+        createEventPartnerLocationService,
+        deleteEventPartnerLocationService,
+        promoteToLead,
+        demoteFromLead,
+    } = useEditEventPageMutations();
+
+    const { data: myTeams } = useQuery({ queryKey: GetMyTeams().key, queryFn: GetMyTeams().service });
+
+    const MAX_CO_LEADS = 5;
 
     const [showAllAttendees, setShowAllAttendees] = useState<boolean>(false);
 
@@ -122,7 +135,8 @@ export const EditEventPage = () => {
             latitude: event.latitude,
             longitude: event.longitude,
             maxNumberOfParticipants: event.maxNumberOfParticipants,
-            isEventPublic: event.isEventPublic,
+            eventVisibilityId: `${event.eventVisibilityId}`,
+            teamId: event.teamId,
             createdByUserId: event.createdByUserId,
             eventStatusId: event.eventStatusId,
         });
@@ -151,7 +165,8 @@ export const EditEventPage = () => {
         body.latitude = formValues.latitude ?? 0;
         body.longitude = formValues.longitude ?? 0;
         body.maxNumberOfParticipants = formValues.maxNumberOfParticipants ?? 0;
-        body.isEventPublic = formValues.isEventPublic;
+        body.eventVisibilityId = Number(formValues.eventVisibilityId);
+        body.teamId = formValues.eventVisibilityId === '2' ? (formValues.teamId ?? null) : null;
         body.eventStatusId = formValues.eventStatusId;
         body.createdByUserId = formValues.createdByUserId;
         body.lastUpdatedByUserId = currentUser.id;
@@ -176,6 +191,7 @@ export const EditEventPage = () => {
         }
     }, []);
 
+    const eventVisibilityId = form.watch('eventVisibilityId');
     const latitude = form.watch('latitude');
     const longitude = form.watch('longitude');
 
@@ -203,6 +219,12 @@ export const EditEventPage = () => {
     }, [latitude, longitude, azureKey]);
 
     const numAttendees = (eventAttendees || []).length;
+    const numLeads = (eventLeads || []).length;
+    const eventLeadIds = new Set((eventLeads || []).map((lead) => lead.id));
+    const isEventCreator = (attendeeId: string) => event?.createdByUserId === attendeeId;
+    const isLead = (attendeeId: string) => eventLeadIds.has(attendeeId);
+    const canPromote = numLeads < MAX_CO_LEADS;
+    const canDemote = numLeads > 1;
     const visibleEventAttendees = showAllAttendees ? eventAttendees || [] : take(eventAttendees, 10);
     return (
         <ManageEventDashboardLayout
@@ -212,23 +234,79 @@ export const EditEventPage = () => {
                     <Card>
                         <CardHeader>
                             <CardTitle>Attendees ({numAttendees})</CardTitle>
+                            <CardDescription>
+                                Co-leads: {numLeads}/{MAX_CO_LEADS}
+                            </CardDescription>
                         </CardHeader>
-                        <CardContent className='grid gap-6'>
-                            {visibleEventAttendees.map((attendee) => (
-                                <div key={attendee.id} className='flex items-center justify-between space-x-4'>
-                                    <div className='flex items-center space-x-2'>
-                                        <span className='relative flex shrink-0 overflow-hidden rounded-full h-8 w-8'>
-                                            <UserRoundCheck />
-                                        </span>
-                                        <div className='grow'>
-                                            <p className='text-sm font-medium leading-none m-0'>{attendee.userName}</p>
-                                            <p className='text-sm text-muted-foreground m-0'>
-                                                {attendee.city} {attendee.country}
-                                            </p>
+                        <CardContent className='grid gap-4'>
+                            {visibleEventAttendees.map((attendee) => {
+                                const attendeeIsLead = isLead(attendee.id);
+                                const attendeeIsCreator = isEventCreator(attendee.id);
+                                return (
+                                    <div key={attendee.id} className='flex items-center justify-between space-x-4'>
+                                        <div className='flex items-center space-x-2 min-w-0 flex-1'>
+                                            <span className='relative flex shrink-0 overflow-hidden rounded-full h-8 w-8'>
+                                                {attendeeIsLead ? (
+                                                    <Crown className='text-amber-500' />
+                                                ) : (
+                                                    <UserRoundCheck />
+                                                )}
+                                            </span>
+                                            <div className='grow min-w-0'>
+                                                <div className='flex items-center gap-2'>
+                                                    <p className='text-sm font-medium leading-none m-0 truncate'>
+                                                        {attendee.userName}
+                                                    </p>
+                                                    {attendeeIsLead ? (
+                                                        <Badge variant='secondary' className='text-xs shrink-0'>
+                                                            {attendeeIsCreator ? 'Creator' : 'Co-lead'}
+                                                        </Badge>
+                                                    ) : null}
+                                                </div>
+                                                <p className='text-sm text-muted-foreground m-0 truncate'>
+                                                    {attendee.city} {attendee.country}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className='shrink-0'>
+                                            {!attendeeIsCreator &&
+                                                (attendeeIsLead ? (
+                                                    <Button
+                                                        size='sm'
+                                                        variant='outline'
+                                                        disabled={!canDemote || demoteFromLead.isPending}
+                                                        onClick={() =>
+                                                            demoteFromLead.mutate({ eventId, userId: attendee.id })
+                                                        }
+                                                        title={
+                                                            !canDemote
+                                                                ? 'Cannot remove last co-lead'
+                                                                : 'Remove co-lead status'
+                                                        }
+                                                    >
+                                                        Demote
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        size='sm'
+                                                        variant='outline'
+                                                        disabled={!canPromote || promoteToLead.isPending}
+                                                        onClick={() =>
+                                                            promoteToLead.mutate({ eventId, userId: attendee.id })
+                                                        }
+                                                        title={
+                                                            !canPromote
+                                                                ? `Maximum ${MAX_CO_LEADS} co-leads reached`
+                                                                : 'Promote to co-lead'
+                                                        }
+                                                    >
+                                                        Promote
+                                                    </Button>
+                                                ))}
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                             {!showAllAttendees && numAttendees > 10 ? (
                                 <Button variant='link' onClick={() => setShowAllAttendees(true)}>
                                     Show all {numAttendees} attendees
@@ -376,19 +454,52 @@ export const EditEventPage = () => {
                         />
                         <FormField
                             control={form.control}
-                            name='isEventPublic'
+                            name='eventVisibilityId'
                             render={({ field }) => (
                                 <FormItem className='col-span-3'>
-                                    <FormLabel>Is Public Event</FormLabel>
+                                    <FormLabel>Visibility</FormLabel>
                                     <FormControl>
-                                        <div className='flex h-[36px] items-center'>
-                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        </div>
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <SelectTrigger className='w-full'>
+                                                <SelectValue placeholder='Visibility' />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value='1'>Public</SelectItem>
+                                                <SelectItem value='2'>Team Only</SelectItem>
+                                                <SelectItem value='3'>Private</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+                        {eventVisibilityId === '2' && (
+                            <FormField
+                                control={form.control}
+                                name='teamId'
+                                render={({ field }) => (
+                                    <FormItem className='col-span-3'>
+                                        <FormLabel>Team</FormLabel>
+                                        <FormControl>
+                                            <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                                                <SelectTrigger className='w-full'>
+                                                    <SelectValue placeholder='Select team' />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {(myTeams?.data || []).map((team) => (
+                                                        <SelectItem key={team.id} value={team.id}>
+                                                            {team.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
                         <FormField
                             control={form.control}
                             name='maxNumberOfParticipants'

@@ -12,66 +12,38 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(CreateEventPage), typeof(CreateEventPage));
         Routing.RegisterRoute(nameof(CreateLitterReportPage), typeof(CreateLitterReportPage));
         Routing.RegisterRoute(nameof(EditEventPage), typeof(EditEventPage));
+        Routing.RegisterRoute(nameof(ExplorePage), typeof(ExplorePage));
+        Routing.RegisterRoute(nameof(HomeFeedPage), typeof(HomeFeedPage));
         Routing.RegisterRoute(nameof(EditEventPartnerLocationServicesPage),
             typeof(EditEventPartnerLocationServicesPage));
         Routing.RegisterRoute(nameof(EditEventSummaryPage), typeof(EditEventSummaryPage));
         Routing.RegisterRoute(nameof(EditLitterReportPage), typeof(EditLitterReportPage));
         Routing.RegisterRoute(nameof(EditPickupLocationPage), typeof(EditPickupLocationPage));
+        Routing.RegisterRoute(nameof(ImpactPage), typeof(ImpactPage));
         Routing.RegisterRoute(nameof(LogoutPage), typeof(LogoutPage));
         Routing.RegisterRoute(nameof(ManageEventPartnersPage), typeof(ManageEventPartnersPage));
+        Routing.RegisterRoute(nameof(MainTabsPage), typeof(MainTabsPage));
         Routing.RegisterRoute(nameof(MyDashboardPage), typeof(MyDashboardPage));
+        Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
+        Routing.RegisterRoute(nameof(QuickActionPlaceholderPage), typeof(QuickActionPlaceholderPage));
+        Routing.RegisterRoute(nameof(MorePage), typeof(MorePage));
         Routing.RegisterRoute(nameof(SearchEventsPage), typeof(SearchEventsPage));
         Routing.RegisterRoute(nameof(SearchLitterReportsPage), typeof(SearchLitterReportsPage));
         Routing.RegisterRoute(nameof(SetUserLocationPreferencePage), typeof(SetUserLocationPreferencePage));
+        Routing.RegisterRoute(nameof(AchievementsPage), typeof(AchievementsPage));
+        Routing.RegisterRoute(nameof(BrowseCommunitiesPage), typeof(BrowseCommunitiesPage));
+        Routing.RegisterRoute(nameof(BrowseTeamsPage), typeof(BrowseTeamsPage));
+        Routing.RegisterRoute(nameof(LeaderboardsPage), typeof(LeaderboardsPage));
+        Routing.RegisterRoute(nameof(NewsletterPreferencesPage), typeof(NewsletterPreferencesPage));
         Routing.RegisterRoute(nameof(ViewEventPage), typeof(ViewEventPage));
         Routing.RegisterRoute(nameof(ViewEventSummaryPage), typeof(ViewEventSummaryPage));
         Routing.RegisterRoute(nameof(ViewLitterReportPage), typeof(ViewLitterReportPage));
         Routing.RegisterRoute(nameof(ViewPickupLocationPage), typeof(ViewPickupLocationPage));
+        Routing.RegisterRoute(nameof(ViewCommunityPage), typeof(ViewCommunityPage));
+        Routing.RegisterRoute(nameof(ViewTeamPage), typeof(ViewTeamPage));
+        Routing.RegisterRoute(nameof(WaiverListPage), typeof(WaiverListPage));
         Routing.RegisterRoute(nameof(WaiverPage), typeof(WaiverPage));
         Routing.RegisterRoute(nameof(WelcomePage), typeof(WelcomePage));
-    }
-
-    public async void OnMyDashboardClicked(object sender, EventArgs e)
-    {
-        Current.FlyoutIsPresented = false;
-        await Current.GoToAsync($"{nameof(MyDashboardPage)}");
-    }
-
-    public async void OnSetMyLocationClicked(object sender, EventArgs e)
-    {
-        Current.FlyoutIsPresented = false;
-        await Current.GoToAsync($"{nameof(SetUserLocationPreferencePage)}");
-    }
-
-    public async void OnPrivacyPolicyClicked(object sender, EventArgs e)
-    {
-        Current.FlyoutIsPresented = false;
-        var uri = new Uri("https://www.trashmob.eco/privacypolicy");
-        await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
-    }
-
-    public async void OnTermsOfUseClicked(object sender, EventArgs e)
-    {
-        Current.FlyoutIsPresented = false;
-        var uri = new Uri("https://www.trashmob.eco/termsofservice");
-        await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
-    }
-
-    public async void OnSignWaiverClicked(object sender, EventArgs e)
-    {
-        Current.FlyoutIsPresented = false;
-        await Current.GoToAsync($"{nameof(WaiverPage)}");
-    }
-
-    public async void OnContactUsClicked(object sender, EventArgs e)
-    {
-        Current.FlyoutIsPresented = false;
-        await Current.GoToAsync(nameof(ContactUsPage));
-    }
-
-    public async void OnLogoutClicked(object sender, EventArgs e)
-    {
-        Current.FlyoutIsPresented = false;
-        await Current.GoToAsync(nameof(LogoutPage));
+        Routing.RegisterRoute(nameof(AgeGatePage), typeof(AgeGatePage));
     }
 }

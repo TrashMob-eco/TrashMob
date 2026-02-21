@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Partners
+namespace TrashMob.Shared.Managers.Partners
 {
     using System;
     using System.Collections.Generic;
@@ -14,28 +14,13 @@
     /// <summary>
     /// Manages partner requests including creation, approval, denial, and email notifications for partnership applications.
     /// </summary>
-    public class PartnerRequestManager : KeyedManager<PartnerRequest>, IPartnerRequestManager
+    public class PartnerRequestManager(
+        IKeyedRepository<PartnerRequest> partnerRequestRepository,
+        IKeyedManager<Partner> partnerManager,
+        IBaseManager<PartnerAdmin> partnerUserManager,
+        IEmailManager emailManager)
+        : KeyedManager<PartnerRequest>(partnerRequestRepository), IPartnerRequestManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IBaseManager<PartnerAdmin> partnerUserManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerRequestManager"/> class.
-        /// </summary>
-        /// <param name="partnerRequestRepository">The repository for partner request data access.</param>
-        /// <param name="partnerManager">The manager for partner operations.</param>
-        /// <param name="partnerUserManager">The manager for partner admin operations.</param>
-        /// <param name="emailManager">The email manager for sending notifications.</param>
-        public PartnerRequestManager(IKeyedRepository<PartnerRequest> partnerRequestRepository,
-            IKeyedManager<Partner> partnerManager,
-            IBaseManager<PartnerAdmin> partnerUserManager,
-            IEmailManager emailManager) : base(partnerRequestRepository)
-        {
-            this.partnerManager = partnerManager;
-            this.partnerUserManager = partnerUserManager;
-            this.emailManager = emailManager;
-        }
 
         /// <inheritdoc />
         public override async Task<PartnerRequest> AddAsync(PartnerRequest instance, Guid userId,
@@ -58,10 +43,10 @@
                 var message = $"From Email: {instance.Email}\nFrom Name:{instance.Name}\nMessage:\n{instance.Notes}";
                 var subject = "Partner Request";
 
-                var recipients = new List<EmailAddress>
-                {
+                List<EmailAddress> recipients =
+                [
                     new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-                };
+                ];
 
                 var dynamicTemplateData = new
                 {
@@ -71,8 +56,7 @@
                 };
 
                 await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
-                        SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None)
-                    .ConfigureAwait(false);
+                        SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None);
             }
             else
             {
@@ -99,25 +83,24 @@
                     subject = welcomeSubject,
                 };
 
-                var welcomeRecipients = new List<EmailAddress>
-                {
+                List<EmailAddress> welcomeRecipients =
+                [
                     new() { Name = instance.Name, Email = instance.Email },
-                };
+                ];
 
                 await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
-                        CancellationToken.None)
-                    .ConfigureAwait(false);
+                        CancellationToken.None);
 
                 // Also gets sent to the TrashMob Admin for informational purposes
                 var message =
                     $"Sent to Email: {instance.Email}\nTo Partner Name:{instance.Name}\nCity: {instance.City}\nRegion: {instance.Region}\nMessage:\n{instance.Notes}";
                 var subject = "Partner Request Sent";
 
-                var recipients = new List<EmailAddress>
-                {
+                List<EmailAddress> recipients =
+                [
                     new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-                };
+                ];
 
                 var dynamicTemplateData = new
                 {
@@ -127,8 +110,7 @@
                 };
 
                 await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
-                        SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None)
-                    .ConfigureAwait(false);
+                        SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None);
             }
 
             return result;
@@ -138,12 +120,12 @@
         public async Task<PartnerRequest> ApproveBecomeAPartnerAsync(Guid partnerRequestId, Guid userId,
             CancellationToken cancellationToken)
         {
-            var partnerRequest = await Repo.GetAsync(partnerRequestId, cancellationToken).ConfigureAwait(false);
+            var partnerRequest = await Repo.GetAsync(partnerRequestId, cancellationToken);
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Approved;
 
-            var result = await base.UpdateAsync(partnerRequest, userId, cancellationToken).ConfigureAwait(false);
+            var result = await base.UpdateAsync(partnerRequest, userId, cancellationToken);
 
-            await CreatePartnerAsync(partnerRequest, cancellationToken).ConfigureAwait(false);
+            await CreatePartnerAsync(partnerRequest, cancellationToken);
 
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PartnerRequestAccepted.ToString());
             partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
@@ -156,14 +138,13 @@
                 subject = partnerSubject,
             };
 
-            var partnerRecipients = new List<EmailAddress>
-            {
+            List<EmailAddress> partnerRecipients =
+            [
                 new() { Name = partnerRequest.Name, Email = partnerRequest.Email },
-            };
+            ];
 
             await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None);
 
             return result;
         }
@@ -172,10 +153,10 @@
         public async Task<PartnerRequest> DenyBecomeAPartnerAsync(Guid partnerRequestId, Guid userId,
             CancellationToken cancellationToken)
         {
-            var partnerRequest = await Repo.GetAsync(partnerRequestId, cancellationToken).ConfigureAwait(false);
+            var partnerRequest = await Repo.GetAsync(partnerRequestId, cancellationToken);
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Denied;
 
-            var result = await base.UpdateAsync(partnerRequest, userId, cancellationToken).ConfigureAwait(false);
+            var result = await base.UpdateAsync(partnerRequest, userId, cancellationToken);
 
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PartnerRequestDeclined.ToString());
             partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
@@ -188,14 +169,13 @@
                 subject = partnerSubject,
             };
 
-            var partnerRecipients = new List<EmailAddress>
-            {
+            List<EmailAddress> partnerRecipients =
+            [
                 new() { Name = partnerRequest.Name, Email = partnerRequest.Email },
-            };
+            ];
 
             await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None);
 
             return result;
         }
@@ -212,8 +192,7 @@
             var partner = partnerRequest.ToPartner();
 
             // Add the partner record
-            var newPartner = await partnerManager.AddAsync(partner, partnerRequest.CreatedByUserId, cancellationToken)
-                .ConfigureAwait(false);
+            var newPartner = await partnerManager.AddAsync(partner, partnerRequest.CreatedByUserId, cancellationToken);
 
             // Make the creator of the partner request a registered user for the partner
             var partnerUser = new PartnerAdmin
@@ -222,8 +201,7 @@
                 UserId = partnerRequest.CreatedByUserId,
             };
 
-            await partnerUserManager.AddAsync(partnerUser, partnerRequest.CreatedByUserId, cancellationToken)
-                .ConfigureAwait(false);
+            await partnerUserManager.AddAsync(partnerUser, partnerRequest.CreatedByUserId, cancellationToken);
         }
     }
 }

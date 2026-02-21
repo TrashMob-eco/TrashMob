@@ -2,25 +2,73 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
-             x:Class="TrashMobMobile.Views.ViewEvent.TabAttendees">
-    <Grid RowDefinitions="*, *, *">
+             x:Class="TrashMobMobile.Views.ViewEvent.TabAttendees"
+             x:Name="TabAttendeesView">
+    <Grid RowDefinitions="Auto, *">
+        <Label Text="{Binding CoLeadCountDisplay}"
+               Style="{StaticResource FieldLabel}"
+               Grid.Row="0"
+               Margin="10,5"
+               IsVisible="{Binding CanManageCoLeads}" />
         <CollectionView x:Name="EventAttendeesCollection" Grid.Row="1"
                                     ItemsSource="{Binding EventAttendees}"
                                     SelectionMode="None">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center"
+                                     Spacing="8" Margin="40,20">
+                    <Image MaximumWidthRequest="48" MaximumHeightRequest="48"
+                           HorizontalOptions="Center">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconAccountMultiple}"
+                                             Size="48"
+                                             Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Text="No attendees yet"
+                           FontFamily="LexendSemibold"
+                           FontSize="Small"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    <Label Text="Be the first to register for this cleanup event."
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:EventAttendeeViewModel">
-                    <StackLayout Margin="5">
-                        <Border Style="{StaticResource RoundBorder}" Margin="5">
-                            <Grid ColumnDefinitions="*, *" RowDefinitions="*, *, *">
-                                <Label Text="User Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
-                                <Label Text="{Binding UserName}" Grid.Row="0" Grid.Column="1" />
-                                <Label Text="Member Since" Style="{StaticResource FieldLabel}" Grid.Row="1" />
-                                <Label Text="{Binding MemberSince}" Grid.Row="1" Grid.Column="1" />
-                                <Label Text="Event Role" Style="{StaticResource FieldLabel}" Grid.Row="2" />
-                                <Label Text="{Binding Role}" Grid.Row="2" Grid.Column="1"/>
-                            </Grid>
-                        </Border>
-                    </StackLayout>
+                    <Border Style="{StaticResource RoundBorder}" Margin="5,3">
+                        <HorizontalStackLayout Padding="10,8" Spacing="10">
+                            <VerticalStackLayout Spacing="2" HorizontalOptions="FillAndExpand">
+                                <Label Text="{Binding UserName}"
+                                       FontFamily="LexendSemibold"
+                                       FontSize="Small" />
+                                <Label Text="{Binding MemberSince, StringFormat='Member since {0}'}"
+                                       FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Label Text="{Binding Role}"
+                                       FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </VerticalStackLayout>
+                            <StackLayout VerticalOptions="Center" Spacing="4">
+                                <Button Text="Promote"
+                                        Command="{Binding Source={x:Reference TabAttendeesView}, Path=BindingContext.PromoteToLeadCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding CanPromote}"
+                                        Style="{StaticResource PrimarySmallButton}"
+                                        Padding="10,5"
+                                        FontSize="12" />
+                                <Button Text="Demote"
+                                        Command="{Binding Source={x:Reference TabAttendeesView}, Path=BindingContext.DemoteFromLeadCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding CanDemote}"
+                                        Style="{StaticResource SecondarySmallButton}"
+                                        Padding="10,5"
+                                        FontSize="12" />
+                            </StackLayout>
+                        </HorizontalStackLayout>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

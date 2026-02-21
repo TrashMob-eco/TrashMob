@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -13,26 +13,12 @@
     /// Controller for managing partner location services, including retrieval and creation.
     /// </summary>
     [Route("api/partnerlocationservices")]
-    public class PartnerLocationServicesController : SecureController
+    public class PartnerLocationServicesController(
+        IBaseManager<PartnerLocationService> partnerLocationServicesManager,
+        IKeyedManager<Partner> partnerManager,
+        IKeyedManager<PartnerLocation> partnerLocationManager)
+        : SecureController
     {
-        private readonly IKeyedManager<PartnerLocation> partnerLocationManager;
-        private readonly IBaseManager<PartnerLocationService> partnerLocationServicesManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerLocationServicesController"/> class.
-        /// </summary>
-        /// <param name="partnerLocationServicesManager">The partner location services manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        /// <param name="partnerLocationManager">The partner location manager.</param>
-        public PartnerLocationServicesController(IBaseManager<PartnerLocationService> partnerLocationServicesManager,
-            IKeyedManager<Partner> partnerManager,
-            IKeyedManager<PartnerLocation> partnerLocationManager)
-        {
-            this.partnerLocationServicesManager = partnerLocationServicesManager;
-            this.partnerManager = partnerManager;
-            this.partnerLocationManager = partnerLocationManager;
-        }
 
         /// <summary>
         /// Gets all partner location services for a given partner location. Requires a valid user.
@@ -75,16 +61,14 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The newly created partner location service.</remarks>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> Add(PartnerLocationService partnerLocationService,
             CancellationToken cancellationToken)
         {
             var partnerLocation =
                 await partnerLocationManager.GetAsync(partnerLocationService.PartnerLocationId, cancellationToken);
             var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -107,22 +91,19 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated partner location service.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> UpdatePartnerLocationService(PartnerLocationService partnerLocationService,
             CancellationToken cancellationToken)
         {
             var partnerLocation =
                 await partnerLocationManager.GetAsync(partnerLocationService.PartnerLocationId, cancellationToken);
             var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            await partnerLocationServicesManager.UpdateAsync(partnerLocationService, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            await partnerLocationServicesManager.UpdateAsync(partnerLocationService, UserId, cancellationToken);
             TrackEvent(nameof(UpdatePartnerLocationService));
 
             return Ok(partnerLocationService);
@@ -136,24 +117,21 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The ID of the deleted partner location service.</remarks>
         [HttpDelete("{partnerLocationId}/{serviceTypeId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> DeletePartnerLocationService(Guid partnerLocationId, int serviceTypeId,
             CancellationToken cancellationToken)
         {
             var partnerLocation = await partnerLocationManager.GetAsync(partnerLocationId, cancellationToken);
             var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            await partnerLocationServicesManager.Delete(partnerLocationId, serviceTypeId, cancellationToken)
-                .ConfigureAwait(false);
+            await partnerLocationServicesManager.Delete(partnerLocationId, serviceTypeId, cancellationToken);
             TrackEvent(nameof(DeletePartnerLocationService));
 
-            return Ok(partnerLocationId);
+            return NoContent();
         }
     }
 }

@@ -8,6 +8,11 @@ class DisplayPartnershipData {
     partnerRequestStatusId: number = 0;
 
     partnerStatusId: number = 0;
+
+    // Community Home Page Properties
+    homePageEnabled: boolean = false;
+
+    slug: string = '';
 }
 
 export default DisplayPartnershipData;

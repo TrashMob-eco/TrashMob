@@ -12,28 +12,20 @@
     /// <summary>
     /// Notification engine that sends a weekly reminder to event hosts who haven't completed their event summary.
     /// </summary>
-    public class EventSummaryHostWeekReminderNotifier : NotificationEngineBase, INotificationEngine
+    public class EventSummaryHostWeekReminderNotifier(
+        IEventManager eventManager,
+        IKeyedManager<User> userManager,
+        IEventAttendeeManager eventAttendeeManager,
+        IKeyedManager<UserNotification> userNotificationManager,
+        INonEventUserNotificationManager nonEventUserNotificationManager,
+        IEmailSender emailSender,
+        IEmailManager emailManager,
+        IMapManager mapRepository,
+        IBaseManager<EventSummary> eventSummaryManager,
+        ILogger logger)
+        : NotificationEngineBase(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+            nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger), INotificationEngine
     {
-        private readonly IBaseManager<EventSummary> eventSummaryManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventSummaryHostWeekReminderNotifier"/> class.
-        /// </summary>
-        public EventSummaryHostWeekReminderNotifier(IEventManager eventManager,
-            IKeyedManager<User> userManager,
-            IEventAttendeeManager eventAttendeeManager,
-            IKeyedManager<UserNotification> userNotificationManager,
-            INonEventUserNotificationManager nonEventUserNotificationManager,
-            IEmailSender emailSender,
-            IEmailManager emailManager,
-            IMapManager mapRepository,
-            IBaseManager<EventSummary> eventSummaryManager,
-            ILogger logger) :
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
-                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-            this.eventSummaryManager = eventSummaryManager;
-        }
 
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryHostWeekReminder;
 
@@ -47,18 +39,18 @@
         /// <inheritdoc />
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
-            Logger.LogInformation("Generating Notifications for {0}", NotificationType);
+            Logger.LogInformation("Generating Notifications for {NotificationType}", NotificationType);
 
             // Get list of users who have notifications turned on for locations
             var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
             var notificationCounter = 0;
 
-            Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
+            Logger.LogInformation("Generating {NotificationType} Notifications for {UserCount} total users", NotificationType, users.Count());
 
             // for each user
             foreach (var user in users)
             {
-                var eventsToNotifyUserFor = new List<Event>();
+                List<Event> eventsToNotifyUserFor = [];
 
                 // Get list of completed events
                 var events = await EventManager.GetCompletedEventsAsync(cancellationToken).ConfigureAwait(false);
@@ -81,7 +73,7 @@
                         .GetAsync(es => es.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
 
                     // Only send an email if the summary has not been completed.
-                    if (eventSummary?.FirstOrDefault() == null)
+                    if (eventSummary?.FirstOrDefault() is null)
                     {
                         // Add to the event list to be sent
                         eventsToNotifyUserFor.Add(mobEvent);
@@ -92,7 +84,7 @@
                     .ConfigureAwait(false);
             }
 
-            Logger.LogInformation("Generating {0} Total {1} Notifications", notificationCounter, NotificationType);
+            Logger.LogInformation("Generating {NotificationCount} Total {NotificationType} Notifications", notificationCounter, NotificationType);
         }
     }
 }

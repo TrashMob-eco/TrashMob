@@ -26,11 +26,27 @@
 
     <Style x:Key="RoundBorder" TargetType="Border">
         <Setter Property="Stroke"
-                Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
-        <Setter Property="StrokeShape" Value="RoundRectangle 15" />
+                Value="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 10" />
         <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="Padding" Value="10" />
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}" />
+        <Setter Property="Padding" Value="12" />
         <Setter Property="Margin" Value="5,0,5,0" />
+        <Setter Property="Shadow">
+            <Shadow Radius="4"
+                    Opacity="0.08"
+                    Brush="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                    Offset="0,2" />
+        </Setter>
+    </Style>
+
+    <Style x:Key="SectionHeader" TargetType="Label">
+        <Setter Property="FontFamily" Value="LexendSemibold" />
+        <Setter Property="FontSize" Value="Medium" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+        <Setter Property="Margin" Value="10,20,10,8" />
     </Style>
 
     <Style TargetType="BoxView">
@@ -51,75 +67,123 @@
         <Setter Property="FontFamily" Value="LexendRegular" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="BorderWidth" Value="0" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CornerRadius" Value="10" />
         <Setter Property="Padding" Value="14,10" />
         <Setter Property="MinimumHeightRequest" Value="44" />
         <Setter Property="MinimumWidthRequest" Value="44" />
-        <Setter Property="Margin" Value="10" />
+        <Setter Property="Margin" Value="8" />
+        <Setter Property="Shadow">
+            <Shadow Radius="4"
+                    Opacity="0.10"
+                    Brush="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                    Offset="0,2" />
+        </Setter>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor"
+                                    Value="{AppThemeBinding Light={StaticResource PrimaryPressed}, Dark={StaticResource PrimaryDarkPressed}}" />
+                            <Setter Property="Opacity" Value="0.9" />
+                        </VisualState.Setters>
+                    </VisualState>
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
                             <Setter Property="TextColor"
                                     Value="{AppThemeBinding Light={StaticResource DisabledText}, Dark={StaticResource DisabledDarkText}}" />
                             <Setter Property="BackgroundColor"
                                     Value="{AppThemeBinding Light={StaticResource Disabled}, Dark={StaticResource DisabledDark}}" />
+                            <Setter Property="Shadow">
+                                <Shadow Radius="0" Opacity="0" Brush="Transparent" Offset="0,0" />
+                            </Setter>
                         </VisualState.Setters>
                     </VisualState>
-                    <VisualState x:Name="PointerOver" />
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.95" />
+                        </VisualState.Setters>
+                    </VisualState>
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
     </Style>
 
     <Style x:Key="PrimaryLargeButton" TargetType="Button">
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="CornerRadius" Value="10" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor"
+                                    Value="{AppThemeBinding Light={StaticResource PrimaryPressed}, Dark={StaticResource PrimaryDarkPressed}}" />
+                            <Setter Property="Opacity" Value="0.9" />
+                        </VisualState.Setters>
+                    </VisualState>
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
                             <Setter Property="TextColor"
                                     Value="{AppThemeBinding Light={StaticResource DisabledText}, Dark={StaticResource DisabledDarkText}}" />
                             <Setter Property="BackgroundColor"
                                     Value="{AppThemeBinding Light={StaticResource Disabled}, Dark={StaticResource DisabledDark}}" />
+                            <Setter Property="Shadow">
+                                <Shadow Radius="0" Opacity="0" Brush="Transparent" Offset="0,0" />
+                            </Setter>
                         </VisualState.Setters>
                     </VisualState>
-                    <VisualState x:Name="PointerOver" />
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.95" />
+                        </VisualState.Setters>
+                    </VisualState>
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
-        <Setter Property="HeightRequest" Value="48" />
-        <Setter Property="CornerRadius" Value="20" />
     </Style>
 
     <Style x:Key="SecondaryLargeButton" TargetType="Button">
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="CornerRadius" Value="10" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor"
+                                    Value="{AppThemeBinding Light={StaticResource PrimaryPressed}, Dark={StaticResource PrimaryDarkPressed}}" />
+                            <Setter Property="Opacity" Value="0.9" />
+                        </VisualState.Setters>
+                    </VisualState>
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
                             <Setter Property="TextColor"
                                     Value="{AppThemeBinding Light={StaticResource DisabledText}, Dark={StaticResource DisabledDarkText}}" />
                             <Setter Property="BackgroundColor"
                                     Value="{AppThemeBinding Light={StaticResource Disabled}, Dark={StaticResource DisabledDark}}" />
+                            <Setter Property="Shadow">
+                                <Shadow Radius="0" Opacity="0" Brush="Transparent" Offset="0,0" />
+                            </Setter>
                         </VisualState.Setters>
                     </VisualState>
-                    <VisualState x:Name="PointerOver" />
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.95" />
+                        </VisualState.Setters>
+                    </VisualState>
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
-        <Setter Property="HeightRequest" Value="48" />
-        <Setter Property="CornerRadius" Value="20" />
     </Style>
 
     <Style x:Key="PrimarySmallButton" TargetType="Button">
         <Setter Property="HeightRequest" Value="40" />
         <Setter Property="Padding" Value="5,5" />
-        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="CornerRadius" Value="8" />
         <Setter Property="FontSize" Value="Micro" />
         <Setter Property="LineBreakMode" Value="WordWrap" />
         <Setter Property="Margin" Value="5" />
@@ -132,10 +196,16 @@
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryText}, Dark={StaticResource SecondaryDarkText}}" />
         <Setter Property="HeightRequest" Value="40" />
         <Setter Property="Padding" Value="5,5" />
-        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="CornerRadius" Value="8" />
         <Setter Property="LineBreakMode" Value="WordWrap" />
         <Setter Property="Margin" Value="5" />
         <Setter Property="FontSize" Value="Micro" />
+        <Setter Property="Shadow">
+            <Shadow Radius="2"
+                    Opacity="0.05"
+                    Brush="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                    Offset="0,1" />
+        </Setter>
     </Style>
 
     <Style TargetType="CheckBox">
@@ -482,10 +552,10 @@
     </Style>
 
     <Style TargetType="Shadow">
-        <Setter Property="Radius" Value="15" />
-        <Setter Property="Opacity" Value="0.5" />
-        <Setter Property="Brush" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource White}}" />
-        <Setter Property="Offset" Value="10,10" />
+        <Setter Property="Radius" Value="4" />
+        <Setter Property="Opacity" Value="0.10" />
+        <Setter Property="Brush" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+        <Setter Property="Offset" Value="0,2" />
     </Style>
 
     <Style TargetType="Slider">
@@ -596,11 +666,11 @@
                 Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray200}}" />
         <Setter Property="Shell.NavBarHasShadow" Value="False" />
         <Setter Property="Shell.TabBarBackgroundColor"
-                Value="{AppThemeBinding Light={StaticResource DarkTextBase}, Dark={StaticResource LightTextBase}}" />
+                Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource LightTextBase}}" />
         <Setter Property="Shell.TabBarForegroundColor"
-                Value="{AppThemeBinding Light={StaticResource Magenta}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
         <Setter Property="Shell.TabBarTitleColor"
-                Value="{AppThemeBinding Light={StaticResource Magenta}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
         <Setter Property="Shell.TabBarUnselectedColor"
                 Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray200}}" />
     </Style>
@@ -609,16 +679,16 @@
         <Setter Property="BarBackgroundColor"
                 Value="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}" />
         <Setter Property="BarTextColor"
-                Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource White}}" />
         <Setter Property="IconColor"
-                Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource White}}" />
     </Style>
 
     <Style TargetType="TabbedPage">
         <Setter Property="BarBackgroundColor"
                 Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" />
         <Setter Property="BarTextColor"
-                Value="{AppThemeBinding Light={StaticResource Magenta}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
         <Setter Property="UnselectedTabColor"
                 Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray950}}" />
         <Setter Property="SelectedTabColor"
@@ -627,7 +697,7 @@
 
     <Style TargetType="VerticalStackLayout">
         <Setter Property="Spacing" Value="5" />
-        <Setter Property="Margin" Value="10" />
+        <Setter Property="Margin" Value="8" />
     </Style>
 
     <Style x:Key="OuterVerticalStack" TargetType="VerticalStackLayout">

@@ -1,7 +1,6 @@
 ﻿namespace TrashMobMobile.Services
 {
     using TrashMob.Models;
-    using TrashMobMobile.Authentication;
 
     public class UserManager : IUserManager
     {
@@ -14,10 +13,8 @@
 
         public User CurrentUser
         {
-            get
-            {
-                return App.CurrentUser;
-            }
+            get => App.CurrentUser!;
+            set => App.CurrentUser = value;
         }
 
         public Task<User> GetUserAsync(string userId, CancellationToken cancellationToken = default)
@@ -25,10 +22,10 @@
             return userRestService.GetUserAsync(userId, cancellationToken);
         }
 
-        public Task<User> GetUserByEmailAsync(string email, UserContext userContext,
+        public Task<User> GetUserByEmailAsync(string email,
             CancellationToken cancellationToken = default)
         {
-            return userRestService.GetUserByEmailAsync(email, userContext, cancellationToken);
+            return userRestService.GetUserByEmailAsync(email, cancellationToken);
         }
 
         public Task<User> AddUserAsync(User user, CancellationToken cancellationToken = default)

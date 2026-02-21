@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models.Poco;
+using Sentry;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -11,13 +12,15 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
                                           IStatsRestService statsRestService,
                                           ILitterReportManager litterReportManager,
                                           INotificationService notificationService,
-                                          IUserManager userManager)
+                                          IUserManager userManager,
+                                          IWaiverManager waiverManager)
     : BaseViewModel(notificationService)
 {
     private readonly ILitterReportManager litterReportManager = litterReportManager;
     private readonly IUserManager userManager = userManager;
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IStatsRestService statsRestService = statsRestService;
+    private readonly IWaiverManager waiverManager = waiverManager;
     private EventViewModel? completedSelectedEvent;
     private LitterReportViewModel? selectedLitterReport;
 
@@ -175,9 +178,7 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
     public async Task Init()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             foreach (var date in DateRanges.UpcomingRangeDictionary)
             {
@@ -200,30 +201,32 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
             SelectedCreatedDateRange = DateRanges.LastMonth;
 
-            var task1 = RefreshEvents();
-            var task2 = RefreshStatistics();
-            var task3 = RefreshLitterReports();
-
-            await Task.WhenAll(task1, task2, task3);
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while loading the dashboard. Please wait and try again in a moment.");
-        }
+            await Task.WhenAll(RefreshEvents(), RefreshStatistics(), RefreshLitterReports());
+        }, "An error has occurred while loading the dashboard. Please wait and try again in a moment.");
     }
 
     private async void PerformEventNavigation(EventViewModel eventViewModel)
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
+        try
+        {
+            await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private async void PerformLitterReportNavigation(LitterReportViewModel litterReportViewModel)
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportViewModel.Id}");
+        try
+        {
+            await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportViewModel.Id}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private async Task RefreshStatistics()
@@ -302,6 +305,7 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
             StartDate = startDate,
             EndDate = endDate,
             CreatedByUserId = userManager.CurrentUser.Id,
+            IncludeLitterImages = true,
         };
 
         var litterReports = await litterReportManager.GetLitterReportsAsync(litterReportFilter, TrashMob.Models.ImageSizeEnum.Thumb, true);
@@ -325,33 +329,48 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
     [RelayCommand]
     private async Task CreateEvent()
     {
+        if (!await waiverManager.HasUserSignedAllRequiredWaiversAsync())
+        {
+            await Shell.Current.GoToAsync(nameof(WaiverListPage));
+            return;
+        }
+
         await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={Guid.Empty}");
     }
 
     private async void HandleUpcomingDateRangeSelected()
     {
-        IsBusy = true;
-
-        await RefreshEvents();
-
-        IsBusy = false;
+        try
+        {
+            await ExecuteAsync(RefreshEvents, "Failed to refresh events. Please try again.");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private async void HandleCompletedDateRangeSelected()
     {
-        IsBusy = true;
-
-        await RefreshEvents();
-
-        IsBusy = false;
+        try
+        {
+            await ExecuteAsync(RefreshEvents, "Failed to refresh events. Please try again.");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private async void HandleCreatedDateRangeSelected()
     {
-        IsBusy = true;
-
-        await RefreshLitterReports();
-
-        IsBusy = false;
+        try
+        {
+            await ExecuteAsync(RefreshLitterReports, "Failed to refresh litter reports. Please try again.");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 }

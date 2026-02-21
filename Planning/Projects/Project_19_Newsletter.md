@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | ✅ Complete |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -49,9 +49,14 @@ Communicate monthly updates with categories/opt-outs, batching/scheduling, and t
 - ✅ SendGrid integration with tracking
 
 ### Phase 3 - Team/Community
-- ❓ Team newsletters (team leads)
-- ❓ Community newsletters (community admins)
-- ❓ Newsletter preview/approval
+- ✅ Team newsletters (team leads can send directly to team members)
+- ✅ Community newsletters (community admins can send directly)
+- ✅ Newsletter preview before sending
+
+**Newsletter Audience Rules:**
+- **Sitewide:** All subscribed users
+- **Team:** Members of the team
+- **Community:** Users whose profile location (city + region/state) matches the community's location
 
 ---
 
@@ -83,7 +88,10 @@ Communicate monthly updates with categories/opt-outs, batching/scheduling, and t
 ## Dependencies
 
 ### Blockers
-None
+None (core newsletter functionality)
+
+### Soft Dependencies
+- **Project 23 (Parental Consent):** For first name personalization - User model needs `FirstName`/`LastName` fields (can use username fallback until then)
 
 ### Enables
 - Volunteer retention
@@ -107,68 +115,258 @@ None
 
 ### Data Model Changes
 
-```sql
--- Newsletter categories
-CREATE TABLE NewsletterCategories (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(500) NULL,
-    IsDefault BIT NOT NULL DEFAULT 0, -- Auto-subscribe new users
-    IsActive BIT NOT NULL DEFAULT 1
-);
+**New Entity: NewsletterCategory (lookup table)**
+```csharp
+// New file: TrashMob.Models/NewsletterCategory.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a newsletter category that users can subscribe/unsubscribe to.
+    /// </summary>
+    public class NewsletterCategory : LookupModel
+    {
+        /// <summary>
+        /// Gets or sets the category description.
+        /// </summary>
+        public string Description { get; set; }
 
--- User newsletter preferences
-CREATE TABLE UserNewsletterPreferences (
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    CategoryId INT NOT NULL,
-    IsSubscribed BIT NOT NULL DEFAULT 1,
-    SubscribedDate DATETIMEOFFSET NULL,
-    UnsubscribedDate DATETIMEOFFSET NULL,
-    PRIMARY KEY (UserId, CategoryId),
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    FOREIGN KEY (CategoryId) REFERENCES NewsletterCategories(Id)
-);
+        /// <summary>
+        /// Gets or sets whether new users are auto-subscribed.
+        /// </summary>
+        public bool IsDefault { get; set; }
 
--- Newsletters
-CREATE TABLE Newsletters (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    CategoryId INT NOT NULL,
-    Subject NVARCHAR(200) NOT NULL,
-    PreviewText NVARCHAR(500) NULL,
-    HtmlContent NVARCHAR(MAX) NOT NULL,
-    TextContent NVARCHAR(MAX) NOT NULL,
-    -- Targeting
-    TargetType NVARCHAR(50) NOT NULL DEFAULT 'All', -- All, Community, Team
-    TargetId UNIQUEIDENTIFIER NULL, -- Community or Team ID
-    -- Status
-    Status NVARCHAR(50) NOT NULL DEFAULT 'Draft', -- Draft, Scheduled, Sending, Sent
-    ScheduledDate DATETIMEOFFSET NULL,
-    SentDate DATETIMEOFFSET NULL,
-    -- Stats
-    RecipientCount INT NOT NULL DEFAULT 0,
-    SentCount INT NOT NULL DEFAULT 0,
-    OpenCount INT NOT NULL DEFAULT 0,
-    ClickCount INT NOT NULL DEFAULT 0,
-    -- Audit
-    CreatedByUserId UNIQUEIDENTIFIER NOT NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (CategoryId) REFERENCES NewsletterCategories(Id),
-    FOREIGN KEY (CreatedByUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets whether this category is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
 
--- Newsletter templates
-CREATE TABLE NewsletterTemplates (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(500) NULL,
-    HtmlContent NVARCHAR(MAX) NOT NULL,
-    TextContent NVARCHAR(MAX) NOT NULL,
-    IsActive BIT NOT NULL DEFAULT 1
-);
+        // Navigation properties
+        public virtual ICollection<UserNewsletterPreference> UserPreferences { get; set; }
+        public virtual ICollection<Newsletter> Newsletters { get; set; }
+    }
+}
+```
 
-CREATE INDEX IX_UserNewsletterPreferences_UserId ON UserNewsletterPreferences(UserId);
-CREATE INDEX IX_Newsletters_Status ON Newsletters(Status);
-CREATE INDEX IX_Newsletters_ScheduledDate ON Newsletters(ScheduledDate) WHERE Status = 'Scheduled';
+**New Entity: UserNewsletterPreference**
+```csharp
+// New file: TrashMob.Models/UserNewsletterPreference.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a user's subscription preference for a newsletter category.
+    /// </summary>
+    public class UserNewsletterPreference
+    {
+        /// <summary>
+        /// Gets or sets the user identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the category identifier.
+        /// </summary>
+        public int CategoryId { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the user is subscribed.
+        /// </summary>
+        public bool IsSubscribed { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets when the user subscribed.
+        /// </summary>
+        public DateTimeOffset? SubscribedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the user unsubscribed.
+        /// </summary>
+        public DateTimeOffset? UnsubscribedDate { get; set; }
+
+        // Navigation properties
+        public virtual User User { get; set; }
+        public virtual NewsletterCategory Category { get; set; }
+    }
+}
+```
+
+**New Entity: Newsletter**
+```csharp
+// New file: TrashMob.Models/Newsletter.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a newsletter to be sent to subscribers.
+    /// </summary>
+    public class Newsletter : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the newsletter category.
+        /// </summary>
+        public int CategoryId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email subject.
+        /// </summary>
+        public string Subject { get; set; }
+
+        /// <summary>
+        /// Gets or sets the preview text (inbox preview).
+        /// </summary>
+        public string PreviewText { get; set; }
+
+        /// <summary>
+        /// Gets or sets the HTML content.
+        /// </summary>
+        public string HtmlContent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the plain text content.
+        /// </summary>
+        public string TextContent { get; set; }
+
+        #region Targeting
+
+        /// <summary>
+        /// Gets or sets the target type (All, Community, Team).
+        /// </summary>
+        public string TargetType { get; set; } = "All";
+
+        /// <summary>
+        /// Gets or sets the target ID (community or team).
+        /// </summary>
+        public Guid? TargetId { get; set; }
+
+        #endregion
+
+        #region Status
+
+        /// <summary>
+        /// Gets or sets the status (Draft, Scheduled, Sending, Sent).
+        /// </summary>
+        public string Status { get; set; } = "Draft";
+
+        /// <summary>
+        /// Gets or sets the scheduled send date.
+        /// </summary>
+        public DateTimeOffset? ScheduledDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the newsletter was sent.
+        /// </summary>
+        public DateTimeOffset? SentDate { get; set; }
+
+        #endregion
+
+        #region Statistics
+
+        /// <summary>
+        /// Gets or sets the total recipient count.
+        /// </summary>
+        public int RecipientCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the count of successfully sent emails.
+        /// </summary>
+        public int SentCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the count of opened emails.
+        /// </summary>
+        public int OpenCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the count of clicked emails.
+        /// </summary>
+        public int ClickCount { get; set; }
+
+        #endregion
+
+        // Navigation properties
+        public virtual NewsletterCategory Category { get; set; }
+    }
+}
+```
+
+**New Entity: NewsletterTemplate (lookup table)**
+```csharp
+// New file: TrashMob.Models/NewsletterTemplate.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a reusable newsletter template.
+    /// </summary>
+    public class NewsletterTemplate : LookupModel
+    {
+        /// <summary>
+        /// Gets or sets the template description.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the HTML content template.
+        /// </summary>
+        public string HtmlContent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the plain text content template.
+        /// </summary>
+        public string TextContent { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this template is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<NewsletterCategory>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+    entity.Property(e => e.Description).HasMaxLength(500);
+});
+
+modelBuilder.Entity<UserNewsletterPreference>(entity =>
+{
+    entity.HasKey(e => new { e.UserId, e.CategoryId });
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.Category)
+        .WithMany(c => c.UserPreferences)
+        .HasForeignKey(e => e.CategoryId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasIndex(e => e.UserId);
+});
+
+modelBuilder.Entity<Newsletter>(entity =>
+{
+    entity.Property(e => e.Subject).HasMaxLength(200).IsRequired();
+    entity.Property(e => e.PreviewText).HasMaxLength(500);
+    entity.Property(e => e.TargetType).HasMaxLength(50);
+    entity.Property(e => e.Status).HasMaxLength(50);
+
+    entity.HasOne(e => e.Category)
+        .WithMany(c => c.Newsletters)
+        .HasForeignKey(e => e.CategoryId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.Status);
+    entity.HasIndex(e => e.ScheduledDate)
+        .HasFilter("[Status] = 'Scheduled'");
+});
+
+modelBuilder.Entity<NewsletterTemplate>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+    entity.Property(e => e.Description).HasMaxLength(500);
+});
 ```
 
 ### API Changes
@@ -332,25 +530,40 @@ public async Task<ActionResult> ProcessNewsletterWebhook([FromBody] SendGridEven
 
 ## Open Questions
 
-1. **Newsletter frequency?**
-   **Recommendation:** Monthly sitewide; weekly digest optional
-   **Owner:** Marketing + Product
-   **Due:** Before Phase 1
+1. ~~**Newsletter frequency?**~~
+   **Decision:** Monthly sitewide newsletter only
+   **Status:** ✅ Resolved
 
-2. **Who can send team/community newsletters?**
-   **Recommendation:** Team leads, community admins with approval
-   **Owner:** Product Lead
-   **Due:** Before Phase 3
+2. ~~**Who can send team/community newsletters?**~~
+   **Decision:** Team leads and community admins can send directly without approval
+   **Status:** ✅ Resolved
 
-3. **Newsletter content guidelines?**
-   **Recommendation:** Create editorial guidelines; review process for first sends
-   **Owner:** Marketing
-   **Due:** Before Phase 2
+3. ~~**Newsletter content guidelines?**~~
+   **Decision:** Create editorial guidelines document; no formal review process
+   **Status:** ✅ Resolved
 
-4. **Personalization scope?**
-   **Recommendation:** Basic tokens (name, city) for v1; advanced later
-   **Owner:** Engineering
-   **Due:** Before Phase 2
+4. ~~**Personalization scope?**~~
+   **Decision:** Basic tokens (city, username) for v1; first name requires User model changes (see note below)
+   **Status:** ✅ Resolved
+
+5. ~~**Name personalization dependency?**~~
+   **Decision:** Currently User model only has `UserName` (display) and `City` - no first/last name fields. To use "Hi {FirstName}" personalization:
+   - Add optional `FirstName` and `LastName` fields to User model
+   - Update registration flow (web + mobile) with optional name fields
+   - Can pre-populate from identity provider claims
+   - Update privacy policy to disclose name collection
+   - For minors: Already covered by Privo.com consent (Project 23)
+   - Personalization fallback: `FirstName ?? UserName ?? "there"`
+   - **Recommendation:** Implement name fields as part of Project 23 (Parental Consent) since minors already require name display ("first name + last initial")
+   **Status:** ✅ Resolved
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2239](https://github.com/trashmob/TrashMob/issues/2239)** - Project 19: TrashMob.eco Newsletter Support (tracking issue)
 
 ---
 
@@ -362,7 +575,83 @@ public async Task<ActionResult> ProcessNewsletterWebhook([FromBody] SendGridEven
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** February 3, 2026
 **Owner:** Marketing + Engineering
-**Status:** Not Started
-**Next Review:** When prioritized
+**Status:** ✅ Complete
+**Next Review:** Q1 2026
+
+---
+
+## Implementation Progress
+
+### Phase 1 - Core Infrastructure (Complete)
+
+**Database Models:**
+- `NewsletterCategory` - Newsletter category lookup table with seed data (Monthly Digest, Event Updates, Community News, Team Updates)
+- `UserNewsletterPreference` - User subscription preferences per category
+- `Newsletter` - Newsletter entity with targeting, status, scheduling, and statistics
+- `NewsletterTemplate` - Reusable newsletter templates with HTML/text content
+
+**Backend:**
+- Migration: `20260203151205_AddNewsletterSupport` - Creates all tables with indexes and seed data
+- `INewsletterManager` / `NewsletterManager` - Newsletter CRUD, scheduling, sending, statistics
+- `IUserNewsletterPreferenceManager` / `UserNewsletterPreferenceManager` - User preferences management
+- `NewsletterPreferencesController` - User-facing API for preferences (GET/PUT preferences, unsubscribe all)
+- `NewslettersController` - Admin API for newsletter management (CRUD, schedule, send, templates)
+
+**Frontend:**
+- `services/newsletters.ts` - API service layer for all newsletter endpoints
+- `pages/siteadmin/newsletters/` - Admin UI for newsletter management
+  - Newsletter list with status filtering
+  - Create/Edit newsletter dialog with template selection
+  - Schedule dialog for future sends
+  - Send now functionality
+  - Delete draft newsletters
+
+### Phase 2 - Sending & Tracking (Complete)
+
+**Backend:**
+- `NewsletterManager.ProcessScheduledNewslettersAsync()` - Processes due newsletters and marks them for sending
+- `NewsletterManager.ProcessSendingNewslettersAsync()` - Sends newsletter emails in batches of 100
+- `NewsletterManager.SendTestEmailAsync()` - Sends test emails to specified addresses
+- `NewslettersController.SendTestEmail()` - API endpoint for test sends
+- `NewsletterWebhooksController` - Processes SendGrid webhook events for delivery/open/click/bounce tracking
+- Integration with `TrashMobHourlyJobs` - Scheduled and sending newsletters are processed hourly
+
+**Frontend:**
+- `services/newsletters.ts` - Added `SendTestEmail` service
+- `pages/siteadmin/newsletters/test-send-dialog.tsx` - Dialog for sending test emails
+- Updated newsletter columns with "Send Test" action in dropdown menu
+
+### Phase 3 - Team/Community (Complete)
+
+**Backend:**
+- `PartnerAdminsController.GetMyPartners()` - New endpoint for getting communities the current user admins
+
+**Frontend:**
+- Updated `newsletter-editor-dialog.tsx` with:
+  - Team selector dropdown (uses `GetTeamsILead` service) when target type is "Team"
+  - Community selector dropdown (uses new `GetMyPartners` service) when target type is "Community"
+  - Preview tab with rendered HTML email preview in iframe
+  - Target validation (requires team/community selection when applicable)
+- Added `GetMyPartners` service to `partners.ts`
+
+### Phase 4 - User Experience (Complete)
+
+**Backend:**
+- `UserNewsletterPreferenceManager.GenerateUnsubscribeToken()` - Generates URL-safe tokens for unsubscribe links
+- `UserNewsletterPreferenceManager.ProcessUnsubscribeTokenAsync()` - Validates and processes unsubscribe tokens
+- `NewsletterPreferencesController.ProcessUnsubscribe()` - Public endpoint for token-based unsubscribe (no auth required)
+- `NewsletterPreferencesController.GetUnsubscribeToken()` - Authenticated endpoint for generating user's unsubscribe token
+
+**Frontend:**
+- `pages/MyDashboard/MyNewsletterPreferencesCard.tsx` - Card showing newsletter preferences with toggle switches
+  - Displays all categories with subscription status
+  - Toggle switches to subscribe/unsubscribe from each category
+  - "Unsubscribe All" button with confirmation dialog
+- `pages/unsubscribe/index.tsx` - Public unsubscribe page
+  - Processes token from URL query parameter
+  - Shows success/error messages
+  - Links to dashboard for further preference management
+- Added unsubscribe route to `App.tsx`
+- Added `ProcessUnsubscribe` service to `newsletters.ts`

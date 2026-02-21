@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phase 2.5 Complete) |
 | **Priority** | Low |
 | **Risk** | Moderate |
 | **Size** | Medium |
@@ -34,23 +34,38 @@ Provide safe, privacy-aware AI access to events/metrics via Model Context Protoc
 
 ## Scope
 
-### Phase 1 - Core MCP Server
-- ✅ MCP server implementation (.NET or Node.js)
-- ✅ Event search tool (location, date, type)
-- ✅ Stats/metrics tool (sitewide, community)
-- ✅ Authentication via API tokens
+### Phase 1 - Core MCP Server ✅
+- ✅ MCP server implementation (.NET) - `TrashMobMCP/`
+- ✅ Event search tool (location, date, type) - `SearchEventsTool`
+- ✅ Stats/metrics tool (sitewide) - `GetStatsTool`
+- ⬜ Authentication via API tokens (deferred)
 
-### Phase 2 - Enhanced Tools
-- ✅ User dashboard data (authenticated)
-- ✅ Team and community lookup
-- ✅ Litter report discovery
-- ✅ Partner/location search
+### Phase 2 - Enhanced Tools ✅
+- ⬜ User dashboard data (requires authentication - deferred)
+- ✅ Team lookup - `SearchTeamsTool`
+- ✅ Litter report discovery - `SearchLitterReportsTool`
+- ✅ Partner/location search - `SearchPartnerLocationsTool`
+- ✅ Community search - `SearchCommunitiesTool`
+
+### Phase 2.5 - Feature Catch-Up Tools ✅
+- ✅ Leaderboard query (user & team rankings) - `GetLeaderboardTool`
+- ✅ Achievement types listing - `GetAchievementTypesTool`
+- ✅ Event route statistics - `GetEventRouteStatsTool`
+- ⬜ Adoptable areas search (deferred - requires authentication)
+
+### Phase 2.75 - HTTP Transport ✅
+- ✅ Convert from stdio to HTTP transport (SSE + Streamable HTTP)
+- ✅ Upgrade MCP SDK from 0.2.0-preview.1 to 0.8.0-preview.1
+- ✅ Add `ModelContextProtocol.AspNetCore` package
+- ✅ Convert from generic host to ASP.NET Core web host
+- ✅ Map MCP endpoints via `app.MapMcp()` (exposes `/sse` and `/messages`)
+- Container app deployment already configured (`containerAppMCP.bicep`)
 
 ### Phase 3 - AI Features
-- ❓ Event recommendations
-- ❓ Impact summaries
-- ❓ Volunteer activity analysis
-- ❓ Community health metrics
+- ⬜ Event recommendations based on user location/history
+- ⬜ Impact summaries (event, community, sitewide)
+- ⬜ Volunteer activity analysis (anonymized trends)
+- ⬜ Community health metrics
 
 ---
 
@@ -107,15 +122,26 @@ None - can use existing API
 
 ```
 TrashMobMCP/
-├── Program.cs                 # MCP server entry point
+├── Program.cs                       # MCP server entry point
 ├── Tools/
-│   ├── EventSearchTool.cs    # Search events by criteria
-│   ├── StatsTool.cs          # Get platform/community stats
-│   ├── TeamSearchTool.cs     # Find teams
-│   ├── CommunityTool.cs      # Community information
-│   └── LitterReportTool.cs   # Litter report lookup
-├── Resources/
-│   └── EventResource.cs      # Event data resource
+│   ├── SearchEventsTool.cs          # Search events by criteria
+│   ├── GetStatsTool.cs              # Get platform/community stats
+│   ├── SearchTeamsTool.cs           # Find teams
+│   ├── SearchCommunitiesTool.cs     # Community information
+│   ├── SearchLitterReportsTool.cs   # Litter report lookup
+│   ├── SearchPartnerLocationsTool.cs # Partner location search
+│   ├── GetLeaderboardTool.cs        # Volunteer/team rankings
+│   ├── GetAchievementTypesTool.cs   # Available achievement badges
+│   └── GetEventRouteStatsTool.cs    # Event route tracking stats
+├── Dtos/
+│   ├── EventDto.cs
+│   ├── CommunityDto.cs
+│   ├── LitterReportDto.cs
+│   ├── PartnerLocationDto.cs
+│   ├── StatsDto.cs
+│   ├── TeamDto.cs
+│   ├── LeaderboardEntryDto.cs
+│   └── AchievementTypeDto.cs
 └── appsettings.json
 ```
 
@@ -284,37 +310,128 @@ public class DataSanitizer
 
 ## Open Questions
 
-1. **Hosting model?**
-   **Recommendation:** Separate container app; or integrate into main API
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+1. ~~**Hosting model?**~~
+   **Decision:** Separate container app for easier scaling and isolation from main API
+   **Status:** ✅ Resolved
 
-2. **Authentication mechanism?**
-   **Recommendation:** API tokens for server-to-server; OAuth for user context
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+2. ~~**Authentication mechanism?**~~
+   **Decision:** API tokens only for server-to-server calls; fits MCP model better than OAuth
+   **Status:** ✅ Resolved
 
-3. **Which AI platforms to target?**
-   **Recommendation:** Claude (Anthropic), ChatGPT (OpenAI), Copilot (Microsoft)
-   **Owner:** Product Lead
-   **Due:** Before launch
+3. ~~**Which AI platforms to target?**~~
+   **Decision:** All major platforms - Claude (Anthropic), ChatGPT (OpenAI), Copilot (Microsoft), and any MCP-compatible client
+   **Status:** ✅ Resolved
 
-4. **Rate limits?**
-   **Recommendation:** 100 calls/minute per token; higher for partners
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+4. ~~**Rate limits?**~~
+   **Decision:** 50 calls/minute per token (conservative); higher limits available for partners
+   **Status:** ✅ Resolved
+
+5. ~~**Implementation technology?**~~
+   **Decision:** .NET (consistent with main TrashMob backend; enables code/manager reuse)
+   **Status:** ✅ Resolved
+
+---
+
+## AI Platform Integration
+
+### How MCP Works
+
+MCP (Model Context Protocol) is an open protocol that allows AI assistants to connect to external data sources and tools. The integration model is:
+
+1. **TrashMob hosts the MCP server** - We build and deploy a server exposing tools (search_events, get_stats, etc.)
+2. **Users configure their AI client** - Users add our server URL to their AI assistant settings
+3. **AI discovers available tools** - The MCP protocol lets AI clients query what tools are available
+4. **AI calls tools as needed** - When users ask questions like "Find cleanup events near me", the AI calls our tools
+
+### Platform-Specific Integration
+
+#### Claude (Anthropic)
+- **Setup:** Users add MCP server in Claude Desktop settings or claude.ai
+- **Config location:** `~/.config/claude/mcp_servers.json` (desktop) or web settings
+- **Documentation:** [MCP Quickstart](https://modelcontextprotocol.io/quickstart)
+- **Our action:** Publish server URL and configuration instructions
+
+```json
+// Example user configuration for Claude Desktop
+{
+  "mcpServers": {
+    "trashmob": {
+      "url": "https://mcp.trashmob.eco",
+      "apiKey": "user-api-token"
+    }
+  }
+}
+```
+
+#### ChatGPT (OpenAI)
+- **Setup:** OpenAI uses "GPTs" with custom actions (similar concept, different protocol)
+- **Our action:** Create a TrashMob GPT with OpenAPI spec pointing to our API
+- **Alternative:** If OpenAI adds MCP support, same server works
+- **Documentation:** [OpenAI Actions](https://platform.openai.com/docs/actions)
+
+#### Copilot (Microsoft)
+- **Setup:** Copilot plugins/extensions
+- **Our action:** Create Copilot plugin manifest
+- **Documentation:** [Copilot Extensibility](https://learn.microsoft.com/copilot-extensibility)
+
+### What TrashMob Needs to Build
+
+| Component | Description | Required |
+|-----------|-------------|----------|
+| **MCP Server** | .NET server implementing MCP protocol | Yes |
+| **Public endpoint** | `https://mcp.trashmob.eco` or similar | Yes |
+| **API token management** | Generate/revoke tokens for users | Yes |
+| **User documentation** | How to connect from each AI platform | Yes |
+| **OpenAPI spec** | For ChatGPT/non-MCP platforms | Nice-to-have |
+
+### User Experience Flow
+
+1. **User requests API token** from TrashMob account settings
+2. **User configures AI client** with server URL + token
+3. **User asks AI** natural language questions about events
+4. **AI calls MCP tools** and returns formatted response
+5. **User clicks links** to event pages on trashmob.eco
+
+### Implementation Resources
+
+| Resource | URL | Purpose |
+|----------|-----|---------|
+| **MCP Specification** | https://modelcontextprotocol.io/specification | Protocol details |
+| **MCP .NET SDK** | https://github.com/modelcontextprotocol/csharp-sdk | .NET implementation |
+| **MCP Quickstart** | https://modelcontextprotocol.io/quickstart | Getting started guide |
+| **Example Servers** | https://github.com/modelcontextprotocol/servers | Reference implementations |
+
+### Deployment Checklist
+
+- [ ] Build MCP server with core tools (Phase 1)
+- [ ] Deploy to separate container app (`mcp.trashmob.eco`)
+- [ ] Implement API token generation in user settings
+- [ ] Write user documentation for Claude setup
+- [ ] Create OpenAPI spec for ChatGPT integration
+- [ ] Test with Claude Desktop and claude.ai
+- [ ] Announce availability to users
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2238](https://github.com/trashmob/TrashMob/issues/2238)** - Project 17: TrashMob.eco MCP Server (tracking issue)
 
 ---
 
 ## Related Documents
 
 - **[MCP Specification](https://modelcontextprotocol.io)** - Protocol documentation
+- **[MCP .NET SDK](https://github.com/modelcontextprotocol/csharp-sdk)** - C# implementation library
+- **[MCP Servers Repository](https://github.com/modelcontextprotocol/servers)** - Example server implementations
 - **[Project 6 - Backend Standards](./Project_06_Backend_Standards.md)** - API patterns
 - **TrashMob API** - Existing endpoints to wrap
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** February 8, 2026
 **Owner:** Engineering Team
-**Status:** Not Started
+**Status:** In Progress (Phase 2.75 Complete — 9 tools, HTTP transport)
 **Next Review:** When AI integration becomes priority

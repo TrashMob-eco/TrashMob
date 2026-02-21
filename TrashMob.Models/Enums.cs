@@ -139,6 +139,11 @@ namespace TrashMob.Models
         /// Business organization.
         /// </summary>
         Business = 2,
+
+        /// <summary>
+        /// Community organization (city, county, nonprofit) with branded community page.
+        /// </summary>
+        Community = 3,
     }
 
     /// <summary>
@@ -217,6 +222,46 @@ namespace TrashMob.Models
         /// Image associated with a litter report.
         /// </summary>
         LitterImage = 4,
+
+        /// <summary>
+        /// Image associated with a team photo gallery.
+        /// </summary>
+        TeamPhoto = 5,
+
+        /// <summary>
+        /// Logo/avatar image for a team.
+        /// </summary>
+        TeamLogo = 6,
+
+        /// <summary>
+        /// Image associated with an event photo gallery.
+        /// </summary>
+        EventPhoto = 7,
+
+        /// <summary>
+        /// Image associated with a partner/community photo gallery.
+        /// </summary>
+        PartnerPhoto = 8,
+
+        /// <summary>
+        /// User profile photo (uploaded or replaced from social IDP).
+        /// </summary>
+        UserProfilePhoto = 9,
+
+        /// <summary>
+        /// Logo image for a community.
+        /// </summary>
+        CommunityLogo = 10,
+
+        /// <summary>
+        /// Banner image for a community.
+        /// </summary>
+        CommunityBanner = 11,
+
+        /// <summary>
+        /// Logo image for a sponsor.
+        /// </summary>
+        SponsorLogo = 12,
     }
 
     /// <summary>
@@ -285,5 +330,75 @@ namespace TrashMob.Models
         /// Weight measured in kilograms.
         /// </summary>
         Kilogram = 2,
+    }
+
+    /// <summary>
+    /// The type of geographic region a community covers.
+    /// </summary>
+    public enum RegionTypeEnum
+    {
+        City = 0,
+        County = 1,
+        State = 2,
+        Province = 3,
+        Region = 4,
+        Country = 5,
+    }
+
+    /// <summary>
+    /// Represents the visibility level of an event.
+    /// </summary>
+    public enum EventVisibilityEnum
+    {
+        /// <summary>
+        /// Event is visible to all users and included in public listings and notifications.
+        /// </summary>
+        Public = 1,
+
+        /// <summary>
+        /// Event is visible only to members of the specified team.
+        /// </summary>
+        TeamOnly = 2,
+
+        /// <summary>
+        /// Event is visible only to the creator, for personal tracking.
+        /// </summary>
+        Private = 3,
+    }
+
+    /// <summary>
+    /// Represents the type of a partner document.
+    /// </summary>
+    public enum PartnerDocumentTypeEnum
+    {
+        /// <summary>
+        /// Other or unspecified document type.
+        /// </summary>
+        Other = 0,
+
+        /// <summary>
+        /// Partnership or volunteer agreement.
+        /// </summary>
+        Agreement = 1,
+
+        /// <summary>
+        /// Formal contract.
+        /// </summary>
+        Contract = 2,
+
+        /// <summary>
+        /// Report or summary document.
+        /// </summary>
+        Report = 3,
+
+        /// <summary>
+        /// Insurance certificate or policy.
+        /// </summary>
+        Insurance = 4,
+
+        /// <summary>
+        /// Certification or compliance document.
+        /// </summary>
+        Certificate = 5,
     }
 }

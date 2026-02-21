@@ -1,9 +1,10 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
@@ -13,22 +14,11 @@
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/eventsummaries")]
-    public class EventSummariesController : SecureController
+    public class EventSummariesController(
+        IEventSummaryManager eventSummaryManager,
+        IKeyedManager<Event> eventManager)
+        : SecureController
     {
-        private readonly IKeyedManager<Event> eventManager;
-        private readonly IEventSummaryManager eventSummaryManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventSummariesController"/> class.
-        /// </summary>
-        /// <param name="eventSummaryManager">The event summary manager.</param>
-        /// <param name="eventManager">The event manager.</param>
-        public EventSummariesController(IEventSummaryManager eventSummaryManager,
-            IKeyedManager<Event> eventManager)
-        {
-            this.eventSummaryManager = eventSummaryManager;
-            this.eventManager = eventManager;
-        }
 
         /// <summary>
         /// Gets the event summary for a given event.
@@ -40,10 +30,9 @@
         public async Task<IActionResult> GetEventSummary(Guid eventId, CancellationToken cancellationToken = default)
         {
             var eventSummary =
-                (await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken)
-                    .ConfigureAwait(false)).FirstOrDefault();
+                (await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken)).FirstOrDefault();
 
-            if (eventSummary != null)
+            if (eventSummary is not null)
             {
                 return Ok(eventSummary);
             }
@@ -61,10 +50,9 @@
         public async Task<IActionResult> GetEventSummaryV2(Guid eventId, CancellationToken cancellationToken = default)
         {
             var eventSummary =
-                (await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken)
-                    .ConfigureAwait(false)).FirstOrDefault();
+                (await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken)).FirstOrDefault();
 
-            if (eventSummary == null)
+            if (eventSummary is null)
             {
                 eventSummary = new EventSummary
                 {
@@ -109,21 +97,17 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated event summary.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEventSummary(EventSummary eventSummary,
             CancellationToken cancellationToken)
         {
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, eventSummary,
-                    AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(eventSummary, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
 
-            var updatedEvent = await eventSummaryManager.UpdateAsync(eventSummary, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            var updatedEvent = await eventSummaryManager.UpdateAsync(eventSummary, UserId, cancellationToken);
             TrackEvent(nameof(UpdateEventSummary));
 
             return Ok(updatedEvent);
@@ -136,20 +120,16 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The created event summary.</remarks>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventSummary(EventSummary eventSummary, CancellationToken cancellationToken)
         {
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, eventSummary,
-                    AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(eventSummary, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
 
-            var result = await eventSummaryManager.AddAsync(eventSummary, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await eventSummaryManager.AddAsync(eventSummary, UserId, cancellationToken);
 
             TrackEvent(nameof(AddEventSummary));
 
@@ -163,23 +143,21 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The ID of the deleted event summary.</remarks>
         [HttpDelete("{id}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventSummary(Guid eventId, CancellationToken cancellationToken)
         {
-            var mobEvent = eventManager.GetAsync(eventId, cancellationToken);
+            var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
 
-            await eventSummaryManager.DeleteAsync(eventId, cancellationToken).ConfigureAwait(false);
+            await eventSummaryManager.DeleteAsync(eventId, cancellationToken);
             TrackEvent(nameof(DeleteEventSummary));
 
-            return Ok(eventId);
+            return NoContent();
         }
     }
 }

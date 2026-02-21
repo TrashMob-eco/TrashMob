@@ -35,7 +35,11 @@ public class CustomMapHandler : MapHandler
     protected override void ConnectHandler(MapView platformView)
     {
         base.ConnectHandler(platformView);
-        (VirtualView as Map).PropertyChanged += OnPropertyChanged;
+        if (VirtualView is Map map)
+        {
+            map.PropertyChanged += OnPropertyChanged;
+        }
+
         var mapReady = new MapCallbackHandler(this);
         PlatformView.GetMapAsync(mapReady);
     }
@@ -43,10 +47,13 @@ public class CustomMapHandler : MapHandler
     protected override void DisconnectHandler(MapView platformView)
     {
         base.DisconnectHandler(platformView);
-        (VirtualView as Map).PropertyChanged -= OnPropertyChanged;
+        if (VirtualView is Map map)
+        {
+            map.PropertyChanged -= OnPropertyChanged;
+        }
     }
 
-    private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         // when map is ready, visible region is initially set by base handler
         if (e.PropertyName == "VisibleRegion")
@@ -62,7 +69,7 @@ public class CustomMapHandler : MapHandler
             return;
         }
 
-        if (Map == null || Map.Projection.VisibleRegion.LatLngBounds.Center.Latitude == 0)
+        if (Map == null || Map.Projection?.VisibleRegion?.LatLngBounds?.Center == null || Map.Projection.VisibleRegion.LatLngBounds.Center.Latitude == 0)
         {
             return;
         }
@@ -94,7 +101,7 @@ public class CustomMapHandler : MapHandler
         }
     }
 
-    private new static void MapPins(IMapHandler handler, IMap map)
+    private static new void MapPins(IMapHandler handler, IMap map)
     {
         if (handler is CustomMapHandler mapHandler)
         {
@@ -126,7 +133,10 @@ public class CustomMapHandler : MapHandler
                     {
                         if (result?.Value is BitmapDrawable bitmapDrawable)
                         {
-                            markerOption.SetIcon(BitmapDescriptorFactory.FromBitmap(bitmapDrawable.Bitmap));
+                            if (bitmapDrawable.Bitmap != null)
+                            {
+                                markerOption.SetIcon(BitmapDescriptorFactory.FromBitmap(bitmapDrawable.Bitmap));
+                            }
                         }
 
                         AddMarker(Map, pin, Markers, markerOption);
@@ -143,8 +153,11 @@ public class CustomMapHandler : MapHandler
     private static void AddMarker(GoogleMap map, IMapPin pin, List<Marker> markers, MarkerOptions markerOption)
     {
         var marker = map.AddMarker(markerOption);
-        pin.MarkerId = marker.Id;
-        markers.Add(marker);
+        if (marker != null)
+        {
+            pin.MarkerId = marker.Id;
+            markers.Add(marker);
+        }
     }
     
     class MapCallbackHandler : Java.Lang.Object, IOnMapReadyCallback

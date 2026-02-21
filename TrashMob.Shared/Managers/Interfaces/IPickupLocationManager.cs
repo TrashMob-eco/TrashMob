@@ -18,7 +18,7 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="userId">The unique identifier of the user submitting the locations.</param>
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        Task SubmitPickupLocations(Guid eventId, Guid userId, CancellationToken cancellationToken);
+        Task SubmitPickupLocationsAsync(Guid eventId, Guid userId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Marks a pickup location as picked up.

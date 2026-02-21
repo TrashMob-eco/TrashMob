@@ -12,43 +12,38 @@
     /// <summary>
     /// Base class for notification engines that notify users about events they are attending.
     /// </summary>
-    public abstract class UpcomingEventAttendingBaseNotifier : NotificationEngineBase, INotificationEngine
+    public abstract class UpcomingEventAttendingBaseNotifier(
+        IEventManager eventManager,
+        IKeyedManager<User> userManager,
+        IEventAttendeeManager eventAttendeeManager,
+        IKeyedManager<UserNotification> userNotificationManager,
+        INonEventUserNotificationManager nonEventUserNotificationManager,
+        IEmailSender emailSender,
+        IEmailManager emailManager,
+        IMapManager mapRepository,
+        ILogger logger)
+        : NotificationEngineBase(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+            nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger), INotificationEngine
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UpcomingEventAttendingBaseNotifier"/> class.
-        /// </summary>
-        public UpcomingEventAttendingBaseNotifier(IEventManager eventManager,
-            IKeyedManager<User> userManager,
-            IEventAttendeeManager eventAttendeeManager,
-            IKeyedManager<UserNotification> userNotificationManager,
-            INonEventUserNotificationManager nonEventUserNotificationManager,
-            IEmailSender emailSender,
-            IEmailManager emailManager,
-            IMapManager mapRepository,
-            ILogger logger) :
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
-                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-        }
 
         /// <inheritdoc />
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
-            Logger.LogInformation("Generating Notifications for {0}", NotificationType);
+            Logger.LogInformation("Generating Notifications for {NotificationType}", NotificationType);
 
             // Get list of users who have notifications turned on for locations
             var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
             var notificationCounter = 0;
 
-            Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
+            Logger.LogInformation("Generating {NotificationType} Notifications for {UserCount} total users", NotificationType, users.Count());
 
             // for each user
             foreach (var user in users)
             {
-                var eventsToNotifyUserFor = new List<Event>();
+                List<Event> eventsToNotifyUserFor = [];
 
                 // Get list of active events
-                var events = await EventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
+                var events = await EventManager.GetActiveEventsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Get list of events user is already attending
                 var eventsUserIsAttending = await EventAttendeeManager
@@ -81,7 +76,7 @@
                     .ConfigureAwait(false);
             }
 
-            Logger.LogInformation("Generating {0} Total {1} Notifications", notificationCounter, NotificationType);
+            Logger.LogInformation("Generating {NotificationCount} Total {NotificationType} Notifications", notificationCounter, NotificationType);
         }
     }
 }

@@ -5,44 +5,31 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
+using Sentry;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class SearchEventsViewModel(IMobEventManager mobEventManager, 
+public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
                                            INotificationService notificationService,
                                            IUserManager userManager)
-    : BaseViewModel(notificationService)
+    : LocationFilterViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IUserManager userManager = userManager;
 
-    private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
-
-    private string? selectedCity;
-    private string? selectedCountry;
     private EventViewModel selectedEvent = new();
-    private string? selectedRegion;
 
     [ObservableProperty]
     private AddressViewModel userLocation = new();
 
+    private IEnumerable<Event> AllEvents { get; set; } = [];
     private IEnumerable<Event> RawEvents { get; set; } = [];
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
-    public ObservableCollection<string> CountryCollection { get; set; } = [];
-    public ObservableCollection<string> RegionCollection { get; set; } = [];
-    public ObservableCollection<string> CityCollection { get; set; } = [];
-
     public ObservableCollection<string> UpcomingDateRanges { get; set; } = [];
 
     public ObservableCollection<string> CompletedDateRanges { get; set; } = [];
-
-    [ObservableProperty]
-    private bool isMapSelected;
-
-    [ObservableProperty]
-    private bool isListSelected;
 
     [ObservableProperty]
     private bool isUpcomingSelected;
@@ -98,42 +85,6 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
         }
     }
 
-    public string? SelectedCountry
-    {
-        get => selectedCountry;
-        set
-        {
-            selectedCountry = value;
-            OnPropertyChanged();
-
-            HandleCountrySelected(value);
-        }
-    }
-
-    public string? SelectedRegion
-    {
-        get => selectedRegion;
-        set
-        {
-            selectedRegion = value;
-            OnPropertyChanged();
-
-            HandleRegionSelected(value);
-        }
-    }
-
-    public string? SelectedCity
-    {
-        get => selectedCity;
-        set
-        {
-            selectedCity = value;
-            OnPropertyChanged();
-
-            HandleCitySelected(value);
-        }
-    }
-
     public EventViewModel SelectedEvent
     {
         get => selectedEvent;
@@ -154,9 +105,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
     public async Task Init()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             IsMapSelected = true;
             IsListSelected = false;
@@ -178,21 +127,20 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
             SelectedCompletedDateRange = DateRanges.LastMonth;
 
-            IsBusy = false;
-
             await NotificationService.Notify("Event list has been refreshed.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while loading the events. Please try again in a few moments.");
-        }
+        }, "An error has occurred while loading the events. Please try again in a few moments.");
     }
 
     private async void PerformNavigation(EventViewModel eventViewModel)
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
+        try
+        {
+            await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private async Task RefreshEvents()
@@ -215,24 +163,12 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
             endDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CompletedRangeDictionary[SelectedCompletedDateRange].Item2);
         }
 
-        locations = await mobEventManager.GetLocationsByTimeRangeAsync(startDate, endDate);
-        CountryCollection.Clear();
-        RegionCollection.Clear();
-        CityCollection.Clear();
+        Locations = await mobEventManager.GetLocationsByTimeRangeAsync(startDate, endDate);
+        PopulateCountries();
 
-        if (locations == null || !locations.Any())
+        if (Locations == null || !Locations.Any())
         {
             return;
-        }
-
-        var countries = locations.Select(l => l.Country).Distinct();
-
-        foreach (var country in countries)
-        {
-            if (!string.IsNullOrEmpty(country))
-            {
-                CountryCollection.Add(country);
-            }
         }
 
         var eventFilter = new EventFilter
@@ -248,132 +184,86 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
         if (IsUpcomingSelected)
         {
-            RawEvents = events.Where(e => !e.IsCompleted());
+            AllEvents = events.Where(e => !e.IsCompleted()).ToList();
         }
         else
         {
-            RawEvents = events.Where(e => e.IsCompleted());
+            AllEvents = events.Where(e => e.IsCompleted()).ToList();
         }
+
+        RawEvents = AllEvents;
 
         if (!RawEvents.Any())
         {
             return;
         }
 
-        var countryList = RawEvents.Select(e => e.Country).Distinct();
-
         UpdateEventReportViewModels();
     }
 
     private async void HandleUpcomingDateRangeSelected()
     {
-        IsBusy = true;
-
-        if (IsUpcomingSelected)
+        try
         {
-            await RefreshEvents();
-        }
+            IsBusy = true;
 
-        IsBusy = false;
+            if (IsUpcomingSelected)
+            {
+                await RefreshEvents();
+            }
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private async void HandleCompletedDateRangeSelected()
     {
-        IsBusy = true;
-
-        if (IsCompletedSelected)
+        try
         {
-            await RefreshEvents();
-        }
+            IsBusy = true;
 
-        IsBusy = false;
-    }
-
-    private void HandleCountrySelected(string? selectedCountry)
-    {
-        IsBusy = true;
-
-        if (selectedCountry != null)
-        {
-            RawEvents = RawEvents.Where(l => l.Country == SelectedCountry);
-        }
-
-        UpdateEventReportViewModels();
-
-        RefreshRegionList();
-
-        IsBusy = false;
-    }
-
-    private void RefreshRegionList()
-    {
-        RegionCollection.Clear();
-
-        if (!locations.Any(l => l.Country == selectedCountry))
-        {
-            return;
-        }
-
-        var regions = locations.Where(l => l.Country == selectedCountry).Select(l => l.Region).Distinct();
-
-        foreach (var region in regions)
-        {
-            if (!string.IsNullOrEmpty(region))
+            if (IsCompletedSelected)
             {
-                RegionCollection.Add(region);
+                await RefreshEvents();
             }
         }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
-    private void HandleRegionSelected(string? selectedRegion)
+    protected override void ApplyFilters()
     {
-        IsBusy = true;
+        IEnumerable<Event> filtered = AllEvents;
 
-        if (!string.IsNullOrEmpty(selectedRegion))
+        if (!string.IsNullOrEmpty(SelectedCountry))
         {
-            RawEvents = RawEvents.Where(l => l.Region == selectedRegion);
+            filtered = filtered.Where(e => e.Country == SelectedCountry);
         }
 
+        if (!string.IsNullOrEmpty(SelectedRegion))
+        {
+            filtered = filtered.Where(e => e.Region == SelectedRegion);
+        }
+
+        if (!string.IsNullOrEmpty(SelectedCity))
+        {
+            filtered = filtered.Where(e => e.City == SelectedCity);
+        }
+
+        RawEvents = filtered;
         UpdateEventReportViewModels();
-
-        RefreshCityList();
-
-        IsBusy = false;
-    }
-
-    private void RefreshCityList()
-    {
-        CityCollection.Clear();
-
-        if (!locations.Any(l => l.Country == selectedCountry && l.Region == selectedRegion))
-        {
-            return;
-        }
-
-        var cities = locations.Where(l => l.Country == selectedCountry && l.Region == selectedRegion)
-            .Select(l => l.City).Distinct();
-
-        foreach (var city in cities)
-        {
-            if (!string.IsNullOrEmpty(city))
-            {
-                CityCollection.Add(city);
-            }
-        }
-    }
-
-    private void HandleCitySelected(string? selectedCity)
-    {
-        IsBusy = true;
-
-        if (!string.IsNullOrEmpty(selectedCity))
-        {
-            RawEvents = RawEvents.Where(l => l.City == selectedCity);
-        }
-
-        UpdateEventReportViewModels();
-
-        IsBusy = false;
     }
 
     private void UpdateEventReportViewModels()
@@ -383,7 +273,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
         foreach (var mobEvent in RawEvents.OrderBy(e => e.EventDate))
         {
             var vm = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
-            
+
             Events.Add(vm);
         }
 
@@ -418,29 +308,11 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     }
 
     [RelayCommand]
-    private Task MapSelected()
-    {
-        IsMapSelected = true;
-        IsListSelected = false;
-        return Task.CompletedTask;
-    }
-
-    [RelayCommand]
-    private Task ListSelected()
-    {
-        IsMapSelected = false;
-        IsListSelected = true;
-        return Task.CompletedTask;
-    }
-
-    [RelayCommand]
     private async Task ClearSelections()
     {
         IsBusy = true;
 
-        SelectedCountry = null;
-        SelectedRegion = null;
-        SelectedCity = null;
+        ClearLocationSelections();
 
         await RefreshEvents();
 

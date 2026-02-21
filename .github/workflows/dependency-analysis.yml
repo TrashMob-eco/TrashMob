@@ -1,0 +1,420 @@
+# Dependency Update Analysis Workflow
+# Analyzes dependency changes from Renovate/Dependabot and updates PR description with safety assessment
+
+name: Dependency Update Analysis
+
+on:
+  pull_request:
+    branches: [ "main", "release" ]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull Request number to analyze (leave empty to analyze current branch against main)'
+        required: false
+        type: number
+      base_ref:
+        description: 'Base branch to compare against (default: main)'
+        required: false
+        type: string
+        default: 'main'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  analyze-dependencies:
+    name: Analyze Dependency Changes
+    runs-on: ubuntu-latest
+
+    # Only run for Renovate or Dependabot PRs, or when manually triggered
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.user.login == 'renovate[bot]' ||
+      github.event.pull_request.user.login == 'dependabot[bot]'
+
+    steps:
+    - name: Get PR details (if triggered manually with PR number)
+      if: github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number != ''
+      id: get_pr
+      uses: actions/github-script@v8
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: ${{ github.event.inputs.pr_number }}
+          });
+          core.setOutput('head_sha', pr.head.sha);
+          core.setOutput('base_ref', pr.base.ref);
+          core.setOutput('pr_number', pr.number);
+          return pr;
+
+    - name: Checkout PR branch
+      uses: actions/checkout@v6
+      with:
+        ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || (github.event.inputs.pr_number != '' && steps.get_pr.outputs.head_sha || github.ref) }}
+        fetch-depth: 0
+
+    - name: Checkout base branch for comparison
+      run: |
+        git fetch origin ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || (github.event.inputs.pr_number != '' && steps.get_pr.outputs.base_ref || github.event.inputs.base_ref) }}
+
+    - name: Set base reference environment variable
+      id: set_base_ref
+      run: |
+        BASE_REF="${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || (github.event.inputs.pr_number != '' && steps.get_pr.outputs.base_ref || github.event.inputs.base_ref) }}"
+        echo "base_ref=$BASE_REF" >> $GITHUB_OUTPUT
+        echo "Base reference: $BASE_REF"
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: '20'
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Analyze package.json changes
+      id: analyze_npm
+      run: |
+        echo "## NPM Package Changes" > /tmp/npm_analysis.md
+        echo "" >> /tmp/npm_analysis.md
+
+        # Find all package.json files
+        # Find all package.json files (using null-terminated output for safe handling)
+        find . -name "package.json" -not -path "*/node_modules/*" -not -path "*/package-lock.json" -print0 | \
+        while IFS= read -r -d '' package_json; do
+          dir=$(dirname "$package_json")
+          echo "### Changes in $dir" >> /tmp/npm_analysis.md
+
+          # Get the package.json from base branch
+          git show origin/${{ steps.set_base_ref.outputs.base_ref }}:"$package_json" > /tmp/base_package.json 2>/dev/null || echo "{}" > /tmp/base_package.json
+
+          # Compare dependencies and fetch package info
+          # Pass package_json path as command line argument to avoid interpolation issues
+          node -e "
+            const fs = require('fs');
+            const https = require('https');
+            const packageJsonPath = process.argv[1];
+            
+            function fetchPackageInfo(packageName, version) {
+              return new Promise((resolve) => {
+                const cleanVersion = version.replace(/^[\^~>=<]+/, '');
+                const req = https.get(\`https://registry.npmjs.org/\${packageName}/\${cleanVersion}\`, {
+                  timeout: 10000  // 10 second timeout
+                }, (res) => {
+                  let data = '';
+                  res.on('data', chunk => data += chunk);
+                  res.on('end', () => {
+                    try {
+                      const pkg = JSON.parse(data);
+                      resolve({
+                        homepage: pkg.homepage,
+                        repository: pkg.repository?.url,
+                        description: pkg.description
+                      });
+                    } catch (e) {
+                      resolve(null);
+                    }
+                  });
+                });
+                req.on('error', () => resolve(null));
+                req.on('timeout', () => {
+                  req.destroy();
+                  resolve(null);
+                });
+              });
+            }
+            
+            async function analyzeChanges() {
+              try {
+                const basePackage = JSON.parse(fs.readFileSync('/tmp/base_package.json', 'utf8'));
+                const currentPackage = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+                const baseDeps = { ...basePackage.dependencies, ...basePackage.devDependencies };
+                const currentDeps = { ...currentPackage.dependencies, ...currentPackage.devDependencies };
+
+                let hasChanges = false;
+                let hasMajorChanges = false;
+
+                // Check for version changes
+                for (const pkg of Object.keys(currentDeps)) {
+                  if (!baseDeps[pkg]) {
+                    console.log('- **NEW**: \`' + pkg + '\` @ \`' + currentDeps[pkg] + '\`');
+                    const info = await fetchPackageInfo(pkg, currentDeps[pkg]);
+                    if (info?.repository) {
+                      const repoUrl = info.repository.replace(/^git\+/, '').replace(/\.git$/, '');
+                      console.log('  - 📦 Repository: ' + repoUrl);
+                    }
+                    if (info?.homepage) {
+                      console.log('  - 🏠 Homepage: ' + info.homepage);
+                    }
+                    hasChanges = true;
+                  } else if (baseDeps[pkg] !== currentDeps[pkg]) {
+                    // Remove all leading version prefix characters
+                    const oldVer = baseDeps[pkg].replace(/^[\^~>=<]+/, '');
+                    const newVer = currentDeps[pkg].replace(/^[\^~>=<]+/, '');
+
+                    // Simple semver check for breaking changes
+                    const oldMajor = parseInt(oldVer.split('.')[0], 10);
+                    const newMajor = parseInt(newVer.split('.')[0], 10);
+                    const oldMinor = parseInt(oldVer.split('.')[1], 10) || 0;
+                    const newMinor = parseInt(newVer.split('.')[1], 10) || 0;
+
+                    // Check for breaking changes:
+                    // - Major version change for 1.x.x and above
+                    // - Minor version change for 0.x.x (as per semver conventions)
+                    if ((oldMajor !== newMajor && newMajor !== 0) || (oldMajor === 0 && newMajor === 0 && oldMinor !== newMinor)) {
+                      console.log('- ⚠️ **MAJOR UPDATE**: \`' + pkg + '\` from \`' + baseDeps[pkg] + '\` to \`' + currentDeps[pkg] + '\` (potential breaking changes)');
+                      hasMajorChanges = true;
+                    } else {
+                      console.log('- ✅ **UPDATED**: \`' + pkg + '\` from \`' + baseDeps[pkg] + '\` to \`' + currentDeps[pkg] + '\`');
+                    }
+                    
+                    // Fetch package info for updated packages
+                    const info = await fetchPackageInfo(pkg, currentDeps[pkg]);
+                    if (info?.repository) {
+                      const repoUrl = info.repository.replace(/^git\+/, '').replace(/\.git$/, '');
+                      console.log('  - 📦 Repository: ' + repoUrl);
+                      // Extract GitHub repo for potential changelog link
+                      const githubMatch = repoUrl.match(/github\.com\/([^\/]+\/[^\/]+)/);
+                      if (githubMatch) {
+                        console.log('  - 📋 Changelog: ' + repoUrl + '/releases');
+                        console.log('  - 📊 Compare: ' + repoUrl + '/compare/v' + oldVer + '...v' + newVer);
+                      }
+                    }
+                    if (info?.homepage && info.homepage !== info?.repository?.replace(/^git\+/, '').replace(/\.git$/, '')) {
+                      console.log('  - 🏠 Homepage: ' + info.homepage);
+                    }
+                    hasChanges = true;
+                  }
+                }
+
+                // Check for removed packages
+                Object.keys(baseDeps).forEach(pkg => {
+                  if (!currentDeps[pkg]) {
+                    console.log('- **REMOVED**: \`' + pkg + '\`');
+                    hasChanges = true;
+                  }
+                });
+
+                if (!hasChanges) {
+                  console.log('No dependency changes detected.');
+                }
+
+                // Set output for breaking changes
+                if (hasMajorChanges) {
+                  fs.writeFileSync('/tmp/has_major_npm.txt', 'true');
+                }
+              } catch (error) {
+                console.log('Error parsing package.json: ' + error.message);
+                console.log('Please check that the package.json file is valid JSON.');
+              }
+            }
+            
+            analyzeChanges();
+          " "$package_json" >> /tmp/npm_analysis.md
+
+          echo "" >> /tmp/npm_analysis.md
+        done
+
+        # Check if there are major changes
+        if [ -f /tmp/has_major_npm.txt ]; then
+          echo "has_major=true" >> $GITHUB_OUTPUT
+        else
+          echo "has_major=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Analyze .csproj changes
+      id: analyze_nuget
+      run: |
+        echo "## NuGet Package Changes" > /tmp/nuget_analysis.md
+        echo "" >> /tmp/nuget_analysis.md
+
+        # Find all .csproj files (using null-terminated output for safe handling)
+        find . -name "*.csproj" -not -path "*/obj/*" -not -path "*/bin/*" -print0 | \
+        while IFS= read -r -d '' csproj; do
+          echo "### Changes in $csproj" >> /tmp/nuget_analysis.md
+
+          # Get the csproj from base branch
+          git show origin/${{ steps.set_base_ref.outputs.base_ref }}:"$csproj" > /tmp/base.csproj 2>/dev/null || echo "<Project></Project>" > /tmp/base.csproj
+
+          # Extract PackageReference versions
+          base_packages=$(grep -oP '<PackageReference Include="\K[^"]+' /tmp/base.csproj 2>/dev/null || echo "")
+          current_packages=$(grep -oP '<PackageReference Include="\K[^"]+' "$csproj" 2>/dev/null || echo "")
+
+          # For each package in current
+          while IFS= read -r pkg; do
+            if [ -n "$pkg" ]; then
+              # Get versions
+              base_ver=$(grep "PackageReference Include=\"$pkg\"" /tmp/base.csproj | grep -oP 'Version="\K[^"]+' 2>/dev/null || echo "")
+              current_ver=$(grep "PackageReference Include=\"$pkg\"" "$csproj" | grep -oP 'Version="\K[^"]+' 2>/dev/null || echo "")
+
+              if [ -z "$base_ver" ] && [ -n "$current_ver" ]; then
+                echo "- **NEW**: \`$pkg\` @ \`$current_ver\`" >> /tmp/nuget_analysis.md
+                # Fetch NuGet package info
+                package_url="https://www.nuget.org/packages/$pkg/$current_ver"
+                echo "  - 📦 NuGet: $package_url" >> /tmp/nuget_analysis.md
+              elif [ "$base_ver" != "$current_ver" ] && [ -n "$current_ver" ]; then
+                # Check for major version changes
+                base_major=$(echo "$base_ver" | cut -d. -f1)
+                current_major=$(echo "$current_ver" | cut -d. -f1)
+
+                if [ "$base_major" != "$current_major" ]; then
+                  echo "- ⚠️ **MAJOR UPDATE**: \`$pkg\` from \`$base_ver\` to \`$current_ver\` (potential breaking changes)" >> /tmp/nuget_analysis.md
+                  echo "true" > /tmp/has_major_nuget.txt
+                else
+                  echo "- ✅ **UPDATED**: \`$pkg\` from \`$base_ver\` to \`$current_ver\`" >> /tmp/nuget_analysis.md
+                fi
+                
+                # Add NuGet package links
+                package_url="https://www.nuget.org/packages/$pkg/$current_ver"
+                echo "  - 📦 NuGet: $package_url" >> /tmp/nuget_analysis.md
+                
+                # Try to get project URL from NuGet API (with timeout)
+                project_url=$(curl -s --max-time 10 "https://api.nuget.org/v3/registration5-semver1/$pkg/index.json" 2>/dev/null | \
+                  grep -oP '"projectUrl":\s*"\K[^"]+' | head -1 || echo "")
+                
+                if [ -n "$project_url" ]; then
+                  echo "  - 🏠 Project: $project_url" >> /tmp/nuget_analysis.md
+                  
+                  # If it's a GitHub repo, add changelog and compare links
+                  if echo "$project_url" | grep -q "github.com"; then
+                    repo_path=$(echo "$project_url" | grep -oP 'github\.com/\K[^/]+/[^/]+' | sed 's/\.git$//')
+                    if [ -n "$repo_path" ]; then
+                      echo "  - 📋 Releases: https://github.com/$repo_path/releases" >> /tmp/nuget_analysis.md
+                      echo "  - 📊 Compare: https://github.com/$repo_path/compare/v$base_ver...v$current_ver" >> /tmp/nuget_analysis.md
+                    fi
+                  fi
+                fi
+              fi
+            fi
+          done <<< "$current_packages"
+
+          echo "" >> /tmp/nuget_analysis.md
+        done
+
+        # Check if there are major changes
+        if [ -f /tmp/has_major_nuget.txt ]; then
+          echo "has_major=true" >> $GITHUB_OUTPUT
+        else
+          echo "has_major=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create analysis summary
+      id: create_summary
+      run: |
+        echo "# 🔍 Dependency Update Analysis" > /tmp/analysis.md
+        echo "" >> /tmp/analysis.md
+        echo "This PR updates dependencies. Review the changes below to assess safety." >> /tmp/analysis.md
+        echo "" >> /tmp/analysis.md
+
+        # Determine overall safety
+        npm_major="${{ steps.analyze_npm.outputs.has_major }}"
+        nuget_major="${{ steps.analyze_nuget.outputs.has_major }}"
+
+        if [ "$npm_major" == "true" ] || [ "$nuget_major" == "true" ]; then
+          echo "## ⚠️ Safety Assessment: REVIEW REQUIRED" >> /tmp/analysis.md
+          echo "" >> /tmp/analysis.md
+          echo "This update contains **major version changes** that may include breaking changes." >> /tmp/analysis.md
+          echo "Please review the changelog and test thoroughly before merging." >> /tmp/analysis.md
+          echo "" >> /tmp/analysis.md
+          echo "**Recommended Actions:**" >> /tmp/analysis.md
+          echo "- Review the package changelog for breaking changes" >> /tmp/analysis.md
+          echo "- Run the full test suite" >> /tmp/analysis.md
+          echo "- Test critical functionality manually" >> /tmp/analysis.md
+          echo "- Check for API changes in updated packages" >> /tmp/analysis.md
+        else
+          echo "## ✅ Safety Assessment: LIKELY SAFE" >> /tmp/analysis.md
+          echo "" >> /tmp/analysis.md
+          echo "This update contains **minor or patch version changes**." >> /tmp/analysis.md
+          echo "According to semantic versioning, these changes should be backward compatible." >> /tmp/analysis.md
+          echo "" >> /tmp/analysis.md
+          echo "**Recommended Actions:**" >> /tmp/analysis.md
+          echo "- Run the test suite to confirm compatibility" >> /tmp/analysis.md
+          echo "- Monitor for any unexpected behavior after deployment" >> /tmp/analysis.md
+        fi
+
+        echo "" >> /tmp/analysis.md
+        echo "---" >> /tmp/analysis.md
+        echo "" >> /tmp/analysis.md
+
+        # Add NPM analysis
+        cat /tmp/npm_analysis.md >> /tmp/analysis.md
+        echo "" >> /tmp/analysis.md
+
+        # Add NuGet analysis
+        cat /tmp/nuget_analysis.md >> /tmp/analysis.md
+        echo "" >> /tmp/analysis.md
+
+        echo "---" >> /tmp/analysis.md
+        echo "" >> /tmp/analysis.md
+        echo "*Analysis performed by [dependency-analysis.yml](https://github.com/${{ github.repository }}/blob/main/.github/workflows/dependency-analysis.yml)*" >> /tmp/analysis.md
+
+    - name: Update PR description
+      if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number != '')
+      uses: actions/github-script@v8
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          const analysis = fs.readFileSync('/tmp/analysis.md', 'utf8');
+
+          // Determine PR number
+          const prNumber = context.payload.pull_request?.number || ${{ github.event.inputs.pr_number || 'null' }};
+          
+          if (!prNumber) {
+            console.log('No PR number available, skipping PR description update');
+            console.log('Analysis summary:\n' + analysis);
+            return;
+          }
+
+          // Get current PR description
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: prNumber
+          });
+
+          let currentBody = pr.body || '';
+
+          // Remove old analysis if it exists
+          const analysisMarker = '# 🔍 Dependency Update Analysis';
+          const analysisStart = currentBody.indexOf(analysisMarker);
+
+          if (analysisStart !== -1) {
+            // Find the end of the analysis section (next major heading or end of string)
+            const afterAnalysis = currentBody.substring(analysisStart + analysisMarker.length);
+            const nextSectionMatch = afterAnalysis.match(/\n# [^#]/);
+
+            if (nextSectionMatch) {
+              const nextSectionStart = analysisStart + analysisMarker.length + nextSectionMatch.index;
+              currentBody = currentBody.substring(0, analysisStart) + currentBody.substring(nextSectionStart);
+            } else {
+              currentBody = currentBody.substring(0, analysisStart);
+            }
+          }
+
+          // Add new analysis at the top
+          const newBody = analysis + '\n\n' + currentBody.trim();
+
+          // Update PR
+          await github.rest.pulls.update({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: prNumber,
+            body: newBody
+          });
+
+          console.log('PR description updated with dependency analysis');
+
+    - name: Output analysis summary
+      if: github.event_name == 'workflow_dispatch' && (github.event.inputs.pr_number == '' || github.event.inputs.pr_number == null)
+      run: |
+        echo "=== Dependency Analysis Summary ==="
+        cat /tmp/analysis.md

@@ -16,26 +16,15 @@
     /// <summary>
     /// Manages IFTTT triggers for event notifications and validates trigger request fields.
     /// </summary>
-    internal class TriggersManager : BaseManager<IftttTrigger>, ITriggersManager
+    internal class TriggersManager(IBaseRepository<IftttTrigger> repository, IKeyedRepository<Event> eventRepository)
+        : BaseManager<IftttTrigger>(repository), ITriggersManager
     {
-        private readonly IKeyedRepository<Event> eventRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TriggersManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for IFTTT trigger data access.</param>
-        /// <param name="eventRepository">The repository for event data access.</param>
-        public TriggersManager(IBaseRepository<IftttTrigger> repository, IKeyedRepository<Event> eventRepository) :
-            base(repository)
-        {
-            this.eventRepository = eventRepository;
-        }
 
         /// <inheritdoc />
         public async Task<List<IftttEventResponse>> GetEventsTriggerDataAsync(TriggersRequest triggersRequest,
             Guid userId, CancellationToken cancellationToken)
         {
-            if (triggersRequest == null)
+            if (triggersRequest is null)
             {
                 throw new ArgumentNullException(nameof(triggersRequest));
             }
@@ -44,7 +33,7 @@
             var trigger = Repository.Get(t => t.TriggerId == triggersRequest.trigger_identity).FirstOrDefault();
 
             // Store Trigger in database if it does not exist
-            if (trigger == null)
+            if (trigger is null)
             {
                 trigger = new IftttTrigger
                 {
@@ -68,7 +57,7 @@
             IQueryable<Event> events;
 
             // Return all events
-            if (eventFields == null)
+            if (eventFields is null)
             {
                 events = eventRepository.Get();
             }
@@ -82,10 +71,10 @@
             }
 
 
-            var triggersResponses = new List<IftttEventResponse>();
+            List<IftttEventResponse> triggersResponses = [];
 
             // Get all the public events in the future
-            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow).ToList()
+            foreach (var mobEvent in events.Where(e => e.EventVisibilityId == (int)EventVisibilityEnum.Public && e.EventDate >= DateTimeOffset.UtcNow).ToList()
                          .OrderByDescending(e => e.CreatedDate).Take(triggersRequest.limit))
             {
                 var triggersResponse = new IftttEventResponse();
@@ -114,7 +103,7 @@
         /// <inheritdoc />
         public object ValidateRequest(TriggersRequest triggersRequest, EventRequestType eventRequestType)
         {
-            if (triggersRequest?.triggerFields == null)
+            if (triggersRequest?.triggerFields is null)
             {
                 var error = new
                 {
@@ -132,7 +121,7 @@
 
             var eventFields = JsonSerializer.Deserialize<IftttEventRequest>(triggersRequest.triggerFields.ToString());
 
-            if (eventRequestType >= EventRequestType.ByCountry && eventFields.country == null)
+            if (eventRequestType >= EventRequestType.ByCountry && eventFields.country is null)
             {
                 var error = new
                 {
@@ -148,7 +137,7 @@
                 return error;
             }
 
-            if (eventRequestType >= EventRequestType.ByRegion && eventFields.region == null)
+            if (eventRequestType >= EventRequestType.ByRegion && eventFields.region is null)
             {
                 var error = new
                 {
@@ -164,7 +153,7 @@
                 return error;
             }
 
-            if (eventRequestType >= EventRequestType.ByCity && eventFields.city == null)
+            if (eventRequestType >= EventRequestType.ByCity && eventFields.city is null)
             {
                 var error = new
                 {
@@ -180,7 +169,7 @@
                 return error;
             }
 
-            if (eventRequestType >= EventRequestType.ByPostalCode && eventFields.postal_code == null)
+            if (eventRequestType >= EventRequestType.ByPostalCode && eventFields.postal_code is null)
             {
                 var error = new
                 {

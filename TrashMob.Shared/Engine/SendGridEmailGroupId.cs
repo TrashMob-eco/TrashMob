@@ -19,5 +19,11 @@
         /// Unsubscribe group ID for general TrashMob communications.
         /// </summary>
         public const int General = 24775;
+
+        /// <summary>
+        /// Unsubscribe group ID for prospect outreach emails.
+        /// Uses General group until a dedicated SendGrid group is created.
+        /// </summary>
+        public const int ProspectOutreach = 24775;
     }
 }

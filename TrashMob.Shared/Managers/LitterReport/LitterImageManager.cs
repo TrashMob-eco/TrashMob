@@ -15,23 +15,11 @@ namespace TrashMob.Shared.Managers.LitterReport
     /// <summary>
     /// Manages litter images including CRUD operations and image storage integration.
     /// </summary>
-    public class LitterImageManager : KeyedManager<LitterImage>, ILitterImageManager
+    public class LitterImageManager(
+        IKeyedRepository<LitterImage> repository,
+        IImageManager imageManager)
+        : KeyedManager<LitterImage>(repository), ILitterImageManager
     {
-        private readonly IImageManager imageManager;
-        private IDbTransaction dbTransaction;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LitterImageManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for litter image data access.</param>
-        /// <param name="dbTransaction">The database transaction manager.</param>
-        /// <param name="imageManager">The image manager for blob storage operations.</param>
-        public LitterImageManager(IKeyedRepository<LitterImage> repository, IDbTransaction dbTransaction,
-            IImageManager imageManager) : base(repository)
-        {
-            this.dbTransaction = dbTransaction;
-            this.imageManager = imageManager;
-        }
 
         /// <inheritdoc />
         public async Task<LitterImage> AddAsync(FullLitterImage instance, Guid userId,
@@ -48,7 +36,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         public override async Task<LitterImage> UpdateAsync(LitterImage instance, Guid userId,
             CancellationToken cancellationToken = default)
         {
-            if (instance == null)
+            if (instance is null)
             {
                 return null;
             }
@@ -61,7 +49,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             var litterImage = await GetAsync(id, cancellationToken);
 
-            if (litterImage == null)
+            if (litterImage is null)
             {
                 return -1;
             }
@@ -75,8 +63,8 @@ namespace TrashMob.Shared.Managers.LitterReport
         /// <inheritdoc />
         public async Task<int> HardDeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            await base.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
-            await imageManager.DeleteImage(id, ImageTypeEnum.LitterImage);
+            await base.DeleteAsync(id, cancellationToken);
+            await imageManager.DeleteImageAsync(id, ImageTypeEnum.LitterImage);
 
             return 1;
         }
@@ -85,9 +73,8 @@ namespace TrashMob.Shared.Managers.LitterReport
         public override async Task<IEnumerable<LitterImage>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
-            return (await Repository.Get().Where(p => p.LitterReportId == parentId)
-                    .ToListAsync(cancellationToken))
-                .AsEnumerable();
+            return await Repository.Get().Where(p => p.LitterReportId == parentId)
+                    .ToListAsync(cancellationToken);
         }
     }
 }

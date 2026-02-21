@@ -1,0 +1,168 @@
+# Checks Apple signing certificate and API key expiry dates.
+# Runs weekly on Monday at 9am UTC. Creates a GitHub issue if any
+# credential is expiring within 30 days.
+#
+# Since we can't directly query Apple from CI, this workflow reads
+# expiry dates from a tracked config file (Deploy/cert-expiry-dates.json).
+# Update that file whenever you renew a certificate or key.
+
+name: Check Certificate Expiry Dates
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 9:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  check-expiry:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Check expiry dates
+        id: check
+        run: |
+          CONFIG_FILE="Deploy/cert-expiry-dates.json"
+
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "WARNING: $CONFIG_FILE not found. Creating template..."
+            echo "missing=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          TODAY=$(date +%Y-%m-%d)
+          WARN_DATE=$(date -d "+30 days" +%Y-%m-%d)
+          echo "Today: $TODAY"
+          echo "Warning threshold: $WARN_DATE (30 days from now)"
+          echo ""
+
+          EXPIRING=""
+          EXPIRED=""
+
+          # Read each entry from the JSON config
+          for ROW in $(jq -c '.certificates[]' "$CONFIG_FILE"); do
+            NAME=$(echo "$ROW" | jq -r '.name')
+            EXPIRY=$(echo "$ROW" | jq -r '.expiryDate')
+            RENEW_URL=$(echo "$ROW" | jq -r '.renewUrl // "N/A"')
+
+            echo "Checking: $NAME (expires: $EXPIRY)"
+
+            if [[ "$EXPIRY" < "$TODAY" ]]; then
+              echo "  EXPIRED!"
+              EXPIRED="${EXPIRED}\n- **${NAME}** — expired ${EXPIRY} — [Renew](${RENEW_URL})"
+            elif [[ "$EXPIRY" < "$WARN_DATE" ]]; then
+              echo "  EXPIRING SOON (within 30 days)"
+              EXPIRING="${EXPIRING}\n- **${NAME}** — expires ${EXPIRY} — [Renew](${RENEW_URL})"
+            else
+              echo "  OK"
+            fi
+          done
+
+          if [ -n "$EXPIRED" ]; then
+            echo "has_expired=true" >> $GITHUB_OUTPUT
+            echo "expired_list<<EOF" >> $GITHUB_OUTPUT
+            echo -e "$EXPIRED" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+          if [ -n "$EXPIRING" ]; then
+            echo "has_expiring=true" >> $GITHUB_OUTPUT
+            echo "expiring_list<<EOF" >> $GITHUB_OUTPUT
+            echo -e "$EXPIRING" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+          if [ -z "$EXPIRED" ] && [ -z "$EXPIRING" ]; then
+            echo "All certificates are valid for at least 30 more days."
+            echo "all_ok=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create issue for expiring certificates
+        if: steps.check.outputs.has_expired == 'true' || steps.check.outputs.has_expiring == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const expired = `${{ steps.check.outputs.expired_list }}`;
+            const expiring = `${{ steps.check.outputs.expiring_list }}`;
+
+            let body = '## Certificate Expiry Alert\n\n';
+            body += 'The weekly certificate check found credentials that need attention.\n\n';
+
+            if (expired) {
+              body += '### :x: Expired\n\n';
+              body += expired + '\n\n';
+            }
+
+            if (expiring) {
+              body += '### :warning: Expiring within 30 days\n\n';
+              body += expiring + '\n\n';
+            }
+
+            body += '### How to renew\n\n';
+            body += '- **iOS Distribution Certificate:** See [R1 in deployment checklist](../blob/main/Planning/PRODUCTION_DEPLOYMENT_CHECKLIST.md#r1-regenerate-ios-distribution-certificate)\n';
+            body += '- **App Store Connect API Key:** See [R2 in deployment checklist](../blob/main/Planning/PRODUCTION_DEPLOYMENT_CHECKLIST.md#r2-regenerate-app-store-connect-api-key)\n';
+            body += '- **Apple Sign-In Client Secret:** Regenerate using `d:/tools/Apple/generate-apple-secret.js`\n\n';
+            body += '_This issue was created automatically by the cert-expiry-check workflow._\n';
+
+            // Check if an open issue already exists
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'cert-expiry',
+              per_page: 1
+            });
+
+            if (issues.length > 0) {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues[0].number,
+                body: body
+              });
+              console.log(`Updated existing issue #${issues[0].number}`);
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🔐 Certificate expiry alert — action required',
+                body: body,
+                labels: ['cert-expiry', 'ops']
+              });
+              console.log('Created new certificate expiry issue');
+            }
+
+      - name: Create config template if missing
+        if: steps.check.outputs.missing == 'true'
+        run: |
+          echo "WARNING: Deploy/cert-expiry-dates.json is missing."
+          echo "Create it with your certificate expiry dates. See the template in the workflow output."
+          echo ""
+          echo "Template:"
+          echo '{'
+          echo '  "certificates": ['
+          echo '    {'
+          echo '      "name": "iOS Distribution Certificate",'
+          echo '      "expiryDate": "2027-01-15",'
+          echo '      "renewUrl": "https://developer.apple.com/account/resources/certificates/list"'
+          echo '    },'
+          echo '    {'
+          echo '      "name": "App Store Connect API Key",'
+          echo '      "expiryDate": "2099-12-31",'
+          echo '      "renewUrl": "https://appstoreconnect.apple.com/access/integrations/api"'
+          echo '    },'
+          echo '    {'
+          echo '      "name": "Apple Sign-In Client Secret (Entra IDP)",'
+          echo '      "expiryDate": "2026-08-20",'
+          echo '      "renewUrl": "https://developer.apple.com/account/resources/authkeys/list"'
+          echo '    }'
+          echo '  ]'
+          echo '}'

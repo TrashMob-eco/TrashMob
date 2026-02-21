@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:converters="clr-namespace:TrashMobMobile.Converters"
+             x:DataType="viewModels:HomeFeedViewModel"
+             x:Class="TrashMobMobile.Pages.HomeFeedPage"
+             Title="Home">
+    <ContentPage.Resources>
+        <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
+    </ContentPage.Resources>
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+
+                <!-- Welcome Header -->
+                <Label Text="{Binding WelcomeMessage}"
+                       AutomationId="WelcomeMessage"
+                       FontFamily="LexendSemibold"
+                       FontSize="Title"
+                       Margin="10,15,10,5" />
+
+                <!-- Upcoming Events Near You -->
+                <Label Text="Upcoming Events"
+                       Style="{StaticResource SectionHeader}" />
+
+                <Label Text="No upcoming events found"
+                       IsVisible="{Binding AreNoEventsFound}"
+                       FontSize="Small"
+                       Margin="10,5"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                <CollectionView ItemsSource="{Binding UpcomingEvents}"
+                                AutomationId="UpcomingEventsList"
+                                SelectionMode="None"
+                                IsVisible="{Binding AreEventsFound}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:EventViewModel">
+                            <Border Style="{x:StaticResource RoundBorder}" Margin="5,3" Padding="0">
+                                <Grid ColumnDefinitions="4, *">
+                                    <!-- Teal accent strip -->
+                                    <BoxView Grid.Column="0" WidthRequest="4"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                             VerticalOptions="Fill" />
+                                    <Grid Grid.Column="1" ColumnDefinitions="*, Auto" Padding="10,10">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                            <Label Text="{Binding Name}"
+                                                   FontFamily="LexendSemibold"
+                                                   FontSize="Small" />
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Image MaximumWidthRequest="16" MaximumHeightRequest="16">
+                                                    <Image.Source>
+                                                        <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                                         Glyph="{StaticResource IconCalendarCheck}"
+                                                                         Size="16"
+                                                                         Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                                    </Image.Source>
+                                                </Image>
+                                                <Label Text="{Binding DisplayDate}" FontSize="Micro"
+                                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Grid>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:HomeFeedViewModel}}, Path=ViewEventCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Nearby Litter Reports -->
+                <Label Text="Recent Litter Reports"
+                       Style="{StaticResource SectionHeader}" />
+
+                <Label Text="No recent litter reports"
+                       IsVisible="{Binding AreNoLitterReportsFound}"
+                       FontSize="Small"
+                       Margin="10,5"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                <CollectionView ItemsSource="{Binding NearbyLitterReports}"
+                                SelectionMode="None"
+                                IsVisible="{Binding AreLitterReportsFound}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:LitterReportViewModel">
+                            <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                                <Grid ColumnDefinitions="*, Auto" Padding="10,8">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Image MaximumWidthRequest="16" MaximumHeightRequest="16">
+                                                <Image.Source>
+                                                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                                     Glyph="{StaticResource IconTrashCanOutline}"
+                                                                     Size="16"
+                                                                     Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                                </Image.Source>
+                                            </Image>
+                                            <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding LitterReportStatus}" FontSize="Micro"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        <Label Text="{Binding CreatedDate}" FontSize="Micro"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        <Label Text="{Binding FirstImageLocation}" FontSize="Micro"
+                                               MaxLines="1" LineBreakMode="TailTruncation"
+                                               IsVisible="{Binding FirstImageLocation, Converter={StaticResource StringToBoolConverter}}"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    </VerticalStackLayout>
+                                    <Border Grid.Column="1"
+                                            StrokeShape="RoundRectangle 6"
+                                            StrokeThickness="0"
+                                            IsVisible="{Binding HasThumbnail}"
+                                            WidthRequest="56"
+                                            HeightRequest="56"
+                                            VerticalOptions="Center">
+                                        <Image Source="{Binding ThumbnailUrl}"
+                                               Aspect="AspectFill"
+                                               WidthRequest="56"
+                                               HeightRequest="56" />
+                                    </Border>
+                                </Grid>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:HomeFeedViewModel}}, Path=ViewLitterReportCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Teams Discovery -->
+                <Label Text="Teams"
+                       Style="{StaticResource SectionHeader}" />
+
+                <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                    <Grid ColumnDefinitions="*, Auto" Padding="10,10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Find a Team"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Small" />
+                            <Label Text="Join a cleanup team near you and make a bigger impact together."
+                                   FontSize="Micro"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="1"
+                                Text="Browse"
+                                Command="{Binding BrowseTeamsCommand}"
+                                Style="{StaticResource SecondarySmallButton}" />
+                    </Grid>
+                </Border>
+
+                <!-- Communities Discovery -->
+                <Label Text="Communities"
+                       Style="{StaticResource SectionHeader}" />
+
+                <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                    <Grid ColumnDefinitions="*, Auto" Padding="10,10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Explore Communities"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Small" />
+                            <Label Text="Discover local cleanup communities and see their impact."
+                                   FontSize="Micro"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="1"
+                                Text="Browse"
+                                Command="{Binding BrowseCommunitiesCommand}"
+                                Style="{StaticResource SecondarySmallButton}" />
+                    </Grid>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

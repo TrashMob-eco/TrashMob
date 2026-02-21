@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
+using Sentry;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -37,19 +38,20 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private bool isListSelected;
 
-    private PickupLocationViewModel selectedPickupLocationViewModel = new(pickupLocationManager, mobEventManager, notificationService, userManager);
+    private PickupLocationViewModel? selectedPickupLocationViewModel;
 
     public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = [];
 
     public ObservableCollection<DisplayEventAttendeeRoute> EventAttendeeRoutes { get; set; } = [];
 
-    private Action UpdateRoutes;
+    private Action UpdateRoutes = null!;
 
-    public PickupLocationViewModel SelectedPickupLocation
+    public PickupLocationViewModel? SelectedPickupLocation
     {
         get => selectedPickupLocationViewModel;
         set
         {
+            if (value == selectedPickupLocationViewModel) return;
             selectedPickupLocationViewModel = value;
             OnPropertyChanged();
 
@@ -62,16 +64,23 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
 
     private async void PerformNavigation(Guid pickupLocationId)
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?PickupLocationId={pickupLocationId}");
+        try
+        {
+            await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?PickupLocationId={pickupLocationId}");
+            selectedPickupLocationViewModel = null;
+            OnPropertyChanged(nameof(SelectedPickupLocation));
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     public async Task Init(Guid eventId, Action updRoutes)
     {
-        IsBusy = true;
-
         UpdateRoutes = updRoutes;
 
-        try
+        await ExecuteAsync(async () =>
         {
             IsMapSelected = true;
             IsListSelected = false;
@@ -90,12 +99,14 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
                     EventId = eventId,
                     Notes = eventSummary.Notes,
                     NumberOfBags = eventSummary.NumberOfBags,
+                    PickedWeight = eventSummary.PickedWeight,
+                    PickedWeightUnitId = eventSummary.PickedWeightUnitId,
                 };
             }
 
             EnableEditEventSummary = mobEvent.IsEventLead(userManager.CurrentUser.Id);
             EnableAddPickupLocation = mobEvent.IsEventLead(userManager.CurrentUser.Id);
-            
+
             var pickupLocations = await pickupLocationManager.GetPickupLocationsAsync(eventId, ImageSizeEnum.Thumb);
 
             PickupLocations.Clear();
@@ -137,15 +148,7 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
             }
 
             UpdateRoutes();
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while loading the event summary. Please try again.");
-        }
+        }, "An error occurred while loading the event summary. Please try again.");
     }
 
     [RelayCommand]

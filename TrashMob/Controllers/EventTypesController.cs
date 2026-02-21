@@ -8,15 +8,8 @@
     /// Controller for event type lookup operations.
     /// </summary>
     [Route("api/eventtypes")]
-    public class EventsTypesController : LookupController<EventType>
+    public class EventsTypesController(ILookupManager<EventType> manager)
+        : LookupController<EventType>(manager)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventsTypesController"/> class.
-        /// </summary>
-        /// <param name="manager">The event type lookup manager.</param>
-        public EventsTypesController(ILookupManager<EventType> manager)
-            : base(manager)
-        {
-        }
     }
 }

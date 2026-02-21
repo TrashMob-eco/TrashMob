@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -15,16 +15,11 @@
     using TrashMob.Shared.Poco;
 
     [Route("api/admin")]
-    public class AdminController : SecureController
+    public class AdminController(
+        IKeyedManager<PartnerRequest> partnerRequestManager,
+        IEmailManager emailManager)
+        : SecureController
     {
-        private readonly IEmailManager emailManager;
-        private readonly IKeyedManager<PartnerRequest> partnerRequestManager;
-
-        public AdminController(IKeyedManager<PartnerRequest> partnerRequestManager, IEmailManager emailManager)
-        {
-            this.partnerRequestManager = partnerRequestManager;
-            this.emailManager = emailManager;
-        }
 
         /// <summary>
         /// Updates a partner request. Admin only.
@@ -40,8 +35,7 @@
         public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest,
             CancellationToken cancellationToken)
         {
-            var result = await partnerRequestManager.UpdateAsync(partnerRequest, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await partnerRequestManager.UpdateAsync(partnerRequest, UserId, cancellationToken);
             TrackEvent(nameof(UpdatePartnerRequest));
 
             return Ok(result);
@@ -56,7 +50,7 @@
         [ProducesResponseType(typeof(IEnumerable<EmailTemplate>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEmails(CancellationToken cancellationToken)
         {
-            var result = await emailManager.GetEmailTemplatesAsync(cancellationToken).ConfigureAwait(false);
+            var result = await emailManager.GetEmailTemplatesAsync(cancellationToken);
             TrackEvent(nameof(GetEmails));
 
             return Ok(result);

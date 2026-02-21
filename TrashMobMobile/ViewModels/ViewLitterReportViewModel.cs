@@ -7,7 +7,7 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class ViewLitterReportViewModel(ILitterReportManager litterReportManager, IEventLitterReportManager eventLitterReportManager, INotificationService notificationService) : BaseViewModel(notificationService)
+public partial class ViewLitterReportViewModel(ILitterReportManager litterReportManager, IEventLitterReportManager eventLitterReportManager, INotificationService notificationService, IUserManager userManager, IWaiverManager waiverManager) : BaseViewModel(notificationService)
 {
     private const int NewLitterReportStatus = 1;
     private const int AssignedLitterReportStatus = 2;
@@ -15,6 +15,8 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
 
     private readonly ILitterReportManager litterReportManager = litterReportManager;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
+    private readonly IUserManager userManager = userManager;
+    private readonly IWaiverManager waiverManager = waiverManager;
     [ObservableProperty]
     private bool canDeleteLitterReport;
 
@@ -25,7 +27,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     private bool canMarkLitterReportCleaned;
 
     [ObservableProperty]
-    private string litterReportStatus;
+    private string litterReportStatus = string.Empty;
 
     [ObservableProperty]
     private Guid eventIdAssignedTo;
@@ -39,7 +41,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     [ObservableProperty]
     public LitterReportViewModel? litterReportViewModel;
 
-    private LitterReport LitterReport { get; set; }
+    private LitterReport LitterReport { get; set; } = null!;
 
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
 
@@ -47,9 +49,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
 
     public async Task Init(Guid litterReportId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             LitterReport = await litterReportManager.GetLitterReportAsync(litterReportId, ImageSizeEnum.Reduced);
 
@@ -63,14 +63,14 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
                 IsAssignedToEvent = true;
                 IsNotAssignedToEvent = false;
                 var eventLitterReport = await eventLitterReportManager.GetEventLitterReportByLitterReportIdAsync(litterReportId);
-                
+
                 if (eventLitterReport != null)
                 {
                     EventIdAssignedTo = eventLitterReport.EventId;
                 }
             }
 
-            if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
+            if (LitterReport.CreatedByUserId == userManager.CurrentUser.Id &&
                 LitterReport.LitterReportStatusId == NewLitterReportStatus)
             {
                 CanDeleteLitterReport = true;
@@ -80,7 +80,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
                 CanDeleteLitterReport = false;
             }
 
-            if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
+            if (LitterReport.CreatedByUserId == userManager.CurrentUser.Id &&
                 (LitterReport.LitterReportStatusId == NewLitterReportStatus ||
                  LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
             {
@@ -91,7 +91,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
                 CanEditLitterReport = false;
             }
 
-            if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
+            if (LitterReport.CreatedByUserId == userManager.CurrentUser.Id &&
                 (LitterReport.LitterReportStatusId == NewLitterReportStatus ||
                  LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
             {
@@ -114,21 +114,13 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
                     LitterImageViewModels.Add(litterImageViewModel);
                 }
             }
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while loading this litter report. Please try again.");
-        }
+        }, "An error occurred while loading this litter report. Please try again.");
     }
 
     [RelayCommand]
     private async Task EditLitterReport()
     {
-        await Shell.Current.GoToAsync($"{nameof(EditLitterReportPage)}?LitterReportId={LitterReportViewModel.Id}");
+        await Shell.Current.GoToAsync($"{nameof(EditLitterReportPage)}?LitterReportId={LitterReportViewModel!.Id}");
     }
 
     [RelayCommand]
@@ -140,7 +132,13 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     [RelayCommand]
     private async Task CreateEvent()
     {
-        await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={litterReportViewModel.Id}");
+        if (!await waiverManager.HasUserSignedAllRequiredWaiversAsync())
+        {
+            await Shell.Current.GoToAsync(nameof(WaiverListPage));
+            return;
+        }
+
+        await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={litterReportViewModel!.Id}");
     }
 
     [RelayCommand]
@@ -153,22 +151,13 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     [RelayCommand]
     private async Task MarkLitterReportCleaned()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             LitterReport.LitterReportStatusId = CleanedLitterReportStatus;
             var tempLitterReport = LitterReport;
             tempLitterReport.LitterImages.Clear();
             await litterReportManager.UpdateLitterReportAsync(tempLitterReport);
-            IsBusy = false;
             await Navigation.PopAsync();
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while updating the status of this litter report. Please try again.");
-        }
+        }, "An error occurred while updating the status of this litter report. Please try again.");
     }
 }

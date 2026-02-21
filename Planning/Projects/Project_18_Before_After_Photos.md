@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning in Progress |
+| **Status** | Phase 4 Complete |
 | **Priority** | Low |
 | **Risk** | Moderate |
 | **Size** | Medium |
@@ -34,28 +34,29 @@ Empower leads to document impact visually with before and after photos. Visual p
 
 ## Scope
 
-### Phase 1 - Photo Upload
-- ✅ Upload photos during/after event
-- ✅ Associate photos with events
-- ✅ Mark as before, during, or after
-- ✅ Add captions/descriptions
+### Phase 1 - Photo Upload ✅ Complete
+- ✅ Upload photos during/after event (API ready)
+- ✅ Associate photos with events (EventPhoto model)
+- ✅ Mark as before, during, or after (EventPhotoType enum)
+- ✅ Add captions/descriptions (Caption field)
+- ✅ Frontend upload UI (EventPhotoUploader component)
 
-### Phase 2 - Display
-- ✅ Photo gallery on event detail page
-- ✅ Before/after comparison view
-- ✅ Photo lightbox/viewer
-- ✅ Download original images
+### Phase 2 - Display ✅ Complete
+- ✅ Photo gallery on event detail page (EventPhotoGallery component)
+- ⏳ Before/after comparison view (future enhancement)
+- ✅ Photo lightbox/viewer (Dialog-based with navigation)
+- ⏳ Download original images (future enhancement)
 
-### Phase 3 - Moderation
-- ✅ Report inappropriate photo
-- ✅ Admin moderation queue
-- ✅ Remove photo with notification
-- ✅ Appeal process
+### Phase 3 - Moderation ✅ Complete
+- ✅ Report inappropriate photo (FlagPhoto API)
+- ✅ Admin moderation queue (PhotoModerationManager supports all photo types)
+- ✅ Remove photo with notification (email notification on reject)
+- ⏳ Appeal process (not needed per user request)
 
-### Phase 4 - Albums
-- ❓ Team photo albums
-- ❓ Community photo galleries
-- ❓ Featured photos on home page
+### Phase 4 - Albums ✅ Complete
+- ✅ Team photo albums (TeamPhoto feature)
+- ✅ Community photo galleries (PartnerPhoto feature)
+- ⏳ Featured photos on home page (moved to Project 2 - Home Page Redesign)
 
 ---
 
@@ -111,49 +112,189 @@ None - independent feature
 
 ### Data Model Changes
 
-```sql
--- Event photos
-CREATE TABLE EventPhotos (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    UploadedByUserId UNIQUEIDENTIFIER NOT NULL,
-    -- Image storage
-    ImageUrl NVARCHAR(500) NOT NULL,
-    ThumbnailUrl NVARCHAR(500) NULL,
-    -- Metadata
-    PhotoType NVARCHAR(20) NOT NULL DEFAULT 'During', -- Before, During, After
-    Caption NVARCHAR(500) NULL,
-    TakenAt DATETIMEOFFSET NULL,
-    -- Status
-    Status NVARCHAR(20) NOT NULL DEFAULT 'Active', -- Active, Flagged, Removed
-    -- Audit
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    FOREIGN KEY (UploadedByUserId) REFERENCES Users(Id)
-);
+**New Entity: EventPhoto**
+```csharp
+// New file: TrashMob.Models/EventPhoto.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a photo uploaded for an event (before, during, or after).
+    /// </summary>
+    public class EventPhoto : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the event identifier.
+        /// </summary>
+        public Guid EventId { get; set; }
 
--- Photo reports
-CREATE TABLE PhotoReports (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    PhotoId UNIQUEIDENTIFIER NOT NULL,
-    ReporterUserId UNIQUEIDENTIFIER NOT NULL,
-    Reason NVARCHAR(50) NOT NULL, -- Inappropriate, Copyright, Privacy, Other
-    Description NVARCHAR(500) NULL,
-    ReportDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    -- Review
-    ReviewedByUserId UNIQUEIDENTIFIER NULL,
-    ReviewedDate DATETIMEOFFSET NULL,
-    ReviewOutcome NVARCHAR(50) NULL, -- Dismissed, Removed, Warning
-    ReviewNotes NVARCHAR(500) NULL,
-    FOREIGN KEY (PhotoId) REFERENCES EventPhotos(Id),
-    FOREIGN KEY (ReporterUserId) REFERENCES Users(Id),
-    FOREIGN KEY (ReviewedByUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets the uploader's user identifier.
+        /// </summary>
+        public Guid UploadedByUserId { get; set; }
 
-CREATE INDEX IX_EventPhotos_EventId ON EventPhotos(EventId);
-CREATE INDEX IX_EventPhotos_Status ON EventPhotos(Status);
-CREATE INDEX IX_EventPhotos_PhotoType ON EventPhotos(PhotoType);
-CREATE INDEX IX_PhotoReports_ReviewedDate ON PhotoReports(ReviewedDate) WHERE ReviewedDate IS NULL;
+        #region Image Storage
+
+        /// <summary>
+        /// Gets or sets the URL of the full-size image.
+        /// </summary>
+        public string ImageUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of the thumbnail image.
+        /// </summary>
+        public string ThumbnailUrl { get; set; }
+
+        #endregion
+
+        #region Metadata
+
+        /// <summary>
+        /// Gets or sets the photo type (Before, During, After).
+        /// </summary>
+        public string PhotoType { get; set; } = "During";
+
+        /// <summary>
+        /// Gets or sets the photo caption.
+        /// </summary>
+        public string Caption { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the photo was taken.
+        /// </summary>
+        public DateTimeOffset? TakenAt { get; set; }
+
+        #endregion
+
+        /// <summary>
+        /// Gets or sets the status (Active, Flagged, Removed).
+        /// </summary>
+        public string Status { get; set; } = "Active";
+
+        // Navigation properties
+        public virtual Event Event { get; set; }
+        public virtual User UploadedByUser { get; set; }
+        public virtual ICollection<PhotoReport> Reports { get; set; }
+    }
+}
+```
+
+**New Entity: PhotoReport**
+```csharp
+// New file: TrashMob.Models/PhotoReport.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a user report of an inappropriate photo.
+    /// </summary>
+    public class PhotoReport : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the reported photo identifier.
+        /// </summary>
+        public Guid PhotoId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reporting user's identifier.
+        /// </summary>
+        public Guid ReporterUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reason (Inappropriate, Copyright, Privacy, Other).
+        /// </summary>
+        public string Reason { get; set; }
+
+        /// <summary>
+        /// Gets or sets additional description of the issue.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the report was submitted.
+        /// </summary>
+        public DateTimeOffset ReportDate { get; set; }
+
+        #region Review
+
+        /// <summary>
+        /// Gets or sets the reviewing admin's user identifier.
+        /// </summary>
+        public Guid? ReviewedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the report was reviewed.
+        /// </summary>
+        public DateTimeOffset? ReviewedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the outcome (Dismissed, Removed, Warning).
+        /// </summary>
+        public string ReviewOutcome { get; set; }
+
+        /// <summary>
+        /// Gets or sets notes from the reviewer.
+        /// </summary>
+        public string ReviewNotes { get; set; }
+
+        #endregion
+
+        // Navigation properties
+        public virtual EventPhoto Photo { get; set; }
+        public virtual User ReporterUser { get; set; }
+        public virtual User ReviewedByUser { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<EventPhoto>(entity =>
+{
+    entity.Property(e => e.ImageUrl).HasMaxLength(500).IsRequired();
+    entity.Property(e => e.ThumbnailUrl).HasMaxLength(500);
+    entity.Property(e => e.PhotoType).HasMaxLength(20);
+    entity.Property(e => e.Caption).HasMaxLength(500);
+    entity.Property(e => e.Status).HasMaxLength(20);
+
+    entity.HasOne(e => e.Event)
+        .WithMany()
+        .HasForeignKey(e => e.EventId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.UploadedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.UploadedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.EventId);
+    entity.HasIndex(e => e.Status);
+    entity.HasIndex(e => e.PhotoType);
+});
+
+modelBuilder.Entity<PhotoReport>(entity =>
+{
+    entity.Property(e => e.Reason).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.Description).HasMaxLength(500);
+    entity.Property(e => e.ReviewOutcome).HasMaxLength(50);
+    entity.Property(e => e.ReviewNotes).HasMaxLength(500);
+
+    entity.HasOne(e => e.Photo)
+        .WithMany(p => p.Reports)
+        .HasForeignKey(e => e.PhotoId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.ReporterUser)
+        .WithMany()
+        .HasForeignKey(e => e.ReporterUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.ReviewedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.ReviewedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.ReviewedDate)
+        .HasFilter("[ReviewedDate] IS NULL");
+});
 ```
 
 ### API Changes
@@ -303,25 +444,30 @@ trashmob-photos/
 
 ## Open Questions
 
-1. **Photo size limits?**
-   **Recommendation:** 10MB per photo; 20 photos per event
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+1. ~~**Photo size limits?**~~
+   **Decision:** 10MB per photo; 20 photos per event - balances quality and storage costs
+   **Status:** ✅ Resolved
 
-2. **Automatic face detection/blur?**
-   **Recommendation:** Not for v1; consider Azure Cognitive Services later
-   **Owner:** Product Lead
-   **Due:** Future
+2. ~~**Automatic face detection/blur?**~~
+   **Decision:** Not for v1; consider Azure Cognitive Services in future version if needed
+   **Status:** ✅ Resolved
 
-3. **Photo retention policy?**
-   **Recommendation:** Keep indefinitely unless removed
-   **Owner:** Legal + Product
-   **Due:** Before Phase 1
+3. ~~**Photo retention policy?**~~
+   **Decision:** Keep indefinitely unless manually removed by user or admin
+   **Status:** ✅ Resolved
 
-4. **Copyright assignment?**
-   **Recommendation:** License to TrashMob in ToS; uploader retains ownership
-   **Owner:** Legal
-   **Due:** Before Phase 1
+4. ~~**Copyright assignment?**~~
+   **Decision:** License to TrashMob in ToS; uploader retains ownership but grants TrashMob rights to use photos for marketing and platform display
+   **Status:** ✅ Resolved
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#202](https://github.com/trashmob/TrashMob/issues/202)** - Project 18: Allow event creators to post "before" and "after" photos (tracking issue)
+- **[#1170](https://github.com/trashmob/TrashMob/issues/1170)** - Website: Allow photo uploads for pickup location
 
 ---
 
@@ -333,7 +479,17 @@ trashmob-photos/
 
 ---
 
-**Last Updated:** January 24, 2026
+## Post-Completion Bug Fixes
+
+- **PR #2725** (Feb 14, 2026): Fixed litter report DB error and aligned image upload limit with project specs
+- **PR #2743** (Feb 15, 2026): Fixed litter report images not displaying after upload
+- **PR #2755** (Feb 15, 2026): Fixed litter report thumbnails not loading and button icon visibility
+- **PR #2761** (Feb 16, 2026): Added camera capture support and improved photo upload popups with better styling
+- **PR #2763** (Feb 16, 2026): Fixed 500 error in photo upload when attendee check called unimplemented method
+
+---
+
+**Last Updated:** February 15, 2026
 **Owner:** Web Team
-**Status:** Planning in Progress
-**Next Review:** When prioritized
+**Status:** Phase 4 Complete
+**Next Review:** Project complete - no further phases planned

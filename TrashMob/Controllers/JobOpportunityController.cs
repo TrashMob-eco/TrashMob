@@ -1,27 +1,23 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
     using TrashMob.Security;
+    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
 
     /// <summary>
     /// Controller for managing job opportunities, including CRUD operations.
     /// </summary>
     [Route("api/jobopportunities")]
-    public class JobOpportunitiesController : KeyedController<JobOpportunity>
+    public class JobOpportunitiesController(IKeyedManager<JobOpportunity> jobOpportunityManager)
+        : KeyedController<JobOpportunity>(jobOpportunityManager)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JobOpportunitiesController"/> class.
-        /// </summary>
-        /// <param name="jobOpportunityManager">The job opportunity manager.</param>
-        public JobOpportunitiesController(IKeyedManager<JobOpportunity> jobOpportunityManager)
-            : base(jobOpportunityManager)
-        {
-        }
 
         /// <summary>
         /// Gets a job opportunity by its unique identifier.
@@ -32,7 +28,7 @@
         [HttpGet("{jobOpportunityId}")]
         public async Task<IActionResult> Get(Guid jobOpportunityId, CancellationToken cancellationToken)
         {
-            return Ok(await Manager.GetAsync(jobOpportunityId, cancellationToken).ConfigureAwait(false));
+            return Ok(await Manager.GetAsync(jobOpportunityId, cancellationToken));
         }
 
         /// <summary>
@@ -42,17 +38,16 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated job opportunity.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> Update(JobOpportunity jobOpportunity, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, jobOpportunity,
-                AuthorizationPolicyConstants.UserIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(jobOpportunity, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
 
-            var result = await Manager.UpdateAsync(jobOpportunity, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.UpdateAsync(jobOpportunity, UserId, cancellationToken);
             TrackEvent(nameof(Update) + typeof(JobOpportunity));
 
             return Ok(result);
@@ -65,17 +60,16 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The newly created job opportunity.</remarks>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public override async Task<IActionResult> Add(JobOpportunity jobOpportunity, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, jobOpportunity,
-                AuthorizationPolicyConstants.UserIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(jobOpportunity, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
 
-            var result = await Manager.AddAsync(jobOpportunity, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.AddAsync(jobOpportunity, UserId, cancellationToken);
             TrackEvent(nameof(Add) + typeof(JobOpportunity));
 
             return Ok(result);
@@ -88,20 +82,19 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The result of the delete operation.</remarks>
         [HttpDelete("{jobOpportunityId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public override async Task<IActionResult> Delete(Guid jobOpportunityId, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, jobOpportunityId,
-                AuthorizationPolicyConstants.UserIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(jobOpportunityId, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
 
-            var result = await Manager.DeleteAsync(jobOpportunityId, cancellationToken).ConfigureAwait(false);
+            await Manager.DeleteAsync(jobOpportunityId, cancellationToken);
             TrackEvent(nameof(Add) + typeof(JobOpportunity));
 
-            return Ok(result);
+            return NoContent();
         }
     }
 }

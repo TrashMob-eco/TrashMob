@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Partners
+namespace TrashMob.Shared.Managers.Partners
 {
     using System;
     using System.Collections.Generic;
@@ -13,17 +13,10 @@
     /// <summary>
     /// Manages services offered at partner locations including CRUD operations by location and service type.
     /// </summary>
-    public class PartnerLocationServiceManager : BaseManager<PartnerLocationService>,
-        IBaseManager<PartnerLocationService>
+    public class PartnerLocationServiceManager(IBaseRepository<PartnerLocationService> partnerLocationServiceRepository)
+        : BaseManager<PartnerLocationService>(partnerLocationServiceRepository),
+            IBaseManager<PartnerLocationService>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerLocationServiceManager"/> class.
-        /// </summary>
-        /// <param name="partnerLocationServiceRepository">The repository for partner location service data access.</param>
-        public PartnerLocationServiceManager(IBaseRepository<PartnerLocationService> partnerLocationServiceRepository) :
-            base(partnerLocationServiceRepository)
-        {
-        }
 
         /// <inheritdoc />
         public override async Task<PartnerLocationService> GetAsync(Guid parentId, int secondId,
@@ -38,8 +31,7 @@
         public override async Task<IEnumerable<PartnerLocationService>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
-            return (await Repository.Get().Where(p => p.PartnerLocationId == parentId).ToListAsync(cancellationToken))
-                .AsEnumerable();
+            return await Repository.Get().Where(p => p.PartnerLocationId == parentId).ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />

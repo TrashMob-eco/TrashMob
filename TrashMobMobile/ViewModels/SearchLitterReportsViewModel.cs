@@ -5,42 +5,30 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
+using Sentry;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class SearchLitterReportsViewModel(ILitterReportManager litterReportManager, INotificationService notificationService, IUserManager userManager) : BaseViewModel(notificationService)
+public partial class SearchLitterReportsViewModel(ILitterReportManager litterReportManager, INotificationService notificationService, IUserManager userManager) : LocationFilterViewModel(notificationService)
 {
     private readonly ILitterReportManager litterReportManager = litterReportManager;
     private readonly IUserManager userManager = userManager;
-    private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
 
     [ObservableProperty]
     private string reportStatus = "New";
 
-    private string? selectedCity;
-    private string? selectedCountry;
     private LitterImageViewModel? selectedLitterImage;
     private LitterReportViewModel? selectedLitterReport;
-    private string? selectedRegion;
 
     [ObservableProperty]
     private AddressViewModel? userLocation;
 
+    private IEnumerable<LitterReport> AllLitterReports { get; set; } = [];
     private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
     public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
 
-    public ObservableCollection<string> CountryCollection { get; set; } = [];
-    public ObservableCollection<string> RegionCollection { get; set; } = [];
-    public ObservableCollection<string> CityCollection { get; set; } = [];
-
     public ObservableCollection<string> CreatedDateRanges { get; set; } = [];
-
-    [ObservableProperty]
-    private bool isMapSelected;
-
-    [ObservableProperty]
-    private bool isListSelected;
 
     [ObservableProperty]
     private bool isNewSelected;
@@ -75,42 +63,6 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
                 OnPropertyChanged();
                 HandleCreatedDateRangeSelected();
             }
-        }
-    }
-
-    public string? SelectedCountry
-    {
-        get => selectedCountry;
-        set
-        {
-            selectedCountry = value;
-            OnPropertyChanged();
-
-            HandleCountrySelected(value);
-        }
-    }
-
-    public string? SelectedRegion
-    {
-        get => selectedRegion;
-        set
-        {
-            selectedRegion = value;
-            OnPropertyChanged();
-
-            HandleRegionSelected(value);
-        }
-    }
-
-    public string? SelectedCity
-    {
-        get => selectedCity;
-        set
-        {
-            selectedCity = value;
-            OnPropertyChanged();
-
-            HandleCitySelected(value);
         }
     }
 
@@ -160,9 +112,7 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
     public async Task Init()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             IsMapSelected = true;
             IsListSelected = false;
@@ -179,20 +129,20 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
             SelectedCreatedDateRange = DateRanges.LastMonth;
 
-            IsBusy = false;
             await NotificationService.Notify("Litter Report list has been refreshed.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("Failed to initialize Litter Report search page.");
-        }
+        }, "Failed to initialize Litter Report search page.");
     }
 
     private async void PerformNavigation(Guid litterReportId)
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");
+        try
+        {
+            await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private async Task RefreshLitterReports()
@@ -204,22 +154,10 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
         DateTimeOffset startDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CreatedDateRangeDictionary[SelectedCreatedDateRange].Item1);
         DateTimeOffset endDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CreatedDateRangeDictionary[SelectedCreatedDateRange].Item2);
-     
-        locations = await litterReportManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180),
+
+        Locations = await litterReportManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180),
             DateTimeOffset.Now);
-        CountryCollection.Clear();
-        RegionCollection.Clear();
-        CityCollection.Clear();
-
-        var countries = locations.Select(l => l.Country).Distinct();
-
-        foreach (var country in countries)
-        {
-            if (!string.IsNullOrEmpty(country))
-            {
-                CountryCollection.Add(country);
-            }
-        }
+        PopulateCountries();
 
         var litterReportFilter = new LitterReportFilter
         {
@@ -243,95 +181,51 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
             litterReportFilter.LitterReportStatusId = (int)LitterReportStatusEnum.Cleaned;
         }
 
-        RawLitterReports = await litterReportManager.GetLitterReportsAsync(litterReportFilter, ImageSizeEnum.Thumb, true);
+        AllLitterReports = (await litterReportManager.GetLitterReportsAsync(litterReportFilter, ImageSizeEnum.Thumb, true)).ToList();
+        RawLitterReports = AllLitterReports;
 
         UpdateLitterReportViewModels();
     }
 
     private async void HandleCreatedDateRangeSelected()
     {
-        IsBusy = true;
+        try
+        {
+            IsBusy = true;
 
-        await RefreshLitterReports();
-
-        IsBusy = false;
+            await RefreshLitterReports();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
-    private void HandleCountrySelected(string? selectedCountry)
+    protected override void ApplyFilters()
     {
-        IsBusy = true;
+        IEnumerable<LitterReport> filtered = AllLitterReports;
 
-        if (selectedCountry != null)
+        if (!string.IsNullOrEmpty(SelectedCountry))
         {
-            RawLitterReports = RawLitterReports.Where(l => l.LitterImages.Any(i => i.Country == SelectedCountry));
+            filtered = filtered.Where(l => l.LitterImages.Any(i => i.Country == SelectedCountry));
         }
 
+        if (!string.IsNullOrEmpty(SelectedRegion))
+        {
+            filtered = filtered.Where(l => l.LitterImages.Any(i => i.Region == SelectedRegion));
+        }
+
+        if (!string.IsNullOrEmpty(SelectedCity))
+        {
+            filtered = filtered.Where(l => l.LitterImages.Any(i => i.City == SelectedCity));
+        }
+
+        RawLitterReports = filtered;
         UpdateLitterReportViewModels();
-
-        RefreshRegionList();
-
-        IsBusy = false;
-    }
-
-    private void RefreshRegionList()
-    {
-        RegionCollection.Clear();
-
-        var regions = locations.Where(l => l.Country == selectedCountry).Select(l => l.Region).Distinct();
-
-        foreach (var region in regions)
-        {
-            if (!string.IsNullOrEmpty(region))
-            {
-                RegionCollection.Add(region);
-            }
-        }
-    }
-
-    private void HandleRegionSelected(string? selectedRegion)
-    {
-        IsBusy = true;
-
-        if (!string.IsNullOrEmpty(selectedRegion))
-        {
-            RawLitterReports = RawLitterReports.Where(l => l.LitterImages.Any(i => i.Region == selectedRegion));
-        }
-
-        UpdateLitterReportViewModels();
-
-        RefreshCityList();
-
-        IsBusy = false;
-    }
-
-    private void RefreshCityList()
-    {
-        CityCollection.Clear();
-
-        var cities = locations.Where(l => l.Country == selectedCountry && l.Region == selectedRegion)
-            .Select(l => l.City).Distinct();
-
-        foreach (var city in cities)
-        {
-            if (!string.IsNullOrEmpty(city))
-            {
-                CityCollection.Add(city);
-            }
-        }
-    }
-
-    private void HandleCitySelected(string? selectedCity)
-    {
-        IsBusy = true;
-
-        if (!string.IsNullOrEmpty(selectedCity))
-        {
-            RawLitterReports = RawLitterReports.Where(l => l.LitterImages.Any(i => i.City == selectedCity));
-        }
-
-        UpdateLitterReportViewModels();
-
-        IsBusy = false;
     }
 
     private void UpdateLitterReportViewModels()
@@ -365,9 +259,7 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
     {
         IsBusy = true;
 
-        SelectedCountry = null;
-        SelectedRegion = null;
-        SelectedCity = null;
+        ClearLocationSelections();
 
         await RefreshLitterReports();
 
@@ -414,21 +306,5 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
         await RefreshLitterReports();
 
         IsBusy = false;
-    }
-
-    [RelayCommand]
-    private Task MapSelected()
-    {
-        IsMapSelected = true;
-        IsListSelected = false;
-        return Task.CompletedTask;
-    }
-
-    [RelayCommand]
-    private Task ListSelected()
-    {
-        IsMapSelected = false;
-        IsListSelected = true;
-        return Task.CompletedTask;
     }
 }

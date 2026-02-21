@@ -88,9 +88,14 @@
         public int? MaxNumberOfParticipants { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the event is publicly visible.
+        /// Gets or sets the visibility level of the event (Public=1, TeamOnly=2, Private=3).
         /// </summary>
-        public bool IsEventPublic { get; set; }
+        public int EventVisibilityId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the team this event is scoped to, when visibility is TeamOnly.
+        /// </summary>
+        public Guid? TeamId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the user who created the event.

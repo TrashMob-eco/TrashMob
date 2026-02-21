@@ -171,8 +171,8 @@
                     {
                         username = user.UserName,
                         eventName = mobEvent.Name,
-                        eventDate = localDate.Item1,
-                        eventTime = localDate.Item2,
+                        eventDate = localDate.Date,
+                        eventTime = localDate.Time,
                         eventAddress = mobEvent.EventAddress(),
                         emailCopy,
                         subject = EmailSubject,
@@ -181,12 +181,12 @@
                         googleMapsUrl = mobEvent.GoogleMapsUrl(),
                     };
 
-                    var recipients = new List<EmailAddress>
-                    {
+                    List<EmailAddress> recipients =
+                    [
                         new() { Name = user.UserName, Email = user.Email },
-                    };
+                    ];
 
-                    Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
+                    Logger.LogInformation("Sending email to {Email}, Subject {Subject}", user.Email, EmailSubject);
 
                     await EmailManager.SendTemplatedEmailAsync(EmailSubject, SendGridEmailTemplateId.EventEmail,
                             SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None)
@@ -227,12 +227,12 @@
                 subject = EmailSubject,
             };
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = user.UserName, Email = user.Email },
-            };
+            ];
 
-            Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
+            Logger.LogInformation("Sending email to {Email}, Subject {Subject}", user.Email, EmailSubject);
 
             await EmailManager.SendTemplatedEmailAsync(EmailSubject, SendGridEmailTemplateId.GenericEmail,
                     SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None)

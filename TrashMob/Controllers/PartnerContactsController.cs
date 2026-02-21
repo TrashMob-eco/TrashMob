@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -14,22 +14,11 @@
     /// </summary>
     [Authorize]
     [Route("api/partnercontacts")]
-    public class PartnerContactsController : SecureController
+    public class PartnerContactsController(
+        IKeyedManager<Partner> partnerManager,
+        IPartnerContactManager partnerContactManager)
+        : SecureController
     {
-        private readonly IPartnerContactManager partnerContactManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerContactsController"/> class.
-        /// </summary>
-        /// <param name="partnerManager">The partner manager.</param>
-        /// <param name="partnerContactManager">The partner contact manager.</param>
-        public PartnerContactsController(IKeyedManager<Partner> partnerManager,
-            IPartnerContactManager partnerContactManager)
-        {
-            this.partnerManager = partnerManager;
-            this.partnerContactManager = partnerContactManager;
-        }
 
         /// <summary>
         /// Gets all contacts for a given partner. Requires a valid user.
@@ -73,15 +62,12 @@
         {
             var partner = await partnerManager.GetAsync(partnerContact.PartnerId, cancellationToken);
 
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -104,16 +90,12 @@
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
             var partner = await partnerManager.GetAsync(partnerContact.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            var result = await partnerContactManager.UpdateAsync(partnerContact, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await partnerContactManager.UpdateAsync(partnerContact, UserId, cancellationToken);
             TrackEvent(nameof(UpdatePartnerContact));
 
             return Ok(result);
@@ -130,18 +112,15 @@
             CancellationToken cancellationToken)
         {
             var partner = await partnerContactManager.GetPartnerForContact(partnerContactId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            await partnerContactManager.DeleteAsync(partnerContactId, cancellationToken).ConfigureAwait(false);
+            await partnerContactManager.DeleteAsync(partnerContactId, cancellationToken);
             TrackEvent(nameof(DeletePartnerContact));
 
-            return Ok(partnerContactId);
+            return NoContent();
         }
     }
 }

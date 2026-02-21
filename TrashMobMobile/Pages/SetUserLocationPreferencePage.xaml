@@ -9,73 +9,97 @@
              xmlns:converters="clr-namespace:TrashMobMobile.Converters"
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Set Your Location">
-    <ScrollView>
-        <Grid>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Label
-                    Text="Click on the map to set your preferred location."
-                    FontSize="Micro"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Center"
-                    HorizontalTextAlignment="Center"
-                    Margin="5" />
+    <Grid RowDefinitions="Auto, *, Auto">
+        <Label Grid.Row="0"
+            Text="Tap the map to set your preferred location"
+            FontSize="Small"
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"
+            TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+            Margin="5,8,5,4" />
 
-                <controls:CustomMap x:Name="userLocationMap"
-                          ItemsSource="{Binding Addresses}"
-                          MapClicked="OnMapClicked">
-                    <maps:Map.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:AddressViewModel">
-                            <controls:CustomPin Location="{Binding Location}"
-                                      Address="{Binding StreetAddress}"
-                                      ImageSource="{Binding IconFile}"
-                                      Label="Your Preferred Location" />
-                        </DataTemplate>
-                    </maps:Map.ItemTemplate>
-                </controls:CustomMap>
-
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *" Margin="10">
-                    <VerticalStackLayout Grid.Row="0" Grid.Column="0">
-                        <Label Text="Set the Max Travel Distance you are willing to travel for an event."
-                               Style="{StaticResource FieldLabel}" />
-                        <controls:TMEntry Text="{Binding TravelDistance}" Keyboard="Numeric" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="0" Grid.Column="1">
-                        <Label Text="Set your preferred Units of measure." Style="{StaticResource FieldLabel}" />
-                        <controls:TMPicker SelectedItem="{Binding Units, Mode=TwoWay}" >
-                            <controls:TMPicker.ItemsSource>
-                                <x:Array Type="{x:Type x:String}">
-                                    <x:String>Kilometers</x:String>
-                                    <x:String>Miles</x:String>
-                                </x:Array>
-                            </controls:TMPicker.ItemsSource>
-                        </controls:TMPicker>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="1" Grid.Column="0">
-                        <Label Text="City" Style="{StaticResource FieldLabel}" />
-                        <Label Text="{Binding Address.City }" FontSize="Small" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="1" Grid.Column="1">
-                        <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
-                        <Label Text="{Binding Address.Region }" FontSize="Small" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="2" Grid.Column="0">
-                        <Label Text="Country" Style="{StaticResource FieldLabel}" />
-                        <Label Text="{Binding Address.Country }" FontSize="Small" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="2" Grid.Column="1">
-                        <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
-                        <Label Text="{Binding Address.PostalCode }" FontSize="Small" />
-                    </VerticalStackLayout>
-                </Grid>
-
-                <Button Text="Update Location" 
-                        Command="{Binding UpdateLocationCommand}"
-                        Style="{StaticResource PrimaryLargeButton}"/>
-            </VerticalStackLayout>
+        <!-- Map outside ScrollView so touch gestures work -->
+        <Grid Grid.Row="1">
+            <controls:CustomMap x:Name="userLocationMap"
+                      ItemsSource="{Binding Addresses}"
+                      MapClicked="OnMapClicked">
+                <maps:Map.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:AddressViewModel">
+                        <controls:CustomPin Location="{Binding Location}"
+                                  Address="{Binding StreetAddress}"
+                                  ImageSource="{Binding IconFile}"
+                                  Label="Your Preferred Location" />
+                    </DataTemplate>
+                </maps:Map.ItemTemplate>
+            </controls:CustomMap>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
                                HorizontalOptions="Center" />
         </Grid>
-    </ScrollView>
+
+        <!-- Form content scrolls independently below the map -->
+        <ScrollView Grid.Row="2" MaximumHeightRequest="300">
+            <VerticalStackLayout Spacing="8" Padding="0,8,0,0">
+                <!-- Travel Preferences -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Travel Preferences" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="Max distance" Style="{StaticResource FieldLabel}" />
+                                <controls:TMEntry Text="{Binding TravelDistance}" Keyboard="Numeric" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="Units" Style="{StaticResource FieldLabel}" />
+                                <controls:TMPicker SelectedItem="{Binding Units, Mode=TwoWay}">
+                                    <controls:TMPicker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>Kilometers</x:String>
+                                            <x:String>Miles</x:String>
+                                        </x:Array>
+                                    </controls:TMPicker.ItemsSource>
+                                </controls:TMPicker>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Your Location -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Your Location" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *" ColumnSpacing="12" RowSpacing="8">
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                                <Label Text="City" Style="{StaticResource FieldLabel}" />
+                                <Label Text="{Binding Address.City}" FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2">
+                                <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
+                                <Label Text="{Binding Address.Region}" FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="2">
+                                <Label Text="Country" Style="{StaticResource FieldLabel}" />
+                                <Label Text="{Binding Address.Country}" FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="2">
+                                <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
+                                <Label Text="{Binding Address.PostalCode}" FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Button Text="Update Location"
+                        Command="{Binding UpdateLocationCommand}"
+                        Style="{StaticResource PrimaryLargeButton}"
+                        Margin="10,8,10,10" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

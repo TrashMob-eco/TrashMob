@@ -3,6 +3,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Authentication;
+using TrashMobMobile.Pages;
 using TrashMobMobile.Services;
 
 public partial class WelcomeViewModel(IAuthService authService, IStatsRestService statsRestService, INotificationService notificationService) : BaseViewModel(notificationService)
@@ -15,9 +16,7 @@ public partial class WelcomeViewModel(IAuthService authService, IStatsRestServic
 
     public async Task Init()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var stats = await statsRestService.GetStatsAsync();
 
@@ -27,15 +26,14 @@ public partial class WelcomeViewModel(IAuthService authService, IStatsRestServic
             StatisticsViewModel.TotalHours = stats.TotalHours;
             StatisticsViewModel.TotalLitterReportsSubmitted = stats.TotalLitterReportsSubmitted;
             StatisticsViewModel.TotalLitterReportsClosed = stats.TotalLitterReportsClosed;
+            StatisticsViewModel.TotalWeightInPounds = (int)stats.TotalWeightInPounds;
+        }, "An error occurred while loading this page. Please try again.");
+    }
 
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while loading this page. Please try again.");
-        }
+    [RelayCommand]
+    private async Task CreateAccount()
+    {
+        await Shell.Current.GoToAsync(nameof(AgeGatePage));
     }
 
     [RelayCommand]
@@ -51,7 +49,14 @@ public partial class WelcomeViewModel(IAuthService authService, IStatsRestServic
 
             if (signedIn.Succeeded)
             {
-                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                // Yield to allow the Android activity to fully resume after
+                // returning from the MSAL browser/webview, preventing a black
+                // screen when navigating immediately after interactive auth.
+                await Task.Delay(100);
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await Shell.Current.GoToAsync($"//{nameof(MainTabsPage)}");
+                });
             }
             else
             {

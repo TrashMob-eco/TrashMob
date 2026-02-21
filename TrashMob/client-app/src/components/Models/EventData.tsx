@@ -41,7 +41,9 @@ class EventData {
 
     lastUpdatedDate: Date = new Date();
 
-    isEventPublic: boolean = true;
+    eventVisibilityId: number = 1;
+
+    teamId: string | null = null;
 
     createdByUserName: string = '';
 

@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phase 1-3 Complete) |
 | **Priority** | Medium |
 | **Risk** | Medium |
 | **Size** | Medium |
@@ -34,30 +34,29 @@ Let attendees enter personal stats and give leads tools to reconcile without dou
 
 ## Scope
 
-### Phase 1 - Attendee Entry
-- ✅ Attendees can enter their own metrics
-- ✅ Bags collected (count)
-- ✅ Weight collected (with units)
-- ✅ Time spent (duration)
-- ✅ Notes/comments
+### Phase 1 - Backend Infrastructure ✅ Complete
+- ✅ `EventAttendeeMetrics` model with approval workflow
+- ✅ API endpoints for attendee submission (`/my-metrics`)
+- ✅ API endpoints for lead operations (approve/reject/adjust)
+- ✅ Totals calculation with weight conversion
+- ✅ Bulk approve-all functionality
 
-### Phase 2 - Reconciliation
-- ✅ Lead sees all attendee entries
-- ✅ Approve/adjust individual entries
-- ✅ Auto-calculate event totals
-- ✅ Handle double-counting conflicts
+### Phase 2 - Frontend UI ✅ Complete
+- ✅ Attendee submission form on event page
+- ✅ Lead review dashboard with approve/reject/adjust actions
+- ✅ Totals display in lead review dashboard
 
-### Phase 3 - Display
+### Phase 3 - Display ✅ Complete
 - ✅ Event summary shows breakdown
 - ✅ Per-attendee contributions visible
 - ✅ Dashboard shows personal impact
 - ✅ Event leaderboards
 
 ### Phase 4 - Integration
-- ❓ Route association (Project 15)
-- ❓ Photo association (Project 18)
-- ❓ Gamification integration (Project 20)
-- ❓ Team roll-ups (Project 9)
+- ⬜ Route association (Project 15)
+- ⬜ Photo association (Project 18)
+- ⬜ Gamification integration (Project 20)
+- ⬜ Team roll-ups (Project 9)
 
 ---
 
@@ -112,52 +111,213 @@ Let attendees enter personal stats and give leads tools to reconcile without dou
 
 ### Data Model Changes
 
-```sql
--- Attendee event metrics
-CREATE TABLE EventAttendeeMetrics (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    -- Metrics
-    BagsCollected INT NULL,
-    WeightCollected DECIMAL(10,2) NULL,
-    WeightUnitId INT NULL,
-    DurationMinutes INT NULL,
-    Notes NVARCHAR(500) NULL,
-    -- Verification
-    Status NVARCHAR(20) NOT NULL DEFAULT 'Pending', -- Pending, Approved, Adjusted, Rejected
-    AdjustedBags INT NULL,
-    AdjustedWeight DECIMAL(10,2) NULL,
-    AdjustedDuration INT NULL,
-    AdjustmentNotes NVARCHAR(500) NULL,
-    ReviewedByUserId UNIQUEIDENTIFIER NULL,
-    ReviewedDate DATETIMEOFFSET NULL,
-    -- Audit
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    LastUpdatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    FOREIGN KEY (WeightUnitId) REFERENCES WeightUnits(Id),
-    FOREIGN KEY (ReviewedByUserId) REFERENCES Users(Id),
-    UNIQUE (EventId, UserId)
-);
+> **Note:** This project builds on Project 7's `EventSummaryAttendee` for Phase 2 (attendee-level weight).
+> Consider whether `EventAttendeeMetrics` should replace or extend `EventSummaryAttendee`.
 
--- Bag drop locations (for pickup coordination)
-CREATE TABLE AttendeeDropLocations (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventAttendeeMetricsId UNIQUEIDENTIFIER NOT NULL,
-    Latitude DECIMAL(9,6) NOT NULL,
-    Longitude DECIMAL(9,6) NOT NULL,
-    BagCount INT NOT NULL DEFAULT 1,
-    Notes NVARCHAR(200) NULL,
-    ImageUrl NVARCHAR(500) NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (EventAttendeeMetricsId) REFERENCES EventAttendeeMetrics(Id) ON DELETE CASCADE
-);
+> **Unattributed Totals:** When partial reporting occurs, unattributed totals (for non-reporting attendees)
+> are stored in `EventSummary.UnattributedBags`, `EventSummary.UnattributedWeight`, etc. The event's final
+> totals = sum of approved attendee metrics + unattributed amounts.
 
-CREATE INDEX IX_EventAttendeeMetrics_EventId ON EventAttendeeMetrics(EventId);
-CREATE INDEX IX_EventAttendeeMetrics_UserId ON EventAttendeeMetrics(UserId);
-CREATE INDEX IX_EventAttendeeMetrics_Status ON EventAttendeeMetrics(Status);
+**New Entity: EventAttendeeMetrics**
+```csharp
+// New file: TrashMob.Models/EventAttendeeMetrics.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents an attendee's self-reported metrics for an event, subject to lead verification.
+    /// </summary>
+    public class EventAttendeeMetrics : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the event identifier.
+        /// </summary>
+        public Guid EventId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the attendee's user identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        #region Reported Metrics
+
+        /// <summary>
+        /// Gets or sets the number of bags collected by this attendee.
+        /// </summary>
+        public int? BagsCollected { get; set; }
+
+        /// <summary>
+        /// Gets or sets the weight collected by this attendee.
+        /// </summary>
+        public decimal? WeightCollected { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the weight unit used.
+        /// </summary>
+        public int? WeightUnitId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the duration in minutes this attendee participated.
+        /// </summary>
+        public int? DurationMinutes { get; set; }
+
+        /// <summary>
+        /// Gets or sets any notes from the attendee about their contribution.
+        /// </summary>
+        public string Notes { get; set; }
+
+        #endregion
+
+        #region Verification
+
+        /// <summary>
+        /// Gets or sets the verification status (Pending, Approved, Adjusted, Rejected).
+        /// </summary>
+        public string Status { get; set; } = "Pending";
+
+        /// <summary>
+        /// Gets or sets the adjusted bag count (if lead modified the original).
+        /// </summary>
+        public int? AdjustedBags { get; set; }
+
+        /// <summary>
+        /// Gets or sets the adjusted weight (if lead modified the original).
+        /// </summary>
+        public decimal? AdjustedWeight { get; set; }
+
+        /// <summary>
+        /// Gets or sets the adjusted duration (if lead modified the original).
+        /// </summary>
+        public int? AdjustedDuration { get; set; }
+
+        /// <summary>
+        /// Gets or sets notes explaining any adjustments made by the lead.
+        /// </summary>
+        public string AdjustmentNotes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the lead who reviewed this entry.
+        /// </summary>
+        public Guid? ReviewedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date this entry was reviewed.
+        /// </summary>
+        public DateTimeOffset? ReviewedDate { get; set; }
+
+        #endregion
+
+        #region Privacy
+
+        /// <summary>
+        /// Gets or sets whether this attendee's metrics are publicly visible.
+        /// Default is true; attendee can opt-out to hide their contributions.
+        /// </summary>
+        public bool IsPublic { get; set; } = true;
+
+        #endregion
+
+        // Navigation properties
+        public virtual Event Event { get; set; }
+        public virtual User User { get; set; }
+        public virtual WeightUnit WeightUnit { get; set; }
+        public virtual User ReviewedByUser { get; set; }
+        public virtual ICollection<AttendeeDropLocation> DropLocations { get; set; }
+    }
+}
+```
+
+**New Entity: AttendeeDropLocation**
+```csharp
+// New file: TrashMob.Models/AttendeeDropLocation.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a location where an attendee dropped bags for pickup coordination.
+    /// </summary>
+    public class AttendeeDropLocation : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the parent metrics entry identifier.
+        /// </summary>
+        public Guid EventAttendeeMetricsId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the latitude of the drop location.
+        /// </summary>
+        public double Latitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the longitude of the drop location.
+        /// </summary>
+        public double Longitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of bags at this drop location.
+        /// </summary>
+        public int BagCount { get; set; } = 1;
+
+        /// <summary>
+        /// Gets or sets notes about this drop location (e.g., landmarks, access info).
+        /// </summary>
+        public string Notes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of a photo of the drop location.
+        /// </summary>
+        public string ImageUrl { get; set; }
+
+        // Navigation property
+        public virtual EventAttendeeMetrics EventAttendeeMetrics { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<EventAttendeeMetrics>(entity =>
+{
+    entity.Property(e => e.Notes).HasMaxLength(500);
+    entity.Property(e => e.Status).HasMaxLength(20);
+    entity.Property(e => e.AdjustmentNotes).HasMaxLength(500);
+    entity.Property(e => e.WeightCollected).HasPrecision(10, 2);
+    entity.Property(e => e.AdjustedWeight).HasPrecision(10, 2);
+
+    entity.HasOne(e => e.Event)
+        .WithMany()
+        .HasForeignKey(e => e.EventId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.WeightUnit)
+        .WithMany()
+        .HasForeignKey(e => e.WeightUnitId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.ReviewedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.ReviewedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.EventId);
+    entity.HasIndex(e => e.UserId);
+    entity.HasIndex(e => e.Status);
+    entity.HasIndex(e => new { e.EventId, e.UserId }).IsUnique();
+});
+
+modelBuilder.Entity<AttendeeDropLocation>(entity =>
+{
+    entity.Property(e => e.Notes).HasMaxLength(200);
+    entity.Property(e => e.ImageUrl).HasMaxLength(500);
+
+    entity.HasOne(e => e.EventAttendeeMetrics)
+        .WithMany(m => m.DropLocations)
+        .HasForeignKey(e => e.EventAttendeeMetricsId)
+        .OnDelete(DeleteBehavior.Cascade);
+});
 ```
 
 ### API Changes
@@ -244,11 +404,20 @@ public async Task<ActionResult<IEnumerable<DropLocationDto>>> GetDropLocations(G
 - Drop location reporting with map pin
 - Photo upload
 
+**Attendee Notifications:**
+- **Email reminder:** Sent 24 hours after event ends ("Report your impact from [Event Name]!")
+- **In-app banner:** Dashboard shows "You have unreported metrics" for recent events
+- **Follow-up email:** Sent at day 5 if not yet submitted ("2 days left to report...")
+- Link directly to metrics submission form
+
 **Event Lead Reconciliation:**
+- **Reporting status:** "3 of 10 attendees reported metrics" prominently displayed
 - List of attendee submissions
 - Comparison view (claimed vs. adjusted)
 - Quick approve/adjust actions
-- Auto-calculate totals button
+- **Unattributed totals:** Input fields for bags/weight not reported by specific attendees
+- Auto-calculate totals button (sums approved + unattributed)
+- Warning when reporting rate < 50%
 - Notes for adjustments
 
 **Event Summary Display:**
@@ -301,41 +470,98 @@ public async Task<ActionResult<IEnumerable<DropLocationDto>>> GetDropLocations(G
 
 1. **Default Behavior:**
    - If no attendee metrics: Lead enters event-level totals only
-   - If attendee metrics: Auto-sum approved entries
+   - If attendee metrics: Auto-sum approved entries + unattributed totals
 
-2. **Double Counting Prevention:**
+2. **Partial Reporting:**
+   - UI clearly displays "X of Y attendees reported metrics"
+   - Lead can enter **unattributed totals** for non-reporting attendees
+   - Event totals = Sum of approved attendee entries + unattributed amounts
+   - Warning displayed when calculating totals with < 50% reporting rate
+
+3. **Double Counting Prevention:**
    - Lead can mark entries as "shared" (e.g., two people carried same bag)
    - Adjusted values used for totals
    - Original values preserved for audit
 
-3. **Late Submissions:**
+4. **Late Submissions:**
    - Attendees can submit up to 7 days after event
    - Leads notified of new submissions
    - Late submissions don't auto-recalculate totals
 
 ---
 
-## Open Questions
+## Data Migration
+
+Existing events with EventSummary data need migration to populate EventAttendeeMetrics:
+
+```csharp
+// Migration logic for existing events
+foreach (var eventSummary in existingEventSummaries)
+{
+    var attendees = await GetEventAttendees(eventSummary.EventId);
+
+    if (attendees.Count == 1)
+    {
+        // Single attendee: attribute all metrics to them
+        CreateAttendeeMetrics(attendees[0], eventSummary.TotalBags, eventSummary.TotalWeight);
+    }
+    else if (attendees.Count > 1)
+    {
+        // Multiple attendees: split equally
+        var bagsPerAttendee = eventSummary.TotalBags / attendees.Count;
+        var weightPerAttendee = eventSummary.TotalWeight / attendees.Count;
+
+        foreach (var attendee in attendees)
+        {
+            CreateAttendeeMetrics(attendee, bagsPerAttendee, weightPerAttendee);
+        }
+
+        // Handle remainder as unattributed
+        var remainderBags = eventSummary.TotalBags % attendees.Count;
+        if (remainderBags > 0)
+            eventSummary.UnattributedBags = remainderBags;
+    }
+
+    // Mark migrated entries as "Approved" (already verified by lead)
+    SetStatus("Approved");
+}
+```
+
+**Migration Notes:**
+- All migrated entries marked as "Approved" status (lead already submitted the totals)
+- Fractional weights rounded; remainder stored as unattributed
+- Events with 0 attendees: metrics remain event-level only (unattributed)
+- Migration runs once during deployment; new events use new workflow
+
+---
+
+## Resolved Questions
 
 1. **Time window for attendee submissions?**
-   **Recommendation:** 7 days post-event; leads can extend
-   **Owner:** Product Lead
-   **Due:** Before Phase 1
+   **Decision:** 7 days post-event by default; event leads can extend the deadline if needed
 
 2. **Default metric values?**
-   **Recommendation:** No defaults; require entry if participating
-   **Owner:** Product Lead
-   **Due:** Before Phase 1
+   **Decision:** No defaults; require entry if participating in metrics tracking
 
 3. **Visibility of individual metrics?**
-   **Recommendation:** Public by default; privacy option to hide
-   **Owner:** Product Lead
-   **Due:** Before Phase 3
+   **Decision:** Public by default; privacy option available for attendees to hide their contributions
 
 4. **Integration with volunteer hour systems?**
-   **Recommendation:** Export feature; no direct integration for v1
-   **Owner:** Product Lead
-   **Due:** Future
+   **Decision:** Export feature only; no direct third-party integration for v1
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2241](https://github.com/trashmob/TrashMob/issues/2241)** - Project 22: Attendee Level Event Metrics (tracking issue)
+- **[#2263](https://github.com/trashmob/TrashMob/issues/2263)** - Update Data Model to Allow event participants to contribute to event summary
+- **[#2264](https://github.com/trashmob/TrashMob/issues/2264)** - Update API's to allow for management of attendee-level metrics for an event
+- **[#2265](https://github.com/trashmob/TrashMob/issues/2265)** - Update Mobile app to allow for individual metrics
+- **[#2266](https://github.com/trashmob/TrashMob/issues/2266)** - Update Web UX to allow for individual metrics
+- **[#2267](https://github.com/trashmob/TrashMob/issues/2267)** - Update Mobile app design for individual metrics
+- **[#2268](https://github.com/trashmob/TrashMob/issues/2268)** - Update Web app design for individual metrics
 
 ---
 
@@ -347,7 +573,7 @@ public async Task<ActionResult<IEnumerable<DropLocationDto>>> GetDropLocations(G
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** February 2, 2026
 **Owner:** Product Lead + Engineering
-**Status:** Not Started
-**Next Review:** When Project 7 complete
+**Status:** In Progress (Phase 1-3 Complete)
+**Next Review:** Phase 4 integration (depends on Projects 9, 15, 18, 20)

@@ -22,11 +22,11 @@ jobs:
               working-directory: ./TrashMob/client-app
         steps:
             -   name: Checkout code
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
                 
             -   name: Cache dependencies
                 id: cache-npm
-                uses: actions/cache@v4
+                uses: actions/cache@v5
                 with:
                     path: ./TrashMob/client-app/node_modules
                     key: deps-node-modules-${{ hashFiles('**\package-lock.json') }}
@@ -51,11 +51,11 @@ jobs:
               working-directory: ./TrashMob/client-app
         steps:
             -   name: Checkout code
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
                 
             -   name: Cache dependencies
                 id: cache-npm
-                uses: actions/cache@v4
+                uses: actions/cache@v5
                 with:
                     path: ./TrashMob/client-app/node_modules
                     key: deps-node-modules-${{ hashFiles('**\package-lock.json') }}

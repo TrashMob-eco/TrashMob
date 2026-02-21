@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:NewsletterPreferencesViewModel"
+             x:Class="TrashMobMobile.Pages.NewsletterPreferencesPage"
+             Title="Newsletter Preferences">
+
+    <ScrollView>
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+
+            <!-- Header -->
+            <Label Text="Manage your email subscriptions"
+                   FontSize="Small"
+                   Margin="10,15,10,5"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+            <!-- Empty state -->
+            <Label Text="No newsletter categories available"
+                   IsVisible="{Binding AreNoPreferencesFound}"
+                   FontSize="Small"
+                   Margin="10,10"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+            <!-- Preference toggles -->
+            <CollectionView ItemsSource="{Binding Preferences}"
+                            SelectionMode="None"
+                            IsVisible="{Binding ArePreferencesFound}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:NewsletterPreferenceItemViewModel">
+                        <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                            <Grid ColumnDefinitions="*, Auto" Padding="12,10">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="{Binding CategoryName}"
+                                           FontFamily="LexendSemibold"
+                                           FontSize="Small" />
+                                    <Label Text="{Binding CategoryDescription}"
+                                           FontSize="Micro"
+                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                </VerticalStackLayout>
+                                <Switch Grid.Column="1"
+                                        IsToggled="{Binding IsSubscribed, Mode=OneWay}"
+                                        InputTransparent="True"
+                                        VerticalOptions="Center" />
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:NewsletterPreferencesViewModel}}, Path=TogglePreferenceCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Unsubscribe All -->
+            <Button Text="Unsubscribe from All"
+                    Command="{Binding UnsubscribeAllCommand}"
+                    IsVisible="{Binding ArePreferencesFound}"
+                    Style="{StaticResource SecondaryLargeButton}"
+                    Margin="5,20,5,5" />
+
+            <!-- Loading -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

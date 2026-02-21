@@ -1,0 +1,133 @@
+# Captures app screenshots on an Android emulator for store listings.
+# Uses Appium with the existing UI test framework.
+#
+# Screenshots are uploaded as artifacts and can be downloaded for
+# manual upload to App Store Connect / Google Play Console.
+#
+# Note: iOS screenshots require a macOS runner with Xcode simulator.
+# This workflow currently supports Android only.
+
+name: Capture App Screenshots
+
+on:
+  workflow_dispatch:
+    inputs:
+      emulator_api_level:
+        description: 'Android API level for emulator'
+        required: false
+        default: '34'
+      include_authenticated:
+        description: 'Include authenticated screenshots (requires test account)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  screenshots:
+    name: Capture Android screenshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+
+      - name: Install .NET MAUI workload
+        run: dotnet workload install maui-android
+
+      - name: Build Android APK
+        run: |
+          dotnet publish TrashMobMobile/TrashMobMobile.csproj \
+            -c Release \
+            -f net10.0-android \
+            /p:TargetFrameworks=net10.0-android \
+            /p:AndroidPackageFormat=apk \
+            -o ./build-output
+
+      - name: Find APK
+        id: find_apk
+        run: |
+          APK=$(find ./build-output -name "*.apk" | head -1)
+          echo "apk_path=$APK" >> $GITHUB_OUTPUT
+          echo "Found APK: $APK"
+
+      - name: Install Appium
+        run: |
+          npm install -g appium
+          appium driver install uiautomator2
+
+      - name: Start Appium server
+        run: |
+          appium --log-level info &
+          sleep 5
+          echo "Appium server started"
+
+      - name: Run screenshot tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ github.event.inputs.emulator_api_level }}
+          arch: x86_64
+          profile: pixel_6
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: |
+            # Wait for emulator to be fully booted
+            adb wait-for-device
+            sleep 10
+
+            # Set environment variables
+            export TRASHMOB_APK_PATH="${{ steps.find_apk.outputs.apk_path }}"
+            export APPIUM_SERVER="http://127.0.0.1:4723"
+
+            # Run screenshot tests
+            FILTER="Category=Screenshots"
+            if [ "${{ github.event.inputs.include_authenticated }}" != "true" ]; then
+              FILTER="Category=Screenshots&Category!=Authenticated"
+            fi
+
+            dotnet test TrashMobMobile.UITests/TrashMobMobile.UITests.csproj \
+              --filter "$FILTER" \
+              --logger "console;verbosity=normal" \
+              --results-directory ./TestResults \
+              || true  # Don't fail workflow if some screenshots fail
+
+            echo "Screenshot capture complete"
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-screenshots
+          path: |
+            **/TestResults/Screenshots/*.png
+          retention-days: 30
+
+      - name: Summary
+        if: always()
+        run: |
+          echo ""
+          echo "========================================="
+          echo " Screenshot Capture Results"
+          echo "========================================="
+          SCREENSHOT_COUNT=$(find . -path "*/TestResults/Screenshots/*.png" | wc -l)
+          echo " Screenshots captured: $SCREENSHOT_COUNT"
+          echo ""
+          echo "Download the 'app-screenshots' artifact to get the files."
+          echo ""
+          echo "Upload to stores:"
+          echo "  Apple: App Store Connect → Screenshots"
+          echo "  Google: Play Console → Store listing → Phone screenshots"
+          echo "========================================="

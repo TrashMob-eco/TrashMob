@@ -1,8 +1,9 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
@@ -12,16 +13,9 @@
     /// Controller for managing partners, including retrieval and update.
     /// </summary>
     [Route("api/partners")]
-    public class PartnersController : KeyedController<Partner>
+    public class PartnersController(IKeyedManager<Partner> partnerManager)
+        : KeyedController<Partner>(partnerManager)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnersController"/> class.
-        /// </summary>
-        /// <param name="partnerManager">The partner manager.</param>
-        public PartnersController(IKeyedManager<Partner> partnerManager)
-            : base(partnerManager)
-        {
-        }
 
         /// <summary>
         /// Gets a partner by its unique identifier.
@@ -32,7 +26,7 @@
         [HttpGet("{partnerId}")]
         public async Task<IActionResult> Get(Guid partnerId, CancellationToken cancellationToken)
         {
-            return Ok(await Manager.GetAsync(partnerId, cancellationToken).ConfigureAwait(false));
+            return Ok(await Manager.GetAsync(partnerId, cancellationToken));
         }
 
         /// <summary>
@@ -42,17 +36,15 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated partner.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> Update(Partner partner, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            var result = await Manager.UpdateAsync(partner, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.UpdateAsync(partner, UserId, cancellationToken);
             TrackEvent(nameof(Update) + typeof(Partner));
 
             return Ok(result);

@@ -6,21 +6,21 @@ using CommunityToolkit.Mvvm.ComponentModel;
 public partial class LitterReportViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string createdDate;
+    private string createdDate = string.Empty;
 
     [ObservableProperty]
-    private string description;
+    private string description = string.Empty;
 
     [ObservableProperty]
     private Guid id;
 
     [ObservableProperty]
-    private string litterReportStatus;
+    private string litterReportStatus = string.Empty;
 
     private int litterReportStatusId;
 
     [ObservableProperty]
-    private string name;
+    private string name = string.Empty;
 
     public LitterReportViewModel()
     {
@@ -54,4 +54,14 @@ public partial class LitterReportViewModel : ObservableObject
     }
 
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; set; } = [];
+
+    public string? ThumbnailUrl => LitterImageViewModels.FirstOrDefault()?.AzureBlobUrl;
+
+    public bool HasThumbnail => !string.IsNullOrEmpty(ThumbnailUrl);
+
+    public string? FirstImageLocation => LitterImageViewModels.FirstOrDefault()?.Address?.DisplayAddress;
+
+    public double? FirstImageLatitude => LitterImageViewModels.FirstOrDefault()?.Address?.Latitude;
+
+    public double? FirstImageLongitude => LitterImageViewModels.FirstOrDefault()?.Address?.Longitude;
 }

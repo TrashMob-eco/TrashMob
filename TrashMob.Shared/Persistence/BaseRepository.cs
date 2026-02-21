@@ -12,27 +12,11 @@
     /// Provides data access implementation for entities derived from <see cref="BaseModel"/>.
     /// </summary>
     /// <typeparam name="T">The entity type that derives from <see cref="BaseModel"/>.</typeparam>
-    public class BaseRepository<T> : IBaseRepository<T> where T : BaseModel
+    public class BaseRepository<T>(MobDbContext mobDbContext)
+        : IBaseRepository<T> where T : BaseModel
     {
-        /// <summary>
-        /// The database set for the entity type.
-        /// </summary>
-        protected readonly DbSet<T> dbSet;
-
-        /// <summary>
-        /// The database context.
-        /// </summary>
-        protected readonly MobDbContext mobDbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseRepository{T}"/> class.
-        /// </summary>
-        /// <param name="mobDbContext">The database context to use for data access.</param>
-        public BaseRepository(MobDbContext mobDbContext)
-        {
-            this.mobDbContext = mobDbContext;
-            dbSet = mobDbContext.Set<T>();
-        }
+        protected readonly DbSet<T> dbSet = mobDbContext.Set<T>();
+        protected readonly MobDbContext mobDbContext = mobDbContext;
 
         /// <inheritdoc />
         public virtual async Task<T> AddAsync(T instance)

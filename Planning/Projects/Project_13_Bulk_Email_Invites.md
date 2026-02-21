@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | Complete |
 | **Priority** | High |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -45,9 +45,14 @@ Enable admins, communities, and users to invite potential volunteers at scale wi
 - ✅ Custom invite templates per community
 - ✅ Tracking attribution to community
 
-### Phase 3 - User Invites
+### Phase 3 - Team Invites
+- ✅ Team leads can invite potential members
+- ✅ Custom invite templates per team
+- ✅ **Auto-add to team** when invited user accepts and signs up
+- ✅ Tracking attribution to team
+
+### Phase 4 - User Invites
 - ✅ Users can invite friends (limited batch)
-- ✅ Referral tracking
 - ✅ Invite success notifications
 
 ---
@@ -104,69 +109,319 @@ None - independent feature
 
 ### Data Model Changes
 
-```sql
--- Email invite batches
-CREATE TABLE EmailInviteBatches (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    SenderUserId UNIQUEIDENTIFIER NOT NULL,
-    BatchType NVARCHAR(50) NOT NULL, -- Admin, Community, User
-    CommunityId UNIQUEIDENTIFIER NULL, -- If community invite
-    TemplateId INT NULL,
-    TotalCount INT NOT NULL DEFAULT 0,
-    SentCount INT NOT NULL DEFAULT 0,
-    DeliveredCount INT NOT NULL DEFAULT 0,
-    OpenedCount INT NOT NULL DEFAULT 0,
-    ClickedCount INT NOT NULL DEFAULT 0,
-    BouncedCount INT NOT NULL DEFAULT 0,
-    Status NVARCHAR(50) NOT NULL DEFAULT 'Pending', -- Pending, Processing, Complete, Failed
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    CompletedDate DATETIMEOFFSET NULL,
-    FOREIGN KEY (SenderUserId) REFERENCES Users(Id),
-    FOREIGN KEY (CommunityId) REFERENCES Partners(Id)
-);
+**New Entity: EmailInviteBatch**
+```csharp
+// New file: TrashMob.Models/EmailInviteBatch.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a batch of email invitations sent by an admin, community, or user.
+    /// </summary>
+    public class EmailInviteBatch : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the sender's user identifier.
+        /// </summary>
+        public Guid SenderUserId { get; set; }
 
--- Individual invite records
-CREATE TABLE EmailInvites (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    BatchId UNIQUEIDENTIFIER NOT NULL,
-    Email NVARCHAR(256) NOT NULL,
-    Status NVARCHAR(50) NOT NULL DEFAULT 'Pending', -- Pending, Sent, Delivered, Opened, Clicked, Bounced, Unsubscribed
-    SendGridMessageId NVARCHAR(100) NULL,
-    SentDate DATETIMEOFFSET NULL,
-    DeliveredDate DATETIMEOFFSET NULL,
-    OpenedDate DATETIMEOFFSET NULL,
-    ClickedDate DATETIMEOFFSET NULL,
-    SignedUpUserId UNIQUEIDENTIFIER NULL, -- If invite converted to signup
-    SignedUpDate DATETIMEOFFSET NULL,
-    FOREIGN KEY (BatchId) REFERENCES EmailInviteBatches(Id) ON DELETE CASCADE,
-    FOREIGN KEY (SignedUpUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets the batch type (Admin, Community, Team, User).
+        /// </summary>
+        public string BatchType { get; set; }
 
--- Invite templates
-CREATE TABLE EmailInviteTemplates (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    Subject NVARCHAR(200) NOT NULL,
-    HtmlBody NVARCHAR(MAX) NOT NULL,
-    TextBody NVARCHAR(MAX) NOT NULL,
-    TemplateType NVARCHAR(50) NOT NULL, -- Default, Community, Event
-    IsActive BIT NOT NULL DEFAULT 1
-);
+        /// <summary>
+        /// Gets or sets the community identifier (if community invite).
+        /// </summary>
+        public Guid? CommunityId { get; set; }
 
--- Daily send limits tracking
-CREATE TABLE EmailSendLimits (
-    Date DATE PRIMARY KEY,
-    AdminSent INT NOT NULL DEFAULT 0,
-    CommunitySent INT NOT NULL DEFAULT 0,
-    UserSent INT NOT NULL DEFAULT 0,
-    TotalSent INT NOT NULL DEFAULT 0
-);
+        /// <summary>
+        /// Gets or sets the team identifier (if team invite).
+        /// </summary>
+        public Guid? TeamId { get; set; }
 
-CREATE INDEX IX_EmailInviteBatches_SenderUserId ON EmailInviteBatches(SenderUserId);
-CREATE INDEX IX_EmailInviteBatches_Status ON EmailInviteBatches(Status);
-CREATE INDEX IX_EmailInvites_BatchId ON EmailInvites(BatchId);
-CREATE INDEX IX_EmailInvites_Email ON EmailInvites(Email);
-CREATE INDEX IX_EmailInvites_Status ON EmailInvites(Status);
+        /// <summary>
+        /// Gets or sets the template identifier used.
+        /// </summary>
+        public int? TemplateId { get; set; }
+
+        #region Statistics
+
+        /// <summary>
+        /// Gets or sets the total number of invites in this batch.
+        /// </summary>
+        public int TotalCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of invites sent.
+        /// </summary>
+        public int SentCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of invites delivered.
+        /// </summary>
+        public int DeliveredCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of invites opened.
+        /// </summary>
+        public int OpenedCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of invites clicked.
+        /// </summary>
+        public int ClickedCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of invites bounced.
+        /// </summary>
+        public int BouncedCount { get; set; }
+
+        #endregion
+
+        /// <summary>
+        /// Gets or sets the batch status (Pending, Processing, Complete, Failed).
+        /// </summary>
+        public string Status { get; set; } = "Pending";
+
+        /// <summary>
+        /// Gets or sets when processing completed.
+        /// </summary>
+        public DateTimeOffset? CompletedDate { get; set; }
+
+        // Navigation properties
+        public virtual User SenderUser { get; set; }
+        public virtual Partner Community { get; set; }
+        public virtual Team Team { get; set; }
+        public virtual EmailInviteTemplate Template { get; set; }
+        public virtual ICollection<EmailInvite> Invites { get; set; }
+    }
+}
+```
+
+**New Entity: EmailInvite**
+```csharp
+// New file: TrashMob.Models/EmailInvite.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents an individual email invitation with tracking.
+    /// </summary>
+    public class EmailInvite : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the batch identifier.
+        /// </summary>
+        public Guid BatchId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the recipient email address.
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
+        /// Gets or sets the invite status.
+        /// </summary>
+        public string Status { get; set; } = "Pending";
+
+        /// <summary>
+        /// Gets or sets the SendGrid message ID for tracking.
+        /// </summary>
+        public string SendGridMessageId { get; set; }
+
+        #region Tracking Dates
+
+        /// <summary>
+        /// Gets or sets when the invite was sent.
+        /// </summary>
+        public DateTimeOffset? SentDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the invite was delivered.
+        /// </summary>
+        public DateTimeOffset? DeliveredDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the invite was opened.
+        /// </summary>
+        public DateTimeOffset? OpenedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the invite link was clicked.
+        /// </summary>
+        public DateTimeOffset? ClickedDate { get; set; }
+
+        #endregion
+
+        #region Conversion Tracking
+
+        /// <summary>
+        /// Gets or sets the user ID if the invite converted to a signup.
+        /// </summary>
+        public Guid? SignedUpUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the invited person signed up.
+        /// </summary>
+        public DateTimeOffset? SignedUpDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the user was auto-added to the team.
+        /// </summary>
+        public bool AddedToTeam { get; set; }
+
+        #endregion
+
+        // Navigation properties
+        public virtual EmailInviteBatch Batch { get; set; }
+        public virtual User SignedUpUser { get; set; }
+    }
+}
+```
+
+**New Entity: EmailInviteTemplate (lookup table)**
+```csharp
+// New file: TrashMob.Models/EmailInviteTemplate.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents an email template for invitations.
+    /// </summary>
+    public class EmailInviteTemplate : LookupModel
+    {
+        /// <summary>
+        /// Gets or sets the email subject.
+        /// </summary>
+        public string Subject { get; set; }
+
+        /// <summary>
+        /// Gets or sets the HTML body content.
+        /// </summary>
+        public string HtmlBody { get; set; }
+
+        /// <summary>
+        /// Gets or sets the plain text body content.
+        /// </summary>
+        public string TextBody { get; set; }
+
+        /// <summary>
+        /// Gets or sets the template type (Default, Community, Event).
+        /// </summary>
+        public string TemplateType { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this template is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+    }
+}
+```
+
+**New Entity: EmailSendLimit**
+```csharp
+// New file: TrashMob.Models/EmailSendLimit.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Tracks daily email send limits for rate limiting.
+    /// </summary>
+    public class EmailSendLimit
+    {
+        /// <summary>
+        /// Gets or sets the date (primary key).
+        /// </summary>
+        public DateOnly Date { get; set; }
+
+        /// <summary>
+        /// Gets or sets admin emails sent today.
+        /// </summary>
+        public int AdminSent { get; set; }
+
+        /// <summary>
+        /// Gets or sets community emails sent today.
+        /// </summary>
+        public int CommunitySent { get; set; }
+
+        /// <summary>
+        /// Gets or sets team emails sent today.
+        /// </summary>
+        public int TeamSent { get; set; }
+
+        /// <summary>
+        /// Gets or sets user emails sent today.
+        /// </summary>
+        public int UserSent { get; set; }
+
+        /// <summary>
+        /// Gets or sets total emails sent today.
+        /// </summary>
+        public int TotalSent { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<EmailInviteBatch>(entity =>
+{
+    entity.Property(e => e.BatchType).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.Status).HasMaxLength(50);
+
+    entity.HasOne(e => e.SenderUser)
+        .WithMany()
+        .HasForeignKey(e => e.SenderUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.Community)
+        .WithMany()
+        .HasForeignKey(e => e.CommunityId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.Team)
+        .WithMany()
+        .HasForeignKey(e => e.TeamId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.Template)
+        .WithMany()
+        .HasForeignKey(e => e.TemplateId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.SenderUserId);
+    entity.HasIndex(e => e.Status);
+});
+
+modelBuilder.Entity<EmailInvite>(entity =>
+{
+    entity.Property(e => e.Email).HasMaxLength(256).IsRequired();
+    entity.Property(e => e.Status).HasMaxLength(50);
+    entity.Property(e => e.SendGridMessageId).HasMaxLength(100);
+
+    entity.HasOne(e => e.Batch)
+        .WithMany(b => b.Invites)
+        .HasForeignKey(e => e.BatchId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.SignedUpUser)
+        .WithMany()
+        .HasForeignKey(e => e.SignedUpUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.BatchId);
+    entity.HasIndex(e => e.Email);
+    entity.HasIndex(e => e.Status);
+});
+
+modelBuilder.Entity<EmailInviteTemplate>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+    entity.Property(e => e.Subject).HasMaxLength(200).IsRequired();
+    entity.Property(e => e.TemplateType).HasMaxLength(50).IsRequired();
+});
+
+modelBuilder.Entity<EmailSendLimit>(entity =>
+{
+    entity.HasKey(e => e.Date);
+});
 ```
 
 ### API Changes
@@ -190,6 +445,16 @@ public async Task<ActionResult<InviteBatchDto>> CreateCommunityInviteBatch(
     Guid communityId, [FromBody] CreateBatchRequest request)
 {
     // Similar to admin but scoped to community
+}
+
+// Team batch invites
+[Authorize(Policy = "TeamLead")]
+[HttpPost("api/teams/{teamId}/invites/batch")]
+public async Task<ActionResult<InviteBatchDto>> CreateTeamInviteBatch(
+    Guid teamId, [FromBody] CreateBatchRequest request)
+{
+    // Team lead can invite potential members
+    // Invites are tagged with TeamId for auto-add on signup
 }
 
 // User invites (limited)
@@ -225,6 +490,27 @@ public async Task<ActionResult> ProcessSendGridWebhook([FromBody] SendGridEvent[
 }
 ```
 
+### Team Invite Auto-Add Flow
+
+When a team lead sends invites, the following flow ensures invited users are automatically added to the team:
+
+1. **Invite Sent:** Email contains a unique invite link with encrypted token (e.g., `/signup?invite={token}`)
+2. **Token Contains:** InviteId, TeamId, Email (encrypted/signed to prevent tampering)
+3. **User Clicks Link:** Directed to signup page with invite context
+4. **User Signs Up:**
+   - System validates token and email match
+   - Creates user account
+   - Automatically adds user to team as member
+   - Updates EmailInvite record (SignedUpUserId, SignedUpDate, AddedToTeam = true)
+5. **Notifications:**
+   - New user receives welcome + team welcome message
+   - Team lead receives notification of successful signup
+
+**Edge Cases:**
+- **Existing user clicks invite:** Prompt to login; if email matches, add to team
+- **Different email used:** Invite not auto-fulfilled; user can manually join team
+- **Token expired:** Show friendly message; allow manual signup
+
 ### Web UX Changes
 
 **Admin Dashboard:**
@@ -239,6 +525,13 @@ public async Task<ActionResult> ProcessSendGridWebhook([FromBody] SendGridEvent[
 - Community-specific templates
 - Attribution tracking
 
+**Team Lead:**
+- "Invite Members" section on team management page
+- Email paste area (up to 50 emails per batch)
+- Team-specific invite templates
+- Invite history with signup/join tracking
+- Clear indication that invitees will be auto-added to team on signup
+
 **User Dashboard:**
 - "Invite Friends" section
 - Simple email input (max 10)
@@ -246,9 +539,15 @@ public async Task<ActionResult> ProcessSendGridWebhook([FromBody] SendGridEvent[
 
 ### Mobile App Changes
 
+**All Users:**
 - Share/invite friends feature
-- Simple email input
+- Simple email input (max 10)
 - Referral link generation
+
+**Team Leads:**
+- "Invite Members" on team page
+- Email input or contact picker
+- Invite history with status tracking
 
 ---
 
@@ -266,10 +565,14 @@ public async Task<ActionResult> ProcessSendGridWebhook([FromBody] SendGridEvent[
 - Analytics dashboard
 - Cost monitoring
 
-### Phase 3: Community & User
+### Phase 3: Team Invites
+- Team lead invite UI
+- Auto-add to team on signup
+- Team attribution tracking
+
+### Phase 4: Community & User
 - Community admin invites
 - User invite feature
-- Referral tracking
 
 **Note:** Phase 1 is high priority; enables rapid volunteer acquisition.
 
@@ -277,25 +580,29 @@ public async Task<ActionResult> ProcessSendGridWebhook([FromBody] SendGridEvent[
 
 ## Open Questions
 
-1. **Daily send limits?**
-   **Recommendation:** 1000/day admin, 500/day per community, 50/month per user
-   **Owner:** Product + Finance
-   **Due:** Before Phase 1
+1. ~~**Daily send limits?**~~
+   **Decision:** 1000/day admin, 500/day per community, 100/day per team, 50/month per user
+   **Status:** ✅ Resolved
 
-2. **SendGrid plan tier?**
-   **Recommendation:** Pro plan with webhooks; monitor costs
-   **Owner:** Engineering + Finance
-   **Due:** Before Phase 1
+2. ~~**SendGrid plan tier?**~~
+   **Decision:** Pro plan with webhooks; monitor costs
+   **Status:** ✅ Resolved
 
-3. **Email template approval process?**
-   **Recommendation:** Admin templates pre-approved; community templates reviewed
-   **Owner:** Product Lead
-   **Due:** Before Phase 2
+3. ~~**Email template approval process?**~~
+   **Decision:** Self-service for all templates with post-hoc moderation if reported; reduces friction while maintaining abuse prevention through reporting mechanism
+   **Status:** ✅ Resolved
 
-4. **Referral incentives?**
-   **Recommendation:** Track only for v1; incentives TBD
-   **Owner:** Product Lead
-   **Due:** After Phase 3
+4. ~~**Referral incentives?**~~
+   **Decision:** Skip referral tracking for v1; add in future version if needed
+   **Status:** ✅ Resolved
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2235](https://github.com/trashmob/TrashMob/issues/2235)** - Project 13: Bulk Email Invites (tracking issue)
 
 ---
 
@@ -306,7 +613,13 @@ public async Task<ActionResult> ProcessSendGridWebhook([FromBody] SendGridEvent[
 
 ---
 
-**Last Updated:** January 24, 2026
+## Post-Completion Bug Fixes
+
+- **PR #2733** (Feb 15, 2026): Fixed 500 errors on invite controller endpoints
+
+---
+
+**Last Updated:** February 15, 2026
 **Owner:** Engineering Team
-**Status:** Not Started
-**Next Review:** When prioritized
+**Status:** Complete
+**Next Review:** SendGrid Webhooks (future enhancement)

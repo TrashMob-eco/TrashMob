@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Partners
+namespace TrashMob.Shared.Managers.Partners
 {
     using System;
     using System.Collections.Generic;
@@ -13,15 +13,9 @@
     /// <summary>
     /// Manages partner documents including CRUD operations and retrieving the partner associated with a document.
     /// </summary>
-    public class PartnerDocumentManager : KeyedManager<PartnerDocument>, IPartnerDocumentManager
+    public class PartnerDocumentManager(IKeyedRepository<PartnerDocument> repository)
+        : KeyedManager<PartnerDocument>(repository), IPartnerDocumentManager
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerDocumentManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for partner document data access.</param>
-        public PartnerDocumentManager(IKeyedRepository<PartnerDocument> repository) : base(repository)
-        {
-        }
 
         /// <inheritdoc />
         public async Task<Partner> GetPartnerForDocument(Guid partnerDocumentId, CancellationToken cancellationToken)
@@ -36,8 +30,15 @@
         public override async Task<IEnumerable<PartnerDocument>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
-            return (await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken))
-                .AsEnumerable();
+            return await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<PartnerDocument>> GetAllWithPartnerAsync(CancellationToken cancellationToken)
+        {
+            return await Repository.Get()
+                .Include(d => d.Partner)
+                .ToListAsync(cancellationToken);
         }
     }
 }

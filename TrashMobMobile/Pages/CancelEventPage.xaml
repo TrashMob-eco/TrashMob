@@ -11,43 +11,51 @@
              Title="Cancel Event">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" Margin="10">
-                    <VerticalStackLayout Grid.Row="0">
-                        <Label Text="Event Name" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding EventViewModel.Name}" FontSize="Small" />
-                        </Border>
-                    </VerticalStackLayout>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
 
-                    <VerticalStackLayout Grid.Row="1">
-                        <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding EventViewModel.DisplayDate}" FontSize="Small" />
-                        </Border>
+                <!-- Event Details -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,8,10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Event Details" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="Event Name" Style="{StaticResource FieldLabel}" />
+                            <Label Text="{Binding EventViewModel.Name}" FontSize="Small"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </VerticalStackLayout>
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
+                                <Label Text="{Binding EventViewModel.DisplayDate}" FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Event Time" Style="{StaticResource FieldLabel}" />
+                                <Label Text="{Binding EventViewModel.DisplayTime}" FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                        </Grid>
                     </VerticalStackLayout>
+                </Border>
 
-                    <VerticalStackLayout Grid.Row="2">
-                        <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding EventViewModel.DisplayTime}" FontSize="Small" />
-                        </Border>
-                    </VerticalStackLayout>
-
-                    <VerticalStackLayout Grid.Row="2">
-                        <Label Text="Cancellation Reason" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
+                <!-- Cancellation Reason -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Cancellation" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <VerticalStackLayout>
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Cancellation Reason" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
                             <controls:TMEditor Text="{Binding EventViewModel.CancellationReason}">
                                 <controls:TMEditor.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10"
                                                                     x:Name="cancellationReasonValidator" />
                                 </controls:TMEditor.Behaviors>
                             </controls:TMEditor>
-                        </Border>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
-                </Grid>
+                </Border>
 
-                <Button Text="Cancel Event" Command="{Binding CancelEventCommand}" Margin="10">
+                <Button Text="Cancel Event" Command="{Binding CancelEventCommand}"
+                        Style="{StaticResource PrimaryLargeButton}"
+                        Margin="10,8,10,10">
                     <Button.Triggers>
                         <MultiTrigger TargetType="Button">
                             <MultiTrigger.Conditions>
@@ -65,7 +73,7 @@
                        HorizontalOptions="Center"
                        HorizontalTextAlignment="Center"
                        TextColor="Red"
-                       Margin="10">
+                       Margin="10,0">
                     <Label.Triggers>
                         <MultiTrigger TargetType="Label">
                             <MultiTrigger.Conditions>

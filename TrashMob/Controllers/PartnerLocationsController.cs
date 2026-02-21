@@ -1,10 +1,12 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
@@ -15,22 +17,11 @@
     /// </summary>
     [Authorize]
     [Route("api/partnerlocations")]
-    public class PartnerLocationsController : SecureController
+    public class PartnerLocationsController(
+        IPartnerLocationManager partnerLocationManager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly IPartnerLocationManager partnerLocationManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerLocationsController"/> class.
-        /// </summary>
-        /// <param name="partnerLocationManager">The partner location manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        public PartnerLocationsController(IPartnerLocationManager partnerLocationManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            this.partnerLocationManager = partnerLocationManager;
-            this.partnerManager = partnerManager;
-        }
 
         /// <summary>
         /// Gets all partner locations for a given partner.
@@ -59,7 +50,7 @@
                 (await partnerLocationManager.GetAsync(pl => pl.Id == partnerLocationId, cancellationToken))
                 .FirstOrDefault();
 
-            if (partnerLocation == null)
+            if (partnerLocation is null)
             {
                 return NotFound();
             }
@@ -77,7 +68,7 @@
         public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation,
             CancellationToken cancellationToken)
         {
-            if (partnerLocation == null)
+            if (partnerLocation is null)
             {
                 return BadRequest("PartnerLocation cannot be null.");
             }
@@ -88,16 +79,12 @@
             }
 
             var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            var result = await partnerLocationManager.AddAsync(partnerLocation, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await partnerLocationManager.AddAsync(partnerLocation, UserId, cancellationToken);
             TrackEvent(nameof(AddPartnerLocation));
 
             return CreatedAtAction(nameof(GetPartnerLocation), new { partnerLocationId = partnerLocation.Id }, result);
@@ -116,15 +103,12 @@
             // Make sure the person adding the user is either an admin or already a user for the partner
             var partner =
                 await partnerLocationManager.GetPartnerForLocationAsync(partnerLocation.Id, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            await partnerLocationManager.UpdateAsync(partnerLocation, UserId, cancellationToken).ConfigureAwait(false);
+            await partnerLocationManager.UpdateAsync(partnerLocation, UserId, cancellationToken);
             TrackEvent(nameof(UpdatePartnerLocation));
 
             return Ok(partnerLocation);
@@ -141,18 +125,55 @@
             CancellationToken cancellationToken)
         {
             var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
 
-            await partnerLocationManager.DeleteAsync(partnerLocationId, cancellationToken).ConfigureAwait(false);
+            await partnerLocationManager.DeleteAsync(partnerLocationId, cancellationToken);
             TrackEvent(nameof(DeletePartnerLocation));
 
-            return Ok(partnerLocationId);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Finds partners with locations near a specified point.
+        /// </summary>
+        /// <param name="latitude">The latitude of the search center.</param>
+        /// <param name="longitude">The longitude of the search center.</param>
+        /// <param name="radiusMiles">The search radius in miles (default: 25).</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>List of partners with locations within the radius.</returns>
+        [AllowAnonymous]
+        [HttpGet("nearby")]
+        [ProducesResponseType(typeof(IEnumerable<Partner>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetNearbyPartners(
+            [FromQuery] double latitude,
+            [FromQuery] double longitude,
+            [FromQuery] double radiusMiles = 25,
+            CancellationToken cancellationToken = default)
+        {
+            // Validate coordinates
+            if (latitude < -90 || latitude > 90)
+            {
+                return BadRequest("Latitude must be between -90 and 90.");
+            }
+
+            if (longitude < -180 || longitude > 180)
+            {
+                return BadRequest("Longitude must be between -180 and 180.");
+            }
+
+            if (radiusMiles <= 0 || radiusMiles > 500)
+            {
+                return BadRequest("Radius must be between 0 and 500 miles.");
+            }
+
+            var partners = await partnerLocationManager.GetNearbyPartnersAsync(latitude, longitude, radiusMiles, cancellationToken);
+            TrackEvent(nameof(GetNearbyPartners));
+
+            return Ok(partners);
         }
     }
 }

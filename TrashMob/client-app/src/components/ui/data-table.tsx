@@ -3,10 +3,12 @@ import { useState } from 'react';
 import {
     Table as TanstackTable,
     SortingState,
+    ColumnFiltersState,
     Column,
     ColumnDef,
     flexRender,
     getCoreRowModel,
+    getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
     useReactTable,
@@ -20,6 +22,8 @@ import {
     ChevronRight,
     ChevronsLeft,
     ChevronsRight,
+    Search,
+    X,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -29,6 +33,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -39,10 +44,24 @@ import { cn } from '@/lib/utils';
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    /** Enable global search filter */
+    enableSearch?: boolean;
+    /** Placeholder text for search input */
+    searchPlaceholder?: string;
+    /** Columns to search in (by accessorKey). If not provided, searches all columns. */
+    searchColumns?: string[];
 }
 
-export const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) => {
+export const DataTable = <TData, TValue>({
+    columns,
+    data,
+    enableSearch = false,
+    searchPlaceholder = 'Search...',
+    searchColumns,
+}: DataTableProps<TData, TValue>) => {
     const [sorting, setSorting] = useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [globalFilter, setGlobalFilter] = useState('');
 
     const table = useReactTable({
         data,
@@ -51,13 +70,56 @@ export const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData
         getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
+        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: setGlobalFilter,
+        getFilteredRowModel: getFilteredRowModel(),
+        globalFilterFn: searchColumns
+            ? (row, _columnId, filterValue) => {
+                  const search = filterValue.toLowerCase();
+                  return searchColumns.some((col) => {
+                      const value = row.getValue(col);
+                      return value?.toString().toLowerCase().includes(search);
+                  });
+              }
+            : 'includesString',
         state: {
             sorting,
+            columnFilters,
+            globalFilter,
         },
     });
 
     return (
         <div>
+            {enableSearch ? (
+                <div className='flex items-center gap-2 pb-4'>
+                    <div className='relative flex-1 max-w-sm'>
+                        <Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
+                        <Input
+                            placeholder={searchPlaceholder}
+                            value={globalFilter}
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                            className='pl-8 pr-8'
+                        />
+                        {globalFilter ? (
+                            <Button
+                                variant='ghost'
+                                size='sm'
+                                className='absolute right-0 top-0 h-full px-2 hover:bg-transparent'
+                                onClick={() => setGlobalFilter('')}
+                            >
+                                <X className='h-4 w-4' />
+                                <span className='sr-only'>Clear search</span>
+                            </Button>
+                        ) : null}
+                    </div>
+                    {globalFilter ? (
+                        <span className='text-sm text-muted-foreground'>
+                            {table.getFilteredRowModel().rows.length} results
+                        </span>
+                    ) : null}
+                </div>
+            ) : null}
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (

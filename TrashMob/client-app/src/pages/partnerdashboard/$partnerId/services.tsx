@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Ban, Check, Ellipsis, Pencil, ToggleRight } from 'lucide-react';
+import { Ban, Check, Ellipsis, MapPin, Pencil, ToggleRight } from 'lucide-react';
 import { Link, Outlet, useMatch, useNavigate, useParams } from 'react-router';
 import { SidebarLayout } from '../../layouts/_layout.sidebar';
 import { useState } from 'react';
@@ -76,6 +76,19 @@ export const PartnerServices = () => {
             useDefaultCard={false}
         >
             <div className='space-y-4'>
+                {!locations?.length ? (
+                    <Card>
+                        <CardContent className='flex flex-col items-center justify-center py-12 text-center'>
+                            <MapPin className='h-10 w-10 text-muted-foreground mb-4' />
+                            <p className='text-muted-foreground mb-4'>
+                                No locations found. Add a location first to configure services.
+                            </p>
+                            <Button asChild>
+                                <Link to={`/partnerdashboard/${partnerId}/locations`}>Go to Locations</Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                ) : null}
                 {(locations || []).map((location, locIndex) => (
                     <Card key={`location-${location.id}`}>
                         <CardHeader>

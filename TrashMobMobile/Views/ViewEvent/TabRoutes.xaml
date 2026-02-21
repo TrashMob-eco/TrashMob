@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             x:Class="TrashMobMobile.Views.ViewEvent.TabRoutes"
+             x:Name="TabRoutesView">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" RowSpacing="4">
+        <!-- Header with count, recording indicator, and Simulate button -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10,5">
+            <Label Text="{Binding RouteCountDisplay}"
+                   Style="{StaticResource FieldLabel}"
+                   VerticalOptions="Center" />
+            <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                <HorizontalStackLayout Spacing="4" IsVisible="{Binding IsRecordingRoute}" VerticalOptions="Center">
+                    <Ellipse WidthRequest="10" HeightRequest="10" Fill="Red" VerticalOptions="Center" />
+                    <Label Text="Recording" FontSize="Micro" TextColor="Red" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <Button Text="Simulate Route"
+                        Command="{Binding SimulateRouteCommand}"
+                        IsVisible="{Binding EnableSimulateRoute}"
+                        Style="{StaticResource PrimarySmallButton}" />
+            </HorizontalStackLayout>
+        </Grid>
+
+        <!-- Aggregate stats -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, *, *" Margin="10,0" IsVisible="{Binding AreRoutesFound}">
+            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                <Label Text="{Binding TotalDistanceDisplay}"
+                       FontFamily="LexendSemibold" FontSize="Small"
+                       HorizontalOptions="Center" />
+                <Label Text="Distance"
+                       FontSize="Micro" HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                <Label Text="{Binding TotalDurationDisplay}"
+                       FontFamily="LexendSemibold" FontSize="Small"
+                       HorizontalOptions="Center" />
+                <Label Text="Duration"
+                       FontSize="Micro" HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                <Label Text="{Binding TotalBagsDisplay}"
+                       FontFamily="LexendSemibold" FontSize="Small"
+                       HorizontalOptions="Center" />
+                <Label Text="Bags"
+                       FontSize="Micro" HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Route map -->
+        <controls:CustomMap x:Name="routeMap" HeightRequest="200"
+                            HandlerProperties.DisconnectPolicy="Manual"
+                            Grid.Row="2" IsVisible="{Binding AreRoutesFound}"
+                            Margin="10,4" />
+
+        <!-- Empty state -->
+        <VerticalStackLayout Grid.Row="3"
+                             VerticalOptions="Center" HorizontalOptions="Center"
+                             Spacing="8" Margin="40,20"
+                             IsVisible="{Binding AreNoRoutesFound}">
+            <Image MaximumWidthRequest="48" MaximumHeightRequest="48"
+                   HorizontalOptions="Center">
+                <Image.Source>
+                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                     Glyph="{StaticResource IconCompass}"
+                                     Size="48"
+                                     Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </Image.Source>
+            </Image>
+            <Label Text="No routes recorded yet"
+                   FontFamily="LexendSemibold"
+                   FontSize="Small"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            <Label Text="Start tracking your cleanup route to see distance, duration, and your path on the map."
+                   FontSize="Micro"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+        </VerticalStackLayout>
+
+        <!-- Route list -->
+        <CollectionView Grid.Row="4"
+                        ItemsSource="{Binding EventAttendeeRouteViewModels}"
+                        SelectionMode="None"
+                        IsVisible="{Binding AreRoutesFound}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:EventAttendeeRouteViewModel">
+                    <Border Style="{StaticResource RoundBorder}" Margin="10,4">
+                        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto" Padding="10,8">
+                            <!-- Distance and duration -->
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="12">
+                                <Label Text="{Binding DistanceDisplay}"
+                                       FontFamily="LexendSemibold" FontSize="Small" />
+                                <Label Text="{Binding DurationDisplay}"
+                                       FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </HorizontalStackLayout>
+
+                            <!-- Privacy badge -->
+                            <Border Grid.Row="0" Grid.Column="1"
+                                    Padding="6,2" StrokeShape="RoundRectangle 8"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
+                                <Label Text="{Binding PrivacyDisplay}" FontSize="Micro" />
+                            </Border>
+
+                            <!-- Metrics row -->
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                   Spacing="12" IsVisible="{Binding HasMetrics}">
+                                <Label Text="{Binding BagsDisplay}" FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Label Text="{Binding WeightDisplay}" FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </HorizontalStackLayout>
+
+                            <!-- Actions row (own routes only) -->
+                            <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                                   Spacing="8" IsVisible="{Binding IsOwnRoute}" Margin="0,4,0,0">
+                                <Button Text="{Binding PrivacyDisplay, StringFormat='Privacy: {0}'}"
+                                        Command="{Binding Source={x:Reference TabRoutesView}, Path=BindingContext.ChangeRoutePrivacyCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding CanChangePrivacy}"
+                                        Style="{StaticResource SecondarySmallButton}" />
+                                <Button Text="Delete"
+                                        Command="{Binding Source={x:Reference TabRoutesView}, Path=BindingContext.DeleteRouteCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding CanDelete}"
+                                        Style="{StaticResource SecondarySmallButton}" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentView>

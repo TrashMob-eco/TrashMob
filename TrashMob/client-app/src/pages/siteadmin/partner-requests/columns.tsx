@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { ColumnDef } from '@tanstack/react-table';
-import { Check, Ellipsis, SquareCheck, SquareX, X } from 'lucide-react';
+import { Ellipsis, Eye } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -11,12 +11,7 @@ import { Button } from '@/components/ui/button';
 import PartnerRequestData from '@/components/Models/PartnerRequestData';
 import { PartnerRequestStatusBadge } from '@/components/partner-requests/partner-request-status-badge';
 
-interface GetColumnsProps {
-    onApprove: (id: string, name: string) => void;
-    onDeny: (id: string, name: string) => void;
-}
-
-export const getColumns = ({ onApprove, onDeny }: GetColumnsProps): ColumnDef<PartnerRequestData>[] => [
+export const columns: ColumnDef<PartnerRequestData>[] = [
     {
         accessorKey: 'name',
         header: 'Name',
@@ -26,52 +21,12 @@ export const getColumns = ({ onApprove, onDeny }: GetColumnsProps): ColumnDef<Pa
         header: 'Email',
     },
     {
-        accessorKey: 'phone',
-        header: 'Phone',
-    },
-    {
-        accessorKey: 'website',
-        header: 'Website',
-        cell: ({ row }) => (
-            <a href={row.getValue('website')} target='_blank' rel='noreferrer'>
-                {row.getValue('website')}
-            </a>
-        ),
-    },
-    {
-        accessorKey: 'city',
-        header: 'City',
-    },
-    {
-        accessorKey: 'region',
-        header: 'Region',
-    },
-    {
-        accessorKey: 'country',
-        header: 'Country',
-    },
-    {
         accessorKey: 'partnerRequestStatusId',
-        header: 'Request Status',
+        header: 'Status',
         cell: ({ row }) => <PartnerRequestStatusBadge statusId={row.getValue('partnerRequestStatusId')} />,
     },
     {
-        accessorKey: 'isBecomeAPartnerRequest',
-        header: 'Is Become Partner Request',
-        cell: ({ row }) => {
-            return row.getValue('isBecomeAPartnerRequest') ? (
-                <Check className='text-primary' />
-            ) : (
-                <X className='text-destructive' />
-            );
-        },
-    },
-    {
-        accessorKey: 'notes',
-        header: 'Notes',
-    },
-    {
-        accessorKey: 'actions',
+        id: 'actions',
         header: () => <div className='text-right'>Actions</div>,
         cell: ({ row }) => {
             const partnerRequest = row.original;
@@ -84,13 +39,11 @@ export const getColumns = ({ onApprove, onDeny }: GetColumnsProps): ColumnDef<Pa
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className='w-56'>
-                            <DropdownMenuItem onClick={() => onApprove(partnerRequest.id, partnerRequest.name)}>
-                                <SquareCheck />
-                                Approve request
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onDeny(partnerRequest.id, partnerRequest.name)}>
-                                <SquareX />
-                                Deny request
+                            <DropdownMenuItem asChild>
+                                <Link to={`${partnerRequest.id}`}>
+                                    <Eye />
+                                    View Details
+                                </Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

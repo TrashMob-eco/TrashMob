@@ -13,11 +13,21 @@ namespace TrashMob.Shared.Managers.Interfaces
     public interface IEventManager : IKeyedManager<Event>
     {
         /// <summary>
-        /// Gets all active events.
+        /// Gets all active events visible to the specified user.
+        /// When userId is null, returns only public events.
+        /// </summary>
+        /// <param name="userId">Optional user ID to include team-only events visible to this user.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A collection of active events visible to the user.</returns>
+        Task<IEnumerable<Event>> GetActiveEventsAsync(Guid? userId = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets all active team-only events (for notification engine use).
+        /// Returns events with EventVisibilityId == TeamOnly, including Team navigation property.
         /// </summary>
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-        /// <returns>A collection of active events.</returns>
-        Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default);
+        /// <returns>A collection of active team-only events.</returns>
+        Task<IEnumerable<Event>> GetActiveTeamEventsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets all completed events.
@@ -56,12 +66,14 @@ namespace TrashMob.Shared.Managers.Interfaces
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Gets events matching the specified filter criteria.
+        /// Gets events matching the specified filter criteria, respecting visibility rules.
+        /// When userId is null, returns only public events.
         /// </summary>
         /// <param name="filter">The filter criteria for events.</param>
+        /// <param name="userId">Optional user ID to include team-only events visible to this user.</param>
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-        /// <returns>A collection of events matching the filter.</returns>
-        Task<IEnumerable<Event>> GetFilteredEventsAsync(EventFilter filter,
+        /// <returns>A collection of events matching the filter visible to the user.</returns>
+        Task<IEnumerable<Event>> GetFilteredEventsAsync(EventFilter filter, Guid? userId = null,
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -71,7 +83,7 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="endTime">The end of the time range.</param>
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>A collection of event locations within the time range.</returns>
-        Task<IEnumerable<Location>> GeEventLocationsByTimeRangeAsync(DateTimeOffset? startTime, DateTimeOffset? endTime,
+        Task<IEnumerable<Location>> GetEventLocationsByTimeRangeAsync(DateTimeOffset? startTime, DateTimeOffset? endTime,
             CancellationToken cancellationToken = default);
 
         /// <summary>

@@ -45,8 +45,8 @@ interface FormInputs {
 const formSchema = z.object({
     name: z.string({ required_error: 'Location Name cannot be empty.' }),
     isActive: z.boolean(),
-    publicNotes: z.string({ required_error: 'Public notes cannot be empty.' }),
-    privateNotes: z.string(),
+    publicNotes: z.string().optional(),
+    privateNotes: z.string().optional(),
     location: z.object({
         lat: z.number().optional(),
         lng: z.number().optional(),
@@ -226,9 +226,7 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
                     name='publicNotes'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerLocationPublicNotes} required>
-                                Public Notes
-                            </FormLabel>
+                            <FormLabel tooltip={ToolTips.PartnerLocationPublicNotes}>Public Notes</FormLabel>
                             <FormControl>
                                 <Textarea {...field} maxLength={1000} className='h-24' />
                             </FormControl>

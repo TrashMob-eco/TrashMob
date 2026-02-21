@@ -17,7 +17,7 @@ public partial class CreatePickupLocationPage : ContentPage
         BindingContext = this.viewModel;
     }
 
-    public string EventId { get; set; }
+    public string EventId { get; set; } = string.Empty;
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
@@ -27,7 +27,7 @@ public partial class CreatePickupLocationPage : ContentPage
         // Default the map zoom to the location of the event
         if (viewModel?.EventViewModel?.Address != null)
         {
-            var mapSpan = new MapSpan(viewModel.EventViewModel.Address.Location, 0.05, 0.05);
+            var mapSpan = new MapSpan(viewModel.EventViewModel.Address.Location!, 0.05, 0.05);
             pickupLocationMap.InitialMapSpanAndroid = mapSpan;
             pickupLocationMap.MoveToRegion(mapSpan);
         }

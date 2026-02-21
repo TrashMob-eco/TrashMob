@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Security.Cryptography.X509Certificates;
@@ -9,23 +9,13 @@
     /// <summary>
     /// Azure Key Vault implementation for retrieving secrets and certificates.
     /// </summary>
-    public class KeyVaultManager : IKeyVaultManager
+    public class KeyVaultManager(SecretClient secretClient) : IKeyVaultManager
     {
-        private readonly SecretClient secretClient;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeyVaultManager"/> class.
-        /// </summary>
-        /// <param name="secretClient">The Azure Key Vault secret client.</param>
-        public KeyVaultManager(SecretClient secretClient)
-        {
-            this.secretClient = secretClient;
-        }
 
         /// <inheritdoc />
         public async Task<X509Certificate2> GetCertificateAsync(string certificateSecretName)
         {
-            var secret = await secretClient.GetSecretAsync(certificateSecretName).ConfigureAwait(false)
+            var secret = await secretClient.GetSecretAsync(certificateSecretName)
                 ?? throw new InvalidOperationException($"Unable to find certificate with secret name {certificateSecretName}");
 
             var pfxBytes = Convert.FromBase64String(secret.Value.Value);

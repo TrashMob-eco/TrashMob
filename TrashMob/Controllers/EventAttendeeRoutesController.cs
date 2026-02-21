@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -19,8 +19,6 @@
     [Route("api/eventattendeeroutes")]
     public class EventAttendeeRoutesController(IEventAttendeeRouteManager eventAttendeeRouteManager) : SecureController
     {
-        private readonly IEventAttendeeRouteManager eventAttendeeRouteManager = eventAttendeeRouteManager;
-
         /// <summary>
         /// Gets a list of event attendee routes for a specific event and user.
         /// </summary>
@@ -31,7 +29,7 @@
         [ProducesResponseType(typeof(IEnumerable<EventAttendeeRoute>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventAttendeeRoutes(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
-            var result = (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false)).Where(e => e.CreatedByUserId == userId);
+            var result = (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken)).Where(e => e.CreatedByUserId == userId);
 
             TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
@@ -46,9 +44,14 @@
         [ProducesResponseType(typeof(IEnumerable<DisplayEventAttendeeRoute>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventAttendeeRoutesByEventId(Guid eventId, CancellationToken cancellationToken)
         {
-            var result = await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false);
+            var result = await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken);
 
-            var displayEventAttendeeRoutes = result.Select(x => x.ToDisplayEventAttendeeRoute()).ToList();
+            var currentUserId = User.Identity?.IsAuthenticated == true ? UserId : Guid.Empty;
+
+            var displayEventAttendeeRoutes = result
+                .Where(r => r.PrivacyLevel != "Private" || r.UserId == currentUserId)
+                .Select(x => x.ToDisplayEventAttendeeRoute())
+                .ToList();
 
             TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(displayEventAttendeeRoutes);
@@ -63,7 +66,7 @@
         [ProducesResponseType(typeof(IEnumerable<EventAttendeeRoute>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventAttendeeRoutesByUserId(Guid userId, CancellationToken cancellationToken)
         {
-            var result = await eventAttendeeRouteManager.GetByCreatedUserIdAsync(userId, cancellationToken).ConfigureAwait(false);
+            var result = await eventAttendeeRouteManager.GetByCreatedUserIdAsync(userId, cancellationToken);
 
             TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
@@ -80,9 +83,9 @@
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetEventAttendeeRoute(Guid id, CancellationToken cancellationToken)
         {
-            var result = await eventAttendeeRouteManager.GetAsync(x => x.Id == id, cancellationToken).ConfigureAwait(false);
+            var result = await eventAttendeeRouteManager.GetAsync(x => x.Id == id, cancellationToken);
 
-            if (result == null || result.Count() == 0)
+            if (result is null || result.Count() == 0)
             {
                 return NotFound();
             }
@@ -98,16 +101,14 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated event attendee route.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventAttendeeRoute), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> UpdateEventAttendeeRoute(DisplayEventAttendeeRoute displayEventAttendeeRoute,
             CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, displayEventAttendeeRoute,
-                AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(displayEventAttendeeRoute, AuthorizationPolicyConstants.UserOwnsEntity))
             {
                 return Forbid();
             }
@@ -115,7 +116,7 @@
             var eventAttendeeRoute = displayEventAttendeeRoute.ToEventAttendeeRoute();
 
             var updatedEventAttendeeRoute = await eventAttendeeRouteManager
-                .UpdateAsync(eventAttendeeRoute, UserId, cancellationToken).ConfigureAwait(false);
+                .UpdateAsync(eventAttendeeRoute, UserId, cancellationToken);
             TrackEvent(nameof(UpdateEventAttendeeRoute));
 
             return Ok(updatedEventAttendeeRoute);
@@ -129,16 +130,15 @@
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status201Created)]
         public async Task<IActionResult> AddEventAttendeeRoute(DisplayEventAttendeeRoute displayEventAttendeeRoute,
             CancellationToken cancellationToken)
         {
             var eventAttendeeRoute = displayEventAttendeeRoute.ToEventAttendeeRoute();
 
-            await eventAttendeeRouteManager.AddAsync(eventAttendeeRoute, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await eventAttendeeRouteManager.AddAsync(eventAttendeeRoute, UserId, cancellationToken);
             TrackEvent(nameof(AddEventAttendeeRoute));
-            return Ok();
+            return CreatedAtAction(nameof(GetEventAttendeeRoute), new { id = result.Id }, result);
         }
 
         /// <summary>
@@ -154,7 +154,7 @@
         public async Task<IActionResult> DeleteEventAttendeeRoute(Guid routeId,
             CancellationToken cancellationToken)
         {
-            await eventAttendeeRouteManager.DeleteAsync(routeId, cancellationToken).ConfigureAwait(false);
+            await eventAttendeeRouteManager.DeleteAsync(routeId, cancellationToken);
             TrackEvent(nameof(DeleteEventAttendeeRoute));
 
             return new NoContentResult();

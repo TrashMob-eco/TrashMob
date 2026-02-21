@@ -58,7 +58,7 @@ export const MyPartnersTable = ({ items }: MyPartnersTableProps) => {
                                             <DropdownMenuItem asChild>
                                                 <Link to={`/partnerdashboard/${displayPartner.id}`}>
                                                     <Pencil />
-                                                    <span>Manage partnership</span>
+                                                    <span>Manage</span>
                                                 </Link>
                                             </DropdownMenuItem>
                                         ) : (

@@ -2,6 +2,7 @@
 
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Sentry;
 using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
@@ -45,15 +46,20 @@ public partial class ManageEventPartnersViewModel(IMobEventManager mobEventManag
 
     private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
     {
-        await Shell.Current.GoToAsync(
-            $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={MobEvent.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        try
+        {
+            await Shell.Current.GoToAsync(
+                $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={MobEvent.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     public async Task Init(Guid eventId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var eventPartnerLocations = await eventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(eventId);
 
@@ -76,14 +82,6 @@ public partial class ManageEventPartnersViewModel(IMobEventManager mobEventManag
             MobEvent = await mobEventManager.GetEventAsync(eventId);
 
             EventViewModel = MobEvent.ToEventViewModel(userManager.CurrentUser.Id);
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while loading the event partners. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while loading the event partners. Please wait and try again in a moment.");
     }
 }

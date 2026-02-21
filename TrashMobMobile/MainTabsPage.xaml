@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:local="clr-namespace:TrashMobMobile"
+       xmlns:pages="clr-namespace:TrashMobMobile.Pages"
+       x:Class="TrashMobMobile.MainTabsPage"
+       Shell.NavBarIsVisible="False">
+    <TabBar>
+        <Tab Title="Home"
+             AutomationId="HomeTab"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHome}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:HomeFeedPage}" Route="HomeFeedPage" />
+        </Tab>
+        <Tab Title="Explore"
+             AutomationId="ExploreTab"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCompass}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:ExplorePage}" Route="ExplorePage" />
+        </Tab>
+        <Tab Title=" "
+             AutomationId="QuickActionTab"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconPlusCircle}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:QuickActionPlaceholderPage}" Route="QuickActionPlaceholderPage" />
+        </Tab>
+        <Tab Title="Impact"
+             AutomationId="ImpactTab"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconTrophy}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:ImpactPage}" Route="ImpactPage" />
+        </Tab>
+        <Tab Title="Profile"
+             AutomationId="ProfileTab"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconAccount}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:ProfilePage}" Route="ProfilePage" />
+        </Tab>
+    </TabBar>
+</Shell>

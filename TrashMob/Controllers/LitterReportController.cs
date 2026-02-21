@@ -38,7 +38,7 @@ namespace TrashMob.Controllers
         [HttpGet("{litterReportId}")]
         public async Task<IActionResult> GetLitterReport(Guid litterReportId, CancellationToken cancellationToken)
         {
-            var result = await litterReportManager.GetAsync(litterReportId, cancellationToken).ConfigureAwait(false);
+            var result = await litterReportManager.GetAsync(litterReportId, cancellationToken);
             return Ok(result);
         }
 
@@ -50,7 +50,7 @@ namespace TrashMob.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLitterReports(CancellationToken cancellationToken)
         {
-            var result = await litterReportManager.GetAsync(cancellationToken).ConfigureAwait(false);
+            var result = await litterReportManager.GetAsync(cancellationToken);
             var fullLitterReports = await ToFullLitterReport(result, cancellationToken);
 
             return Ok(fullLitterReports);
@@ -65,7 +65,7 @@ namespace TrashMob.Controllers
         [Route("new")]
         public async Task<IActionResult> GetNewLitterReports(CancellationToken cancellationToken)
         {
-            var result = await litterReportManager.GetNewLitterReportsAsync(cancellationToken).ConfigureAwait(false);
+            var result = await litterReportManager.GetNewLitterReportsAsync(cancellationToken);
             var fullLitterReports = await ToFullLitterReport(result, cancellationToken);
 
             return Ok(fullLitterReports);
@@ -80,8 +80,7 @@ namespace TrashMob.Controllers
         [Route("cleaned")]
         public async Task<IActionResult> GetCleanedLitterReports(CancellationToken cancellationToken)
         {
-            var result = await litterReportManager.GetCleanedLitterReportsAsync(cancellationToken)
-                .ConfigureAwait(false);
+            var result = await litterReportManager.GetCleanedLitterReportsAsync(cancellationToken);
             var fullLitterReports = await ToFullLitterReport(result, cancellationToken);
 
             return Ok(fullLitterReports);
@@ -96,8 +95,7 @@ namespace TrashMob.Controllers
         [Route("notcancelled")]
         public async Task<IActionResult> GetNotCancelledLitterReports(CancellationToken cancellationToken)
         {
-            var result = await litterReportManager.GetNotCancelledLitterReportsAsync(cancellationToken)
-                .ConfigureAwait(false);
+            var result = await litterReportManager.GetNotCancelledLitterReportsAsync(cancellationToken);
             var fullLitterReports = await ToFullLitterReport(result, cancellationToken);
 
             return Ok(fullLitterReports);
@@ -112,8 +110,7 @@ namespace TrashMob.Controllers
         [Route("assigned")]
         public async Task<IActionResult> GetAssignedLitterReports(CancellationToken cancellationToken)
         {
-            var result = await litterReportManager.GetAssignedLitterReportsAsync(cancellationToken)
-                .ConfigureAwait(false);
+            var result = await litterReportManager.GetAssignedLitterReportsAsync(cancellationToken);
             var fullLitterReports = await ToFullLitterReport(result, cancellationToken);
 
             return Ok(fullLitterReports);
@@ -129,8 +126,7 @@ namespace TrashMob.Controllers
         [Route("cancelled")]
         public async Task<IActionResult> GetCancelledLitterReports(CancellationToken cancellationToken)
         {
-            var result = await litterReportManager.GetCancelledLitterReportsAsync(cancellationToken)
-                .ConfigureAwait(false);
+            var result = await litterReportManager.GetCancelledLitterReportsAsync(cancellationToken);
             var fullLitterReports = await ToFullLitterReport(result, cancellationToken);
 
             return Ok(fullLitterReports);
@@ -148,8 +144,7 @@ namespace TrashMob.Controllers
         [Route("userlitterreports/{userId}")]
         public async Task<IActionResult> GetUserLitterReports(Guid userId, CancellationToken cancellationToken)
         {
-            var result = await litterReportManager.GetUserLitterReportsAsync(userId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await litterReportManager.GetUserLitterReportsAsync(userId, cancellationToken);
             var fullLitterReports = await ToFullLitterReport(result, cancellationToken);
 
             return Ok(fullLitterReports);
@@ -166,10 +161,9 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetFilteredLitterReports([FromBody] LitterReportFilter filter,
             CancellationToken cancellationToken)
         {
-            var result = await litterReportManager.GetFilteredLitterReportsAsync(filter, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await litterReportManager.GetFilteredLitterReportsAsync(filter, cancellationToken);
 
-            if (filter.PageSize != null)
+            if (filter.PageSize is not null)
             {
                 var pagedResults = result.OrderByDescending(e => e.CreatedDate).Skip(filter.PageIndex.GetValueOrDefault(0) * filter.PageSize.GetValueOrDefault(10))
                     .Take(filter.PageSize.GetValueOrDefault(10)).ToList();
@@ -193,10 +187,9 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetPagedFilteredLitterReports([FromBody] LitterReportFilter filter,
             CancellationToken cancellationToken)
         {
-            var result = await litterReportManager.GetFilteredLitterReportsAsync(filter, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await litterReportManager.GetFilteredLitterReportsAsync(filter, cancellationToken);
 
-            if (filter.PageSize != null)
+            if (filter.PageSize is not null)
             {
                 var pagedResults = PaginatedList<LitterReport>.Create(result.OrderByDescending(e => e.CreatedDate).AsQueryable(),
                     filter.PageIndex.GetValueOrDefault(0), filter.PageSize.GetValueOrDefault(10));
@@ -219,7 +212,7 @@ namespace TrashMob.Controllers
             [FromQuery] DateTimeOffset? endTime, CancellationToken cancellationToken)
         {
             var result = await litterReportManager
-                .GeLitterLocationsByTimeRangeAsync(startTime, endTime, cancellationToken).ConfigureAwait(false);
+                .GeLitterLocationsByTimeRangeAsync(startTime, endTime, cancellationToken);
 
             return Ok(result);
         }
@@ -235,7 +228,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddLitterReport(LitterReport litterReport, CancellationToken cancellationToken)
         {
-            if (litterReport == null)
+            if (litterReport is null)
             {
                 return BadRequest("Litter report cannot be null.");
             }
@@ -263,20 +256,22 @@ namespace TrashMob.Controllers
         /// <remarks>Result of the upload operation.</remarks>
         [HttpPost("image/{litterImageId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid litterImageId,
+        public async Task<IActionResult> UploadImageAsync([FromForm] ImageUpload imageUpload, Guid litterImageId,
             CancellationToken cancellationToken)
         {
             var litterImage = await litterImageManager.GetAsync(litterImageId, cancellationToken);
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, litterImage,
-                    AuthorizationPolicyConstants.UserOwnsEntity);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(litterImage, AuthorizationPolicyConstants.UserOwnsEntity))
             {
                 return Forbid();
             }
 
-            await imageManager.UploadImage(imageUpload);
+            await imageManager.UploadImageAsync(imageUpload);
+
+            // Update the LitterImage record with the blob URL so the detail page can display it
+            var imageUrl = await imageManager.GetImageUrlAsync(litterImageId, ImageTypeEnum.LitterImage, ImageSizeEnum.Reduced, cancellationToken);
+            litterImage.AzureBlobURL = imageUrl;
+            await litterImageManager.UpdateAsync(litterImage, UserId, cancellationToken);
 
             return Ok();
         }
@@ -293,17 +288,14 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> UpdateLitterReport(LitterReport litterReport,
             CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, litterReport,
-                AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(litterReport, AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin))
             {
                 return Forbid();
             }
 
             var updatedLitterReport = await litterReportManager.UpdateAsync(litterReport, UserId, cancellationToken);
 
-            if (updatedLitterReport != null)
+            if (updatedLitterReport is not null)
             {
                 TrackEvent(nameof(UpdateLitterReport));
                 return Ok(updatedLitterReport);
@@ -323,22 +315,19 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteLitterReport(Guid id, CancellationToken cancellationToken)
         {
-            var litterReport = await litterReportManager.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            var litterReport = await litterReportManager.GetAsync(id, cancellationToken);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, litterReport,
-                AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(litterReport, AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin))
             {
                 return Forbid();
             }
 
-            var result = await litterReportManager.DeleteAsync(id, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await litterReportManager.DeleteAsync(id, UserId, cancellationToken);
 
             if (result != -1)
             {
                 TrackEvent(nameof(DeleteLitterReport));
-                return Ok(id);
+                return NoContent();
             }
 
             return BadRequest("Could not find the litter report, delete failed");
@@ -347,7 +336,7 @@ namespace TrashMob.Controllers
         private async Task<IEnumerable<FullLitterReport>> ToFullLitterReport(IEnumerable<LitterReport> litterReports,
             CancellationToken cancellationToken)
         {
-            var fullLitterReports = new List<FullLitterReport>();
+            List<FullLitterReport> fullLitterReports = [];
 
             foreach (var litterReport in litterReports)
             {
@@ -369,14 +358,22 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetImage(Guid litterImageId, ImageSizeEnum imageSize,
             CancellationToken cancellationToken)
         {
-            var url = await imageManager.GetImageUrlAsync(litterImageId, ImageTypeEnum.LitterImage, imageSize, cancellationToken);
-
-            if (string.IsNullOrEmpty(url))
+            try
             {
+                var url = await imageManager.GetImageUrlAsync(litterImageId, ImageTypeEnum.LitterImage, imageSize, cancellationToken);
+
+                if (string.IsNullOrWhiteSpace(url))
+                {
+                    return NoContent();
+                }
+
+                return Ok(url);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to get image URL for litter image {LitterImageId}", litterImageId);
                 return NoContent();
             }
-
-            return Ok(url);
         }
     }
 }

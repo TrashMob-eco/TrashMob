@@ -6,7 +6,7 @@
 | **Priority** | High |
 | **Risk** | Very High |
 | **Size** | Very Large |
-| **Dependencies** | Project 1 (Auth), Project 8 (Waivers), Project 9 (Teams), Project 16 (CMS) |
+| **Dependencies** | Project 1 (Auth), Project 8 (Waivers), Project 9 (Teams) |
 
 ---
 
@@ -21,46 +21,72 @@ Branded public pages for partner communities (cities, counties, organizations) w
 ### Primary Goals
 - **Community discovery map** showing all partnered communities
 - **Branded public home pages** for each community
-- **Admin management** with SSO for community staff
+- **Custom community branding** (colors, logos)
+- **Community-specific waivers**
+- **Admin management** for community staff
 - **Metrics & notifications** for community stakeholders
 - **Opt-in to adopt-a programs** integration
 
 ### Secondary Goals
-- Custom community branding (colors, logos)
-- Community-specific waivers
+- SSO for community admin login
 - Community newsletters
-- Sponsorship display areas
+- **Community leaderboards** (individual and team rankings within the community)
 
 ---
 
 ## Scope
 
 ### Phase 1 - Community Discovery
-- ✅ Map showing community locations
-- ✅ List view with search/filter
-- ✅ Basic community detail pages
-- ✅ Link from partner pages
+- ☐ Map showing community locations
+- ☐ List view with search/filter
+- ☐ Basic community detail pages
+- ☐ Link from partner pages
+- ☐ Friendly URLs for each community (`/communities/{city-state}` e.g., `/communities/seattle-wa`)
 
 ### Phase 2 - Community Home Pages
-- ✅ Branded header with logo
-- ✅ About section (CMS-editable)
-- ✅ Contact information
-- ✅ Events in this community
-- ✅ Teams in this community
-- ✅ Impact metrics display
+- ☐ Branded header with logo
+- ☐ About section (admin-editable, stored in database)
+- ☐ Contact information
+- ☐ Community map centered on location (events, litter reports, teams)
+- ☐ Events in this community
+- ☐ Teams in this community
+- ☐ Impact metrics display
+- ☐ Community leaderboards (individual and team) - future enhancement
+
+### Community Page Customizable Fields (V1)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| Logo | Image upload | Standard size (200x200) |
+| Hero/Banner image | Image upload | Standard dimensions |
+| Primary color | Color picker | Hex value |
+| Secondary color | Color picker | Hex value |
+| About text | Textarea | Plain text or markdown |
+| Tagline | Text | Short descriptor |
+| Contact email | Email | Required |
+| Contact phone | Text | Optional |
+| Website URL | URL | Optional |
+| Social links | URLs | Facebook, Instagram, Twitter, LinkedIn |
+| Physical address | Text | For display |
 
 ### Phase 3 - Community Admin
-- ✅ SSO integration for community staff
-- ✅ Admin dashboard for community
-- ✅ Manage community content
-- ✅ View community metrics and reports
-- ✅ Download reports (CSV, PDF)
+- ☐ Admin dashboard for community
+- ☐ Manage community content
+- ☐ View community metrics and reports
+- ☐ Download reports (CSV, PDF)
+- ☐ SSO integration for community staff (secondary goal)
 
 ### Phase 4 - Programs Integration
-- ✅ Opt-in to Adopt-A-Location program
-- ✅ Manage adoptable areas
-- ✅ Review team applications
-- ✅ Community-specific events
+- ☐ Opt-in to Adopt-A-Location program
+- ☐ Manage adoptable areas
+- ☐ Review team applications
+- ☐ Community-specific events
+
+### Phase 5 - Documentation
+- ☐ Update FAQ page with Community-related questions (see #2307)
+- ☐ Update Help documentation for Community features
+- ☐ Add Communities section to Getting Started guide
+- ☐ Create Community Admin guide/tips content
 
 ---
 
@@ -71,6 +97,7 @@ Branded public pages for partner communities (cities, counties, organizations) w
 - ❌ Multi-language community pages
 - ❌ Community forums/discussion boards
 - ❌ Custom domain support (future)
+- ❌ Community sponsorship display areas
 
 ---
 
@@ -93,10 +120,11 @@ Branded public pages for partner communities (cities, counties, organizations) w
 ## Dependencies
 
 ### Blockers
-- **Project 1 (Auth Revamp):** SSO for community admins
 - **Project 8 (Waivers V3):** Community-specific waivers
 - **Project 9 (Teams):** Teams associated with communities
-- **Project 16 (CMS):** Editable community content
+
+### Related (Non-Blocking)
+- **Project 1 (Auth Revamp):** SSO for community admins (secondary goal)
 
 ### Enables
 - **Project 11 (Adopt-A-Location):** Communities define adoptable areas
@@ -119,42 +147,155 @@ Branded public pages for partner communities (cities, counties, organizations) w
 
 ### Data Model Changes
 
-```sql
--- Add home page support to Partners (Communities are Partners)
-ALTER TABLE Partners
-ADD HomePageStartDate DATETIMEOFFSET NULL,
-    HomePageEndDate DATETIMEOFFSET NULL,
-    HomePageEnabled BIT NOT NULL DEFAULT 0,
-    BrandingPrimaryColor NVARCHAR(7) NULL,
-    BrandingSecondaryColor NVARCHAR(7) NULL,
-    BannerImageUrl NVARCHAR(500) NULL;
+**Modification: Partner (add home page properties)**
+```csharp
+// Add to existing TrashMob.Models/Partner.cs
+#region Community Home Page Properties
 
--- Community program types (Adopt-A-Highway, Adopt-A-Park, etc.)
-CREATE TABLE CommunityProgramTypes (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(500) NULL,
-    DisplayOrder INT NOT NULL DEFAULT 0,
-    IsActive BIT NOT NULL DEFAULT 1
-);
+/// <summary>
+/// Gets or sets when the community home page subscription starts.
+/// </summary>
+public DateTimeOffset? HomePageStartDate { get; set; }
 
--- Community programs
-CREATE TABLE CommunityPrograms (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    PartnerId UNIQUEIDENTIFIER NOT NULL,
-    ProgramTypeId INT NOT NULL,
-    Name NVARCHAR(200) NOT NULL,
-    Description NVARCHAR(MAX) NULL,
-    IsActive BIT NOT NULL DEFAULT 1,
-    CreatedByUserId UNIQUEIDENTIFIER NOT NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (PartnerId) REFERENCES Partners(Id),
-    FOREIGN KEY (ProgramTypeId) REFERENCES CommunityProgramTypes(Id),
-    FOREIGN KEY (CreatedByUserId) REFERENCES Users(Id)
-);
+/// <summary>
+/// Gets or sets when the community home page subscription ends.
+/// </summary>
+public DateTimeOffset? HomePageEndDate { get; set; }
 
-CREATE INDEX IX_Partners_HomePageEnabled ON Partners(HomePageEnabled) WHERE HomePageEnabled = 1;
-CREATE INDEX IX_CommunityPrograms_PartnerId ON CommunityPrograms(PartnerId);
+/// <summary>
+/// Gets or sets whether the community home page is enabled.
+/// </summary>
+public bool HomePageEnabled { get; set; }
+
+/// <summary>
+/// Gets or sets the primary branding color (hex, e.g., "#FF5733").
+/// </summary>
+public string BrandingPrimaryColor { get; set; }
+
+/// <summary>
+/// Gets or sets the secondary branding color (hex).
+/// </summary>
+public string BrandingSecondaryColor { get; set; }
+
+/// <summary>
+/// Gets or sets the URL of the community banner image.
+/// </summary>
+public string BannerImageUrl { get; set; }
+
+#endregion
+
+// Navigation property for programs
+public virtual ICollection<CommunityProgram> Programs { get; set; }
+```
+
+**New Entity: CommunityProgramType (lookup table)**
+```csharp
+// New file: TrashMob.Models/CommunityProgramType.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a type of community program (e.g., Adopt-A-Highway, Adopt-A-Park).
+    /// </summary>
+    public class CommunityProgramType : LookupModel
+    {
+        /// <summary>
+        /// Gets or sets the description of this program type.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the display order for sorting.
+        /// </summary>
+        public int DisplayOrder { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this program type is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        // Navigation property
+        public virtual ICollection<CommunityProgram> Programs { get; set; }
+    }
+}
+```
+
+**New Entity: CommunityProgram**
+```csharp
+// New file: TrashMob.Models/CommunityProgram.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a program offered by a community (partner).
+    /// </summary>
+    public class CommunityProgram : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the community (partner) identifier.
+        /// </summary>
+        public Guid PartnerId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the program type identifier.
+        /// </summary>
+        public int ProgramTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the program name.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the program description.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this program is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        // Navigation properties
+        public virtual Partner Partner { get; set; }
+        public virtual CommunityProgramType ProgramType { get; set; }
+        public virtual ICollection<AdoptableArea> AdoptableAreas { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<Partner>(entity =>
+{
+    // Add to existing Partner configuration
+    entity.Property(e => e.BrandingPrimaryColor).HasMaxLength(7);
+    entity.Property(e => e.BrandingSecondaryColor).HasMaxLength(7);
+    entity.Property(e => e.BannerImageUrl).HasMaxLength(500);
+    entity.HasIndex(e => e.HomePageEnabled)
+        .HasFilter("[HomePageEnabled] = 1");
+});
+
+modelBuilder.Entity<CommunityProgramType>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+    entity.Property(e => e.Description).HasMaxLength(500);
+});
+
+modelBuilder.Entity<CommunityProgram>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+
+    entity.HasOne(e => e.Partner)
+        .WithMany(p => p.Programs)
+        .HasForeignKey(e => e.PartnerId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.ProgramType)
+        .WithMany(pt => pt.Programs)
+        .HasForeignKey(e => e.ProgramTypeId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.PartnerId);
+});
 ```
 
 ### API Changes
@@ -207,7 +348,11 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 
 2. `/communities/{slug}` - Community Public Page
    - Branded header
-   - About section (from CMS)
+   - About section (admin-editable)
+   - **Community map** centered on community location showing:
+     - Events in this community
+     - Litter reports in this community
+     - Teams in this community
    - Impact metrics widget
    - Upcoming events in community
    - Active teams in community
@@ -247,8 +392,8 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 - Link partners to community pages
 
 ### Phase 2: Branded Content
-- CMS integration for content
-- Branding customization
+- Admin-editable content fields (about, tagline, contact info)
+- Branding customization (logo, colors, banner image)
 - Metrics widgets
 - Events and teams integration
 
@@ -263,18 +408,27 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 - Integration with Adopt-A-Location
 - Application management
 
+### Phase 5: Documentation
+- Update FAQ with Community questions
+- Update Help docs for Community features
+- Add to Getting Started guide
+- Create Community Admin guide
+
 **Note:** Phases are sequential; SSO requires Project 1 completion.
 
 ---
 
 ## Open Questions
 
-1. **URL structure for communities?**
-   **Recommendation:** `/communities/{slug}` with auto-generated slugs
-   **Owner:** Product Lead
-   **Due:** Before Phase 1
+1. ~~**URL structure for communities?**~~
+   **Decision:** `/communities/{slug}` with friendly slugs (e.g., `/communities/seattle`)
+   **Status:** ✅ Resolved
 
-2. **How to handle overlapping community boundaries?**
+2. ~~**How to handle non-unique city names and spaces in slugs?**~~
+   **Decision:** Always include state abbreviation: `/communities/seattle-wa`, `/communities/portland-or`, `/communities/new-york-ny`. Use hyphens for spaces.
+   **Status:** ✅ Resolved
+
+3. **How to handle overlapping community boundaries?**
    **Recommendation:** Allow overlap; events show in all applicable communities
    **Owner:** Product Lead
    **Due:** Before Phase 1
@@ -289,6 +443,39 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
    **Owner:** Business Team
    **Due:** Before pilot launch
 
+5. ~~**How are community boundaries defined geographically?**~~
+   **Decision:** Simple city/state matching for v1; polygon boundaries for v2 if needed for complex cases (multi-city regions, unincorporated areas)
+   **Status:** ✅ Resolved
+
+6. ~~**What happens to community content when subscription lapses?**~~
+   **Decision:** 30-day grace period with warning; then page shows "Inactive Community" with historical metrics preserved but no active features; full data deletion after 1 year of inactivity
+   **Status:** ✅ Resolved
+
+7. ~~**Can communities have multiple admin roles with different permissions?**~~
+   **Decision:** No. Single role: Community Admin (full access). Multiple people can have the admin role for a community.
+   **Status:** ✅ Resolved
+
+8. ~~**What content guidelines apply to community uploads (logos, banners)?**~~
+   **Decision:** Same moderation rules as team photos; logos must be appropriate and non-offensive; review queue for all community branding changes; integration with Project 28
+   **Status:** ✅ Resolved
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2232](https://github.com/trashmob/TrashMob/issues/2232)** - Project 10: Community Pages (tracking issue)
+- **[#2299](https://github.com/trashmob/TrashMob/issues/2299)** - Create data model for community pages
+- **[#2300](https://github.com/trashmob/TrashMob/issues/2300)** - Update entities for community pages
+- **[#2301](https://github.com/trashmob/TrashMob/issues/2301)** - Add back end apis for community pages
+- **[#2302](https://github.com/trashmob/TrashMob/issues/2302)** - Community Page UX Design
+- **[#2303](https://github.com/trashmob/TrashMob/issues/2303)** - Website - Add Community Page View
+- **[#2304](https://github.com/trashmob/TrashMob/issues/2304)** - Website - Add Community Page Edit
+- **[#2305](https://github.com/trashmob/TrashMob/issues/2305)** - Website - Add Navigation from Home Page to Community Page
+- **[#2306](https://github.com/trashmob/TrashMob/issues/2306)** - Website - Add Featured Communities Widget to home page
+- **[#2307](https://github.com/trashmob/TrashMob/issues/2307)** - Website - Add FAQ for Communities Functionality
+
 ---
 
 ## Related Documents
@@ -297,11 +484,10 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 - **[Project 8 - Waivers V3](./Project_08_Waivers_V3.md)** - Community-specific waivers
 - **[Project 9 - Teams](./Project_09_Teams.md)** - Teams in communities
 - **[Project 11 - Adopt-A-Location](./Project_11_Adopt_A_Location.md)** - Community programs
-- **[Project 16 - Content Management](./Project_16_Content_Management.md)** - Editable content
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** February 1, 2026
 **Owner:** Product Lead + Web Team
-**Status:** Planning in Progress
+**Status:** Not Started (0% implementation - legacy Community tables from 2022 exist but are unused)
 **Next Review:** When dependencies complete

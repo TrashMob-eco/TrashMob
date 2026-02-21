@@ -11,8 +11,8 @@ export const EventMaxNumberOfParticipants =
     "Max Number of Participants is optional. If you are concerned your event's work area is too small to accomodate large numbers of people, select a value that is practical for the location, knowing that attendance rates will vary depending on location, weather, and other factors.";
 export const EventType =
     'Choose an Event Type that matches the type of location and the type of work being done. Note that some event types may require special training (i.e. Highway cleanup), so be sure to mention any special requirements you may have in your event description.';
-export const EventIsEventPublic =
-    'A public event is open to anyone to join. A private event is something you have created to track your own effort, or to do with friends and colleagues only and will not be shown to others.';
+export const EventVisibility =
+    'Public events are open to anyone. Team Only events are visible only to members of the selected team. Private events are for tracking your own efforts and are not shown to others.';
 export const EventDate = 'The date of the event.';
 export const EventTime = 'The start time of the event.';
 export const LocationPreferenceMaxEventsRadius =
@@ -64,7 +64,14 @@ export const PartnerContactNotes = 'Enter any notes for the contact.';
 export const PartnerContactCreatedDate = 'Date this record was created.';
 export const PartnerContactLastUpdatedDate = 'Date this record was last updated.';
 export const PartnerStatus = 'The current status of this partner.';
-export const PartnerType = 'The type of the partner.';
+export const PartnerType =
+    'Select the type of partnership you are looking for. Government and Business partners provide services for events. Community partners get a branded page with volunteer and adoption tools.';
+export const PartnerTypeGovernment =
+    'City, county, or state agency providing waste management, hauling, or disposal services for cleanup events.';
+export const PartnerTypeBusiness =
+    'Commercial company offering recycling, hauling, disposal, or other cleanup-related services.';
+export const PartnerTypeCommunity =
+    'City, county, nonprofit, or organization that wants a branded TrashMob community page with volunteer engagement tools, adoption programs, and analytics.';
 export const PartnerLocationName = 'Enter the name of the partner location.';
 export const PartnerLocationStreetAddress =
     'The Street Address will auto-populate when clicking a location on the map.';
@@ -99,6 +106,8 @@ export const EventSummaryNumberOfBags =
 export const EventSummaryNumberOfBuckets =
     'If you were dumping buckets of trash into dumpsters, how many buckets did you gather?';
 export const EventSummaryDurationInMinutes = 'How long did the event last in minutes';
+export const EventSummaryPickedWeight = 'Total picked weight';
+export const EventSummaryPickedWeightUnit = 'Picked weight unit';
 export const EventSummaryNotes =
     'Record any notes about what went well or what could have gone better, or reminders for the next time at this location.';
 export const EventCancellationReason =
@@ -166,5 +175,5 @@ export const CopyToClipboard = 'Copied to clipboard!';
 
 export const JobOpportunityTitle = 'Enter Job title';
 export const JobOpportunityTagLine = 'Enter Job tag line';
-export const JobOpportunityFullDescription = 'Enter Job description';
+export const JobOpportunityFullDescription = 'Enter Job description using Markdown formatting';
 export const JobOpportunityIsActive = 'Whether or not this job will be active';

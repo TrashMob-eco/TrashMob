@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Collections.Generic;
@@ -38,7 +38,7 @@
         public string GetHtmlEmailCopy(string notificationType)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = string.Format("TrashMob.Shared.Engine.EmailCopy.{0}.html", notificationType);
+            var resourceName = $"TrashMob.Shared.Engine.EmailCopy.{notificationType}.html";
             logger.LogInformation("Getting email copy: {resourceName}", resourceName);
             string result;
 
@@ -65,13 +65,13 @@
 
             email.Addresses.AddRange(recipients);
 
-            await emailSender.SendTemplatedEmailAsync(email, cancellationToken).ConfigureAwait(false);
+            await emailSender.SendTemplatedEmailAsync(email, cancellationToken);
         }
 
         /// <inheritdoc />
         public Task<IEnumerable<EmailTemplate>> GetEmailTemplatesAsync(CancellationToken cancellationToken)
         {
-            var emailTemplates = new List<EmailTemplate>();
+            List<EmailTemplate> emailTemplates = [];
             foreach (var notificationType in Enum.GetValues(typeof(NotificationTypeEnum)))
             {
                 var content = GetHtmlEmailCopy(notificationType.ToString());
@@ -92,7 +92,7 @@
         public string GetEmailTemplate(string notificationType)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.txt", notificationType);
+            var resourceName = $"TrashMob.Shared.Engine.EmailTemplates.{notificationType}.txt";
             logger.LogInformation("Getting email template: {resourceName}", resourceName);
             string result;
 
@@ -109,7 +109,7 @@
         public string GetHtmlEmailTemplate(string notificationType)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.html", notificationType);
+            var resourceName = $"TrashMob.Shared.Engine.EmailTemplates.{notificationType}.html";
             logger.LogInformation("Getting email template: {resourceName}", resourceName);
             string result;
 

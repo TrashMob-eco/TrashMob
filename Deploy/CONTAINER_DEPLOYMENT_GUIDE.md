@@ -306,6 +306,19 @@ To switch traffic, update your DNS or Front Door configuration to point to the C
 4. Monitor the Container App Job executions
 5. Consider removing App Service/Function App resources once containers are validated
 
+## Post-Production Deployment Checklist
+
+After deploying to production, complete these manual steps:
+
+1. **Upload TrashMob.eco Waiver** - Log into the production admin portal and upload/create the global TrashMob.eco waiver document in the Waiver Management section. This is required for users to sign waivers before attending events.
+
+2. Verify database migrations ran successfully
+3. Test user authentication flow
+4. Verify email notifications are working
+5. Check Application Insights for any startup errors
+6. **Review Google Search Console** - Visit [Google Search Console](https://search.google.com/search-console?resource_id=https://www.trashmob.eco/) to check for any remaining site issues (mobile usability, indexing problems, etc.)
+7. **Check Job Logs for Daily Summary Report** - Review the Container App Job logs to verify the daily summary report is still being generated. Run: `az containerapp job execution list --name caj-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2` to see recent executions, then check the logs for any errors.
+
 ## Additional Resources
 
 - [Azure Container Apps documentation](https://learn.microsoft.com/azure/container-apps/)

@@ -1,8 +1,8 @@
-# Project 7 � Add Weights to Event Summaries
+# Project 7 � Add Weights to Event Summaries
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Ready for Review |
+| **Status** | Complete |
 | **Priority** | High |
 | **Risk** | Low |
 | **Size** | Very Small |
@@ -19,49 +19,48 @@ Enable communities and attendees to track weight metrics accurately for events. 
 ## Objectives
 
 ### Primary Goals
-- **Phase 1:** Add total event weight to EventSummary
-- **Phase 2:** Enable attendee-level weight entries with validation and unit preferences
+- Add total event weight to EventSummary
+- Support both imperial (lbs) and metric (kgs) units
+- Automatic unit conversion for display based on user preference
 
 ### Secondary Goals
-- Support both imperial (lbs) and metric (kgs) units
-- Automatic unit conversion for display
-- Roll-up attendee weights to event totals
+- Weight displayed in event details and dashboards
+- Weight included in email notifications
+- Weight-based statistics and metrics
+
+> **Note:** Attendee-level weight tracking is covered in [Project 22 - Attendee Metrics](./Project_22_Attendee_Metrics.md)
 
 ---
 
 ## Scope
 
-### Phase 1 - Event-Level Weight
-- ? Add `TotalWeight` and `WeightUnits` fields to `EventSummary` table
-- ? Update Event Summary form to include weight entry
-- ? Display weight in event details and dashboards
-- ? Include weight in email notifications
-- ? Add weight to statistics/metrics displays
+### In Scope
+- ✅ Add `TotalWeight` and `WeightUnits` fields to `EventSummary` table
+- ✅ Update Event Summary form to include weight entry
+- ✅ Display weight in event details and dashboards
+- ✅ Include weight in email notifications
+- ✅ Add weight to statistics/metrics displays
+- ✅ Support user preference for metric vs. imperial units
 
-### Phase 2 - Attendee-Level Weight
-- ? Create `EventSummaryAttendee` table
-- ? Allow attendees to enter their individual weights
-- ? Event lead can review and reconcile entries
-- ? Roll-up attendee weights to event total
-- ? Validation to prevent double-counting
+> **Note:** Attendee-level weight entries, reconciliation, and roll-up are covered in [Project 22 - Attendee Metrics](./Project_22_Attendee_Metrics.md)
 
 ---
 
 ## Out-of-Scope
 
-- ? Weight estimation based on bag count (requires research)
-- ? Integration with scales/IoT devices
-- ? Historical data backfill (Phase 3)
-- ? Weight-based leaderboards (covered in Project 20)
+- ❌ Attendee-level weight entries (covered in [Project 22](./Project_22_Attendee_Metrics.md))
+- ❌ Weight estimation based on bag count (requires research)
+- ❌ Integration with scales/IoT devices
+- ❌ Historical data backfill
+- ❌ Weight-based leaderboards (covered in [Project 20](./Project_20_Gamification.md))
 
 ---
 
 ## Success Metrics
 
 ### Quantitative
-- **Events with weight recorded:** ? 60% within 6 months
-- **Attendee weight entries:** ? 30% of attendees at events
-- **Data accuracy:** < 5% discrepancies between total and sum of attendees
+- **Events with weight recorded:** ≥ 60% within 6 months
+- **Form completion time:** No increase in event summary submission time
 
 ### Qualitative
 - Positive feedback from communities on weight tracking
@@ -76,7 +75,7 @@ Enable communities and attendees to track weight metrics accurately for events. 
 None - independent feature
 
 ### Enables
-- **Project 22 (Attendee Metrics):** Attendee-level tracking foundation
+- **Project 22 (Attendee Metrics):** Weight unit infrastructure
 - **Project 20 (Gamification):** Weight-based leaderboards
 
 ---
@@ -85,9 +84,8 @@ None - independent feature
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
-| **Unit conversion errors** | Low | Medium | Thorough testing; store in canonical unit internally |
-| **Attendees over-reporting** | Medium | Low | Event lead review; reasonable range validation |
-| **Double-counting** | Low | High | Clear UI indicators; validation logic |
+| **Unit conversion errors** | Low | Medium | Thorough testing; store with unit identifier |
+| **Low adoption** | Medium | Low | Optional field; easy UI; community encouragement |
 
 ---
 
@@ -95,70 +93,63 @@ None - independent feature
 
 ### Data Model Changes
 
-```sql
--- Phase 1: Event-level weight
-ALTER TABLE EventSummary
-ADD TotalWeight DECIMAL(10,2) NULL,
-    WeightUnits VARCHAR(10) NULL; -- 'lbs' or 'kgs'
+> **Note:** `EventSummary` already has `PickedWeight` (int) and `PickedWeightUnitId` (int) fields.
+> May only require changing `PickedWeight` from `int` to `decimal` for precision.
 
--- Phase 2: Attendee-level weight
-CREATE TABLE EventSummaryAttendee (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventSummaryId UNIQUEIDENTIFIER NOT NULL,
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    NumberOfBags INT NULL,
-    Weight DECIMAL(10,2) NULL,
-    WeightUnits VARCHAR(10) NULL,
-    DurationInMinutes INT NULL,
-    Notes NVARCHAR(MAX) NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    LastUpdatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (EventSummaryId) REFERENCES EventSummary(Id),
-    FOREIGN KEY (UserId) REFERENCES Users(Id)
-);
+**Update EventSummary (if precision change needed)**
+```csharp
+// In TrashMob.Models/EventSummary.cs - existing field may need type change
+public class EventSummary : BaseModel
+{
+    // ... existing fields ...
 
-CREATE INDEX IX_EventSummaryAttendee_EventSummaryId 
-    ON EventSummaryAttendee(EventSummaryId);
-CREATE INDEX IX_EventSummaryAttendee_UserId 
-    ON EventSummaryAttendee(UserId);
+    /// <summary>
+    /// Gets or sets the total weight of trash picked up during the event.
+    /// </summary>
+    public decimal PickedWeight { get; set; }  // Changed from int to decimal
+
+    /// <summary>
+    /// Gets or sets the identifier of the weight unit used for the picked weight.
+    /// </summary>
+    public int PickedWeightUnitId { get; set; }
+
+    // ... navigation properties ...
+}
 ```
 
 ### API Changes
 
-**Phase 1 - Event Summary:**
+**Event Summary DTO:**
 ```csharp
 public class EventSummaryDto
 {
     // Existing fields...
     public decimal? TotalWeight { get; set; }
-    public string? WeightUnits { get; set; } // "lbs" or "kgs"
-}
-```
-
-**Phase 2 - Attendee Entries:**
-```csharp
-[HttpGet("api/eventsummaries/{eventSummaryId}/attendees")]
-public async Task<ActionResult<IEnumerable<EventSummaryAttendeeDto>>> GetAttendeeEntries(
-    Guid eventSummaryId)
-{
-    // Return attendee-level data for event lead review
-}
-
-[HttpPost("api/eventsummaries/{eventSummaryId}/attendees")]
-public async Task<ActionResult<EventSummaryAttendeeDto>> CreateAttendeeEntry(
-    Guid eventSummaryId,
-    [FromBody] CreateAttendeeEntryRequest request)
-{
-    // Validate user is registered attendee
-    // Save entry
-    // Recalculate event totals
+    public string? WeightUnits { get; set; } // "lbs" or "kg"
 }
 ```
 
 ### Web UX Changes
 
-**Event Summary Form (Phase 1):**
+**User Preference Integration:**
+All weight displays and entry forms must respect the signed-in user's `PrefersMetric` setting:
+
 ```tsx
+// Hook to get user's preferred weight unit
+const usePreferredWeightUnit = () => {
+  const { data: user } = useGetCurrentUser();
+  return user?.prefersMetric ? 'kg' : 'lbs';
+};
+
+// Usage in components
+const preferredUnit = usePreferredWeightUnit();
+const displayWeight = convertToUnit(rawWeight, rawUnit, preferredUnit);
+```
+
+**Event Summary Form:**
+```tsx
+const preferredUnit = usePreferredWeightUnit();
+
 <FormGroup>
   <Label>Total Weight Collected</Label>
   <InputGroup>
@@ -169,62 +160,68 @@ public async Task<ActionResult<EventSummaryAttendeeDto>> CreateAttendeeEntry(
       onChange={(e) => setTotalWeight(e.target.value)}
       placeholder="Enter weight"
     />
-    <Select value={weightUnits} onChange={(e) => setWeightUnits(e.target.value)}>
+    <Select
+      value={weightUnits}
+      onChange={(e) => setWeightUnits(e.target.value)}
+      defaultValue={preferredUnit}  // Default to user's preference
+    >
       <option value="lbs">pounds (lbs)</option>
-      <option value="kgs">kilograms (kgs)</option>
+      <option value="kg">kilograms (kg)</option>
     </Select>
   </InputGroup>
   <FormText>Optional: Enter the total weight of litter collected</FormText>
 </FormGroup>
 ```
 
-**Attendee Entry Form (Phase 2):**
-```tsx
-<AttendeeMetricsForm>
-  <h4>My Contribution</h4>
-  <Input label="Bags I Collected" type="number" />
-  <Input label="Weight I Collected" type="number" step="0.1" />
-  <Select label="Units">
-    <option value="lbs">pounds</option>
-    <option value="kgs">kilograms</option>
-  </Select>
-  <Button>Submit My Entry</Button>
-</AttendeeMetricsForm>
-```
-
-**Event Lead Reconciliation View (Phase 2):**
-- Table showing all attendee entries
-- Calculated total vs. event lead's total
-- Flag discrepancies
-- Allow adjustments
+**Event Details Display:**
+- Show weight in user's preferred unit
+- Include unit label (e.g., "150 lbs" or "68 kg")
+- Conversion happens client-side based on user preference
 
 ### Mobile App Changes
 
-- Add weight fields to event summary form
-- Display weight in event details
-- Phase 2: Attendee entry form on mobile
+**User Preference Integration:**
+The mobile app must also respect the user's `PrefersMetric` setting from their profile.
+
+**Requirements:**
+- **Event Summary Form:** Add weight entry fields with unit selector defaulting to user's preference
+- **Event Summary Display:** Show weight in user's preferred unit
+- **Event Details View:** Display weight converted to user's preferred unit
+- **Statistics/Dashboard:** Show total weights in user's preferred unit
+- **My Dashboard:** Display user's personal weight contributions in preferred unit
+
+**Implementation Notes:**
+```csharp
+// In MAUI ViewModels - get user's preference
+var prefersMetric = _userService.CurrentUser?.PrefersMetric ?? false;
+var displayUnit = prefersMetric ? "kg" : "lbs";
+
+// Convert for display
+var displayWeight = prefersMetric
+    ? weight * 0.453592m  // lbs to kg
+    : weight;             // already in lbs
+```
+
+**Screens to Update:**
+1. `EventSummaryPage` - Add weight entry with unit picker
+2. `EventDetailsPage` - Display weight in user's preferred unit
+3. `MyDashboardPage` - Show personal stats with preferred unit
+4. `StatisticsPage` (if exists) - Display aggregate weights in preferred unit
 
 ---
 
-## Implementation Phases
+## Implementation Steps
 
-### Phase 1: Event-Level Weight
-- Add database columns
-- Update DTOs and API
-- Update web forms
-- Update mobile forms
-- Update display components
-- Update email templates
+1. **Database:** Change `PickedWeight` from `int` to `decimal` (migration)
+2. **API:** Update DTOs to include weight with unit
+3. **Web - Event Summary Form:** Add weight entry with unit selector
+4. **Web - Event Details:** Display weight in user's preferred unit
+5. **Web - Dashboards:** Show weight in statistics displays
+6. **Mobile - Event Summary:** Add weight entry with unit picker
+7. **Mobile - Displays:** Show weight in user's preferred unit
+8. **Email Templates:** Include weight in event summary notifications
 
-### Phase 2: Attendee-Level Weight
-- Create new table
-- Build API endpoints
-- Create attendee entry form
-- Build event lead reconciliation view
-- Implement roll-up logic
-- Add validation rules
-
-**Note:** Phase 1 can be completed quickly (1-2 developers). Phase 2 can be picked up independently.
+**Note:** This is a small, focused project. Attendee-level weight tracking is covered in [Project 22](./Project_22_Attendee_Metrics.md).
 
 ---
 
@@ -236,50 +233,94 @@ public async Task<ActionResult<EventSummaryAttendeeDto>> CreateAttendeeEntry(
 - Optional field (not required)
 
 ### Unit Preference
-- Default to user's preference (from profile)
-- Fall back to imperial (lbs) in US, metric elsewhere
-- Always store conversion factor for accuracy
 
-### Attendee Entries (Phase 2)
-- Sum of attendee weights should be ? event total � 1.2 (20% tolerance)
-- Warning (not error) if discrepancy
-- Event lead can override
+**User Preference Storage:**
+The `User` table already has a `PrefersMetric` boolean field that stores the user's weight unit preference.
+
+```csharp
+// In TrashMob.Models/User.cs (existing)
+public bool PrefersMetric { get; set; }  // true = metric (kg), false = imperial (lbs)
+```
+
+**Display and Entry Behavior:**
+- **Signed-in users:** Use `PrefersMetric` from the user's profile for all weight displays and form defaults
+- **Anonymous users:** Default to imperial (lbs)
+- **Null/unset preference:** Default to imperial (lbs)
+- Forms should pre-select the user's preferred unit
+- Displays should convert and show weights in the user's preferred unit
+
+**Implementation Requirements:**
+1. **Frontend:** Fetch user preference on load; use for all weight-related components
+2. **API responses:** Include both raw value + unit, let frontend handle conversion
+3. **Statistics displays:** Convert to user's preferred unit (home page stats, dashboards, event details)
+4. **Event summary forms:** Default unit selector to user's preference
+
+**Conversion Constants:**
+```typescript
+const LBS_TO_KG = 0.453592;
+const KG_TO_LBS = 2.20462;
+```
+
+**Example Frontend Logic:**
+```typescript
+const getUserWeightUnit = (user: User | null): 'lbs' | 'kg' => {
+  return user?.prefersMetric ? 'kg' : 'lbs';
+};
+
+const convertWeight = (weight: number, fromUnit: string, toUnit: string): number => {
+  if (fromUnit === toUnit) return weight;
+  return fromUnit === 'lbs' ? weight * LBS_TO_KG : weight * KG_TO_LBS;
+};
+```
 
 ---
 
-## Open Questions
+## Decisions
 
-1. **Should we require weight or keep it optional?**  
-   **Recommendation:** Keep optional for Phase 1; encourage in Phase 2  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 1
+1. **Should we require weight or keep it optional?**
+   **Decision:** Optional - event leads can enter if they have the data
 
-2. **What's the canonical storage unit?**  
-   **Recommendation:** Store as entered; convert for display only  
-   **Owner:** Engineering Team  
-   **Due:** Before implementation
+2. **What's the canonical storage unit?**
+   **Decision:** Store as entered with unit identifier; convert for display only
 
-3. **How do we handle discrepancies between attendee sum and lead's total?**  
-   **Recommendation:** Show warning; use lead's total as authoritative; log for review  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 2
+3. **Should we backfill historical events with estimated weights?**
+   **Decision:** No - too much uncertainty; focus on new events only
 
-4. **Should we backfill historical events with estimated weights?**  
-   **Recommendation:** No; too much uncertainty; focus on new events  
-   **Owner:** Product Lead  
-   **Due:** N/A (out of scope)
+4. **How do we handle aggregations across events with different units?**
+   **Decision:** Store both original value and unit; aggregate by summing values in each unit separately; display in user's preferred unit
+
+5. **What precision should decimal weights support?**
+   **Decision:** One decimal place (0.1 lbs or 0.1 kg); use `decimal(10,1)` in database
+
+6. **Should we provide weight estimation guidance for users without scales?**
+   **Decision:** Yes, add help text: "A full 33-gallon bag typically weighs 15-25 lbs depending on contents"
+
+---
+
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#1181](https://github.com/trashmob/TrashMob/issues/1181)** - Project 7: Allow attendees to add bags/weight collected (tracking issue)
 
 ---
 
 ## Related Documents
 
-- **[Project 22 - Attendee Metrics](./Project_22_Attendee_Metrics.md)** - Builds on attendee-level tracking
+- **[Project 22 - Attendee Metrics](./Project_22_Attendee_Metrics.md)** - Attendee-level weight and metrics tracking
 - **[Project 20 - Gamification](./Project_20_Gamification.md)** - Uses weight for leaderboards
-- **Database:** `EventSummary` and `EventSummaryAttendee` tables
+- **Database:** `EventSummary` table
 
 ---
 
-**Last Updated:** January 24, 2026  
-**Owner:** Product Lead + Engineering Team  
-**Status:** Ready for Review  
+**Last Updated:** January 31, 2026
+**Owner:** Product Lead + Engineering Team
+**Status:** Ready for Review
 **Next Review:** When volunteer picks up work
+
+---
+
+## Changelog
+
+- **2026-01-31:** Removed Phase 2 (attendee-level weights) - now covered in Project 22
+- **2026-01-28:** Added detailed requirements for user weight unit preference (`User.PrefersMetric`) integration across all displays and entry forms

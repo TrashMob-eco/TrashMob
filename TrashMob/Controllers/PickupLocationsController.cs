@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -31,7 +31,7 @@
         [HttpGet("{pickupLocationId}")]
         public async Task<IActionResult> Get(Guid pickupLocationId, CancellationToken cancellationToken)
         {
-            return Ok(await Manager.GetAsync(pickupLocationId, cancellationToken).ConfigureAwait(false));
+            return Ok(await Manager.GetAsync(pickupLocationId, cancellationToken));
         }
 
         /// <summary>
@@ -43,7 +43,7 @@
         [HttpGet("getbyevent/{eventId}")]
         public async Task<IActionResult> GetByEvent(Guid eventId, CancellationToken cancellationToken)
         {
-            return Ok(await Manager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false));
+            return Ok(await Manager.GetByParentIdAsync(eventId, cancellationToken));
         }
 
         /// <summary>
@@ -55,7 +55,7 @@
         [HttpGet("getbyuser/{userId}")]
         public async Task<IActionResult> GetByUser(Guid userId, CancellationToken cancellationToken)
         {
-            return Ok(await pickupLocationManager.GetByUserAsync(userId, cancellationToken).ConfigureAwait(false));
+            return Ok(await pickupLocationManager.GetByUserAsync(userId, cancellationToken));
         }
 
         /// <summary>
@@ -65,25 +65,18 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated pickup location.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> Update(PickupLocation pickupLocation, CancellationToken cancellationToken)
         {
             var localPickupLocation = await Manager.GetAsync(pickupLocation.Id, cancellationToken);
 
-            // Does the user own the pickup location?
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, localPickupLocation,
-                    AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            // Does the user own the pickup location or the event?
+            if (!await IsAuthorizedAsync(localPickupLocation, AuthorizationPolicyConstants.UserIsEventLead))
             {
-                // Does the user own the event?
                 var mobEvent = await eventManager.GetAsync(pickupLocation.EventId, cancellationToken);
 
-                authResult =
-                    await AuthorizationService.AuthorizeAsync(User, mobEvent,
-                        AuthorizationPolicyConstants.UserOwnsEntity);
-
-                if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
                 {
                     return Forbid();
                 }
@@ -102,7 +95,7 @@
             localPickupLocation.HasBeenPickedUp = pickupLocation.HasBeenPickedUp;
             localPickupLocation.HasBeenSubmitted = pickupLocation.HasBeenSubmitted; 
 
-            var result = await Manager.UpdateAsync(localPickupLocation, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.UpdateAsync(localPickupLocation, UserId, cancellationToken);
             TrackEvent(nameof(Update) + typeof(PickupLocation));
 
             return Ok(result);
@@ -116,18 +109,23 @@
         /// <remarks>Action result.</remarks>
         [HttpPost("markpickedup/{pickupLocationId}")]
         [Authorize(AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> MarkAsPickedUp(Guid pickupLocationId, CancellationToken cancellationToken)
         {
-            // Todo: Add security
-            //var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation, AuthorizationPolicyConstants.UserOwnsEntity);
+            var pickupLocation = await Manager.GetAsync(pickupLocationId, cancellationToken);
 
-            //if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
-            //{
-            //    return Forbid();
-            //}
+            if (!await IsAuthorizedAsync(pickupLocation, AuthorizationPolicyConstants.UserIsEventLead))
+            {
+                // Check if the user is the event lead
+                var mobEvent = await eventManager.GetAsync(pickupLocation.EventId, cancellationToken);
 
-            await pickupLocationManager.MarkAsPickedUpAsync(pickupLocationId, UserId, cancellationToken)
-                .ConfigureAwait(false);
+                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+                {
+                    return Forbid();
+                }
+            }
+
+            await pickupLocationManager.MarkAsPickedUpAsync(pickupLocationId, UserId, cancellationToken);
             TrackEvent("MarkAsPickedUp");
 
             return Ok();
@@ -140,20 +138,18 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The added pickup location.</remarks>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public override async Task<IActionResult> Add(PickupLocation instance, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(instance.EventId, cancellationToken);
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
 
-            var result = await Manager.AddAsync(instance, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.AddAsync(instance, UserId, cancellationToken);
 
             TrackEvent("AddPickupLocation");
 
@@ -167,20 +163,18 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Action result.</remarks>
         [HttpPost("submit/{eventId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> SubmitPickupLocations(Guid eventId, CancellationToken cancellationToken)
+        public async Task<IActionResult> SubmitPickupLocationsAsync(Guid eventId, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
 
-            await pickupLocationManager.SubmitPickupLocations(eventId, UserId, cancellationToken).ConfigureAwait(false);
+            await pickupLocationManager.SubmitPickupLocationsAsync(eventId, UserId, cancellationToken);
 
             TrackEvent("SubmitPickupLocations");
 
@@ -195,19 +189,19 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Action result.</remarks>
         [HttpPost("image/{eventId}")]
-        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid eventId,
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        public async Task<IActionResult> UploadImageAsync([FromForm] ImageUpload imageUpload, Guid eventId,
             CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
 
-            await imageManager.UploadImage(imageUpload);
+            await imageManager.UploadImageAsync(imageUpload);
 
             return Ok();
         }
@@ -223,7 +217,7 @@
         {
             var url = await imageManager.GetImageUrlAsync(pickupLocationId, ImageTypeEnum.Pickup, ImageSizeEnum.Raw, cancellationToken);
 
-            if (string.IsNullOrEmpty(url))
+            if (string.IsNullOrWhiteSpace(url))
             {
                 return NoContent();
             }
@@ -244,7 +238,7 @@
         {
             var url = await imageManager.GetImageUrlAsync(pickupLocationId, ImageTypeEnum.Pickup, imageSize, cancellationToken);
 
-            if (string.IsNullOrEmpty(url))
+            if (string.IsNullOrWhiteSpace(url))
             {
                 return NoContent();
             }
@@ -264,29 +258,22 @@
             // Is the user the owner of the pickup location?
             var entity = await Manager.GetAsync(id, cancellationToken);
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, entity, AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 // Does the user own the event?
                 var mobEvent = await eventManager.GetAsync(entity.EventId, cancellationToken);
 
-                authResult =
-                    await AuthorizationService.AuthorizeAsync(User, mobEvent,
-                        AuthorizationPolicyConstants.UserOwnsEntity);
-
-                if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
                 {
                     return Forbid();
                 }
             }
 
-            var results = await Manager.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
+            await Manager.DeleteAsync(id, cancellationToken);
 
             TrackEvent("Delete" + nameof(PickupLocation));
 
-            return Ok(results);
+            return NoContent();
         }
     }
 }

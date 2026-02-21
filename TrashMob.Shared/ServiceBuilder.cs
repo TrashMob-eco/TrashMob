@@ -8,8 +8,16 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers.LitterReport;
     using TrashMob.Shared.Managers.Partners;
+    using TrashMob.Shared.Managers.Teams;
+    using TrashMob.Shared.Managers.Communities;
+    using TrashMob.Shared.Managers.Adoptions;
+    using TrashMob.Shared.Managers.Areas;
+    using TrashMob.Shared.Managers.Gamification;
+    using TrashMob.Shared.Managers.Prospects;
+    using TrashMob.Shared.Managers.SponsoredAdoptions;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Services;
 
     public static class ServiceBuilder
     {
@@ -51,12 +59,14 @@
             services.AddScoped<ILookupManager<WeightUnit>, LookupManager<WeightUnit>>();
             services.AddScoped<IKeyedManager<LitterReport>, LitterReportManager>();
             services.AddScoped<IKeyedManager<LitterImage>, LitterImageManager>();
+            services.AddScoped<IKeyedManager<EventPhoto>, EventPhotoManager>();
 
             // Intentional deviation due to unique methods
             services.AddScoped<IEventAttendeeManager, EventAttendeeManager>();
             services.AddScoped<IEventAttendeeRouteManager, EventAttendeeRouteManager>();
             services.AddScoped<IEventLitterReportManager, EventLitterReportManager>();
             services.AddScoped<IEventSummaryManager, EventSummaryManager>();
+            services.AddScoped<IEventAttendeeMetricsManager, EventAttendeeMetricsManager>();
             services.AddScoped<IEventManager, EventManager>();
             services.AddScoped<IEventPartnerLocationServiceManager, EventPartnerLocationServiceManager>();
             services.AddScoped<IPartnerAdminManager, PartnerAdminManager>();
@@ -73,6 +83,80 @@
             services.AddScoped<IWaiverManager, WaiverManager>();
             services.AddScoped<ILitterImageManager, LitterImageManager>();
             services.AddScoped<ILitterReportManager, LitterReportManager>();
+
+            // Team managers
+            services.AddScoped<ITeamManager, TeamManager>();
+            services.AddScoped<ITeamMemberManager, TeamMemberManager>();
+            services.AddScoped<ITeamPhotoManager, TeamPhotoManager>();
+
+            // Event Photo managers
+            services.AddScoped<IEventPhotoManager, EventPhotoManager>();
+
+            // Partner Photo managers
+            services.AddScoped<IPartnerPhotoManager, PartnerPhotoManager>();
+
+            // Partner Document Storage manager
+            services.AddScoped<IPartnerDocumentStorageManager, PartnerDocumentStorageManager>();
+
+            // Community managers
+            services.AddScoped<ICommunityManager, CommunityManager>();
+
+            // Adoption managers
+            services.AddScoped<IAdoptableAreaManager, AdoptableAreaManager>();
+            services.AddScoped<IAreaSuggestionService, AreaSuggestionService>();
+            services.AddHttpClient<INominatimService, NominatimService>();
+            services.AddScoped<IAreaFileParser, AreaFileParser>();
+            services.AddScoped<ITeamAdoptionManager, TeamAdoptionManager>();
+            services.AddScoped<ITeamAdoptionEventManager, TeamAdoptionEventManager>();
+
+            // Area generation managers
+            services.AddScoped<IAreaGenerationBatchManager, AreaGenerationBatchManager>();
+            services.AddScoped<IStagedAdoptableAreaManager, StagedAdoptableAreaManager>();
+            services.AddScoped<IAreaGenerationOrchestrator, AreaGenerationOrchestrator>();
+
+            // Sponsored adoption managers
+            services.AddScoped<ISponsorManager, SponsorManager>();
+            services.AddScoped<IProfessionalCompanyManager, ProfessionalCompanyManager>();
+            services.AddScoped<IProfessionalCompanyUserManager, ProfessionalCompanyUserManager>();
+            services.AddScoped<ISponsoredAdoptionManager, SponsoredAdoptionManager>();
+            services.AddScoped<IProfessionalCleanupLogManager, ProfessionalCleanupLogManager>();
+
+            // User Feedback
+            services.AddScoped<IUserFeedbackManager, UserFeedbackManager>();
+
+            // Photo Moderation
+            services.AddScoped<IPhotoModerationManager, PhotoModerationManager>();
+
+            // Waiver V3
+            services.AddScoped<IWaiverVersionManager, WaiverVersionManager>();
+            services.AddScoped<IUserWaiverManager, UserWaiverManager>();
+            services.AddScoped<IWaiverDocumentManager, WaiverDocumentManager>();
+
+            // Feature Metrics
+            services.AddSingleton<IFeatureMetricsService, FeatureMetricsService>();
+
+            // Email Invites
+            services.AddScoped<IEmailInviteManager, EmailInviteManager>();
+
+            // Gamification
+            services.AddScoped<ILeaderboardManager, LeaderboardManager>();
+            services.AddScoped<IAchievementManager, AchievementManager>();
+
+            // Community Prospects
+            services.AddScoped<ICommunityProspectManager, CommunityProspectManager>();
+            services.AddScoped<IProspectActivityManager, ProspectActivityManager>();
+            services.AddScoped<IClaudeDiscoveryService, ClaudeDiscoveryService>();
+            services.AddScoped<IProspectScoringManager, ProspectScoringManager>();
+            services.AddScoped<ICsvImportManager, CsvImportManager>();
+            services.AddScoped<IOutreachContentService, OutreachContentService>();
+            services.AddScoped<IProspectOutreachManager, ProspectOutreachManager>();
+            services.AddScoped<IPipelineAnalyticsManager, PipelineAnalyticsManager>();
+            services.AddScoped<ISentimentAnalysisService, SentimentAnalysisService>();
+            services.AddScoped<IProspectConversionManager, ProspectConversionManager>();
+
+            // Newsletter
+            services.AddScoped<INewsletterManager, NewsletterManager>();
+            services.AddScoped<IUserNewsletterPreferenceManager, UserNewsletterPreferenceManager>();
 
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();
@@ -103,6 +187,7 @@
                     LookupRepository<EventPartnerLocationServiceStatus>>();
             services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();
             services.AddScoped<IBaseRepository<EventSummary>, BaseRepository<EventSummary>>();
+            services.AddScoped<IKeyedRepository<EventAttendeeMetrics>, KeyedRepository<EventAttendeeMetrics>>();
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
             services.AddScoped<IBaseRepository<IftttTrigger>, BaseRepository<IftttTrigger>>();
             services.AddScoped<ILookupRepository<InvitationStatus>, LookupRepository<InvitationStatus>>();
@@ -132,6 +217,57 @@
             services.AddScoped<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>();
             services.AddScoped<IKeyedRepository<Waiver>, KeyedRepository<Waiver>>();
             services.AddScoped<ILookupRepository<WeightUnit>, LookupRepository<WeightUnit>>();
+
+            // Team repositories
+            services.AddScoped<IKeyedRepository<Team>, KeyedRepository<Team>>();
+            services.AddScoped<IKeyedRepository<TeamMember>, KeyedRepository<TeamMember>>();
+            services.AddScoped<IKeyedRepository<TeamJoinRequest>, KeyedRepository<TeamJoinRequest>>();
+            services.AddScoped<IKeyedRepository<TeamEvent>, KeyedRepository<TeamEvent>>();
+            services.AddScoped<IKeyedRepository<TeamPhoto>, KeyedRepository<TeamPhoto>>();
+
+            // Partner Photo repository
+            services.AddScoped<IKeyedRepository<PartnerPhoto>, KeyedRepository<PartnerPhoto>>();
+
+            // Event Photo repository
+            services.AddScoped<IKeyedRepository<EventPhoto>, KeyedRepository<EventPhoto>>();
+
+            // Adoption repositories
+            services.AddScoped<IKeyedRepository<AdoptableArea>, KeyedRepository<AdoptableArea>>();
+            services.AddScoped<IKeyedRepository<TeamAdoption>, KeyedRepository<TeamAdoption>>();
+            services.AddScoped<IKeyedRepository<TeamAdoptionEvent>, KeyedRepository<TeamAdoptionEvent>>();
+
+            // Area generation repositories
+            services.AddScoped<IKeyedRepository<AreaGenerationBatch>, KeyedRepository<AreaGenerationBatch>>();
+            services.AddScoped<IKeyedRepository<StagedAdoptableArea>, KeyedRepository<StagedAdoptableArea>>();
+
+            // Sponsored adoption repositories
+            services.AddScoped<IKeyedRepository<Sponsor>, KeyedRepository<Sponsor>>();
+            services.AddScoped<IKeyedRepository<ProfessionalCompany>, KeyedRepository<ProfessionalCompany>>();
+            services.AddScoped<IBaseRepository<ProfessionalCompanyUser>, BaseRepository<ProfessionalCompanyUser>>();
+            services.AddScoped<IKeyedRepository<SponsoredAdoption>, KeyedRepository<SponsoredAdoption>>();
+            services.AddScoped<IKeyedRepository<ProfessionalCleanupLog>, KeyedRepository<ProfessionalCleanupLog>>();
+
+            // User Feedback repository
+            services.AddScoped<IKeyedRepository<UserFeedback>, KeyedRepository<UserFeedback>>();
+
+            // Waiver V3 repositories
+            services.AddScoped<IKeyedRepository<WaiverVersion>, KeyedRepository<WaiverVersion>>();
+            services.AddScoped<IBaseRepository<CommunityWaiver>, BaseRepository<CommunityWaiver>>();
+            services.AddScoped<IKeyedRepository<UserWaiver>, KeyedRepository<UserWaiver>>();
+
+            // Email Invite repositories
+            services.AddScoped<IKeyedRepository<EmailInviteBatch>, KeyedRepository<EmailInviteBatch>>();
+            services.AddScoped<IKeyedRepository<EmailInvite>, KeyedRepository<EmailInvite>>();
+
+            // Community Prospect repositories
+            services.AddScoped<IKeyedRepository<CommunityProspect>, KeyedRepository<CommunityProspect>>();
+            services.AddScoped<IKeyedRepository<ProspectActivity>, KeyedRepository<ProspectActivity>>();
+            services.AddScoped<IKeyedRepository<ProspectOutreachEmail>, KeyedRepository<ProspectOutreachEmail>>();
+
+            // Newsletter repositories
+            services.AddScoped<IKeyedRepository<Newsletter>, KeyedRepository<Newsletter>>();
+            services.AddScoped<ILookupRepository<NewsletterCategory>, LookupRepository<NewsletterCategory>>();
+            services.AddScoped<ILookupRepository<NewsletterTemplate>, LookupRepository<NewsletterTemplate>>();
 
             return services;
         }

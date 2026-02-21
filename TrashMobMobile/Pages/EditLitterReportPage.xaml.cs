@@ -17,7 +17,7 @@ public partial class EditLitterReportPage : ContentPage
         BindingContext = this.viewModel;
     }
 
-    public string LitterReportId { get; set; }
+    public string LitterReportId { get; set; } = string.Empty;
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
@@ -26,7 +26,7 @@ public partial class EditLitterReportPage : ContentPage
 
         if (viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location != null)
         {
-            var mapSpan = new MapSpan(viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05,
+            var mapSpan = new MapSpan(viewModel!.LitterImageViewModels!.First().Address.Location!, 0.05,
                 0.05);
             litterReportLocationMap.InitialMapSpanAndroid = mapSpan;
             litterReportLocationMap.MoveToRegion(mapSpan);
@@ -56,8 +56,7 @@ public partial class EditLitterReportPage : ContentPage
 
     private void DeleteLitterImage_Clicked(object sender, EventArgs e)
     {
-        var button = sender as Button;
-        var litterImageViewModel = button?.BindingContext as LitterImageViewModel;
+        var litterImageViewModel = (sender as BindableObject)?.BindingContext as LitterImageViewModel;
 
         if (litterImageViewModel != null)
         {

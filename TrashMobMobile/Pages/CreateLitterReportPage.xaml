@@ -10,69 +10,96 @@
              Title="Submit Litter Report">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
 
-                <!--  Litter Report Top  -->
-                <Grid RowDefinitions="Auto, *, Auto">
-                    <VerticalStackLayout Grid.Row="0">
-                        <Label Text="Name" Style="{StaticResource FieldLabel}" />
-                        <controls:TMEntry Text="{Binding Name}" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="1">
-                        <Label Text="Description" Style="{StaticResource FieldLabel}" />
-                        <controls:TMEditor Text="{Binding Description}"  HeightRequest="100"/>
-                    </VerticalStackLayout>
+                <Label
+                    Text="Report litter in your area so it can be cleaned up"
+                    FontSize="Small"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                    Margin="5,8,5,0" />
 
-                    <Button Grid.Row="2"
-                            Margin="10"
+                <!-- Report Details -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Report Details" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <VerticalStackLayout>
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Name" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMEntry Text="{Binding Name}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout>
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Description" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMEditor Text="{Binding Description}" HeightRequest="100"/>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Litter Images -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Litter Images" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Label
+                            FontSize="Small"
+                            HorizontalTextAlignment="Center"
+                            IsVisible="{Binding HasNoImages}"
+                            TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                            Text="Please add between 1 and 5 images of the litter to your report." />
+
+                        <Button
                             Clicked="TakePhoto_Clicked"
                             IsEnabled="{Binding CanAddImages}"
-                            Text="Add Litter Image" />
-                </Grid>
+                            Style="{StaticResource SecondarySmallButton}"
+                            Text="Add Litter Image"
+                            ContentLayout="Left, 8"
+                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCamera}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
 
-                <Grid Margin="10"
-                      RowDefinitions="Auto, *">
-                    <Label Grid.Row="0"
-                           Margin="10"
-                           FontAttributes="Bold"
-                           FontSize="Small"
-                           HorizontalTextAlignment="Center"
-                           IsVisible="{Binding HasNoImages}"
-                           Text="Please add between 1 and 5 images of the litter to your report." />
+                        <CollectionView x:Name="LitterImagesCollection"
+                                        ItemsSource="{Binding LitterImageViewModels}"
+                                        SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:LitterImageViewModel">
+                                    <Border Style="{StaticResource RoundBorder}" Margin="0,4">
+                                        <Grid ColumnDefinitions="Auto, *, Auto">
+                                            <Image Grid.Column="0"
+                                                   Margin="5"
+                                                   WidthRequest="80" HeightRequest="80"
+                                                   MaximumWidthRequest="80" MaximumHeightRequest="80"
+                                                   Aspect="AspectFill"
+                                                   Source="{Binding FilePath}" />
+                                            <Label Grid.Column="1"
+                                                   Margin="5"
+                                                   FontSize="Small"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                                                   Text="{Binding Address.DisplayAddress}" />
+                                            <ImageButton Grid.Column="2"
+                                                       Margin="5"
+                                                       Clicked="DeleteLitterImage_Clicked"
+                                                       HeightRequest="40"
+                                                       WidthRequest="40"
+                                                       VerticalOptions="Center">
+                                                <ImageButton.Source>
+                                                    <FontImageSource FontFamily="GoogleMaterialIcons"
+                                                                     Glyph="{DynamicResource IconDelete}"
+                                                                     Color="{StaticResource Destructive}"
+                                                                     Size="24" />
+                                                </ImageButton.Source>
+                                            </ImageButton>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
 
-                    <CollectionView x:Name="LitterImagesCollection"
-                                    Grid.Row="1"
-                                    Margin="10"
-                                    ItemsSource="{Binding LitterImageViewModels}"
-                                    SelectionMode="None">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                                <Border Style="{StaticResource RoundBorder}">
-                                    <Grid ColumnDefinitions="Auto, *, Auto">
-                                        <Image Grid.Column="0"
-                                               Margin="5"
-                                               MaximumWidthRequest="100"
-                                               Source="{Binding FilePath}" />
-                                        <Label Grid.Column="1"
-                                               Margin="5"
-                                               Text="{Binding Address.DisplayAddress}" />
-                                        <Button Grid.Column="2"
-                                                Margin="5"
-                                                Clicked="DeleteLitterImage_Clicked"
-                                                HeightRequest="40"
-                                                Text="Delete Image"
-                                                WidthRequest="80" />
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </Grid>
-
-                <Button Margin="10"
+                <Button Margin="10,8,10,10"
                         Command="{Binding SaveLitterReportCommand}"
                         IsEnabled="{Binding ReportIsValid}"
-                        Text="Save Litter Report" />
+                        Style="{StaticResource PrimaryLargeButton}"
+                        Text="Save Litter Report"
+                        ContentLayout="Left, 12"
+                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconContentSave}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />

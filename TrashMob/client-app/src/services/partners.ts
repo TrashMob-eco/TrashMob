@@ -164,3 +164,14 @@ export const UpdatePartner = () => ({
             data: body,
         }),
 });
+
+// Get partners (communities) the current user is an admin of
+export type GetMyPartners_Response = PartnerData[];
+export const GetMyPartners = () => ({
+    key: ['/partneradmins/my'],
+    service: async () =>
+        ApiService('protected').fetchData<GetMyPartners_Response>({
+            url: '/partneradmins/my',
+            method: 'get',
+        }),
+});

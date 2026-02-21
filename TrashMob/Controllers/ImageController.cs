@@ -1,11 +1,14 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
     using TrashMob.Security;
+    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
@@ -13,22 +16,11 @@
     /// Controller for managing images, including upload and deletion.
     /// </summary>
     [Route("api/image")]
-    [ApiController]
-    public class ImageController : SecureController
+    public class ImageController(
+        IImageManager imageManager,
+        IEventManager eventManager)
+        : SecureController
     {
-        private readonly IEventManager eventManager;
-        private readonly IImageManager imageManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageController"/> class.
-        /// </summary>
-        /// <param name="imageManager">The image manager.</param>
-        /// <param name="eventManager">The event manager.</param>
-        public ImageController(IImageManager imageManager, IEventManager eventManager)
-        {
-            this.imageManager = imageManager;
-            this.eventManager = eventManager;
-        }
 
         /// <summary>
         /// Uploads an image for an event.
@@ -37,19 +29,19 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Action result.</remarks>
         [HttpPost]
-        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload,
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        public async Task<IActionResult> UploadImageAsync([FromForm] ImageUpload imageUpload,
             CancellationToken cancellationToken)
         {
-            var mobEvent = eventManager.GetAsync(imageUpload.ParentId, cancellationToken);
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+            var mobEvent = await eventManager.GetAsync(imageUpload.ParentId, cancellationToken);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
 
-            await imageManager.UploadImage(imageUpload);
+            await imageManager.UploadImageAsync(imageUpload);
 
             return Ok();
         }
@@ -62,13 +54,22 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Action result.</remarks>
         [HttpDelete]
-        public async Task<IActionResult> DeleteImage(Guid parentId, ImageTypeEnum imageType,
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        public async Task<IActionResult> DeleteImageAsync(Guid parentId, ImageTypeEnum imageType,
             CancellationToken cancellationToken)
         {
-            var deleted = await imageManager.DeleteImage(parentId, imageType);
+            var mobEvent = await eventManager.GetAsync(parentId, cancellationToken);
+
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            {
+                return Forbid();
+            }
+
+            var deleted = await imageManager.DeleteImageAsync(parentId, imageType);
             if (deleted)
             {
-                return Ok();
+                return NoContent();
             }
 
             return BadRequest("The image is not deleted");
