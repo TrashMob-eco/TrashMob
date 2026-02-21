@@ -18,14 +18,6 @@ param managedCertificateName string = ''
 // Build the managed certificate resource ID if provided
 var managedCertificateId = managedCertificateName != '' ? '${containerAppsEnvironmentId}/managedCertificates/${managedCertificateName}' : ''
 
-// Custom domain configuration (optional)
-// The managed certificate must be created separately before deployment
-param customDomainName string = ''
-param managedCertificateName string = ''
-
-// Build the managed certificate resource ID if provided
-var managedCertificateId = managedCertificateName != '' ? '${containerAppsEnvironmentId}/managedCertificates/${managedCertificateName}' : ''
-
 // Derive the Application Insights name from environment and region
 var appInsightsName = 'ai-tm-${environment}-${region}'
 
