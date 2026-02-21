@@ -2,7 +2,7 @@
   "certificates": [
     {
       "name": "iOS Distribution Certificate",
-      "expiryDate": "2027-01-15",
+      "expiryDate": "2027-02-21",
       "renewUrl": "https://developer.apple.com/account/resources/certificates/list",
       "notes": "Update this date after regenerating the .p12 certificate. See R1 in deployment checklist."
     },
