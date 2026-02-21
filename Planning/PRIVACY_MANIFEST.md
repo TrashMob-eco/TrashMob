@@ -72,6 +72,9 @@ This document tracks what data TrashMob collects, how it's used, and what must b
 | Permission | Key | Usage Description |
 |-----------|-----|-------------------|
 | Location (When In Use) | `NSLocationWhenInUseUsageDescription` | To show nearby events and allow creating events and litter reports at your location |
+| Location (Always) | `NSLocationAlwaysAndWhenInUseUsageDescription` | Route tracking during cleanup events records your walking path while the app is in the background |
+| Location (Always, legacy) | `NSLocationAlwaysUsageDescription` | Route tracking needs background location when you have turned on route tracking |
+| Background Modes | `UIBackgroundModes: location` | Continues GPS tracking for route recording when app is backgrounded |
 | Camera | `NSCameraUsageDescription` | To take photos of litter reports and events |
 | Photo Library | `NSPhotoLibraryUsageDescription` | To select photos for litter reports and events |
 
@@ -83,6 +86,9 @@ This document tracks what data TrashMob collects, how it's used, and what must b
 |-----------|-------|
 | `ACCESS_FINE_LOCATION` | Map display, event proximity, litter reports |
 | `ACCESS_COARSE_LOCATION` | Approximate location for event discovery |
+| `ACCESS_BACKGROUND_LOCATION` | Route tracking continues when app is backgrounded during cleanup events |
+| `FOREGROUND_SERVICE` | Required for Android foreground service during route tracking |
+| `FOREGROUND_SERVICE_LOCATION` | Foreground service type declaration for location tracking |
 | `CAMERA` | Taking photos for litter reports and events |
 | `READ_EXTERNAL_STORAGE` | Selecting photos for upload |
 | `INTERNET` | API communication |
@@ -132,6 +138,6 @@ Categories to declare:
 | Date | Change | Store Update Required |
 |------|--------|----------------------|
 | 2026-02-20 | Initial privacy manifest created | Verify current store declarations match |
-| | | |
+| 2026-02-20 | Added background location + foreground service permissions for route tracking | Update Google Play Data Safety if not already declared |
 
 **Instructions:** When you change data collection, add a row here AND update the relevant store forms. The CI workflow will create a GitHub issue to remind you.
