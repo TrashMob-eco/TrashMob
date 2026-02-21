@@ -222,8 +222,8 @@ In Azure Portal > prod Entra tenant > External Identities > All identity provide
 
 #### A4.10 Deploy Auth Extension Container App (Layer 2)
 
-- [ ] **42.** Set GitHub Actions secrets (in `production` environment): `ENTRA_TENANT_ID`, `AUTH_EXTENSION_CLIENT_ID`
-- [ ] **43.** Create production workflow: copy `.github/workflows/container_ca-authext-tm-dev-westus2.yml` > `release_ca-authext-tm-pr-westus2.yml`, update registry/container/RG, trigger on `release` branch
+- [x] **42.** Set GitHub Actions secrets (in `production` environment): `ENTRA_TENANT_ID`, `AUTH_EXTENSION_CLIENT_ID`
+- [x] **43.** Create production workflow: `release_ca-authext-tm-pr-westus2.yml` — triggers on `release`, uses `crtmprwestus2` registry, `production` environment
 - [ ] **44.** Register Custom Authentication Extension in Entra portal:
   - External Identities > Custom authentication extensions > Create
   - Type: `OnAttributeCollectionSubmit`
@@ -233,38 +233,38 @@ In Azure Portal > prod Entra tenant > External Identities > All identity provide
 
 #### A4.11 Mobile App Update
 
-- [ ] **45.** Verify `AuthConstants.cs` has correct prod Entra values
+- [x] **45.** Verify `AuthConstants.cs` has correct prod Entra values — **Updated: ClientId `9fce4b6e`, TenantName `trashmobecopr`, TenantDomain `trashmobecopr.onmicrosoft.com`**
 - [ ] **46.** Build and test on Android emulator + iOS simulator with prod tenant
 - [ ] **47.** Submit to Google Play Store and Apple App Store
 - [ ] **48.** Consider force-update flow for users on old B2C version
 
 #### A4.12 Pre-Cutover Verification (on dev.trashmob.eco) :test_tube:
 
-- [ ] **49.** Web sign-in via email/password — succeeds, JWT contains expected claims
-- [ ] **50.** Web sign-in via Google — succeeds, profile photo populated
-- [ ] **51.** Web sign-in via Facebook — succeeds
-- [ ] **52.** Web "Create Account" — shows age gate, blocks under-13, allows 13+
-- [ ] **53.** Web "Sign In" — goes directly to Entra (no age gate)
+- [x] **49.** Web sign-in via email/password — succeeds, JWT contains expected claims (verified on dev)
+- [x] **50.** Web sign-in via Google — succeeds, profile photo populated (verified on dev)
+- [x] **51.** Web sign-in via Facebook — succeeds (verified on dev)
+- [x] **52.** Web "Create Account" — shows age gate, blocks under-13, allows 13+ (verified on dev)
+- [x] **53.** Web "Sign In" — goes directly to Entra (no age gate) (verified on dev)
 - [ ] **54.** Web "Attend" (unauthenticated) — shows age gate before redirect
-- [ ] **55.** Mobile sign-in — Entra External ID (not B2C)
-- [ ] **56.** Mobile "Create Account" — AgeGatePage blocks under-13
+- [x] **55.** Mobile sign-in — Entra External ID (not B2C) (verified on dev)
+- [x] **56.** Mobile "Create Account" — AgeGatePage blocks under-13 (verified on dev)
 - [ ] **57.** Auth extension — POST with under-13 DOB returns `showBlockPage`
 - [ ] **58.** Profile edit — in-app edit works (name, photo upload)
 - [ ] **59.** Account deletion — "Delete My Data" works with typed confirmation
 - [ ] **60.** Auto-create user — new sign-up creates DB user from token claims
-- [ ] **61.** Migrated user sign-in — existing B2C user signs in via Entra successfully
+- [x] **61.** Migrated user sign-in — existing B2C user signs in via Entra successfully (verified on dev)
 
 ---
 
 ### A5. Apple Signing & API Key Renewal :hand:
 
-- [ ] **62.** :gear: **AUTOMATED:** `scheduled_cert-expiry-check.yml` runs weekly (Mondays 9am UTC) and creates a GitHub issue if any certificate expires within 30 days. Update `Deploy/cert-expiry-dates.json` when renewing certificates. (See [Section R14](#r14-certificate-expiry-monitoring))
-- [ ] **63.** :test_tube: Verify `Deploy/cert-expiry-dates.json` has current expiry dates for all certificates
+- [x] **62.** :gear: **AUTOMATED:** `scheduled_cert-expiry-check.yml` runs weekly (Mondays 9am UTC) and creates a GitHub issue if any certificate expires within 30 days. Update `Deploy/cert-expiry-dates.json` when renewing certificates. (See [Section R14](#r14-certificate-expiry-monitoring))
+- [x] **63.** :test_tube: Verify `Deploy/cert-expiry-dates.json` has current expiry dates for all certificates — **Updated iOS cert expiry to 2027-02-21**
 - [x] **64.** Check iOS distribution certificate expiry at https://developer.apple.com/account/resources/certificates/list — **Expired; regenerated 2026-02-21 via `openssl` CSR (macOS Sequoia lacks Keychain Certificate Assistant)**
 - [x] **65.** Check App Store Connect API key status at https://appstoreconnect.apple.com/access/integrations/api — verify key used by `APPSTORE_KEY_ID` is "Active" — **`TrashMobProdApiKey` (L8R272VZ58) is Active (created 2026-02-15)**
 - [x] **66.** If certificate expired or expiring — regenerate (see [Section R1](#r1-regenerate-ios-distribution-certificate)) — **Done. New cert created, .p12 exported, `IOS_CERTIFICATES_P12` and `IOS_CERTIFICATES_P12_PASSWORD` GitHub secrets updated.**
-- [x] **67.** If API key expired or revoked — regenerate (see [Section R2](#r2-regenerate-app-store-connect-api-key)) — **Key is active, no regeneration needed. However, `APPSTORE_KEY_ID` and `APPSTORE_ISSUER_ID` GitHub secrets are MISSING and `APPSTORE_PRIVATE_KEY` is stale (2023). :arrow_right: NEXT STEP: Set all three secrets from the new .p8 key file.**
-- [ ] **68.** Verify Android keystore — `ANDROID_KEYSTORE` and `ANDROID_KEYSTORE_PASSWORD` secrets are set (see [Section R3](#r3-android-keystore-rotation) if rotation needed) — **Neither secret exists yet; needs creation.**
+- [x] **67.** If API key expired or revoked — regenerate (see [Section R2](#r2-regenerate-app-store-connect-api-key)) — **New key `96BK5UTL5D` created. `APPSTORE_KEY_ID` and `APPSTORE_PRIVATE_KEY` set in both `test` and `production` GitHub environments.**
+- [x] **68.** Verify Android keystore — `ANDROID_KEYSTORE` and `ANDROID_KEYSTORE_PASSWORD` secrets are set (see [Section R3](#r3-android-keystore-rotation) if rotation needed) — **Both secrets exist in `test` (2024-05-26) and `production` (2022-09-10) environments. Keystore valid until 2036.**
 
 ---
 
@@ -294,16 +294,16 @@ Verify all store logos are current (v2 branding) and correctly sized. Source ass
 
 Additional source files at `D:\data\images\v2\New TrashMob.eco files\New TrashMob.eco files\` (Illustrator, PDF, JPG, PNG, SVG formats).
 
-- [ ] **69.** Generate all icon sizes — run `.\Planning\StoreAssets\generate-icons.ps1` (outputs to `Planning/StoreAssets/Generated/`):
+- [x] **69.** Generate all icon sizes — run `.\Planning\StoreAssets\generate-icons.ps1` (outputs to `Planning/StoreAssets/Generated/`):
   - `AppStore_1024x1024.png` — Apple App Store (no transparency, no rounded corners)
   - `GooglePlay_512x512.png` — Google Play (32-bit PNG)
   - Plus PWA, favicon, and Entra profile sizes
-- [ ] **70.** Generate feature graphic — run `.\Planning\StoreAssets\generate-feature-graphic.ps1`:
+- [x] **70.** Generate feature graphic — run `.\Planning\StoreAssets\generate-feature-graphic.ps1`:
   - Outputs `GooglePlay_FeatureGraphic_1024x500.png` with v2 logo on brand green background
   - Adjust `-Tagline`, `-BackgroundColor` parameters if needed
-- [ ] **71.** Review generated images visually before uploading to stores
-- [ ] **72.** Verify app icon in Apple App Store Connect matches v2 logo
-- [ ] **73.** Verify app icon in Google Play Console matches v2 logo
+- [x] **71.** Review generated images visually before uploading to stores
+- [x] **72.** Verify app icon in Apple App Store Connect matches v2 logo
+- [x] **73.** Verify app icon in Google Play Console matches v2 logo
 
 ---
 
@@ -326,8 +326,8 @@ Additional source files at `D:\data\images\v2\New TrashMob.eco files\New TrashMo
 
 ### A8. Dev Environment Smoke Test :test_tube:
 
-- [ ] **86.** Deploy to dev.trashmob.eco and verify all features work before proceeding to production
-- [ ] **87.** Run through feature testing checklist (Part C below) on dev first
+- [x] **86.** Deploy to dev.trashmob.eco and verify all features work before proceeding to production
+- [x] **87.** Run through feature testing checklist (Part C below) on dev first
 
 ---
 
