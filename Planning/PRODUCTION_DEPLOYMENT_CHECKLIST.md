@@ -1054,6 +1054,138 @@ After updating the manifest, update the corresponding store forms:
 - **Apple:** [App Store Connect > App Privacy](https://appstoreconnect.apple.com)
 - **Google:** [Play Console > Data Safety](https://play.google.com/console)
 
+### R17. Google Play Staged Rollout (Fastlane Supply)
+
+<a id="r17-google-play-staged-rollout"></a>
+
+**Workflow (auto):** `.github/workflows/publish-android.yml` (optional `promote_to_production` input)
+**Workflow (manual):** `.github/workflows/manual_android-rollout.yml`
+**Fastlane lane:** `android_promote` / `android_rollout` in `fastlane/Fastfile`
+
+#### How it works
+
+1. **During release:** The `publish-android.yml` workflow uploads the AAB to the Google Play internal track via `r0adkll/upload-google-play`. If `promote_to_production: true` is passed, it then uses Fastlane Supply to promote from `internal` → `production` at the specified rollout percentage (default 10%).
+2. **Manual rollout adjustment:** Use `manual_android-rollout.yml` to change the rollout percentage (10% → 25% → 50% → 100%) without rebuilding or redeploying.
+
+#### Prerequisites
+
+| Secret | Purpose |
+|--------|---------|
+| `GCP_SERVICE_ACCOUNT` | Google Cloud service account JSON key with Google Play Developer API access |
+
+The service account must have "Release manager" permissions in Google Play Console.
+
+#### Usage
+
+```bash
+# Adjust rollout to 50%
+gh workflow run "Android - Adjust Production Rollout" -f rollout_percentage=50
+
+# Full rollout (100%)
+gh workflow run "Android - Adjust Production Rollout" -f rollout_percentage=100
+```
+
+#### Monitoring rollout
+
+Check rollout status in [Google Play Console](https://play.google.com/console) > Release > Production > Release dashboard. Watch crash rates and ANR rates before increasing rollout percentage.
+
+### R18. App Store Promotion (Fastlane Pilot & Deliver)
+
+<a id="r18-app-store-promotion"></a>
+
+**Workflow (upload):** `.github/workflows/publish-ios.yml` (uses `fastlane pilot upload`)
+**Workflow (submit):** `.github/workflows/manual_ios-submit.yml`
+**Fastlane lanes:** `ios_upload` / `ios_submit` in `fastlane/Fastfile`
+**Metadata:** `fastlane/metadata/en-US/`
+
+#### How it works
+
+1. **TestFlight upload:** The `publish-ios.yml` workflow uses `fastlane pilot upload` (replacing the deprecated `xcrun altool`) to upload the IPA to TestFlight.
+2. **App Store submission:** The `manual_ios-submit.yml` workflow uses `fastlane deliver` to submit the latest TestFlight build for App Store review, including metadata from `fastlane/metadata/en-US/`.
+
+#### Prerequisites
+
+| Secret | Purpose |
+|--------|---------|
+| `APPSTORE_KEY_ID` | App Store Connect API key ID |
+| `APPSTORE_ISSUER_ID` | App Store Connect API issuer ID |
+| `APPSTORE_PRIVATE_KEY` | App Store Connect API private key (.p8 content, base64-encoded) |
+
+#### Metadata files
+
+| File | Purpose |
+|------|---------|
+| `description.txt` | Full app description |
+| `keywords.txt` | Search keywords (comma-separated, max 100 chars) |
+| `release_notes.txt` | What's New text for this version |
+| `privacy_url.txt` | Privacy policy URL |
+| `support_url.txt` | Support/contact URL |
+| `subtitle.txt` | App subtitle (max 30 chars) |
+| `name.txt` | App name |
+
+#### Usage
+
+```bash
+# Submit latest TestFlight build for review
+gh workflow run "iOS - Submit for App Store Review"
+
+# Submit a specific build number
+gh workflow run "iOS - Submit for App Store Review" -f build_number=42
+```
+
+#### Updating metadata
+
+Edit the files in `fastlane/metadata/en-US/`, commit, and push. The next `ios_submit` run will use the updated metadata. Apple validates metadata during review — check App Store Connect for any rejections.
+
+### R19. Screenshot Capture (Appium)
+
+<a id="r19-screenshot-capture"></a>
+
+**Workflow:** `.github/workflows/manual_capture-screenshots.yml`
+**Tests:** `TrashMobMobile.UITests/Tests/ScreenshotTests.cs`
+
+#### How it works
+
+1. **Trigger:** `workflow_dispatch` with optional API level and authenticated screenshot toggle.
+2. **Build:** Publishes the MAUI app as an Android APK.
+3. **Emulator:** Starts an Android emulator (pixel_6 profile) via `reactivecircus/android-emulator-runner`.
+4. **Appium:** Installs Appium + UiAutomator2 driver, starts the server.
+5. **Capture:** Runs `dotnet test` with `Category=Screenshots` filter. Each test navigates to a screen and calls `CaptureScreenshot()`.
+6. **Artifacts:** Screenshots are uploaded as a GitHub Actions artifact (retained 30 days).
+
+#### Screenshot tests
+
+| Test | Screen | Filename |
+|------|--------|----------|
+| `CaptureWelcomeScreen` | Welcome/landing | `01_Welcome.png` |
+| `CaptureGetStartedScreen` | Get Started page | `02_GetStarted.png` |
+| `CaptureEventsMapScreen` | Events map (main) | `03_EventsMap.png` |
+| `CaptureDashboardScreen` | User dashboard | `04_Dashboard.png` |
+| `CaptureTeamsScreen` | Teams listing | `05_Teams.png` |
+| `CaptureCreateEventScreen` | Create event form | `06_CreateEvent.png` |
+
+Tests marked `[Trait("Category", "Authenticated")]` require a logged-in session. By default these are skipped; enable with `include_authenticated: true`.
+
+#### Usage
+
+```bash
+# Capture unauthenticated screenshots (default)
+gh workflow run "Capture App Screenshots"
+
+# Include authenticated screens
+gh workflow run "Capture App Screenshots" -f include_authenticated=true
+
+# Use a different API level
+gh workflow run "Capture App Screenshots" -f emulator_api_level=35
+```
+
+#### Adding new screenshots
+
+1. Add a new test method to `ScreenshotTests.cs` with `[Trait("Category", "Screenshots")]`.
+2. Use the Appium driver to navigate to the target screen.
+3. Call `CaptureScreenshot("07_ScreenName")` with the next number in sequence.
+4. If the screen requires authentication, also add `[Trait("Category", "Authenticated")]`.
+
 ---
 
 ## New Features Summary
@@ -1087,9 +1219,9 @@ The following steps are currently manual but could be automated to reduce errors
 | 1 | **Database migrations** (step 85) | `.github/workflows/release_db-migrations.yml` — auto-runs on release push when migration files change. Temporarily opens SQL firewall, retrieves connection string from Key Vault, applies migrations, cleans up. | **Done** |
 | 2 | **App Store icon resizing** (steps 67-68) | `Planning/StoreAssets/generate-icons.ps1` — generates all required sizes (1024x1024, 512x512, 192x192, 32x32, 240x240) from the 2500x2500 source PNG. | **Done** |
 | 3 | **Google Play Feature Graphic** (step 69) | `Planning/StoreAssets/generate-feature-graphic.ps1` — composites v2 logo onto brand green background at 1024x500 with configurable tagline. | **Done** |
-| 4 | **Screenshot capture** (step 75) — manual emulator/simulator screenshots | Use [Fastlane Snapshot](https://docs.fastlane.tools/actions/snapshot/) (iOS) and [Fastlane Screengrab](https://docs.fastlane.tools/actions/screengrab/) (Android) to automate screenshot capture across device sizes. Requires UI test setup. | High |
-| 5 | **Apple TestFlight > App Store promotion** (step 94) — manual click in App Store Connect | Use [Fastlane Deliver](https://docs.fastlane.tools/actions/deliver/) to automate App Store submission including metadata, screenshots, and build promotion. | Medium |
-| 6 | **Google Play staged rollout** (step 95) — manual in Google Play Console | Use [Fastlane Supply](https://docs.fastlane.tools/actions/supply/) to automate Google Play uploads and rollout percentage management from CI. | Medium |
+| 4 | **Screenshot capture** (step 77) — automated via Appium | `.github/workflows/manual_capture-screenshots.yml` — `workflow_dispatch` runs Appium UI tests on Android emulator, captures screenshots of key screens, uploads as artifacts. `TrashMobMobile.UITests/Tests/ScreenshotTests.cs` has the test class. | **Done** |
+| 5 | **Apple TestFlight > App Store promotion** (step 97) — Fastlane Deliver | `.github/workflows/manual_ios-submit.yml` — `workflow_dispatch` submits latest TestFlight build for App Store review using Fastlane Deliver with metadata from `fastlane/metadata/en-US/`. iOS publish workflow migrated from deprecated `xcrun altool` to `fastlane pilot upload`. | **Done** |
+| 6 | **Google Play staged rollout** (step 98) — Fastlane Supply | `.github/workflows/manual_android-rollout.yml` — `workflow_dispatch` to adjust production rollout (10%/25%/50%/100%). Android publish workflow updated with optional `promote_to_production` input using Fastlane Supply. | **Done** |
 | 7 | **Post-deployment smoke tests** (step 99) — automated health checks | `.github/workflows/release_smoke-tests.yml` — runs automatically after container app deployment. Checks site HTTP status, `/health`, `/health/live`, `/api/config`, and Swagger. | **Done** |
 | 8 | **Apple signing cert expiry monitoring** (step 62) — weekly automated check | `.github/workflows/scheduled_cert-expiry-check.yml` — runs weekly (Monday 9am UTC), reads `Deploy/cert-expiry-dates.json`, creates GitHub issue if any cert expires within 30 days. | **Done** |
 | 9 | **B2C > Entra user migration** (step 89) — automated workflow | `.github/workflows/manual_b2c-to-entra-migration.yml` — `workflow_dispatch` with environment (dev/prod) and mode (dry-run/export-only/full-migration). Exports B2C users, imports to Entra via Graph API. | **Done** |

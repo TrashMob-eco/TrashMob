@@ -24,6 +24,9 @@ jobs:
         runs-on: macos-15
         environment: ${{ inputs.environment }}
         steps:
+            - name: Checkout (for Fastlane config)
+              uses: actions/checkout@v6
+
             - name: Download artifact
               uses: actions/download-artifact@v4
               with:
@@ -32,26 +35,16 @@ jobs:
             - name: Get ipa filename
               run: echo "IPA_FILENAME=$(ls -R *.ipa)" > $GITHUB_ENV
 
-            - name: Setup API key
-              run: |
-                mkdir -p ~/private_keys
-                echo "$API_PRIVATE_KEY" > ~/private_keys/AuthKey_${API_KEY_ID}.p8
-              env:
-                API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-                API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+            - name: Set up Ruby
+              uses: ruby/setup-ruby@v1
+              with:
+                ruby-version: '3.3'
+                bundler-cache: true
 
-            - name: Upload to TestFlight
-              run: |
-                xcrun altool --upload-app \
-                  -f "$IPA_FILENAME" \
-                  -t ios \
-                  --apiKey "$API_KEY_ID" \
-                  --apiIssuer "$API_ISSUER_ID"
+            - name: Upload to TestFlight via Fastlane Pilot
               env:
-                IPA_FILENAME: ${{ env.IPA_FILENAME }}
-                API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-                API_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
-
-            - name: Cleanup
-              if: always()
-              run: rm -rf ~/private_keys
+                APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+                APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+                APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+              run: |
+                bundle exec fastlane ios ios_upload ipa:"$IPA_FILENAME"
