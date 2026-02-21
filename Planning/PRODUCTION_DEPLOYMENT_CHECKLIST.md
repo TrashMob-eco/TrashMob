@@ -20,23 +20,23 @@ Everything in this section can and should be completed **before** merging to rel
 
 Ensure required secrets exist in both environments. These are idempotent — safe to re-run.
 
-- [ ] **1.** Verify/create Strapi DB password (dev):
+- [x] **1.** Verify/create Strapi DB password (dev):
   ```bash
   az keyvault secret show --vault-name kv-tm-dev-westus2 --name strapi-db-password || \
     az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
   ```
-- [ ] **2.** Verify/create Anthropic API key (dev):
+- [x] **2.** Verify/create Anthropic API key (dev):
   ```bash
   az keyvault secret show --vault-name kv-tm-dev-westus2 --name AnthropicApiKey || \
     az keyvault secret set --vault-name kv-tm-dev-westus2 --name AnthropicApiKey --value "<your-anthropic-api-key>"
   ```
   Get key from https://console.anthropic.com/settings/keys
-- [ ] **3.** Verify/create Strapi DB password (prod):
+- [x] **3.** Verify/create Strapi DB password (prod):
   ```bash
   az keyvault secret show --vault-name kv-tm-pr-westus2 --name strapi-db-password || \
     az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
   ```
-- [ ] **4.** Verify/create Anthropic API key (prod):
+- [x] **4.** Verify/create Anthropic API key (prod):
   ```bash
   az keyvault secret show --vault-name kv-tm-pr-westus2 --name AnthropicApiKey || \
     az keyvault secret set --vault-name kv-tm-pr-westus2 --name AnthropicApiKey --value "<your-anthropic-api-key>"
@@ -46,7 +46,7 @@ Ensure required secrets exist in both environments. These are idempotent — saf
 
 ### A2. Infrastructure Deployments :hand:
 
-- [ ] **5.** Deploy Application Insights Workbook (recommended):
+- [x] **5.** Deploy Application Insights Workbook (recommended):
   ```bash
   az account set --subscription "TrashMobProd"
   az deployment group create \
@@ -56,14 +56,14 @@ Ensure required secrets exist in both environments. These are idempotent — saf
       rgName=rg-trashmob-pr-westus2 \
       appInsightsName=ai-tm-pr-westus2
   ```
-- [ ] **6.** Deploy Backup Alerts (if not already deployed):
+- [x] **6.** Deploy Backup Alerts (if not already deployed):
   ```bash
   az deployment group create \
     --resource-group rg-trashmob-pr-westus2 \
     --template-file Deploy/backupAlerts.bicep \
     --parameters environment=pr region=westus2
   ```
-- [ ] **7.** Deploy Billing Alerts action group:
+- [x] **7.** Deploy Billing Alerts action group:
   ```bash
   az deployment group create \
     --resource-group rg-trashmob-pr-westus2 \
@@ -76,13 +76,13 @@ Ensure required secrets exist in both environments. These are idempotent — saf
   - Annual grant monitor ($1) to detect grant expiration
 - [ ] **9.** Create SendGrid alerts: https://app.sendgrid.com > Settings > Billing > alerts at 75% and 90% (recipient: joe@trashmob.eco)
 - [ ] **10.** Create Google Maps API alerts: https://console.cloud.google.com > Billing > Budgets & alerts > "TrashMob Maps API" at $100/month with 50%, 90%, 100%
-- [ ] **11.** Verify KeyVault RBAC is working (PR #2482 migrated from access policies to RBAC)
+- [ ] **11.** Verify KeyVault RBAC is working (PR #2482 migrated from access policies to RBAC) — **NOTE: prod KV still uses access policies (`enableRbacAuthorization: false`), not RBAC. Needs investigation.**
 
 ---
 
 ### A3. Strapi CMS (Optional — only if deploying to prod for first time) :hand:
 
-- [ ] **12.** Create KeyVault secrets for Strapi:
+- [x] **12.** Create KeyVault secrets for Strapi: — **Already exist in prod KV (verified 2026-02-20)**
   ```bash
   az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
   az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-admin-jwt-secret --value "$(openssl rand -base64 32)"
@@ -90,14 +90,14 @@ Ensure required secrets exist in both environments. These are idempotent — saf
   az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-app-keys --value "$(openssl rand -base64 32),$(openssl rand -base64 32)"
   az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-transfer-token-salt --value "$(openssl rand -base64 32)"
   ```
-- [ ] **13.** Deploy Strapi database:
+- [x] **13.** Deploy Strapi database:
   ```bash
   az deployment group create \
     --resource-group rg-trashmob-pr-westus2 \
     --template-file Deploy/sqlDatabaseStrapi.bicep \
     --parameters environment=pr region=westus2
   ```
-- [ ] **14.** Create production workflow (copy from dev, update environment variables). Workflow auto-creates SQL user and deploys container.
+- [x] **14.** Create production workflow (copy from dev, update environment variables). Workflow auto-creates SQL user and deploys container. — **Created `.github/workflows/release_strapi-tm-pr-westus2.yml`**
 
 ---
 
@@ -109,28 +109,28 @@ This is a **downtime deployment** — B2C is fully replaced by Entra External ID
 
 #### A4.1 Create Production Entra Tenant
 
-- [ ] **15.** Azure Portal > Microsoft Entra External ID > Create **Customer** tenant
-  - Tenant name: `TrashMobEco`
-  - Domain: `trashmobeco.onmicrosoft.com`
-  - CIAM domain: `trashmobeco.ciamlogin.com`
+- [x] **15.** Azure Portal > Microsoft Entra External ID > Create **Customer** tenant
+  - Tenant name: `TrashMobEcoPr`
+  - Domain: `trashmobecopr.onmicrosoft.com`
+  - CIAM domain: `trashmobecopr.ciamlogin.com`
   - Location: United States
-- [ ] **16.** Record the **Tenant ID** (GUID from Overview page)
+- [x] **16.** Record the **Tenant ID**: `b5fc8717-29eb-496e-8e09-cf90d344ce9f`
 
 #### A4.2 Register App Registrations
 
-Login to the prod tenant first: `az login --tenant <prod-entra-tenant-id> --allow-no-subscriptions`
+Login to the prod tenant first: `az login --tenant b5fc8717-29eb-496e-8e09-cf90d344ce9f --allow-no-subscriptions`
 
-- [ ] **17.** **Web SPA (Frontend):** Name: `TrashMob Web`, Redirect URIs (SPA): `https://www.trashmob.eco`, `https://trashmob.eco`, check ID tokens, uncheck Access tokens. Record **Application (client) ID** → `FrontendClientId`
-- [ ] **18.** **Backend API:** Name: `TrashMob API`, Expose an API → URI: `api://<client-id>`, Add scopes: `TrashMob.Read`, `TrashMob.Writes`. Record **Application (client) ID** → `ClientId`
-- [ ] **19.** **Mobile App:** Name: `TrashMob Mobile`, Redirect URI (Public client): `eco.trashmob.trashmobmobile://auth`. Record **Application (client) ID**
-- [ ] **20.** **Auth Extension (Layer 2):** Name: `TrashMob AuthExtension`. Record **Application (client) ID** → JWT audience validation
-- [ ] **21.** **Grant API Permissions:** Web SPA + Mobile App → add `TrashMob.Read` + `TrashMob.Writes` → Grant admin consent
+- [x] **17.** **Web SPA (Frontend):** Name: `TrashMob Web`, Redirect URIs (SPA): `https://www.trashmob.eco`, `https://trashmob.eco`, check ID tokens, uncheck Access tokens. **FrontendClientId: `0604ef02-6b84-450f-b5d5-2196e96f3b48`**
+- [x] **18.** **Backend API:** Name: `TrashMob API`, Expose an API → URI: `api://dc09e17b-bce4-4af9-82ab-f7b12af586b4`, Scopes: `TrashMob.Read`, `TrashMob.Writes`. **ClientId: `dc09e17b-bce4-4af9-82ab-f7b12af586b4`**
+- [x] **19.** **Mobile App:** Name: `TrashMob Mobile`, Redirect URI (Public client): `eco.trashmob.trashmobmobile://auth`. **AppId: `9fce4b6e-9df5-4e41-a425-75535ba99fbe`**
+- [x] **20.** **Auth Extension (Layer 2):** Name: `TrashMob AuthExtension`. **AppId: `261e358b-ccf7-4691-89a8-0690262bcc52`**
+- [x] **21.** **Grant API Permissions:** Web SPA + Mobile App → `TrashMob.Read` + `TrashMob.Writes` → Admin consent granted
 
 #### A4.3 Configure Optional Claims
 
-- [ ] **22.** Run configure script:
+- [x] **22.** Run configure script:
   ```bash
-  az login --tenant <prod-entra-tenant-id> --allow-no-subscriptions
+  az login --tenant b5fc8717-29eb-496e-8e09-cf90d344ce9f --allow-no-subscriptions
   .\Deploy\configure-entra-apps.ps1 -Environment pr
   ```
   Sets: `email`, `given_name`, `family_name`, `preferred_username`, `acceptMappedClaims: true`, `isFallbackPublicClient: true` (mobile only)
@@ -139,12 +139,12 @@ Login to the prod tenant first: `az login --tenant <prod-entra-tenant-id> --allo
 
 In Azure Portal > prod Entra tenant > External Identities > All identity providers:
 
-- [ ] **23.** **Google:** Create OAuth 2.0 credentials in Google Cloud Console, add redirect URI `https://trashmobeco.ciamlogin.com/trashmobeco.onmicrosoft.com/federation/oauth2`, enter Client ID + secret in Azure
+- [ ] **23.** **Google:** Create OAuth 2.0 credentials in Google Cloud Console, add redirect URI `https://trashmobecopr.ciamlogin.com/trashmobecopr.onmicrosoft.com/federation/oauth2`, enter Client ID + secret in Azure
 - [ ] **24.** **Facebook:** Add OAuth redirect URI in Facebook Developer Console, enter App ID + secret in Azure
 - [ ] **25.** **Apple:**
   1. Apple Developer > Certificates, Identifiers & Profiles > Identifiers > **+** > **Services IDs**
   2. Register Service ID (e.g., `eco.trashmob.entra`) with **Sign In with Apple** enabled
-  3. Configure return URL: `https://trashmobeco.ciamlogin.com/trashmobeco.onmicrosoft.com/federation/oidc/apple`
+  3. Configure return URL: `https://trashmobecopr.ciamlogin.com/trashmobecopr.onmicrosoft.com/federation/oidc/apple`
   4. If no `.p8` key file: create under Keys > **+** > check Sign in with Apple > download (one-time)
   5. Generate Apple client secret JWT using `d:/tools/Apple/generate-apple-secret.js` (update KEY_ID, SERVICE_ID, KEY_FILE for prod)
   6. Enter Service ID + generated JWT in Entra Apple IDP config
@@ -186,11 +186,11 @@ In Azure Portal > prod Entra tenant > External Identities > All identity provide
 
 - [ ] **39.** Set backend config (Key Vault or env vars):
   ```
-  AzureAdEntra__Instance=https://trashmobeco.ciamlogin.com/
-  AzureAdEntra__ClientId=<API app client ID>
-  AzureAdEntra__FrontendClientId=<Web SPA client ID>
-  AzureAdEntra__Domain=trashmobeco.onmicrosoft.com
-  AzureAdEntra__TenantId=<prod tenant ID>
+  AzureAdEntra__Instance=https://trashmobecopr.ciamlogin.com/
+  AzureAdEntra__ClientId=dc09e17b-bce4-4af9-82ab-f7b12af586b4
+  AzureAdEntra__FrontendClientId=0604ef02-6b84-450f-b5d5-2196e96f3b48
+  AzureAdEntra__Domain=trashmobecopr.onmicrosoft.com
+  AzureAdEntra__TenantId=b5fc8717-29eb-496e-8e09-cf90d344ce9f
   UseEntraExternalId=true
   ```
 - [ ] **40.** Update `Deploy/containerApp.bicep` prod environment variables with prod Entra values
