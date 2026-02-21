@@ -260,11 +260,11 @@ In Azure Portal > prod Entra tenant > External Identities > All identity provide
 
 - [ ] **62.** :gear: **AUTOMATED:** `scheduled_cert-expiry-check.yml` runs weekly (Mondays 9am UTC) and creates a GitHub issue if any certificate expires within 30 days. Update `Deploy/cert-expiry-dates.json` when renewing certificates. (See [Section R14](#r14-certificate-expiry-monitoring))
 - [ ] **63.** :test_tube: Verify `Deploy/cert-expiry-dates.json` has current expiry dates for all certificates
-- [ ] **64.** Check iOS distribution certificate expiry at https://developer.apple.com/account/resources/certificates/list
-- [ ] **65.** Check App Store Connect API key status at https://appstoreconnect.apple.com/access/integrations/api — verify key used by `APPSTORE_KEY_ID` is "Active"
-- [ ] **66.** If certificate expired or expiring — regenerate (see [Section R1](#r1-regenerate-ios-distribution-certificate))
-- [ ] **67.** If API key expired or revoked — regenerate (see [Section R2](#r2-regenerate-app-store-connect-api-key))
-- [ ] **68.** Verify Android keystore — `ANDROID_KEYSTORE` and `ANDROID_KEYSTORE_PASSWORD` secrets are set (see [Section R3](#r3-android-keystore-rotation) if rotation needed)
+- [x] **64.** Check iOS distribution certificate expiry at https://developer.apple.com/account/resources/certificates/list — **Expired; regenerated 2026-02-21 via `openssl` CSR (macOS Sequoia lacks Keychain Certificate Assistant)**
+- [x] **65.** Check App Store Connect API key status at https://appstoreconnect.apple.com/access/integrations/api — verify key used by `APPSTORE_KEY_ID` is "Active" — **`TrashMobProdApiKey` (L8R272VZ58) is Active (created 2026-02-15)**
+- [x] **66.** If certificate expired or expiring — regenerate (see [Section R1](#r1-regenerate-ios-distribution-certificate)) — **Done. New cert created, .p12 exported, `IOS_CERTIFICATES_P12` and `IOS_CERTIFICATES_P12_PASSWORD` GitHub secrets updated.**
+- [x] **67.** If API key expired or revoked — regenerate (see [Section R2](#r2-regenerate-app-store-connect-api-key)) — **Key is active, no regeneration needed. However, `APPSTORE_KEY_ID` and `APPSTORE_ISSUER_ID` GitHub secrets are MISSING and `APPSTORE_PRIVATE_KEY` is stale (2023). :arrow_right: NEXT STEP: Set all three secrets from the new .p8 key file.**
+- [ ] **68.** Verify Android keystore — `ANDROID_KEYSTORE` and `ANDROID_KEYSTORE_PASSWORD` secrets are set (see [Section R3](#r3-android-keystore-rotation) if rotation needed) — **Neither secret exists yet; needs creation.**
 
 ---
 
