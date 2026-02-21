@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  AZURE_CONTAINER_REGISTRY: crtmprwestus2
+  AZURE_CONTAINER_REGISTRY: acrtmprwestus2
   CONTAINER_APP_NAME: ca-authext-tm-pr-westus2
   RESOURCE_GROUP: rg-trashmob-pr-westus2
   IMAGE_NAME: trashmob-authext
