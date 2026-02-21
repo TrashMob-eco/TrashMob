@@ -42,11 +42,11 @@ $config = @{
         AuthExtAppId    = '219a6eac-9f9e-4ade-96b8-881928bd6d6d'
     }
     'pr' = @{
-        TenantId        = ''  # TODO: Fill in when prod tenant is created
-        WebSpaAppId     = ''  # TODO: Fill in when prod apps are registered
-        ApiAppId        = ''  # TODO: Fill in when prod apps are registered
-        MobileAppId     = ''  # TODO: Fill in when prod apps are registered
-        AuthExtAppId    = ''  # TODO: Fill in when prod apps are registered
+        TenantId        = 'b5fc8717-29eb-496e-8e09-cf90d344ce9f'
+        WebSpaAppId     = '0604ef02-6b84-450f-b5d5-2196e96f3b48'
+        ApiAppId        = 'dc09e17b-bce4-4af9-82ab-f7b12af586b4'
+        MobileAppId     = '9fce4b6e-9df5-4e41-a425-75535ba99fbe'
+        AuthExtAppId    = '261e358b-ccf7-4691-89a8-0690262bcc52'
     }
 }
 
