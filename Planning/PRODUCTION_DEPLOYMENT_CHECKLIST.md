@@ -1,6 +1,6 @@
 # Production Deployment Checklist
 
-**Last Updated:** February 20, 2026
+**Last Updated:** February 21, 2026
 **Commits Since Last Release:** ~100+ commits from main
 
 > **Legend:**
@@ -288,7 +288,7 @@ Additional source files at `D:\data\images\v2\New TrashMob.eco files\New TrashMo
 - [ ] **74.** Update app store listing copy (see [Section R4](#r4-app-store-listing-copy))
 - [ ] **75.** Update release notes (see [Section R5](#r5-release-notes-template))
 - [ ] **76.** Update keywords (Apple, see [Section R6](#r6-keywords))
-- [ ] **77.** Capture new screenshots if significant UI changes (see [Section R7](#r7-screenshot-guide))
+- [ ] **77.** Capture new screenshots if significant UI changes — run `gh workflow run "Capture App Screenshots"` or capture manually (see [Section R7](#r7-screenshot-guide) and [Section R19](#r19-screenshot-capture))
 - [ ] **78.** Verify privacy policy URL is accessible: https://www.trashmob.eco/privacypolicy
 - [ ] **79.** Verify support URL is accessible: https://www.trashmob.eco/contactus
 - [ ] **80.** Update content rating if needed (user-generated content, location)
@@ -421,11 +421,11 @@ Run all 31 pending migrations. EF Core applies only unapplied migrations automat
 ### B4. Deploy Mobile Apps :hand: :gear:
 
 - [ ] **95.** :gear: **AUTOMATED:** Push to `release` triggers `release_trashmobmobileapp.yml` which:
-  - Builds Android AAB, signs with keystore, uploads to Google Play via GCP service account
-  - Builds iOS IPA, signs with distribution cert, uploads to TestFlight via `xcrun altool`
+  - Builds Android AAB, signs with keystore, uploads to Google Play internal track via GCP service account
+  - Builds iOS IPA, signs with distribution cert, uploads to TestFlight via Fastlane Pilot (see [Section R18](#r18-app-store-promotion))
 - [ ] **96.** Monitor mobile build workflow for success
-- [ ] **97.** :hand: **Apple:** Promote TestFlight build to App Store review in App Store Connect
-- [ ] **98.** :hand: **Google:** Promote internal track build to production in Google Play Console (recommend staged rollout: 10% > 50% > 100%)
+- [ ] **97.** :hand: **Apple:** Promote TestFlight build to App Store review — either manually in App Store Connect, or run `gh workflow run "iOS - Submit for App Store Review"` (see [Section R18](#r18-app-store-promotion))
+- [ ] **98.** :hand: **Google:** Promote internal track to production with staged rollout — either manually in Google Play Console, or run `gh workflow run "Android - Adjust Production Rollout" -f rollout_percentage=10` then increase (see [Section R17](#r17-google-play-staged-rollout))
 
 ---
 
@@ -492,30 +492,53 @@ Run all 31 pending migrations. EF Core applies only unapplied migrations automat
   - Use Preview toggle to verify before saving
 - [ ] **131.** Volunteer opportunities page renders markdown correctly
 
+#### Route Tracking (Project 4)
+- [ ] **132.** Start route tracking during an event on mobile
+- [ ] **133.** Route appears as colored polyline on event map
+- [ ] **134.** Route tracking works offline and syncs when connected
+- [ ] **135.** Route stops recording when user taps stop or event ends
+
+#### Area Map Editor (Project 44)
+- [ ] **136.** Generate areas via AI (interchanges, city blocks, highway sections)
+- [ ] **137.** Search and filter adoptable areas
+- [ ] **138.** Clear all areas (hard-delete for unadopted areas)
+- [ ] **139.** View area boundaries on map (polygon rendering)
+- [ ] **140.** Community boundary GeoJSON displays correctly
+
+#### Event Visibility
+- [ ] **141.** Create event with Public/Team-Only/Private visibility
+- [ ] **142.** Team-Only events visible only to team members
+- [ ] **143.** Private events visible only to invited attendees
+
+#### Event Photos
+- [ ] **144.** Upload photos to an event
+- [ ] **145.** Photos display in event details
+- [ ] **146.** Photo moderation flags work for admins
+
 #### Auth Migration — Entra External ID (Project 1)
-- [ ] **132.** Sign in via email/password works
-- [ ] **133.** Sign in via Google works, profile photo auto-populated
-- [ ] **134.** Sign in via Facebook works
-- [ ] **135.** Sign in via Apple works
-- [ ] **136.** "Create Account" shows age gate before Entra redirect
-- [ ] **137.** Age gate blocks under-13 with friendly message
-- [ ] **138.** "Sign In" goes directly to Entra (no age gate)
-- [ ] **139.** Profile edit works in-app (name, photo upload)
-- [ ] **140.** "Delete My Data" works with typed DELETE confirmation
-- [ ] **141.** Migrated B2C user can sign in via Entra
-- [ ] **142.** New user auto-created in DB on first sign-in
-- [ ] **143.** Auth extension blocks under-13 sign-up server-side
-- [ ] **144.** JWT contains expected claims: email, given_name, family_name, dateOfBirth
-- [ ] **145.** No auth errors in Application Insights after 1 hour
+- [ ] **147.** Sign in via email/password works
+- [ ] **148.** Sign in via Google works, profile photo auto-populated
+- [ ] **149.** Sign in via Facebook works
+- [ ] **150.** Sign in via Apple works
+- [ ] **151.** "Create Account" shows age gate before Entra redirect
+- [ ] **152.** Age gate blocks under-13 with friendly message
+- [ ] **153.** "Sign In" goes directly to Entra (no age gate)
+- [ ] **154.** Profile edit works in-app (name, photo upload)
+- [ ] **155.** "Delete My Data" works with typed DELETE confirmation
+- [ ] **156.** Migrated B2C user can sign in via Entra
+- [ ] **157.** New user auto-created in DB on first sign-in
+- [ ] **158.** Auth extension blocks under-13 sign-up server-side
+- [ ] **159.** JWT contains expected claims: email, given_name, family_name, dateOfBirth
+- [ ] **160.** No auth errors in Application Insights after 1 hour
 
 ---
 
 ### C3. Post-Launch Monitoring
 
-- [ ] **146.** Monitor Application Insights for auth errors for 24 hours
-- [ ] **147.** Monitor Sentry.io for mobile crashes
-- [ ] **148.** Monitor Google Play pre-launch report for crashes
-- [ ] **149.** After 1-week coexistence: decommission B2C tenant
+- [ ] **161.** Monitor Application Insights for auth errors for 24 hours
+- [ ] **162.** Monitor Sentry.io for mobile crashes
+- [ ] **163.** Monitor Google Play pre-launch report for crashes
+- [ ] **164.** After 1-week coexistence: decommission B2C tenant
 
 ---
 
@@ -1198,6 +1221,15 @@ gh workflow run "Capture App Screenshots" -f emulator_api_level=35
 | Event Co-Leads | Project 21 | Multiple leads per event |
 | Weight Tracking | Project 7 | Decimal weights, weight units |
 | Litter Reports Web | Project 3 | Full web parity for litter reporting |
+| Route Tracking | Project 4 | GPS route tracing during cleanups, colored polylines on map |
+| Area Map Editor | Project 44 | AI area generation (Overpass API), interchanges, city blocks, highway sections, boundary editor |
+| Adoptable Areas | Project 44 | Area adoption system with team assignments, co-adoption, cleanup frequency |
+| Event Visibility | — | Public/Team-Only/Private event visibility settings |
+| Event Photos | — | Photo uploads for events with moderation support |
+| Waivers V3 | Project 8 | Community waivers, minor consent, versioning, guardian info |
+| Achievements | — | Gamification with 7 achievement types, leaderboard caching |
+| Sponsored Adoptions | — | Professional companies, sponsors, sponsored area cleanups |
+| Community Prospects | Project 40 | Pipeline management, fit scoring, outreach email cadence |
 | Feature Metrics | Project 29 | Application Insights event tracking |
 | OpenTelemetry | Project 27 | Migrated from App Insights SDK |
 | KeyVault RBAC | Project 26 | Migrated from access policies |
@@ -1207,6 +1239,7 @@ gh workflow run "Capture App Screenshots" -f emulator_api_level=35
 | Auth Migration (B2C > Entra) | Project 1 | Entra External ID sign-in, profile photos, social IDPs |
 | Age Gate (COPPA) | Project 1/23 | Under-13 block (Layer 1 client + Layer 2 server), minor flagging |
 | Auth Extension | Project 1 | Server-side age verification Container App for Entra |
+| Fastlane CI/CD | — | Pilot (TestFlight), Deliver (App Store review), Supply (Google Play rollout) |
 
 ---
 
@@ -1216,8 +1249,8 @@ The following steps are currently manual but could be automated to reduce errors
 
 | # | Current Manual Step | Automation Suggestion | Status |
 |---|--------------------|-----------------------|--------|
-| 1 | **Database migrations** (step 85) | `.github/workflows/release_db-migrations.yml` — auto-runs on release push when migration files change. Temporarily opens SQL firewall, retrieves connection string from Key Vault, applies migrations, cleans up. | **Done** |
-| 2 | **App Store icon resizing** (steps 67-68) | `Planning/StoreAssets/generate-icons.ps1` — generates all required sizes (1024x1024, 512x512, 192x192, 32x32, 240x240) from the 2500x2500 source PNG. | **Done** |
+| 1 | **Database migrations** (step 88) | `.github/workflows/release_db-migrations.yml` — auto-runs on release push when migration files change. Temporarily opens SQL firewall, retrieves connection string from Key Vault, applies migrations, cleans up. | **Done** |
+| 2 | **App Store icon resizing** (steps 69-70) | `Planning/StoreAssets/generate-icons.ps1` — generates all required sizes (1024x1024, 512x512, 192x192, 32x32, 240x240) from the 2500x2500 source PNG. | **Done** |
 | 3 | **Google Play Feature Graphic** (step 69) | `Planning/StoreAssets/generate-feature-graphic.ps1` — composites v2 logo onto brand green background at 1024x500 with configurable tagline. | **Done** |
 | 4 | **Screenshot capture** (step 77) — automated via Appium | `.github/workflows/manual_capture-screenshots.yml` — `workflow_dispatch` runs Appium UI tests on Android emulator, captures screenshots of key screens, uploads as artifacts. `TrashMobMobile.UITests/Tests/ScreenshotTests.cs` has the test class. | **Done** |
 | 5 | **Apple TestFlight > App Store promotion** (step 97) — Fastlane Deliver | `.github/workflows/manual_ios-submit.yml` — `workflow_dispatch` submits latest TestFlight build for App Store review using Fastlane Deliver with metadata from `fastlane/metadata/en-US/`. iOS publish workflow migrated from deprecated `xcrun altool` to `fastlane pilot upload`. | **Done** |
