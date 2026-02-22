@@ -80,7 +80,7 @@ platform :ios do
       automatic_release: false,
       force: true, # Skip HTML preview in CI
       precheck_include_in_app_purchases: false,
-      screenshots_path: "screenshots",
+      screenshots_path: "fastlane/screenshots",
       overwrite_screenshots: true,
       submission_information: {
         add_id_info_uses_idfa: false
@@ -154,7 +154,7 @@ platform :ios do
       skip_binary_upload: true,
       skip_metadata: true,
       skip_screenshots: false,
-      screenshots_path: "screenshots",
+      screenshots_path: "fastlane/screenshots",
       overwrite_screenshots: true,
       force: true,
       submit_for_review: false,
