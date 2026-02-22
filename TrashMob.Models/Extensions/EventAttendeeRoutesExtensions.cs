@@ -30,6 +30,7 @@
                 TrimEndMeters = eventAttendeeRoute.TrimEndMeters,
                 BagsCollected = eventAttendeeRoute.BagsCollected,
                 WeightCollected = eventAttendeeRoute.WeightCollected,
+                WeightUnitId = eventAttendeeRoute.WeightUnitId,
                 Notes = eventAttendeeRoute.Notes,
                 ExpiresDate = eventAttendeeRoute.ExpiresDate,
                 Locations = GetSortedLocations(eventAttendeeRoute.UserPath)
@@ -48,6 +49,7 @@
                 DurationMinutes = eventAttendeeRoute.DurationMinutes,
                 BagsCollected = eventAttendeeRoute.BagsCollected,
                 WeightCollected = eventAttendeeRoute.WeightCollected,
+                WeightUnitId = eventAttendeeRoute.WeightUnitId,
                 Locations = GetSortedLocations(eventAttendeeRoute.UserPath)
             };
         }

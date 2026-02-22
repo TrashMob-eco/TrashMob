@@ -29,13 +29,15 @@ import {
 } from '@/services/locations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
-import { Ellipsis, Loader2, Pencil, Plus, SquareX } from 'lucide-react';
+import { Ellipsis, Loader2, Pencil, Plus, RefreshCw, SquareX } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import EventSummaryData from '@/components/Models/EventSummaryData';
 import { useLogin } from '@/hooks/useLogin';
 import { CreateEventSummary, GetEventSummaryById, UpdateEventSummary } from '@/services/events';
 import { GetWeightUnits } from '../../../services/weight-units';
+import { GetEventSummaryPrefill } from '@/services/event-routes';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AssociatedLitterReports } from '@/components/eventsummary/associated-litter-reports';
 
@@ -68,6 +70,21 @@ export const EditEventSummary = () => {
         queryFn: GetWeightUnits().service,
         select: (res) => res.data,
     });
+
+    // Determine default weight unit based on user preference (Pound=1, Kilogram=2)
+    const defaultWeightUnitId = currentUser.prefersMetric ? 2 : 1;
+
+    const isNewSummary = !eventSummary || eventSummary.createdByUserId === Guid.EMPTY;
+
+    const { data: prefill } = useQuery({
+        queryKey: GetEventSummaryPrefill({ eventId, weightUnitId: defaultWeightUnitId }).key,
+        queryFn: GetEventSummaryPrefill({ eventId, weightUnitId: defaultWeightUnitId }).service,
+        select: (res) => res.data,
+        enabled: !!eventId,
+    });
+
+    const [isFromRouteData, setIsFromRouteData] = useState(false);
+    const [showResyncBanner, setShowResyncBanner] = useState(false);
 
     const createEventSummary = useMutation({
         mutationKey: CreateEventSummary().key,
@@ -165,23 +182,50 @@ export const EditEventSummary = () => {
         defaultValues: {},
     });
 
-    // Determine default weight unit based on user preference (Pound=1, Kilogram=2)
-    const defaultWeightUnitId = currentUser.prefersMetric ? 2 : 1;
-
     useEffect(() => {
         if (event) {
-            form.reset({
-                actualNumberOfAttendees: eventSummary?.actualNumberOfAttendees ?? event.maxNumberOfParticipants,
-                durationInMinutes: eventSummary?.durationInMinutes ?? event.durationHours * 60 + event.durationMinutes,
-                numberOfBags: eventSummary?.numberOfBags ?? 0,
-                numberOfBuckets: eventSummary?.numberOfBuckets ?? 0,
-                pickedWeight: eventSummary?.pickedWeight ?? 0,
-                pickedWeightUnitId: eventSummary?.pickedWeightUnitId ?? defaultWeightUnitId,
-                notes: eventSummary?.notes ?? '',
-                createdByUserId: eventSummary?.createdByUserId ?? Guid.EMPTY,
-            });
+            // For new summaries, use prefill data from routes if available
+            if (isNewSummary && prefill?.hasRouteData) {
+                form.reset({
+                    actualNumberOfAttendees: prefill.actualNumberOfAttendees || event.maxNumberOfParticipants,
+                    durationInMinutes: prefill.durationInMinutes || event.durationHours * 60 + event.durationMinutes,
+                    numberOfBags: prefill.numberOfBags || 0,
+                    numberOfBuckets: 0,
+                    pickedWeight: prefill.pickedWeight || 0,
+                    pickedWeightUnitId: prefill.pickedWeightUnitId || defaultWeightUnitId,
+                    notes: '',
+                    createdByUserId: Guid.EMPTY,
+                });
+                setIsFromRouteData(true);
+            } else {
+                form.reset({
+                    actualNumberOfAttendees: eventSummary?.actualNumberOfAttendees ?? event.maxNumberOfParticipants,
+                    durationInMinutes:
+                        eventSummary?.durationInMinutes ?? event.durationHours * 60 + event.durationMinutes,
+                    numberOfBags: eventSummary?.numberOfBags ?? 0,
+                    numberOfBuckets: eventSummary?.numberOfBuckets ?? 0,
+                    pickedWeight: eventSummary?.pickedWeight ?? 0,
+                    pickedWeightUnitId: eventSummary?.pickedWeightUnitId ?? defaultWeightUnitId,
+                    notes: eventSummary?.notes ?? '',
+                    createdByUserId: eventSummary?.createdByUserId ?? Guid.EMPTY,
+                });
+                setIsFromRouteData(eventSummary?.isFromRouteData ?? false);
+            }
         }
-    }, [eventSummary, event, defaultWeightUnitId]);
+    }, [eventSummary, event, defaultWeightUnitId, prefill]);
+
+    // Detect when route data has changed after summary was saved from route data
+    useEffect(() => {
+        if (eventSummary && eventSummary.isFromRouteData && prefill?.hasRouteData) {
+            const hasDrift =
+                eventSummary.numberOfBags !== prefill.numberOfBags ||
+                Math.abs(eventSummary.pickedWeight - prefill.pickedWeight) > 0.1 ||
+                eventSummary.durationInMinutes !== prefill.durationInMinutes;
+            setShowResyncBanner(hasDrift);
+        } else {
+            setShowResyncBanner(false);
+        }
+    }, [eventSummary, prefill]);
 
     function onSubmit(formValues: z.infer<typeof upsertEventSummarySchema>) {
         const body = new EventSummaryData();
@@ -193,6 +237,7 @@ export const EditEventSummary = () => {
         body.pickedWeight = formValues.pickedWeight;
         body.pickedWeightUnitId = formValues.pickedWeightUnitId;
         body.notes = formValues.notes ?? '';
+        body.isFromRouteData = isFromRouteData;
         body.createdByUserId = currentUser.id;
         body.createdDate = new Date();
 
@@ -226,6 +271,46 @@ export const EditEventSummary = () => {
                     <CardHeader>
                         <CardTitle>Enter Event Summary Information</CardTitle>
                         <CardDescription>Please enter information about how the event went.</CardDescription>
+                        {isFromRouteData && isNewSummary ? (
+                            <Alert className='border-primary/30 bg-primary/5'>
+                                <AlertDescription className='text-primary text-sm'>
+                                    Pre-filled from route tracking data. Review and adjust values as needed.
+                                </AlertDescription>
+                            </Alert>
+                        ) : null}
+                        {showResyncBanner ? (
+                            <Alert className='border-amber-500/30 bg-amber-50 dark:bg-amber-950/20'>
+                                <AlertDescription className='flex items-center justify-between text-sm'>
+                                    <span className='text-amber-700 dark:text-amber-400'>
+                                        Route data has been updated since this summary was saved.
+                                    </span>
+                                    <Button
+                                        variant='outline'
+                                        size='sm'
+                                        onClick={() => {
+                                            if (prefill) {
+                                                form.setValue('numberOfBags', prefill.numberOfBags);
+                                                form.setValue('pickedWeight', prefill.pickedWeight);
+                                                form.setValue(
+                                                    'pickedWeightUnitId',
+                                                    prefill.pickedWeightUnitId || defaultWeightUnitId,
+                                                );
+                                                form.setValue('durationInMinutes', prefill.durationInMinutes);
+                                                form.setValue(
+                                                    'actualNumberOfAttendees',
+                                                    prefill.actualNumberOfAttendees ||
+                                                        form.getValues('actualNumberOfAttendees'),
+                                                );
+                                                setShowResyncBanner(false);
+                                            }
+                                        }}
+                                    >
+                                        <RefreshCw className='h-4 w-4 mr-1' />
+                                        Refresh totals
+                                    </Button>
+                                </AlertDescription>
+                            </Alert>
+                        ) : null}
                     </CardHeader>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>

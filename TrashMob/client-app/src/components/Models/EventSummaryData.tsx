@@ -17,6 +17,8 @@ class EventSummaryData {
 
     notes: string = '';
 
+    isFromRouteData: boolean = false;
+
     createdByUserId: string = Guid.EMPTY;
 
     createdDate: Date = new Date();

@@ -1,8 +1,21 @@
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
-import { Calendar, MapPin, ExternalLink } from 'lucide-react';
+import { Calendar, MapPin } from 'lucide-react';
 import EventData from '@/components/Models/EventData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItemAlt, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    getUpcomingTimeranges,
+    getCompletedTimeranges,
+    getAllUpcomingTimerange,
+    getLastDaysTimerange,
+} from '@/pages/_home/utils/timerange';
+import moment from 'moment';
+
+type EventTab = 'upcoming' | 'completed';
+const INITIAL_SHOW_COUNT = 5;
 
 interface CommunityEventsSectionProps {
     events: EventData[];
@@ -10,6 +23,41 @@ interface CommunityEventsSectionProps {
 }
 
 export const CommunityEventsSection = ({ events, isLoading }: CommunityEventsSectionProps) => {
+    const [tab, setTab] = useState<EventTab>('upcoming');
+    const [timeRange, setTimeRange] = useState<string>(getAllUpcomingTimerange());
+    const [showAll, setShowAll] = useState(false);
+
+    // Reset time range and showAll when tab changes
+    useEffect(() => {
+        setShowAll(false);
+        if (tab === 'completed') {
+            setTimeRange(getLastDaysTimerange(90));
+        } else {
+            setTimeRange(getAllUpcomingTimerange());
+        }
+    }, [tab]);
+
+    const timeRangeOptions = tab === 'upcoming' ? getUpcomingTimeranges() : getCompletedTimeranges();
+
+    const filteredEvents = useMemo(() => {
+        const now = moment();
+        const [startDate, endDate] = timeRange.split('|');
+        const start = moment(startDate);
+        const end = moment(endDate).endOf('day');
+
+        return events.filter((event) => {
+            const eventMoment = moment(event.eventDate);
+            const isUpcoming = eventMoment.isAfter(now);
+
+            if (tab === 'upcoming' && !isUpcoming) return false;
+            if (tab === 'completed' && isUpcoming) return false;
+
+            return eventMoment.isBetween(start, end, undefined, '[]');
+        });
+    }, [events, tab, timeRange]);
+
+    const displayEvents = showAll ? filteredEvents : filteredEvents.slice(0, INITIAL_SHOW_COUNT);
+
     const formatDate = (date: Date) => {
         return new Date(date).toLocaleDateString('en-US', {
             weekday: 'short',
@@ -30,7 +78,7 @@ export const CommunityEventsSection = ({ events, isLoading }: CommunityEventsSec
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle className='text-lg'>Upcoming Events</CardTitle>
+                    <CardTitle className='text-lg'>Events</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className='space-y-3'>
@@ -46,23 +94,42 @@ export const CommunityEventsSection = ({ events, isLoading }: CommunityEventsSec
         );
     }
 
+    const emptyText =
+        tab === 'upcoming'
+            ? 'No upcoming events in this community.'
+            : 'No completed events match the selected filters.';
+
     return (
         <Card>
-            <CardHeader className='flex flex-row items-center justify-between'>
-                <CardTitle className='text-lg'>Upcoming Events</CardTitle>
-                <Link to='/eventsmain'>
-                    <Button variant='ghost' size='sm'>
-                        View All
-                        <ExternalLink className='ml-1 h-3 w-3' />
-                    </Button>
-                </Link>
+            <CardHeader className='space-y-3'>
+                <CardTitle className='text-lg'>Events</CardTitle>
+                <div className='flex flex-col sm:flex-row gap-3'>
+                    <Tabs value={tab} onValueChange={(v) => setTab(v as EventTab)}>
+                        <TabsList>
+                            <TabsTrigger value='upcoming'>Upcoming</TabsTrigger>
+                            <TabsTrigger value='completed'>Completed</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                    <Select value={timeRange} onValueChange={setTimeRange}>
+                        <SelectTrigger className='w-44'>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {timeRangeOptions.map((opt) => (
+                                <SelectItemAlt key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </SelectItemAlt>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
             </CardHeader>
             <CardContent>
-                {events.length === 0 ? (
-                    <p className='text-sm text-muted-foreground'>No upcoming events in this community.</p>
+                {filteredEvents.length === 0 ? (
+                    <p className='text-sm text-muted-foreground'>{emptyText}</p>
                 ) : (
                     <div className='space-y-4'>
-                        {events.slice(0, 5).map((event) => (
+                        {displayEvents.map((event) => (
                             <Link
                                 key={event.id}
                                 to={`/eventdetails/${event.id}`}
@@ -83,11 +150,16 @@ export const CommunityEventsSection = ({ events, isLoading }: CommunityEventsSec
                                 </div>
                             </Link>
                         ))}
-                        {events.length > 5 && (
-                            <p className='text-xs text-muted-foreground text-center'>
-                                + {events.length - 5} more events
-                            </p>
-                        )}
+                        {filteredEvents.length > INITIAL_SHOW_COUNT ? (
+                            <Button
+                                variant='ghost'
+                                size='sm'
+                                className='w-full'
+                                onClick={() => setShowAll((prev) => !prev)}
+                            >
+                                {showAll ? 'Show fewer' : `Show all ${filteredEvents.length} events`}
+                            </Button>
+                        ) : null}
                     </div>
                 )}
             </CardContent>

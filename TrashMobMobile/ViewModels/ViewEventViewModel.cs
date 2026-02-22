@@ -6,8 +6,10 @@ using System.Text.Json;
 using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
+using TrashMobMobile.Controls;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -593,6 +595,17 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 return;
             }
 
+            // Copy to cache and compress before upload
+            var cachedPath = Path.Combine(FileSystem.CacheDirectory, result.FileName);
+
+            using (var sourceStream = await result.OpenReadAsync())
+            using (var cacheStream = File.Create(cachedPath))
+            {
+                await sourceStream.CopyToAsync(cacheStream);
+            }
+
+            await ImageCompressor.CompressAsync(cachedPath);
+
             var typePopup = new Controls.PhotoTypePopup();
             var typeResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(typePopup);
             var photoType = typeResult?.Result;
@@ -610,7 +623,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             };
 
             await eventPhotoManager.UploadPhotoAsync(
-                EventViewModel.Id, result.FullPath, eventPhotoType, string.Empty);
+                EventViewModel.Id, cachedPath, eventPhotoType, string.Empty);
 
             await LoadPhotos();
 
@@ -726,6 +739,68 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             await NotificationService.Notify("Privacy updated.");
         }, "An error occurred while updating privacy. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task LogPickup(EventAttendeeRouteViewModel? routeVm)
+    {
+        if (routeVm == null || !routeVm.IsOwnRoute)
+        {
+            return;
+        }
+
+        var popup = new LogPickupPopup(
+            routeVm.BagsCollected, routeVm.WeightCollected,
+            routeVm.WeightUnitId, routeVm.Notes);
+        var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        var resultJson = popupResult?.Result;
+
+        if (string.IsNullOrEmpty(resultJson))
+        {
+            return;
+        }
+
+        var pickupResult = JsonConvert.DeserializeObject<LogPickupResult>(resultJson);
+        if (pickupResult == null)
+        {
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            var request = new UpdateRouteMetadataRequest
+            {
+                PrivacyLevel = routeVm.PrivacyLevel,
+                BagsCollected = pickupResult.BagsCollected,
+                WeightCollected = pickupResult.WeightCollected,
+                WeightUnitId = pickupResult.WeightUnitId,
+                Notes = pickupResult.Notes,
+            };
+
+            var updated = await eventAttendeeRouteRestService.UpdateRouteMetadataAsync(routeVm.Id, request);
+
+            // Update the view model
+            var weightUnitLabel = updated.WeightUnitId == (int)WeightUnitEnum.Kilogram ? "kg" : "lbs";
+            routeVm.BagsCollected = updated.BagsCollected;
+            routeVm.WeightCollected = updated.WeightCollected;
+            routeVm.WeightUnitId = updated.WeightUnitId;
+            routeVm.Notes = updated.Notes;
+            routeVm.BagsDisplay = updated.BagsCollected.HasValue ? $"{updated.BagsCollected} bags" : string.Empty;
+            routeVm.WeightDisplay = updated.WeightCollected.HasValue ? $"{updated.WeightCollected:F1} {weightUnitLabel}" : string.Empty;
+
+            // Update the raw route data too
+            var rawRoute = EventAttendeeRoutes.FirstOrDefault(r => r.Id == routeVm.Id);
+            if (rawRoute != null)
+            {
+                rawRoute.BagsCollected = updated.BagsCollected;
+                rawRoute.WeightCollected = updated.WeightCollected;
+                rawRoute.WeightUnitId = updated.WeightUnitId;
+            }
+
+            UpdateRouteStats();
+
+            await NotificationService.Notify("Pickup logged!");
+        }, "An error occurred while saving pickup data.");
     }
 
     private void LoadRouteViewModels(IEnumerable<DisplayEventAttendeeRoute> routes)

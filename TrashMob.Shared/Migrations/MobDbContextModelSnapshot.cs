@@ -983,6 +983,9 @@ namespace TrashMob.Migrations
                     b.Property<decimal?>("WeightCollected")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("WeightUnitId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByUserId");
@@ -992,6 +995,8 @@ namespace TrashMob.Migrations
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("WeightUnitId");
 
                     b.ToTable("EventAttendeeRoutes");
                 });
@@ -1295,6 +1300,11 @@ namespace TrashMob.Migrations
 
                     b.Property<int>("DurationInMinutes")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsFromRouteData")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
@@ -5320,6 +5330,11 @@ namespace TrashMob.Migrations
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_EventAttendeeRoutes_ApplicationUser");
+
+                    b.HasOne("TrashMob.Models.WeightUnit", null)
+                        .WithMany()
+                        .HasForeignKey("WeightUnitId")
+                        .HasConstraintName("FK_EventAttendeeRoutes_WeightUnits");
 
                     b.Navigation("CreatedByUser");
 

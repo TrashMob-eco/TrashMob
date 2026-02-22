@@ -104,6 +104,10 @@ npm run start
 | Email Templates | `TrashMob.Shared/Engine/EmailCopy/` |
 | React Entry | `TrashMob/client-app/src/App.tsx` |
 | API Services | `TrashMob/client-app/src/services/` |
+| Auth Handler | `TrashMob/Security/UserIsValidUserAuthHandler.cs` |
+| CIAM Graph Service | `TrashMob/Services/CiamGraphService.cs` |
+| Frontend Auth | `TrashMob/client-app/src/store/AuthStore.tsx` |
+| Frontend Login Hook | `TrashMob/client-app/src/hooks/useLogin.ts` |
 
 ## Development Setup
 
@@ -159,7 +163,7 @@ npm start
 
 ## Technology Stack
 
-- **Backend:** .NET 10, EF Core 10, Azure SQL, Entra External ID (migrating from Azure B2C), SendGrid, Azure Maps
+- **Backend:** .NET 10, EF Core 10, Azure SQL, Entra External ID (CIAM), SendGrid, Azure Maps
 - **Frontend:** React 18, TypeScript 5.8, Vite 7, Tailwind CSS 4, TanStack React Query, Radix UI, Zod, React Hook Form
 - **Mobile:** .NET MAUI with CommunityToolkit.Mvvm (MVVM + source generators), Sentry.io for crash reporting
 - **Infrastructure:** Azure Container Apps, GitHub Actions, Bicep IaC
@@ -225,7 +229,10 @@ npm start
 ## Security & Privacy
 
 ### Authentication & Authorization
-- Transitioning from **Azure B2C** to **Entra External ID**
+- **Entra External ID (CIAM)** — production since February 2026, fully replaced Azure B2C
+- **CIAM token behavior:** id_tokens lack `email` claim; access_tokens include it. Backend resolves users via 4-step process: email → ObjectId → Graph API → auto-create (`UserIsValidUserAuthHandler.cs`)
+- **Graph API service:** `CiamGraphService` uses `User.Read.All` (Application) to resolve emails from CIAM directory. Requires `AzureAdEntra:ClientSecret` in Key Vault.
+- **Frontend auth:** `validateToken()` accepts tokens with `email` or `oid`; `useLogin.ts` falls back to OID-based lookup when email missing from id_token
 - Support **SSO** for partner communities
 - Implement **role-based access control** (Admin, Event Lead, User)
 - Special handling for **minors (13+)**: parental consent, visibility restrictions
@@ -254,7 +261,7 @@ npm start
 
 Refer to `Planning/README.md` for detailed roadmap (47 projects, 25 complete). Active priority areas:
 
-1. **Project 1:** Auth migration (Azure B2C → Entra External ID) — Phases 0-3 code complete, prod cutover remaining
+1. **Project 1:** Auth migration (Azure B2C → Entra External ID) — Phases 0-5 complete, production live since Feb 2026. OID auto-linking + Graph API email resolution for CIAM token workarounds.
 2. **Project 4:** Mobile stabilization — Phases 1-4 substantial progress, ViewModel tests + UX improvements
 3. **Project 8:** Waivers V3 — Phases 1-4, 6 complete, community waivers and minors coverage
 4. **Project 44:** Area Map Editor — Phases 1-4 complete, Phase 6 (AI bulk generation) planned

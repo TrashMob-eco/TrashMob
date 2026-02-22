@@ -492,6 +492,12 @@
                 entity.Property(e => e.Notes)
                     .HasMaxLength(2000);
 
+                entity.HasOne<WeightUnit>()
+                    .WithMany()
+                    .HasForeignKey(e => e.WeightUnitId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventAttendeeRoutes_WeightUnits");
+
                 entity.HasMany(e => e.RoutePoints)
                     .WithOne(rp => rp.Route)
                     .HasForeignKey(rp => rp.RouteId)
@@ -698,6 +704,8 @@
                     .IsRequired();
 
                 entity.Property(e => e.Notes).HasMaxLength(2048);
+
+                entity.Property(e => e.IsFromRouteData).HasDefaultValue(false);
 
                 entity.Property(e => e.PickedWeightUnitId).HasDefaultValue(0);
 

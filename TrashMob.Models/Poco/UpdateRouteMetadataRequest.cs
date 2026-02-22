@@ -31,8 +31,13 @@
         public int? BagsCollected { get; set; }
 
         /// <summary>
-        /// Gets or sets weight collected in pounds.
+        /// Gets or sets weight collected.
         /// </summary>
         public decimal? WeightCollected { get; set; }
+
+        /// <summary>
+        /// Gets or sets the weight unit for the weight collected value.
+        /// </summary>
+        public int? WeightUnitId { get; set; }
     }
 }

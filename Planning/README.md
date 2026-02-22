@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (47 Total)
+### 2026 Projects (48 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -69,6 +69,8 @@
 | [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md) | Sponsor-funded professional cleanup tracking | In Progress (Phases 1-4 Complete) |
 | [Project 42 - Partner Document Management](./Projects/Project_42_Partner_Document_Management.md) | File upload & storage for partner documents | ✅ Complete |
 | [Project 47 - Team-Visible Private Events](./Projects/Project_47_Team_Private_Events.md) | Team-scoped event visibility for member-only events | ✅ Complete |
+| [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md) | Route-level metrics, litter density heatmap, route time editing | Not Started |
+| [Project 49 - Privacy & Compliance Review](./Projects/Project_49_Privacy_Compliance_Review.md) | Deletion audit, data export, GDPR compliance, aggregate preservation | Not Started |
 
 #### High Priority (Marketing & Growth)
 
@@ -98,6 +100,7 @@
 - [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md)
 - [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md)
 - [Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md) ✅
+- [Project 49 - Privacy & Compliance Review](./Projects/Project_49_Privacy_Compliance_Review.md)
 
 ### Community Features
 - [Project 9 - Teams](./Projects/Project_09_Teams.md) ✅
@@ -116,6 +119,7 @@
 - [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md)
 - [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) ✅
 - [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md)
+- [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md)
 
 ### Platform Quality
 - [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md)
@@ -153,10 +157,10 @@
 | **In Progress** | 11 | Projects 1 (Phases 0-3 Partial, 5-6 Partial), 4 (Phases 1-4 Substantial), 6 (Phases 1, 2.5, 3 Substantial), 8 (Phases 1-4, 6 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete), 41 (Phases 1-4 Complete), 45 (Phases 1-4 Complete) |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
-| **Not Started** | 6 | Projects 12, 24, 31, 36, 43, 46 |
+| **Not Started** | 7 | Projects 12, 24, 31, 36, 43, 46, 49 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 47 project specifications documented
+**Total:** 48 project specifications documented
 
 ---
 

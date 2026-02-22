@@ -1,0 +1,70 @@
+# Upload framed screenshots to App Store Connect.
+# Uses Fastlane frameit for captions/device frames, then deliver to upload.
+#
+# Prerequisites:
+#   - Screenshots in Planning/StoreAssets/Screenshots/ (iPhone_6.9/ and iPad_13/)
+#   - App Store Connect API key secrets configured
+#   - Framefile.json in fastlane/ with caption configuration
+
+name: iOS - Upload Screenshots
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - production
+
+permissions:
+  contents: read
+
+jobs:
+  upload-screenshots:
+    name: Frame & Upload Screenshots
+    runs-on: macos-15
+    environment: ${{ github.event.inputs.environment }}
+
+    env:
+      IOS_BUNDLE_ID: ${{ github.event.inputs.environment == 'production' && 'eco.trashmob' || 'eco.trashmobdev.trashmobmobile' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Install ImageMagick
+        run: brew install imagemagick
+
+      - name: Upload screenshots
+        env:
+          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+        run: |
+          echo "Uploading screenshots for $IOS_BUNDLE_ID (${{ github.event.inputs.environment }})..."
+          bundle exec fastlane ios ios_screenshots
+
+      - name: Summary
+        run: |
+          echo ""
+          echo "========================================="
+          echo " Screenshot Upload Complete"
+          echo "========================================="
+          echo " Environment: ${{ github.event.inputs.environment }}"
+          echo " Bundle ID:   ${{ env.IOS_BUNDLE_ID }}"
+          echo " iPhone 6.9\" screenshots: uploaded"
+          echo " iPad 13\" screenshots: uploaded"
+          echo " Captions: applied via frameit"
+          echo "========================================="
+          echo ""
+          echo "Verify at: https://appstoreconnect.apple.com"

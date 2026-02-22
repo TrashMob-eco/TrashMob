@@ -120,6 +120,11 @@
                             <!-- Actions row (own routes only) -->
                             <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                                                    Spacing="8" IsVisible="{Binding IsOwnRoute}" Margin="0,4,0,0">
+                                <Button Text="Log Pickup"
+                                        Command="{Binding Source={x:Reference TabRoutesView}, Path=BindingContext.LogPickupCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding IsOwnRoute}"
+                                        Style="{StaticResource SecondarySmallButton}" />
                                 <Button Text="{Binding PrivacyDisplay, StringFormat='Privacy: {0}'}"
                                         Command="{Binding Source={x:Reference TabRoutesView}, Path=BindingContext.ChangeRoutePrivacyCommand}"
                                         CommandParameter="{Binding .}"

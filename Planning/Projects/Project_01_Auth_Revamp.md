@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 0-3 Partial Complete, Phase 4 next) |
+| **Status** | In Progress (Phases 0-5 Complete — Production Live; Phase 6-7 Remaining) |
 | **Priority** | Critical |
 | **Risk** | High |
 | **Size** | Large |
@@ -114,13 +114,13 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 - [x] Fill in `AzureAdEntra` config values for deployed dev environment — added to `Deploy/containerApp.bicep` as environment variables (same pattern as B2C; not secrets)
 - [ ] Document tenant setup process (Privo documentation deliverable)
 
-#### Remaining (Manual — Azure Portal, Prod)
-- [ ] Create Entra External ID external tenant (prod: `TrashMobEco`, domain `trashmobeco.ciamlogin.com`)
-- [ ] Register app registrations (web, mobile, backend) for prod
-- [ ] Configure social identity providers: Google, Facebook, Apple (Microsoft accounts work natively — no setup needed)
-- [ ] Create sign-up/sign-in user flow with custom attributes
-- [ ] Configure built-in branding (logo, colors, background)
-- [ ] Fill in `AzureAdEntra` config values in Key Vault (for deployed prod environment)
+#### Completed (Manual — Azure Portal, Prod)
+- [x] Create Entra External ID external tenant (prod: `TrashMobEcoPr`, domain `trashmobecopr.ciamlogin.com`, Tenant ID `b5fc8717-29eb-496e-8e09-cf90d344ce9f`)
+- [x] Register app registrations (web SPA `0604ef02`, backend API `dc09e17b`, mobile) for prod
+- [x] Configure social identity providers: Google, Facebook, Apple, Microsoft (Microsoft accounts work natively — no setup needed)
+- [x] Create sign-up/sign-in user flow with custom attributes
+- [x] Configure built-in branding (logo, colors, background)
+- [x] Fill in `AzureAdEntra` config values in Key Vault (for deployed prod environment)
 
 ### Phase 1 — Sign-Up/Sign-In + Profile Photos (Complete)
 - [x] Upgrade MSAL packages: `@azure/msal-browser` v2→v4 and `@azure/msal-react` v1→v3 (PR #2669, closed Renovate PR #2036). v5 requires React 19.
@@ -189,23 +189,36 @@ Age check logic is the same on both platforms — show DOB input, calculate age,
 
 ### Phase 4 — User Migration + Testing
 - [x] Build B2C → Entra user migration script for dev (PR #2690)
-- [ ] Run MS migration tool to export B2C users → import to Entra External ID (production)
-- [ ] Configure JIT (Just-In-Time) password migration for first-login
+- ~~Run MS migration tool to export B2C users → import to Entra External ID (production)~~ — replaced by OID auto-linking on first CIAM sign-in
+- ~~Configure JIT (Just-In-Time) password migration for first-login~~ — not needed; user migration happens via OID auto-linking on first CIAM sign-in
 - [ ] Run both systems in parallel (coexistence period)
-- [ ] Smoke test with real accounts on dev
+- [x] Smoke test with real accounts on dev — tested and working
 - [ ] Security audit of new configuration
 - [ ] Load testing
 
 ### Phase 5 — Production Cutover (Web + Backend)
-- [ ] Create production Entra External ID tenant
-- [ ] Register production app registrations
-- [ ] Run production user migration
-- [ ] Update production MSAL config + backend JWT validation
+- [x] Create production Entra External ID tenant (TrashMobEcoPr)
+- [x] Register production app registrations
+- ~~Run production user migration~~ — replaced by OID auto-linking on first CIAM sign-in
+- [x] Update production MSAL config + backend JWT validation
 - [x] Switch default auth from B2C to Entra External ID (PR #2692)
 - [x] Fix env var config override for deployed dev environment (PR #2688)
-- [ ] Switch all web traffic to new system (production)
-- [ ] Monitor for auth failures, have hot rollback to B2C
+- [x] Switch all web traffic to new system (production) — completed February 22, 2026
+- [ ] Monitor for auth failures, have hot rollback to B2C — monitoring ongoing
 - [ ] 24/7 monitoring during migration window
+
+### Phase 5a — CIAM Token Workarounds (Complete)
+
+CIAM id_tokens lack the `email` claim because Entra External ID stores sign-up emails in the `identities` collection, not the `mail` property. The `email` optional claim has no value to emit in id_tokens. The following workarounds were implemented:
+
+- [x] Added OID-based user lookup endpoint: `GET /api/Users/getbyobjectid/{objectId}`
+- [x] Added `CiamGraphService` for backend email resolution via Graph API `User.Read.All`
+- [x] Auth handler rewritten with 4-step resolution: email → OID → Graph API → auto-create
+- [x] Frontend `useLogin.ts`: `fetchUser` fallback from email to OID
+- [x] Frontend `validateToken`: accept tokens with `oid` (not just `email`)
+- [x] Frontend `isUserLoaded`: check `id != empty GUID` (not email)
+
+**PRs:** #2838, #2839, #2840
 
 ### Phase 6 — Mobile App Update (Partial)
 - [x] Update MAUI MSAL config (AuthConstants.cs) for new Entra tenant (PR #2694)
@@ -348,6 +361,10 @@ Age check logic is the same on both platforms — show DOB input, calculate age,
 9. ~~**Can we get custom CSS for the Entra External ID sign-in page?**~~
    **Decision:** Custom CSS cutoff was January 5, 2026; our tenant hasn't been created yet. Request exception from Microsoft given Privo sponsorship. Fall back to built-in branding if denied.
    **Status:** ✅ Resolved (workaround identified)
+
+10. ~~**CIAM id_tokens don't include email claims?**~~
+   **Decision:** CIAM stores sign-up emails in the `identities` collection, not the `mail` property, so the `email` optional claim has no value to emit in id_tokens. The email DOES appear in access_tokens. Workaround: backend uses Graph API (`CiamGraphService` with `User.Read.All`) to resolve emails; frontend falls back to OID-based lookup; token validation accepts `oid` instead of requiring `email`.
+   **Status:** ✅ Resolved (February 2026)
 
 ---
 
@@ -533,7 +550,7 @@ For each provider (Google, Microsoft, Apple, Facebook):
 
 ---
 
-**Last Updated:** February 15, 2026
+**Last Updated:** February 22, 2026
 **Owner:** Security Engineer + Product Lead
-**Status:** In Progress (Phases 0-2 Complete; Phase 3 age gate Layers 1+2 implemented (PRs #2693, #2694, #2695); Phase 4 migration script for dev done (PR #2690); Phase 5-6 default auth switched + mobile Entra switch (PRs #2692, #2694); Privo API integration and production cutover remaining)
-**Next Review:** After Privo API integration planning
+**Status:** In Progress (Phases 0-5 Complete — Production Live on Entra External ID; Phase 5a CIAM token workarounds complete; Phase 6 mobile app update partially done; Phase 7 minor protections and Privo API integration remaining)
+**Next Review:** After Phase 6 mobile testing and store submission

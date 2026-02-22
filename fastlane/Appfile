@@ -10,7 +10,7 @@ team_name ENV["APPLE_TEAM_NAME"] || "TrashMob"
 # Set via environment variables:
 #   APP_STORE_CONNECT_API_KEY_KEY_ID
 #   APP_STORE_CONNECT_API_KEY_ISSUER_ID
-#   APP_STORE_CONNECT_API_KEY_KEY (base64-encoded .p8 contents)
+#   APP_STORE_CONNECT_API_KEY_KEY (raw .p8 PEM contents, not base64)
 
 # Android
 json_key_data ENV["SUPPLY_JSON_KEY_DATA"] || ""

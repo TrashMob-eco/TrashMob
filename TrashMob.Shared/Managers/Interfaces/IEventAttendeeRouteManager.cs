@@ -32,5 +32,10 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// Updates route metadata (privacy, trim, notes). Only the route owner can update.
         /// </summary>
         Task<ServiceResult<EventAttendeeRoute>> UpdateRouteMetadataAsync(Guid routeId, Guid userId, UpdateRouteMetadataRequest request, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets route aggregate data suitable for pre-filling an event summary.
+        /// </summary>
+        Task<EventSummaryPrefill> GetEventSummaryPrefillAsync(Guid eventId, int targetWeightUnitId, CancellationToken cancellationToken = default);
     }
 }

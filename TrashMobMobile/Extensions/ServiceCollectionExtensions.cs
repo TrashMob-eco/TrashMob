@@ -46,6 +46,8 @@
             services.AddSingleton<IPickupLocationManager, PickupLocationManager>();
             services.AddSingleton<IPickupLocationRestService, PickupLocationRestService>();
             services.AddSingleton<IServiceTypeRestService, ServiceTypeRestService>();
+            services.AddSingleton<IAppVersionRestService, AppVersionRestService>();
+            services.AddSingleton<IAppVersionCheckService, AppVersionCheckService>();
             services.AddSingleton<IStatsRestService, StatsRestService>();
             services.AddSingleton<ITeamManager, TeamManager>();
             services.AddSingleton<ITeamRestService, TeamRestService>();
@@ -67,15 +69,21 @@
             //ngrok.exe http https://localhost:44373 -host-header="localhost:44373"
             services.AddScoped<AuthHandler>();
             services.AddHttpClient($"ServerAPI", client =>
-                    client.BaseAddress = new Uri(Settings.ApiBaseUrl))
+                {
+                    client.BaseAddress = new Uri(Settings.ApiBaseUrl);
+                    client.Timeout = TimeSpan.FromSeconds(60);
+                })
                 .AddHttpMessageHandler<AuthHandler>()
                 .AddHttpMessageHandler<SentryHttpMessageHandler>()
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5)) //Set lifetime to five minutes
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
                 .AddPolicyHandler(GetRetryPolicy());
 
             services.AddHttpClient($"ServerAPI.Anonymous", client =>
-                    client.BaseAddress = new Uri(Settings.ApiBaseUrl))
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5)) //Set lifetime to five minutes
+                {
+                    client.BaseAddress = new Uri(Settings.ApiBaseUrl);
+                    client.Timeout = TimeSpan.FromSeconds(60);
+                })
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
                 .AddHttpMessageHandler<SentryHttpMessageHandler>()
                 .AddPolicyHandler(GetRetryPolicy());
 

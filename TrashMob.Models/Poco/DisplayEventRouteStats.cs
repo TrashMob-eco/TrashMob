@@ -36,9 +36,14 @@
         public int TotalBagsCollected { get; set; }
 
         /// <summary>
-        /// Gets or sets the total weight collected in pounds.
+        /// Gets or sets the total weight collected.
         /// </summary>
         public decimal TotalWeightCollected { get; set; }
+
+        /// <summary>
+        /// Gets or sets the weight unit used for the aggregated total weight (defaults to pounds).
+        /// </summary>
+        public int TotalWeightUnitId { get; set; } = (int)TrashMob.Models.WeightUnitEnum.Pound;
 
         /// <summary>
         /// Gets or sets the estimated area covered in square meters, based on 25m grid cell aggregation.

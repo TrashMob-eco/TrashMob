@@ -4,72 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { GoogleMapWithKey } from '@/components/Map/GoogleMap/GoogleMap';
 import { GetEventRoutes } from '@/services/event-routes';
 import { DisplayAnonymizedRoute } from '@/components/Models/RouteData';
+import { RoutePolylines } from '@/components/Map/RoutePolylines';
 
-const ROUTE_COLORS = [
-    '#3B82F6',
-    '#EF4444',
-    '#10B981',
-    '#F59E0B',
-    '#8B5CF6',
-    '#EC4899',
-    '#06B6D4',
-    '#F97316',
-    '#6366F1',
-    '#14B8A6',
-];
-
-function getRouteColor(index: number): string {
-    return ROUTE_COLORS[index % ROUTE_COLORS.length];
-}
-
-interface RoutePolylinesProps {
-    routes: DisplayAnonymizedRoute[];
-}
-
-const RoutePolylines = ({ routes }: RoutePolylinesProps) => {
-    const map = useMap();
-
-    useEffect(() => {
-        if (!map || routes.length === 0) return;
-
-        const polylines: google.maps.Polyline[] = [];
-        const bounds = new google.maps.LatLngBounds();
-
-        routes.forEach((route, index) => {
-            if (route.locations.length < 2) return;
-
-            const path = route.locations
-                .sort((a, b) => a.sortOrder - b.sortOrder)
-                .map((loc) => {
-                    const latLng = { lat: loc.latitude, lng: loc.longitude };
-                    bounds.extend(latLng);
-                    return latLng;
-                });
-
-            const polyline = new google.maps.Polyline({
-                path,
-                strokeColor: getRouteColor(index),
-                strokeOpacity: 0.8,
-                strokeWeight: 3,
-                map,
-            });
-
-            polylines.push(polyline);
-        });
-
-        if (!bounds.isEmpty()) {
-            map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 });
-        }
-
-        return () => {
-            polylines.forEach((p) => p.setMap(null));
-        };
-    }, [map, routes]);
-
-    return null;
-};
-
-const HeatmapOverlay = ({ routes }: RoutePolylinesProps) => {
+const HeatmapOverlay = ({ routes }: { routes: DisplayAnonymizedRoute[] }) => {
     const map = useMap();
     const visualization = useMapsLibrary('visualization');
 
@@ -168,7 +105,11 @@ export const EventRoutesMap = ({ eventId, defaultCenter }: EventRoutesMapProps) 
                 </button>
             </div>
             <GoogleMapWithKey defaultCenter={defaultCenter} style={{ width: '100%', height: '400px' }}>
-                {viewMode === 'routes' ? <RoutePolylines routes={routeList} /> : <HeatmapOverlay routes={routeList} />}
+                {viewMode === 'routes' ? (
+                    <RoutePolylines routes={routeList} fitBounds />
+                ) : (
+                    <HeatmapOverlay routes={routeList} />
+                )}
             </GoogleMapWithKey>
         </div>
     );

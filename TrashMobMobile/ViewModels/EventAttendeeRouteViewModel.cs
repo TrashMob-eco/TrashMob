@@ -1,6 +1,7 @@
 namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using TrashMob.Models;
 using TrashMob.Models.Poco;
 
 public partial class EventAttendeeRouteViewModel : ObservableObject
@@ -25,9 +26,19 @@ public partial class EventAttendeeRouteViewModel : ObservableObject
         _ => "Event Only",
     };
 
-    public string BagsDisplay { get; set; } = string.Empty;
+    [ObservableProperty]
+    private string bagsDisplay = string.Empty;
 
-    public string WeightDisplay { get; set; } = string.Empty;
+    [ObservableProperty]
+    private string weightDisplay = string.Empty;
+
+    public int? BagsCollected { get; set; }
+
+    public decimal? WeightCollected { get; set; }
+
+    public int? WeightUnitId { get; set; }
+
+    public string? Notes { get; set; }
 
     public bool IsOwnRoute { get; set; }
 
@@ -41,6 +52,8 @@ public partial class EventAttendeeRouteViewModel : ObservableObject
 
     public static EventAttendeeRouteViewModel FromRoute(DisplayEventAttendeeRoute route, Guid currentUserId)
     {
+        var weightUnitLabel = route.WeightUnitId == (int)WeightUnitEnum.Kilogram ? "kg" : "lbs";
+
         return new EventAttendeeRouteViewModel
         {
             Id = route.Id,
@@ -49,8 +62,12 @@ public partial class EventAttendeeRouteViewModel : ObservableObject
             PrivacyLevel = route.PrivacyLevel,
             DistanceDisplay = FormatDistance(route.TotalDistanceMeters),
             DurationDisplay = FormatDuration(route.DurationMinutes),
+            BagsCollected = route.BagsCollected,
+            WeightCollected = route.WeightCollected,
+            WeightUnitId = route.WeightUnitId,
+            Notes = route.Notes,
             BagsDisplay = route.BagsCollected.HasValue ? $"{route.BagsCollected} bags" : string.Empty,
-            WeightDisplay = route.WeightCollected.HasValue ? $"{route.WeightCollected:F1} lbs" : string.Empty,
+            WeightDisplay = route.WeightCollected.HasValue ? $"{route.WeightCollected:F1} {weightUnitLabel}" : string.Empty,
             IsOwnRoute = route.UserId == currentUserId,
             Locations = route.Locations,
         };
