@@ -69,6 +69,7 @@
 | [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md) | Sponsor-funded professional cleanup tracking | In Progress (Phases 1-4 Complete) |
 | [Project 42 - Partner Document Management](./Projects/Project_42_Partner_Document_Management.md) | File upload & storage for partner documents | ✅ Complete |
 | [Project 47 - Team-Visible Private Events](./Projects/Project_47_Team_Private_Events.md) | Team-scoped event visibility for member-only events | ✅ Complete |
+| [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md) | Route-level metrics, litter density heatmap, route time editing | Not Started |
 
 #### High Priority (Marketing & Growth)
 
@@ -116,6 +117,7 @@
 - [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md)
 - [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) ✅
 - [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md)
+- [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md)
 
 ### Platform Quality
 - [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md)
