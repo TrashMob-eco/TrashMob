@@ -40,19 +40,7 @@ For detailed development setup instructions, see [CLAUDE.md](./CLAUDE.md).
 
 ### Build & Run
 
-```bash
-# Backend API
-cd TrashMob
-dotnet run --environment Development
-
-# Frontend (separate terminal)
-cd TrashMob/client-app
-npm install
-npm start
-```
-
-Local API: https://localhost:44332
-Swagger: https://localhost:44332/swagger/index.html
+See [CLAUDE.md](./CLAUDE.md) for full build commands, local URLs, and development setup.
 
 ---
 
@@ -139,60 +127,18 @@ Before starting work on a new feature, please check:
 
 ## Development Environment Setup
 
-### Using Shared Dev Environment
+See [CLAUDE.md](./CLAUDE.md) for full development setup, troubleshooting, and local URLs.
 
-If you're not making database changes, you can use the shared dev environment:
-
-1. Email [info@trashmob.eco](mailto:info@trashmob.eco) to request contributor access
-2. TrashMob will add you to the Sandbox subscription and Dev KeyVault
-3. Add your IP to the [Dev Azure SQL firewall](https://portal.azure.com/#@jobeedevids.onmicrosoft.com/resource/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/rg-trashmob-dev-westus2/providers/Microsoft.Sql/servers/sql-tm-dev-westus2/overview)
-4. Run setup script:
+**Quick start:** Email [info@trashmob.eco](mailto:info@trashmob.eco) to request contributor access, then:
 
 ```powershell
 az login
-.\setupdev.ps1 -environment dev -region westus2 -subscription 39a254b7-c01a-45ab-bebd-4038ea4adea9
+.\setupdev.ps1 -environment dev -region westus2 -subscription <guid>
 ```
-
-### Creating Your Own Environment
-
-For major database changes, create your own environment:
-
-1. Follow [Deploy/README.md](./Deploy/README.md)
-2. Run setup with your parameters:
-
-```powershell
-.\setupdev.ps1 -environment <yourenv> -region <yourregion> -subscription <yourguid>
-```
-
-### Troubleshooting
-
-**Data doesn't load:** Your IP may have changed. Check the VS Code debug output for your actual IP and update the Azure SQL firewall rule.
-
-**Email not sending:** Set a dummy key to disable email:
-```bash
-dotnet user-secrets set "sendGridApiKey" "x"
-```
-
----
 
 ## Mobile App Development
 
-See [TrashMobMobile/readme.md](./TrashMobMobile/readme.md) for detailed mobile setup.
-
-### Quick Setup (Windows)
-
-1. Install Visual Studio with .NET MAUI workload
-2. Install [Android Studio](https://developer.android.com/studio) and create an emulator
-3. Open `TrashMobMobileApp.sln`
-4. Get Google Maps API key from Dev KeyVault or create your own
-5. Update `Platforms/Android/AndroidManifest.xml` with your key
-
-⚠️ **Never commit API keys to the repository!**
-
-### Test Builds
-
-- **Android:** Request internal tester access at [info@trashmob.eco](mailto:info@trashmob.eco)
-- **iOS:** Request TestFlight access at [info@trashmob.eco](mailto:info@trashmob.eco)
+See [TrashMobMobile/readme.md](./TrashMobMobile/readme.md) for mobile setup, test builds, and store links.
 
 ---
 

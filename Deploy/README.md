@@ -1,32 +1,26 @@
-# Deploying the infrastructure
+# Deploy
 
-## Prerequisites
-1. Install PowerShell
-1. Install the latest version of Azure CLI
-1. Download the TrashMob repo from GitHub
+Infrastructure-as-code (Bicep templates), deployment scripts, and operational documentation for TrashMob.
 
-## To deploy the Infrastructure needed to run TrashMob locally on your box, you will need to run the following steps:
-1. Open a Powershell window and go to the $GitRoot\Deploy folder
-1. Execute the following commands to log in and set your session to the correct subscription:
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [OPERATIONS_RUNBOOK.md](./OPERATIONS_RUNBOOK.md) | Infrastructure ops: rollback, backups, DNS, Key Vault, SSL, Strapi |
+| [CONTAINER_DEPLOYMENT_GUIDE.md](./CONTAINER_DEPLOYMENT_GUIDE.md) | Docker builds, Azure Container Apps deployment |
+| [CUSTOM_DOMAIN_MIGRATION.md](./CUSTOM_DOMAIN_MIGRATION.md) | Custom domain and SSL certificate setup |
+| [OIDC_SETUP_GUIDE.md](./OIDC_SETUP_GUIDE.md) | GitHub Actions OIDC federation for deployments |
+| [COST_ALERT_RUNBOOK.md](./COST_ALERT_RUNBOOK.md) | Azure cost alerts and budget monitoring |
+
+## Quick Start
+
+```powershell
+# Log in and set subscription
+az login
+az account set --subscription <subscriptionName>
+
+# Deploy infrastructure for a new environment
+.\deployInfra.ps1 -environment <env> -region <regionName> -subscriptionId <subscriptionId>
 ```
-    az login
-    az account set --subscription <subscriptionName>
-```
-  az login will ask you to log in with your Azure Credentials
-  If you have more than one subscription tied to your Azure account, you will need to specify it in the second line
-  
-1. Execute the following command to deploy the Infrastructure needed
-```
 
-.\deployInfra.ps1 -environment <env> -region <regionName> -subscriptionId <subscriptionId> -sqlAdminPassword <password> -alwaysOn $False
-
-i.e.
-
-.\deployInfra.ps1 -environment jb -region westus2 -subscriptionId <your subscription Id> -sqlAdminPassword "TestP$$wrd1" -alwaysOn $False
-
-```
-where:
-  env is the same as set above (i.e. jb)
-  regionName is the Azure Region you wish to deploy to (i.e. uswest2)
-  subscriptionId is the current subscription id
-  password is the password value you want to set for your sql server that is being created. The password must meet Azure minimum password standards
+See [OPERATIONS_RUNBOOK.md](./OPERATIONS_RUNBOOK.md) for detailed procedures.
