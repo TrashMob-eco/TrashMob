@@ -99,6 +99,26 @@ namespace TrashMob.Controllers
         }
 
         /// <summary>
+        /// Retrieves a user by their identity provider object ID.
+        /// </summary>
+        /// <param name="objectId">The object ID from the identity provider.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>User details if found.</remarks>
+        [HttpGet("getbyobjectid/{objectId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        public async Task<IActionResult> GetUserByObjectId(Guid objectId, CancellationToken cancellationToken)
+        {
+            var user = await userManager.GetUserByObjectIdAsync(objectId, cancellationToken);
+
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+
+        /// <summary>
         /// Retrieves a user by their internal ID.
         /// </summary>
         /// <param name="id">The internal ID of the user.</param>

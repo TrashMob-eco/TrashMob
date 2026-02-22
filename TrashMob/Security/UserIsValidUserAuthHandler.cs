@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Security
+namespace TrashMob.Security
 {
     using System;
     using System.Collections.Generic;
@@ -10,22 +10,15 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
+    using TrashMob.Services;
     using TrashMob.Shared.Managers.Interfaces;
 
-    public class UserIsValidUserAuthHandler : AuthorizationHandler<UserIsValidUserRequirement>
+    public class UserIsValidUserAuthHandler(
+        IHttpContextAccessor httpContext,
+        IUserManager userManager,
+        ICiamGraphService ciamGraphService,
+        ILogger<UserIsValidUserAuthHandler> logger) : AuthorizationHandler<UserIsValidUserRequirement>
     {
-        private readonly IHttpContextAccessor httpContext;
-        private readonly ILogger<UserIsValidUserAuthHandler> logger;
-        private readonly IUserManager userManager;
-
-        public UserIsValidUserAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager,
-            ILogger<UserIsValidUserAuthHandler> logger)
-        {
-            this.httpContext = httpContext;
-            this.userManager = userManager;
-            this.logger = logger;
-        }
-
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
             UserIsValidUserRequirement requirement)
         {
@@ -33,21 +26,77 @@
             {
                 var emailAddressClaim = context.User.FindFirst(ClaimTypes.Email);
                 var emailClaim = context.User.FindFirst("email");
-
                 var email = emailAddressClaim is null ? emailClaim?.Value : emailAddressClaim?.Value;
 
-                var user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
+                var oidClaim = context.User.FindFirst("oid")
+                            ?? context.User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")
+                            ?? context.User.FindFirst(ClaimTypes.NameIdentifier);
+                Guid? objectId = oidClaim is not null && Guid.TryParse(oidClaim.Value, out var parsedOid)
+                    ? parsedOid
+                    : null;
 
+                // Step 1: Try to find user by email
+                Models.User user = null;
+                if (!string.IsNullOrWhiteSpace(email))
+                {
+                    user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
+
+                    // Auto-link CIAM ObjectId when existing user found by email (B2C → CIAM migration)
+                    if (user is not null && objectId.HasValue && user.ObjectId != objectId.Value)
+                    {
+                        logger.LogInformation(
+                            "Updating ObjectId for user {Email} from {OldObjectId} to {NewObjectId} (CIAM migration)",
+                            email, user.ObjectId, objectId.Value);
+                        user.ObjectId = objectId.Value;
+                        await userManager.UpdateAsync(user, CancellationToken.None);
+                    }
+                }
+
+                // Step 2: If not found by email, try ObjectId lookup
+                if (user is null && objectId.HasValue)
+                {
+                    user = await userManager.GetUserByObjectIdAsync(objectId.Value, CancellationToken.None);
+
+                    // If found by OID and email is available but different, update the stored email
+                    if (user is not null && !string.IsNullOrWhiteSpace(email) && user.Email != email)
+                    {
+                        user.Email = email;
+                        await userManager.UpdateAsync(user, CancellationToken.None);
+                    }
+                }
+
+                // Step 3: If still not found and no email in token, fetch email from CIAM via Graph API
+                if (user is null && string.IsNullOrWhiteSpace(email) && objectId.HasValue)
+                {
+                    email = await ciamGraphService.GetUserEmailAsync(objectId.Value, CancellationToken.None);
+
+                    if (!string.IsNullOrWhiteSpace(email))
+                    {
+                        logger.LogInformation("Resolved email {Email} from CIAM Graph API for ObjectId {ObjectId}",
+                            email, objectId.Value);
+
+                        // Try finding by the Graph-resolved email
+                        user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
+
+                        if (user is not null)
+                        {
+                            // Link the CIAM ObjectId to the existing user
+                            user.ObjectId = objectId.Value;
+                            await userManager.UpdateAsync(user, CancellationToken.None);
+                        }
+                    }
+                }
+
+                // Step 4: Auto-create if user still not found
                 if (user is null)
                 {
-                    // Auto-create user on first login (needed for Entra External ID which
-                    // doesn't have B2C-style REST API callbacks during sign-up)
                     user = await TryAutoCreateUser(context, email);
 
                     if (user is null)
                     {
+                        var identifier = !string.IsNullOrWhiteSpace(email) ? email : "unknown (no email claim)";
                         AuthorizationFailure.Failed(new List<AuthorizationFailureReason>
-                            { new(this, $"User with email '{email}' not found and could not be auto-created.") });
+                            { new(this, $"User '{identifier}' not found and could not be auto-created.") });
                         return;
                     }
                 }
@@ -122,6 +171,7 @@
         {
             if (string.IsNullOrWhiteSpace(email))
             {
+                logger.LogWarning("Cannot auto-create user: no email available from token or Graph API");
                 return null;
             }
 
