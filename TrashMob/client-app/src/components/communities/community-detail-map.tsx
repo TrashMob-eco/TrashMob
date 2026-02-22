@@ -1,14 +1,17 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { AdvancedMarker, InfoWindow, MapProps } from '@vis.gl/react-google-maps';
+import { useQueries } from '@tanstack/react-query';
 import { GoogleMapWithKey as GoogleMap } from '../Map/GoogleMap';
 import { EventDetailInfoWindowHeader, EventDetailInfoWindowContent } from '../Map/EventInfoWindowContent';
-import { ExistingAreasOverlay } from '../Map/AreaMapEditor/ExistingAreasOverlay';
 import { CommunityBoundsOverlay } from '../Map/CommunityBoundsOverlay';
+import { RoutePolylines } from '../Map/RoutePolylines';
 import EventData from '../Models/EventData';
 import TeamData from '../Models/TeamData';
 import LitterReportData from '../Models/LitterReportData';
-import AdoptableAreaData from '../Models/AdoptableAreaData';
+import { DisplayAnonymizedRoute } from '../Models/RouteData';
 import { LitterReportStatusEnum } from '../Models/LitterReportStatus';
+import { EventStatus } from '@/enums/EventStatus';
+import { GetEventRoutes } from '@/services/event-routes';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
 import { cn } from '@/lib/utils';
 import { EventPin } from '../events/event-pin';
@@ -43,6 +46,9 @@ const getLitterReportColor = (statusId: number): string => {
     }
 };
 
+const MAX_ROUTE_EVENTS = 25;
+const ROUTE_LOOKBACK_DAYS = 90;
+
 const COMMUNITY_MAP_ID = 'community-detail-map';
 
 interface CommunityDetailMapProps extends MapProps {
@@ -50,7 +56,6 @@ interface CommunityDetailMapProps extends MapProps {
     events: EventData[];
     teams: TeamData[];
     litterReports: LitterReportData[];
-    areas?: AdoptableAreaData[];
     centerLat: number;
     centerLng: number;
     boundsNorth?: number | null;
@@ -66,7 +71,6 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
         events,
         teams,
         litterReports,
-        areas,
         centerLat,
         centerLng,
         boundsNorth,
@@ -85,7 +89,7 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
     const [showEvents, setShowEvents] = useState(true);
     const [showTeams, setShowTeams] = useState(true);
     const [showLitterReports, setShowLitterReports] = useState(true);
-    const [showAreas, setShowAreas] = useState(true);
+    const [showRoutes, setShowRoutes] = useState(false);
 
     const eventMarkersRef = useRef<Record<string, google.maps.marker.AdvancedMarkerElement>>({});
     const teamMarkersRef = useRef<Record<string, google.maps.marker.AdvancedMarkerElement>>({});
@@ -123,6 +127,33 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
             };
         })
         .filter(Boolean) as (LitterReportData & { latitude: number; longitude: number })[];
+
+    // Recent completed events for route fetching (last 90 days, max 25)
+    const recentCompletedEvents = useMemo(() => {
+        const cutoff = moment().subtract(ROUTE_LOOKBACK_DAYS, 'days');
+        return events
+            .filter((e) => e.eventStatusId === EventStatus.Completed && moment(e.eventDate).isAfter(cutoff))
+            .sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime())
+            .slice(0, MAX_ROUTE_EVENTS);
+    }, [events]);
+
+    // Batch-fetch routes for completed events (only when toggle is on)
+    const routeQueries = useQueries({
+        queries: showRoutes
+            ? recentCompletedEvents.map((event) => ({
+                  queryKey: GetEventRoutes({ eventId: event.id }).key,
+                  queryFn: GetEventRoutes({ eventId: event.id }).service,
+                  select: (res: { data: DisplayAnonymizedRoute[] }) => res.data,
+                  staleTime: 5 * 60 * 1000,
+              }))
+            : [],
+    });
+
+    const routesLoading = showRoutes && routeQueries.some((q) => q.isLoading);
+    const allRoutes = useMemo<DisplayAnonymizedRoute[]>(() => {
+        if (!showRoutes) return [];
+        return routeQueries.flatMap((q) => q.data ?? []);
+    }, [showRoutes, routeQueries]);
 
     const handleEventMarkerHover = (eventId: string) => {
         setShowingEventId(eventId);
@@ -183,15 +214,16 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                             Litter Reports ({litterReportsWithLocation.length})
                         </Label>
                     </div>
-                    {areas && areas.length > 0 ? (
+                    {recentCompletedEvents.length > 0 ? (
                         <div className='flex items-center space-x-2'>
                             <Checkbox
-                                id='show-areas'
-                                checked={showAreas}
-                                onCheckedChange={(checked) => setShowAreas(checked === true)}
+                                id='show-routes'
+                                checked={showRoutes}
+                                onCheckedChange={(checked) => setShowRoutes(checked === true)}
                             />
-                            <Label htmlFor='show-areas' className='text-sm cursor-pointer'>
-                                Adoptable Areas ({areas.length})
+                            <Label htmlFor='show-routes' className='text-sm cursor-pointer'>
+                                Routes
+                                {routesLoading ? ' (loading...)' : allRoutes.length > 0 ? ` (${allRoutes.length})` : ''}
                             </Label>
                         </div>
                     ) : null}
@@ -217,6 +249,11 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                     >
                         {/* Community Boundary */}
                         {boundaryGeoJson ? <CommunityBoundsOverlay mapId={mapId} geoJson={boundaryGeoJson} /> : null}
+
+                        {/* Route Polylines */}
+                        {showRoutes && allRoutes.length > 0 ? (
+                            <RoutePolylines mapId={mapId} routes={allRoutes} />
+                        ) : null}
 
                         {/* Event Markers */}
                         {showEvents
@@ -280,11 +317,6 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                                   </AdvancedMarker>
                               ))
                             : null}
-
-                        {/* Adoptable Areas Overlay */}
-                        {showAreas && areas && areas.length > 0 ? (
-                            <ExistingAreasOverlay mapId={mapId} areas={areas} />
-                        ) : null}
 
                         {/* Event Info Window */}
                         {showingEvent ? (

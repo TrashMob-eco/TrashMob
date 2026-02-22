@@ -1,31 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GetEventRouteStats } from '@/services/event-routes';
-
-function formatDistance(meters: number): string {
-    if (meters >= 1609) {
-        return `${(meters / 1609.34).toFixed(1)} mi`;
-    }
-    return `${meters.toLocaleString()} m`;
-}
-
-function formatDuration(minutes: number): string {
-    if (minutes >= 60) {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-    }
-    return `${minutes}m`;
-}
-
-function formatArea(sqMeters: number): string {
-    const sqMetersPerAcre = 4046.86;
-    if (sqMeters >= sqMetersPerAcre) {
-        return `${(sqMeters / sqMetersPerAcre).toFixed(1)} acres`;
-    }
-    const sqFeet = sqMeters * 10.7639;
-    return `${Math.round(sqFeet).toLocaleString()} sq ft`;
-}
+import { formatDistance, formatDuration, formatArea } from '@/lib/route-format';
 
 interface EventRouteStatsCardProps {
     eventId: string;
