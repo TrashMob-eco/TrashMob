@@ -187,7 +187,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             EnableEditEvent = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
             EnableViewEventSummary = mobEvent.IsCompleted();
 
-            EnableStartTrackEventRoute = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
+            EnableStartTrackEventRoute = !mobEvent.IsCompleted();
             EnableStopTrackEventRoute = false;
 
             WhatToExpect =
