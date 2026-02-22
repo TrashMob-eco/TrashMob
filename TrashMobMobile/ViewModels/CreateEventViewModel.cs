@@ -559,7 +559,10 @@ public partial class CreateEventViewModel : BaseViewModel
 
             var mobEvent = EventViewModel.ToEvent();
 
-            var updatedEvent = await mobEventManager.AddEventAsync(mobEvent);
+            // If the event was already saved (has an ID), update instead of creating a duplicate
+            var updatedEvent = mobEvent.Id != Guid.Empty
+                ? await mobEventManager.UpdateEventAsync(mobEvent)
+                : await mobEventManager.AddEventAsync(mobEvent);
 
             EventViewModel = updatedEvent.ToEventViewModel(userManager.CurrentUser.Id);
             Events.Clear();
