@@ -23,7 +23,9 @@
         <Grid Grid.Row="1">
             <controls:CustomMap x:Name="userLocationMap"
                       ItemsSource="{Binding Addresses}"
-                      MapClicked="OnMapClicked">
+                      MapClicked="OnMapClicked"
+                      HeightRequest="-1"
+                      VerticalOptions="Fill">
                 <maps:Map.ItemTemplate>
                     <DataTemplate x:DataType="viewModels:AddressViewModel">
                         <controls:CustomPin Location="{Binding Location}"

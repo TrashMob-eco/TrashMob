@@ -100,7 +100,9 @@
         <controls:CustomMap Grid.Row="4"
                             x:Name="exploreMap"
                             ItemsSource="{Binding Addresses}"
-                            IsVisible="{Binding IsMapSelected}">
+                            IsVisible="{Binding IsMapSelected}"
+                            HeightRequest="-1"
+                            VerticalOptions="Fill">
             <maps:Map.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:AddressViewModel">
                     <controls:CustomPin Location="{Binding Location}"
