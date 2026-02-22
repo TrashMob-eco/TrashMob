@@ -149,6 +149,9 @@ platform :ios do
   end
 
   private_lane :upload_screenshots do
+    # Requires an editable version (Prepare for Submission) in App Store Connect.
+    # Live versions can't be modified via API — use ios_submit instead,
+    # which uploads screenshots as part of the submission flow.
     deliver(
       app_identifier: ENV["IOS_BUNDLE_ID"] || "eco.trashmob",
       skip_binary_upload: true,
@@ -158,9 +161,7 @@ platform :ios do
       overwrite_screenshots: true,
       force: true,
       submit_for_review: false,
-      run_precheck_before_submit: false,
-      edit_live: true,
-      use_live_version: true
+      run_precheck_before_submit: false
     )
   end
 end
