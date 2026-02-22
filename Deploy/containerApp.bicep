@@ -21,16 +21,6 @@ var managedCertificateId = managedCertificateName != '' ? '${containerAppsEnviro
 // Derive the Application Insights name from environment and region
 var appInsightsName = 'ai-tm-${environment}-${region}'
 
-// Azure AD B2C configuration - these are public values, not secrets
-// Backend B2C settings (for JWT validation)
-var b2cInstance = environment == 'dev' ? 'https://trashmobdev.b2clogin.com/' : 'https://trashmob.b2clogin.com/'
-var b2cDomain = environment == 'dev' ? 'trashmobdev.onmicrosoft.com' : 'trashmob.onmicrosoft.com'
-var b2cBackendClientId = environment == 'dev' ? '7e44c032-7c3d-43a1-8ea7-f0a14a93bce2' : 'ca9c62c2-fdcb-4d07-b049-cdf66e874dfc'
-var b2cSignUpSignInPolicyId = 'B2C_1A_TM_SIGNUP_SIGNIN'
-
-// Frontend B2C settings (for MSAL in browser - different client IDs than backend)
-var b2cFrontendClientId = environment == 'dev' ? 'e46d67ba-fe46-40f4-b222-2f982b2bb112' : '0a1647a4-c758-4964-904f-a9b66958c071'
-
 // Azure AD Entra External ID configuration - these are public values, not secrets
 // Note: Microsoft accounts work natively in Entra External ID (no external IDP setup needed)
 var entraInstance = environment == 'dev' ? 'https://trashmobecodev.ciamlogin.com/' : 'https://trashmobecopr.ciamlogin.com/'
@@ -38,9 +28,6 @@ var entraDomain = environment == 'dev' ? 'TrashMobEcoDev.onmicrosoft.com' : 'tra
 var entraBackendClientId = environment == 'dev' ? '84df543d-6535-45f5-afab-4d38528b721a' : 'dc09e17b-bce4-4af9-82ab-f7b12af586b4'
 var entraTenantId = environment == 'dev' ? '8577fa31-4b86-4e4b-8b02-93fba708cb19' : 'b5fc8717-29eb-496e-8e09-cf90d344ce9f'
 var entraFrontendClientId = environment == 'dev' ? '1e6ae74d-0160-4a01-9d75-04048e03b17e' : '0604ef02-6b84-450f-b5d5-2196e96f3b48'
-
-// Feature flag: use Entra External ID instead of B2C
-var useEntraExternalId = 'true'
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: containerRegistryName
@@ -127,33 +114,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'ApplicationInsights__ConnectionString'
               value: appInsights.properties.ConnectionString
-            }
-            // Azure AD B2C backend settings (for JWT validation)
-            {
-              name: 'AzureAdB2C__Instance'
-              value: b2cInstance
-            }
-            {
-              name: 'AzureAdB2C__ClientId'
-              value: b2cBackendClientId
-            }
-            {
-              name: 'AzureAdB2C__Domain'
-              value: b2cDomain
-            }
-            {
-              name: 'AzureAdB2C__SignUpSignInPolicyId'
-              value: b2cSignUpSignInPolicyId
-            }
-            // Azure AD B2C frontend settings (for MSAL in browser)
-            {
-              name: 'AzureAdB2C__FrontendClientId'
-              value: b2cFrontendClientId
-            }
-            // Auth provider feature flag
-            {
-              name: 'UseEntraExternalId'
-              value: useEntraExternalId
             }
             // Azure AD Entra External ID backend settings (for JWT validation)
             {

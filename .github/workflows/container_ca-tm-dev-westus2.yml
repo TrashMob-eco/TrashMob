@@ -124,8 +124,7 @@ jobs:
               managedCertificateName=${{ env.MANAGED_CERTIFICATE_NAME }} \
               strapiBaseUrl="${{ steps.get-strapi.outputs.strapi_url }}"
 
-      # Note: Azure AD B2C configuration is now set via environment variables in containerApp.bicep
-      # The B2C settings are public configuration values (not secrets) determined by the 'environment' parameter
+      # Note: Azure AD Entra External ID configuration is set via environment variables in containerApp.bicep
 
       - name: Grant Key Vault and Storage Access via RBAC
         run: |

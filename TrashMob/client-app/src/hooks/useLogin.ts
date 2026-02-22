@@ -40,7 +40,7 @@ export const useLogin = () => {
         }
         try {
             const tokenResponse = await getMsalClientInstance().acquireTokenSilent({
-                scopes: getApiConfig().b2cScopes,
+                scopes: getApiConfig().scopes,
                 account: accounts[0],
             });
             verifyAccount(tokenResponse);

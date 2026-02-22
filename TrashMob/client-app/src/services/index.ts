@@ -19,7 +19,7 @@ ProtectedService.interceptors.request.use(
         const accounts = getMsalClientInstance().getAllAccounts();
         if (accounts === null || accounts.length <= 0) throw new axios.Cancel('User not found!');
         const request = {
-            scopes: getApiConfig().b2cScopes,
+            scopes: getApiConfig().scopes,
             account: accounts[0],
         };
         const tokenResponse = await getMsalClientInstance().acquireTokenSilent(request);
