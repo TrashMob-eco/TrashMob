@@ -200,7 +200,8 @@ export const EditEventSummary = () => {
             } else {
                 form.reset({
                     actualNumberOfAttendees: eventSummary?.actualNumberOfAttendees ?? event.maxNumberOfParticipants,
-                    durationInMinutes: eventSummary?.durationInMinutes ?? event.durationHours * 60 + event.durationMinutes,
+                    durationInMinutes:
+                        eventSummary?.durationInMinutes ?? event.durationHours * 60 + event.durationMinutes,
                     numberOfBags: eventSummary?.numberOfBags ?? 0,
                     numberOfBuckets: eventSummary?.numberOfBuckets ?? 0,
                     pickedWeight: eventSummary?.pickedWeight ?? 0,
@@ -270,12 +271,15 @@ export const EditEventSummary = () => {
                     <CardHeader>
                         <CardTitle>Enter Event Summary Information</CardTitle>
                         <CardDescription>Please enter information about how the event went.</CardDescription>
-                        {isFromRouteData && isNewSummary ? <Alert className='border-primary/30 bg-primary/5'>
+                        {isFromRouteData && isNewSummary ? (
+                            <Alert className='border-primary/30 bg-primary/5'>
                                 <AlertDescription className='text-primary text-sm'>
                                     Pre-filled from route tracking data. Review and adjust values as needed.
                                 </AlertDescription>
-                            </Alert> : null}
-                        {showResyncBanner ? <Alert className='border-amber-500/30 bg-amber-50 dark:bg-amber-950/20'>
+                            </Alert>
+                        ) : null}
+                        {showResyncBanner ? (
+                            <Alert className='border-amber-500/30 bg-amber-50 dark:bg-amber-950/20'>
                                 <AlertDescription className='flex items-center justify-between text-sm'>
                                     <span className='text-amber-700 dark:text-amber-400'>
                                         Route data has been updated since this summary was saved.
@@ -287,9 +291,16 @@ export const EditEventSummary = () => {
                                             if (prefill) {
                                                 form.setValue('numberOfBags', prefill.numberOfBags);
                                                 form.setValue('pickedWeight', prefill.pickedWeight);
-                                                form.setValue('pickedWeightUnitId', prefill.pickedWeightUnitId || defaultWeightUnitId);
+                                                form.setValue(
+                                                    'pickedWeightUnitId',
+                                                    prefill.pickedWeightUnitId || defaultWeightUnitId,
+                                                );
                                                 form.setValue('durationInMinutes', prefill.durationInMinutes);
-                                                form.setValue('actualNumberOfAttendees', prefill.actualNumberOfAttendees || form.getValues('actualNumberOfAttendees'));
+                                                form.setValue(
+                                                    'actualNumberOfAttendees',
+                                                    prefill.actualNumberOfAttendees ||
+                                                        form.getValues('actualNumberOfAttendees'),
+                                                );
                                                 setShowResyncBanner(false);
                                             }
                                         }}
@@ -298,7 +309,8 @@ export const EditEventSummary = () => {
                                         Refresh totals
                                     </Button>
                                 </AlertDescription>
-                            </Alert> : null}
+                            </Alert>
+                        ) : null}
                     </CardHeader>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
