@@ -1,14 +1,17 @@
 import UserData from '@/components/Models/UserData';
+import { Guid } from 'guid-typescript';
 import { useEffect, useState } from 'react';
 import * as msal from '@azure/msal-browser';
 import { getApiConfig, getMsalClientInstance } from '@/store/AuthStore';
 import { GetUserByEmail, GetUserById, GetUserByObjectId } from '@/services/users';
 import { useFeatureMetrics } from './useFeatureMetrics';
 
+const EMPTY_GUID = Guid.createEmpty().toString();
+
 export const useLogin = () => {
     const [callbackId, setCallbackId] = useState('');
     const [currentUser, setCurrentUser] = useState<UserData>(new UserData());
-    const isUserLoaded = !!currentUser.id;
+    const isUserLoaded = !!currentUser.id && currentUser.id !== EMPTY_GUID;
     const { trackAuth } = useFeatureMetrics();
 
     useEffect(() => {
