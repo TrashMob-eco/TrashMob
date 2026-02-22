@@ -14,7 +14,7 @@ TrashMobMobile is a .NET MAUI app that follows an MVVM pattern with a service la
 - UI: XAML pages in `Pages/` and `Views/`, with shared styles in `Resources/Styles/`.
 - ViewModels: `ViewModels/` uses `CommunityToolkit.Mvvm` for observable state and commands.
 - Services: `Services/` provides REST service implementations and manager facades.
-- Authentication: `Authentication/` integrates MSAL for Azure B2C and stores user context.
+- Authentication: `Authentication/` integrates MSAL for Entra External ID and stores user context.
 - Models: shared domain models are from `../TrashMob.Models`; mobile-specific models live in `Models/`.
 
 ## Responsibilities by folder

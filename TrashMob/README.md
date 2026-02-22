@@ -9,7 +9,7 @@ The `TrashMob` project is the main web application for the TrashMob platform, de
 - **ASP.NET Core Web Application**: Built with .NET 10, serving both API endpoints and web pages.
 - **Single Page Application (SPA)**: Integrated React client app located in `client-app/`.
 - **Entity Framework Core**: Data access using SQL Server.
-- **Authentication & Authorization**: Migrating from Azure B2C to Entra External ID for secure user management.
+- **Authentication & Authorization**: Entra External ID (CIAM) for secure user management.
 - **Azure Integrations**: Key Vault, Blob Storage, and Application Insights for secrets, file storage, and monitoring.
 - **Geo Data Support**: NetTopologySuite for spatial and geographic operations.
 - **Email Notifications**: SendGrid integration for event and user communications.

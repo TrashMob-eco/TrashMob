@@ -49,8 +49,8 @@
 │  └─────────────────┘  └─────────────────┘  └─────────────────┘                     │
 │                                                                                     │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐                     │
-│  │  Azure AD B2C   │  │  Azure Maps     │  │  Azure          │                     │
-│  │  (Auth)         │  │  (Geocoding)    │  │  Notification   │                     │
+│  │  Entra External │  │  Azure Maps     │  │  Azure          │                     │
+│  │  ID (CIAM)      │  │  (Geocoding)    │  │  Notification   │                     │
 │  │                 │  │                 │  │  Hub            │                     │
 │  └─────────────────┘  └─────────────────┘  └─────────────────┘                     │
 │                                                                                     │
@@ -106,7 +106,7 @@
 
 | Service | Purpose |
 |---------|---------|
-| **Azure AD B2C** | User authentication and identity management |
+| **Entra External ID** | User authentication and identity management (CIAM) |
 | **Managed Identity** | Service-to-service authentication within Azure |
 
 ### Observability
@@ -131,7 +131,7 @@
 
 ### User Authentication
 ```
-Mobile/Web → Azure AD B2C → JWT Token → API (validates token)
+Mobile/Web → Entra External ID → JWT Token → API (validates token)
 ```
 
 ### Event Creation

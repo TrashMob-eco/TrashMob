@@ -2,9 +2,9 @@
 
 ## Identity provider
 
-- Uses MSAL (`Microsoft.Identity.Client`) for Azure AD B2C.
+- Uses MSAL (`Microsoft.Identity.Client`) for Entra External ID (CIAM).
 - `AuthConstants` defines tenant, client ID, scopes, and redirect URI.
-- `USETEST` toggles between dev and prod B2C tenants and API base URLs.
+- `USETEST` toggles between dev and prod tenants and API base URLs.
 
 ## Auth flow
 

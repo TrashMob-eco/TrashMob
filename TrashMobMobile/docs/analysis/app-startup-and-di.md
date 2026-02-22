@@ -33,5 +33,5 @@
 
 ## Environment and build flags
 
-- `USETEST` compile constant toggles API base URLs and Azure B2C client settings.
+- `USETEST` compile constant toggles API base URLs and Entra External ID client settings.
 - Target frameworks are net10.0 for Android, iOS, and MacCatalyst.
