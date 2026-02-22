@@ -117,8 +117,10 @@ platform :ios do
   end
 
   private_lane :apply_frames do
+    # frameit uses Dir.chdir internally, which resolves from the process
+    # working directory (repo root), not fastlane's directory
     frameit(
-      path: "screenshots/en-US",
+      path: "fastlane/screenshots/en-US",
       force_device_type: nil
     )
   end

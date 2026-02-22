@@ -10,6 +10,15 @@ name: iOS - Upload Screenshots
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - production
 
 permissions:
   contents: read
@@ -18,7 +27,10 @@ jobs:
   upload-screenshots:
     name: Frame & Upload Screenshots
     runs-on: macos-15
-    environment: production
+    environment: ${{ github.event.inputs.environment }}
+
+    env:
+      IOS_BUNDLE_ID: ${{ github.event.inputs.environment == 'production' && 'eco.trashmob' || 'eco.trashmobdev.trashmobmobile' }}
 
     steps:
       - name: Checkout
@@ -39,7 +51,7 @@ jobs:
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
         run: |
-          echo "Preparing, framing, and uploading screenshots..."
+          echo "Uploading screenshots for $IOS_BUNDLE_ID (${{ github.event.inputs.environment }})..."
           bundle exec fastlane ios ios_screenshots
 
       - name: Summary
@@ -48,6 +60,8 @@ jobs:
           echo "========================================="
           echo " Screenshot Upload Complete"
           echo "========================================="
+          echo " Environment: ${{ github.event.inputs.environment }}"
+          echo " Bundle ID:   ${{ env.IOS_BUNDLE_ID }}"
           echo " iPhone 6.9\" screenshots: uploaded"
           echo " iPad 13\" screenshots: uploaded"
           echo " Captions: applied via frameit"
