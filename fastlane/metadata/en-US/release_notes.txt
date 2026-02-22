@@ -1,6 +1,8 @@
-- Redesigned Create Event and Edit Event pages with improved date/time and duration controls
-- Route tracking during cleanup events — see your walking path on the map
-- Team support — create or join a team, track collective impact
-- Improved litter report flow with photo support
-- Better form validation with inline error messages
-- Performance and stability improvements
+- Background route tracking — keeps recording when you switch apps
+- Event visibility controls — team-only and community events
+- Redesigned Create/Edit Event pages with card-based layouts
+- Image cropping and camera capture for photo uploads
+- Map view for your routes with colored polylines
+- Modern sign-in with improved reliability
+- Inline validation and required field indicators
+- Bug fixes and stability improvements
