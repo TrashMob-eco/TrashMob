@@ -2,6 +2,7 @@ namespace TrashMobMobile.Pages;
 
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using TrashMobMobile.Services;
 
 public partial class CreateLitterReportPage : ContentPage
 {
@@ -23,13 +24,16 @@ public partial class CreateLitterReportPage : ContentPage
 
             if (photo != null)
             {
-                // save the file into local storage
                 viewModel.LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
 
-                using var sourceStream = await photo.OpenReadAsync();
-                using var localFileStream = File.OpenWrite(viewModel.LocalFilePath);
+                using (var sourceStream = await photo.OpenReadAsync())
+                using (var localFileStream = File.OpenWrite(viewModel.LocalFilePath))
+                {
+                    await sourceStream.CopyToAsync(localFileStream);
+                }
 
-                await sourceStream.CopyToAsync(localFileStream);
+                await ImageCompressor.CompressAsync(viewModel.LocalFilePath);
+
                 await viewModel.AddImageToCollection();
                 viewModel.ValidateReport();
             }

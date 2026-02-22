@@ -595,6 +595,17 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 return;
             }
 
+            // Copy to cache and compress before upload
+            var cachedPath = Path.Combine(FileSystem.CacheDirectory, result.FileName);
+
+            using (var sourceStream = await result.OpenReadAsync())
+            using (var cacheStream = File.Create(cachedPath))
+            {
+                await sourceStream.CopyToAsync(cacheStream);
+            }
+
+            await ImageCompressor.CompressAsync(cachedPath);
+
             var typePopup = new Controls.PhotoTypePopup();
             var typeResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(typePopup);
             var photoType = typeResult?.Result;
@@ -612,7 +623,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             };
 
             await eventPhotoManager.UploadPhotoAsync(
-                EventViewModel.Id, result.FullPath, eventPhotoType, string.Empty);
+                EventViewModel.Id, cachedPath, eventPhotoType, string.Empty);
 
             await LoadPhotos();
 
