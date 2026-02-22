@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning in Progress (combined with Project 1) |
+| **Status** | Planning in Progress (combined with Project 1; auth migration complete, Privo integration remaining) |
 | **Priority** | High |
 | **Risk** | High |
 | **Size** | Large |
@@ -127,7 +127,7 @@ See **Project 1, Phase 3 Investigation** for full task list. Key questions:
 ## Dependencies
 
 ### Blockers
-- **Project 1 (Auth Revamp):** Integration with Entra External ID
+- ~~**Project 1 (Auth Revamp):** Integration with Entra External ID~~ ✅ Complete — Entra External ID live on production (Feb 22, 2026)
 - **Legal Review:** COPPA compliance sign-off
 - **Privo.com Contract:** Vendor agreement
 
@@ -869,7 +869,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 8, 2026
+**Last Updated:** February 22, 2026
 **Owner:** Product Lead + Legal + Engineering
-**Status:** Planning in Progress (combined with Project 1)
-**Next Review:** After Project 1 Phase 0 (tenant setup) is complete
+**Status:** Planning in Progress — Auth migration complete (Project 1 Phases 0-5 live on production). Privo API integration and parental consent workflow remaining.
+**Next Review:** After Privo API documentation and test environment available

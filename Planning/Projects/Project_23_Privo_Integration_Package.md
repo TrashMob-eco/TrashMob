@@ -29,21 +29,21 @@
 
 ## 2. Authentication Flow — Swim Lane Diagram
 
-### Current Architecture: Azure AD B2C
-> **Note:** TrashMob is planning migration to Microsoft Entra External ID (Project 1).
-> The flow below uses Azure AD B2C but the Privo integration points remain the same.
+### Current Architecture: Microsoft Entra External ID (CIAM)
+> **Note:** TrashMob completed migration from Azure AD B2C to Microsoft Entra External ID in February 2026 (Project 1).
+> The Privo integration points remain the same — Privo hooks into the Custom Authentication Extension on the sign-up user flow.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                              MINOR REGISTRATION FLOW WITH PRIVO                                      │
 └─────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
-   USER (Minor)          TrashMob Web/Mobile       Azure AD B2C           Privo.com            Parent
+   USER (Minor)          TrashMob Web/Mobile       Entra External ID      Privo.com            Parent
         │                        │                      │                     │                   │
         │  1. Click "Sign Up"    │                      │                     │                   │
         │───────────────────────>│                      │                     │                   │
         │                        │                      │                     │                   │
-        │                        │  2. Redirect to B2C  │                     │                   │
+        │                        │  2. Redirect to CIAM │                     │                   │
         │                        │─────────────────────>│                     │                   │
         │                        │                      │                     │                   │
         │  3. Enter Email/Password                      │                     │                   │
@@ -323,9 +323,10 @@ TrashMob requests the following customizations on Privo's consent collection pag
 - **Development:** `https://dev-api.trashmob.eco/webhooks/privo`
 
 ### Authentication Provider
-- **Current:** Azure AD B2C
-- **Future:** Microsoft Entra External ID (migration planned)
+- **Current:** Microsoft Entra External ID (CIAM) — production cutover completed February 22, 2026
+- **Previous:** Azure AD B2C (decommissioned)
 - **Impact on Privo:** None — Privo integration occurs after IdP authentication
+- **CIAM Note:** CIAM id_tokens do not include an `email` claim. The backend resolves emails via Microsoft Graph API (`User.Read.All` application permission). The auth handler uses a 4-step user resolution: email lookup → ObjectId lookup → Graph API email resolution → auto-create.
 
 ---
 
@@ -364,6 +365,7 @@ Please provide Figma access to the Privo team members for UI/UX review.
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | January 31, 2026 | TrashMob Engineering | Initial draft |
+| 1.1 | February 22, 2026 | TrashMob Engineering | Updated auth provider to Entra External ID (CIAM migration complete) |
 
 ---
 
