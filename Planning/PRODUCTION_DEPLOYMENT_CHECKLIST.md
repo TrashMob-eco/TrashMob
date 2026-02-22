@@ -223,13 +223,33 @@ In Azure Portal > prod Entra tenant > External Identities > All identity provide
 #### A4.10 Deploy Auth Extension Container App (Layer 2)
 
 - [x] **42.** Set GitHub Actions secrets (in `production` environment): `ENTRA_TENANT_ID`, `AUTH_EXTENSION_CLIENT_ID`
-- [x] **43.** Create production workflow: `release_ca-authext-tm-pr-westus2.yml` — triggers on `release`, uses `crtmprwestus2` registry, `production` environment
-- [ ] **44.** Register Custom Authentication Extension in Entra portal:
+- [x] **43.** Create production workflow: `release_ca-authext-tm-pr-westus2.yml` — triggers on `release`, uses `acrtmprwestus2` registry, `production` environment — **Note: Initial workflow had wrong registry name `crtmprwestus2`; fixed to `acrtmprwestus2` in PR #2835. Same fix needed for `release_strapi-tm-pr-westus2.yml`.**
+- [x] **44.** Register Custom Authentication Extension in Entra portal:
   - External Identities > Custom authentication extensions > Create
   - Type: `OnAttributeCollectionSubmit`
-  - Target URL: `https://ca-authext-tm-pr-westus2.<fqdn>/api/authext/attributecollectionsubmit`
+  - Target URL: `https://ca-authext-tm-pr-westus2.greenground-fd8fc385.westus2.azurecontainerapps.io/api/authext/attributecollectionsubmit`
   - Link to auth extension app registration
   - Assign to user flow's "When a user submits their information" event
+
+  **Deployment Notes (2026-02-21):**
+  > **Important lessons learned:**
+  >
+  > 1. **Do NOT try to select an existing app registration** when creating the custom auth extension. The portal throws `"The resourceId is not found in the IdentifierUris property of the app"` errors regardless of what Identifier URI format you set (`api://{appId}`, `api://{ciamDomain}/{appId}`, `api://{tenantId}/{appId}`).
+  >
+  > 2. **Use "Create new app registration"** option in the portal wizard instead. This creates a dedicated app registration with the correct Identifier URI and `CustomAuthenticationExtensions.Receive.Payload` permission pre-configured.
+  >
+  > 3. **Steps that worked:**
+  >    - Go to Entra portal > External Identities > Custom authentication extensions > **+ Create**
+  >    - Select `OnAttributeCollectionSubmit` event type
+  >    - Enter the Target URL (Container App FQDN + `/api/authext/attributecollectionsubmit`)
+  >    - On the API Authentication step, choose **"Create new app registration"** (NOT "Select existing")
+  >    - Give it a name (e.g., `TrashMob AuthExtension API`)
+  >    - Complete the wizard
+  >    - Then go to User flows > `SignUpSignIn` > Custom authentication extensions > assign the new extension to "When a user submits their information"
+  >
+  > 4. **The original app registration** (AppId `261e358b-ccf7-4691-89a8-0690262bcc52` from step 20) is separate from the one the portal wizard creates. The wizard-created registration is specifically for the auth extension API authentication.
+  >
+  > 5. **Graph API alternative** was blocked by insufficient permissions in the CIAM tenant. Portal wizard is the reliable path.
 
 #### A4.11 Mobile App Update
 
@@ -263,8 +283,30 @@ In Azure Portal > prod Entra tenant > External Identities > All identity provide
 - [x] **64.** Check iOS distribution certificate expiry at https://developer.apple.com/account/resources/certificates/list — **Expired; regenerated 2026-02-21 via `openssl` CSR (macOS Sequoia lacks Keychain Certificate Assistant)**
 - [x] **65.** Check App Store Connect API key status at https://appstoreconnect.apple.com/access/integrations/api — verify key used by `APPSTORE_KEY_ID` is "Active" — **`TrashMobProdApiKey` (L8R272VZ58) is Active (created 2026-02-15)**
 - [x] **66.** If certificate expired or expiring — regenerate (see [Section R1](#r1-regenerate-ios-distribution-certificate)) — **Done. New cert created, .p12 exported, `IOS_CERTIFICATES_P12` and `IOS_CERTIFICATES_P12_PASSWORD` GitHub secrets updated.**
-- [x] **67.** If API key expired or revoked — regenerate (see [Section R2](#r2-regenerate-app-store-connect-api-key)) — **New key `96BK5UTL5D` created. `APPSTORE_KEY_ID` and `APPSTORE_PRIVATE_KEY` set in both `test` and `production` GitHub environments.**
+- [x] **67.** If API key expired or revoked — regenerate (see [Section R2](#r2-regenerate-app-store-connect-api-key)) — **New prod key `96BK5UTL5D` created. Set in `production` GitHub environment only.**
+
+  **Apple API Key Separation — Lesson Learned (2026-02-21):**
+  > **Dev and prod use DIFFERENT App Store Connect API keys.** Do NOT set the same key in both `test` and `production` environments.
+  >
+  > | Environment | Key ID | Key Name | Purpose |
+  > |-------------|--------|----------|---------|
+  > | `test` (dev builds) | `X8J78CDY98` | TrashMobDevApiKey | Dev app (`eco.trashmobdev.trashmobmobile`) |
+  > | `production` (release builds) | `96BK5UTL5D` | TrashMobProdApiKey | Prod app (`eco.trashmob`) |
+  >
+  > Initially the prod key was mistakenly set in BOTH environments, causing dev iOS builds to fail with `error:1E08010C:DECODER routines::unsupported` when downloading provisioning profiles (wrong key for the dev app). Fix: Restored dev key `X8J78CDY98` to `test` environment.
+  >
+  > **Secrets affected:** `APPSTORE_KEY_ID`, `APPSTORE_PRIVATE_KEY` (and possibly `APPSTORE_ISSUER_ID` — same issuer for both keys since they're on the same account).
 - [x] **68.** Verify Android keystore — `ANDROID_KEYSTORE` and `ANDROID_KEYSTORE_PASSWORD` secrets are set (see [Section R3](#r3-android-keystore-rotation) if rotation needed) — **Both secrets exist in `test` (2024-05-26) and `production` (2022-09-10) environments. Keystore valid until 2036.**
+
+  **Dev vs Prod Android Bundle ID — Lesson Learned (2026-02-21):**
+  > The dev workflow (`main_trashmobmobileapp.yml`) had `ANDROID_BUNDLE_ID: 'eco.trashmob.trashmobmobileapp'` (the prod value), causing Google Play upload failures due to signing key mismatch. The correct dev Android bundle ID is `eco.trashmobdev.trashmobmobile`. Fixed in PR #2834.
+  >
+  > | Environment | Android Bundle ID | iOS Bundle ID |
+  > |-------------|-------------------|---------------|
+  > | Dev (`test`) | `eco.trashmobdev.trashmobmobile` | `eco.trashmobdev.trashmobmobile` |
+  > | Prod (`production`) | `eco.trashmob.trashmobmobileapp` | `eco.trashmob` |
+  >
+  > **Google Maps note:** The dev Android bundle ID must be registered in Google Cloud Console API key restrictions (package name + SHA-1 fingerprint) for Google Maps to work on dev Android builds.
 
 ---
 
@@ -429,27 +471,55 @@ Run all 31 pending migrations. EF Core applies only unapplied migrations automat
 
 ### B3. Merge and Deploy Web App :hand: :gear:
 
-- [ ] **91.** Merge main to release:
+- [x] **91.** Merge main to release:
   ```bash
   git checkout release
   git pull origin release
   git merge origin/main
   git push origin release
   ```
-- [ ] **92.** :gear: **AUTOMATED:** GitHub Actions builds and deploys web container to Azure Container Apps
-- [ ] **93.** :gear: **AUTOMATED:** GitHub Actions builds and deploys background jobs (daily + hourly)
-- [ ] **94.** Monitor GitHub Actions for success: https://github.com/TrashMob-eco/TrashMob/actions
+  **Note (2026-02-21):** Merge had 739 commits and 37 merge conflicts. All resolved using `--theirs` strategy (accepting main's version). Three issues found after merge:
+  - **Registry name:** `release_ca-authext-tm-pr-westus2.yml` and `release_strapi-tm-pr-westus2.yml` had `crtmprwestus2` instead of `acrtmprwestus2` — fixed directly on release, PR #2835 created for main
+  - **Bicep duplicates:** `Deploy/containerApp.bicep` had duplicate `param`/`var` declarations from merge conflict resolution (`customDomainName`, `managedCertificateName`, `managedCertificateId`) — removed duplicates directly on release, needs fixing on main too
+- [x] **92.** :gear: **AUTOMATED:** GitHub Actions builds and deploys web container to Azure Container Apps — **Succeeded after fixing registry names and Bicep duplicates**
+- [x] **93.** :gear: **AUTOMATED:** GitHub Actions builds and deploys background jobs (daily + hourly) — **Succeeded**
+- [x] **94.** Monitor GitHub Actions for success: https://github.com/TrashMob-eco/TrashMob/actions — **All backend services deployed successfully. Auth extension, Strapi, and Container App required fixes (see step 91 notes).**
 
 ---
 
 ### B4. Deploy Mobile Apps :hand: :gear:
 
-- [ ] **95.** :gear: **AUTOMATED:** Push to `release` triggers `release_trashmobmobileapp.yml` which:
+- [x] **95.** :gear: **AUTOMATED:** Push to `release` triggers `release_trashmobmobileapp.yml` which:
   - Builds Android AAB, signs with keystore, uploads to Google Play internal track via GCP service account
-  - Builds iOS IPA, signs with distribution cert, uploads to TestFlight via Fastlane Pilot (see [Section R18](#r18-app-store-promotion))
-- [ ] **96.** Monitor mobile build workflow for success
-- [ ] **97.** :hand: **Apple:** Promote TestFlight build to App Store review — either manually in App Store Connect, or run `gh workflow run "iOS - Submit for App Store Review"` (see [Section R18](#r18-app-store-promotion))
+  - Builds iOS IPA, signs with distribution cert, uploads to TestFlight via `xcrun altool` (see [Section R18](#r18-app-store-promotion))
+
+  **Deployment Notes (2026-02-21):**
+  > - **iOS Build:** Succeeded. Used `xcrun altool` (not Fastlane Pilot — see R18 note).
+  > - **iOS Deploy:** Failed — version `2.11.597` already uploaded to TestFlight by dev build. Next release commit will get a higher version number.
+  > - **Android Build:** Succeeded.
+  > - **Android Deploy:** Failed — Google Play rejected upload because the app now uses `FOREGROUND_SERVICE_LOCATION` permission, which requires a foreground service declaration in Google Play Console (see step 98 notes). **Workaround:** Manually uploaded the signed AAB via Google Play Console after completing the declaration.
+- [x] **96.** Monitor mobile build workflow for success — **Builds succeeded; deploys had issues (see step 95 notes)**
+- [ ] **97.** :hand: **Apple:** Promote TestFlight build to App Store review — either manually in App Store Connect, or run `gh workflow run "iOS - Submit for App Store Review"` (see [Section R18](#r18-app-store-promotion)) — **Blocked: need a new version build (see step 95). Will succeed on next release push.**
 - [ ] **98.** :hand: **Google:** Promote internal track to production with staged rollout — either manually in Google Play Console, or run `gh workflow run "Android - Adjust Production Rollout" -f rollout_percentage=10` then increase (see [Section R17](#r17-google-play-staged-rollout))
+
+  **Google Play Foreground Service Declaration (2026-02-21):**
+  > This release adds `FOREGROUND_SERVICE_LOCATION` permission for background route tracking. Google Play now requires:
+  >
+  > 1. **Permission declaration:** Google Play Console > App content > Sensitive app permissions > Foreground service
+  >    - Task type: **Background location updates** > **User-initiated location sharing**
+  >    - Justification: "TrashMob tracks the user's cleanup route during litter pickup events. The user explicitly starts route recording from the event details screen. A foreground service with a persistent notification ('Recording your cleanup route...') keeps GPS location updates active when the user switches apps or locks their screen, so their full route is captured. Recording stops when the user returns to the app and taps Stop, or when they leave the event."
+  >
+  > 2. **Video demonstration required:** Record a 30-60 second screen recording showing:
+  >    - Open app → navigate to event → Routes tab → Start route tracking
+  >    - Foreground notification appears ("Recording your cleanup route...")
+  >    - Switch to another app (background usage)
+  >    - Pull down notification shade showing the notification is still active
+  >    - Return to app → Stop route tracking → notification disappears
+  >    - Record using: device screen recorder, emulator toolbar, or `adb shell screenrecord /sdcard/demo.mp4`
+  >
+  > 3. **Must complete declaration before uploading AAB** — otherwise Google Play rejects the upload.
+  >
+  > See also: GitHub issues #2836 (deobfuscation file) and #2837 (debug symbols) for post-launch cleanup items.
 
 ---
 
@@ -1136,19 +1206,21 @@ gh workflow run "Android - Adjust Production Rollout" -f rollout_percentage=100
 
 Check rollout status in [Google Play Console](https://play.google.com/console) > Release > Production > Release dashboard. Watch crash rates and ANR rates before increasing rollout percentage.
 
-### R18. App Store Promotion (Fastlane Pilot & Deliver)
+### R18. App Store Promotion (altool Upload & Fastlane Deliver)
 
 <a id="r18-app-store-promotion"></a>
 
-**Workflow (upload):** `.github/workflows/publish-ios.yml` (uses `fastlane pilot upload`)
+**Workflow (upload):** `.github/workflows/publish-ios.yml` (uses `xcrun altool`)
 **Workflow (submit):** `.github/workflows/manual_ios-submit.yml`
-**Fastlane lanes:** `ios_upload` / `ios_submit` in `fastlane/Fastfile`
+**Fastlane lanes:** `ios_submit` in `fastlane/Fastfile`
 **Metadata:** `fastlane/metadata/en-US/`
 
 #### How it works
 
-1. **TestFlight upload:** The `publish-ios.yml` workflow uses `fastlane pilot upload` (replacing the deprecated `xcrun altool`) to upload the IPA to TestFlight.
+1. **TestFlight upload:** The `publish-ios.yml` workflow uses `xcrun altool --upload-app` with App Store Connect API key authentication to upload the IPA to TestFlight.
 2. **App Store submission:** The `manual_ios-submit.yml` workflow uses `fastlane deliver` to submit the latest TestFlight build for App Store review, including metadata from `fastlane/metadata/en-US/`.
+
+> **Note (2026-02-21):** We attempted to migrate from `xcrun altool` to `fastlane pilot upload` but reverted due to a `string contains null byte` error. Fastlane's Ruby OpenSSL layer could not parse the `.p8` API private key when stored as a multiline GitHub Actions secret. The `xcrun altool` approach works reliably by writing the key to a temp file (`~/private_keys/AuthKey_${API_KEY_ID}.p8`) and cleaning up after upload. PR #2834 reverted this change.
 
 #### Prerequisites
 
@@ -1277,7 +1349,7 @@ The following steps are currently manual but could be automated to reduce errors
 | 2 | **App Store icon resizing** (steps 69-70) | `Planning/StoreAssets/generate-icons.ps1` — generates all required sizes (1024x1024, 512x512, 192x192, 32x32, 240x240) from the 2500x2500 source PNG. | **Done** |
 | 3 | **Google Play Feature Graphic** (step 69) | `Planning/StoreAssets/generate-feature-graphic.ps1` — composites v2 logo onto brand green background at 1024x500 with configurable tagline. | **Done** |
 | 4 | **Screenshot capture** (step 77) — automated via Appium | `.github/workflows/manual_capture-screenshots.yml` — `workflow_dispatch` runs Appium UI tests on Android emulator, captures screenshots of key screens, uploads as artifacts. `TrashMobMobile.UITests/Tests/ScreenshotTests.cs` has the test class. | **Done** |
-| 5 | **Apple TestFlight > App Store promotion** (step 97) — Fastlane Deliver | `.github/workflows/manual_ios-submit.yml` — `workflow_dispatch` submits latest TestFlight build for App Store review using Fastlane Deliver with metadata from `fastlane/metadata/en-US/`. iOS publish workflow migrated from deprecated `xcrun altool` to `fastlane pilot upload`. | **Done** |
+| 5 | **Apple TestFlight > App Store promotion** (step 97) — Fastlane Deliver | `.github/workflows/manual_ios-submit.yml` — `workflow_dispatch` submits latest TestFlight build for App Store review using Fastlane Deliver with metadata from `fastlane/metadata/en-US/`. iOS publish workflow uses `xcrun altool` for TestFlight upload (Fastlane Pilot reverted due to null byte error with multiline secrets — see R18). | **Done** |
 | 6 | **Google Play staged rollout** (step 98) — Fastlane Supply | `.github/workflows/manual_android-rollout.yml` — `workflow_dispatch` to adjust production rollout (10%/25%/50%/100%). Android publish workflow updated with optional `promote_to_production` input using Fastlane Supply. | **Done** |
 | 7 | **Post-deployment smoke tests** (step 99) — automated health checks | `.github/workflows/release_smoke-tests.yml` — runs automatically after container app deployment. Checks site HTTP status, `/health`, `/health/live`, `/api/config`, and Swagger. | **Done** |
 | 8 | **Apple signing cert expiry monitoring** (step 62) — weekly automated check | `.github/workflows/scheduled_cert-expiry-check.yml` — runs weekly (Monday 9am UTC), reads `Deploy/cert-expiry-dates.json`, creates GitHub issue if any cert expires within 30 days. | **Done** |
