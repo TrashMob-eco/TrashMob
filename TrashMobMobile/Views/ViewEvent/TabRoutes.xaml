@@ -17,6 +17,16 @@
                     <Ellipse WidthRequest="10" HeightRequest="10" Fill="Red" VerticalOptions="Center" />
                     <Label Text="Recording" FontSize="Micro" TextColor="Red" VerticalOptions="Center" />
                 </HorizontalStackLayout>
+                <Button Text="Start Route"
+                        Command="{Binding RealTimeLocationTrackerCommand}"
+                        IsVisible="{Binding EnableStartTrackEventRoute}"
+                        Style="{StaticResource PrimarySmallButton}" />
+                <Button Text="Stop Route"
+                        Command="{Binding RealTimeLocationTrackerCancelCommand}"
+                        IsVisible="{Binding EnableStopTrackEventRoute}"
+                        BackgroundColor="{StaticResource Destructive}"
+                        TextColor="White"
+                        Style="{StaticResource PrimarySmallButton}" />
                 <Button Text="Simulate Route"
                         Command="{Binding SimulateRouteCommand}"
                         IsVisible="{Binding EnableSimulateRoute}"
