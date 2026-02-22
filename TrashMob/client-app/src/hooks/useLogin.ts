@@ -2,13 +2,13 @@ import UserData from '@/components/Models/UserData';
 import { useEffect, useState } from 'react';
 import * as msal from '@azure/msal-browser';
 import { getApiConfig, getMsalClientInstance } from '@/store/AuthStore';
-import { GetUserByEmail, GetUserById } from '@/services/users';
+import { GetUserByEmail, GetUserById, GetUserByObjectId } from '@/services/users';
 import { useFeatureMetrics } from './useFeatureMetrics';
 
 export const useLogin = () => {
     const [callbackId, setCallbackId] = useState('');
     const [currentUser, setCurrentUser] = useState<UserData>(new UserData());
-    const isUserLoaded = !!currentUser.email;
+    const isUserLoaded = !!currentUser.id;
     const { trackAuth } = useFeatureMetrics();
 
     useEffect(() => {
@@ -64,25 +64,27 @@ export const useLogin = () => {
             return;
         }
         const { email } = claims;
-        if (!email) {
-            console.warn('No email claim found in token — cannot verify account');
+        const objectId = claims.oid;
+
+        if (!email && !objectId) {
+            console.warn('No email or oid claim found in token — cannot verify account');
             return;
         }
 
         try {
-            const { data: user } = await GetUserByEmail({ email }).service();
+            const user = await fetchUser(email, objectId);
             if (user) {
                 setCurrentUser(user);
             }
         } catch (error) {
             // On first sign-up, the backend auto-creates the user during auth validation.
             // If the first call fails (e.g. transient error), retry once after a short delay.
-            console.warn('First GetUserByEmail attempt failed, retrying...', error);
+            console.warn('First user lookup attempt failed, retrying...', error);
             try {
                 await new Promise<void>((resolve) => {
                     setTimeout(resolve, 1000);
                 });
-                const { data: user } = await GetUserByEmail({ email }).service();
+                const user = await fetchUser(email, objectId);
                 if (user) {
                     setCurrentUser(user);
                 }
@@ -90,6 +92,19 @@ export const useLogin = () => {
                 console.error('Failed to verify account after retry', retryError);
             }
         }
+    }
+
+    async function fetchUser(email: string | undefined, objectId: string | undefined): Promise<UserData | null> {
+        // Try email lookup first, fall back to ObjectId
+        if (email) {
+            const { data: user } = await GetUserByEmail({ email }).service();
+            if (user) return user;
+        }
+        if (objectId) {
+            const { data: user } = await GetUserByObjectId({ objectId }).service();
+            if (user) return user;
+        }
+        return null;
     }
 
     return {
