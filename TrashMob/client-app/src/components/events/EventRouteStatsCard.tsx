@@ -87,7 +87,9 @@ export const EventRouteStatsCard = ({ eventId }: EventRouteStatsCardProps) => {
                         )}
                         {stats.totalWeightCollected > 0 && (
                             <div className='text-center'>
-                                <p className='text-2xl font-bold'>{stats.totalWeightCollected.toFixed(1)} lbs</p>
+                                <p className='text-2xl font-bold'>
+                                    {stats.totalWeightCollected.toFixed(1)} {stats.totalWeightUnitId === 2 ? 'kg' : 'lbs'}
+                                </p>
                                 <p className='text-sm text-muted-foreground'>Weight Collected</p>
                             </div>
                         )}

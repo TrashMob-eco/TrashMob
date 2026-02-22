@@ -20,6 +20,15 @@
                     TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
                     Margin="5,8,5,0" />
 
+                <Label
+                    Text="Pre-filled from route tracking data"
+                    FontSize="Micro"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    TextColor="{StaticResource Primary}"
+                    IsVisible="{Binding IsFromRouteData}"
+                    Margin="5,0" />
+
                 <!-- Event Metrics -->
                 <Border Style="{StaticResource RoundBorder}" Margin="10,0">
                     <VerticalStackLayout Spacing="8">

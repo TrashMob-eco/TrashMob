@@ -13,6 +13,7 @@ export interface DisplayAnonymizedRoute {
     durationMinutes: number;
     bagsCollected: number | null;
     weightCollected: number | null;
+    weightUnitId: number | null;
     locations: SortableLocation[];
 }
 
@@ -24,6 +25,7 @@ export interface DisplayEventRouteStats {
     uniqueContributors: number;
     totalBagsCollected: number;
     totalWeightCollected: number;
+    totalWeightUnitId: number;
     coverageAreaSquareMeters: number;
 }
 
@@ -37,9 +39,19 @@ export interface DisplayUserRouteHistory {
     privacyLevel: string;
     bagsCollected: number | null;
     weightCollected: number | null;
+    weightUnitId: number | null;
     eventLatitude: number;
     eventLongitude: number;
     startTime: string;
     endTime: string;
     locations: SortableLocation[];
+}
+
+export interface EventSummaryPrefill {
+    numberOfBags: number;
+    pickedWeight: number;
+    pickedWeightUnitId: number;
+    durationInMinutes: number;
+    actualNumberOfAttendees: number;
+    hasRouteData: boolean;
 }

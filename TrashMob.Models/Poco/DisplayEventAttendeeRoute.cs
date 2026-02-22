@@ -66,9 +66,14 @@
         public int? BagsCollected { get; set; }
 
         /// <summary>
-        /// Gets or sets weight collected along this route in pounds.
+        /// Gets or sets weight collected along this route.
         /// </summary>
         public decimal? WeightCollected { get; set; }
+
+        /// <summary>
+        /// Gets or sets the weight unit for the weight collected value.
+        /// </summary>
+        public int? WeightUnitId { get; set; }
 
         /// <summary>
         /// Gets or sets notes about this route.

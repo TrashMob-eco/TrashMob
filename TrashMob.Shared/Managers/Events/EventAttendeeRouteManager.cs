@@ -87,7 +87,8 @@ namespace TrashMob.Shared.Managers.Events
                 TotalDurationMinutes = routes.Sum(r => (long)r.DurationMinutes),
                 UniqueContributors = routes.Select(r => r.UserId).Distinct().Count(),
                 TotalBagsCollected = routes.Sum(r => r.BagsCollected ?? 0),
-                TotalWeightCollected = routes.Sum(r => r.WeightCollected ?? 0),
+                TotalWeightCollected = Math.Round(ConvertWeightsToPounds(routes), 1),
+                TotalWeightUnitId = (int)WeightUnitEnum.Pound,
                 CoverageAreaSquareMeters = CalculateCoverageArea(routes),
             };
         }
@@ -113,6 +114,7 @@ namespace TrashMob.Shared.Managers.Events
                 PrivacyLevel = r.PrivacyLevel,
                 BagsCollected = r.BagsCollected,
                 WeightCollected = r.WeightCollected,
+                WeightUnitId = r.WeightUnitId,
                 EventLatitude = r.Event?.Latitude ?? 0,
                 EventLongitude = r.Event?.Longitude ?? 0,
                 StartTime = r.StartTime,
@@ -153,6 +155,7 @@ namespace TrashMob.Shared.Managers.Events
             route.Notes = request.Notes;
             route.BagsCollected = request.BagsCollected;
             route.WeightCollected = request.WeightCollected;
+            route.WeightUnitId = request.WeightUnitId;
 
             if (route.PrivacyLevel == "Public" && route.ExpiresDate is null)
             {
@@ -167,6 +170,56 @@ namespace TrashMob.Shared.Managers.Events
 
             var updated = await Repository.UpdateAsync(route);
             return ServiceResult<EventAttendeeRoute>.Success(updated);
+        }
+
+        /// <inheritdoc />
+        public async Task<EventSummaryPrefill> GetEventSummaryPrefillAsync(Guid eventId,
+            int targetWeightUnitId, CancellationToken cancellationToken = default)
+        {
+            var routes = await Repository.Get()
+                .Where(r => r.EventId == eventId)
+                .ToListAsync(cancellationToken);
+
+            if (routes.Count == 0)
+            {
+                return new EventSummaryPrefill { HasRouteData = false };
+            }
+
+            var totalWeightInPounds = ConvertWeightsToPounds(routes);
+
+            // Convert from pounds to target unit
+            var totalWeight = targetWeightUnitId == (int)WeightUnitEnum.Kilogram
+                ? totalWeightInPounds * PoundsToKilogramsMultiplier
+                : totalWeightInPounds;
+
+            return new EventSummaryPrefill
+            {
+                NumberOfBags = routes.Sum(r => r.BagsCollected ?? 0),
+                PickedWeight = Math.Round(totalWeight, 1),
+                PickedWeightUnitId = targetWeightUnitId,
+                DurationInMinutes = (int)routes.Sum(r => (long)r.DurationMinutes),
+                ActualNumberOfAttendees = routes.Select(r => r.UserId).Distinct().Count(),
+                HasRouteData = true,
+            };
+        }
+
+        private const decimal KilogramsToPoundsMultiplier = 2.20462m;
+        private const decimal PoundsToKilogramsMultiplier = 0.453592m;
+
+        private static decimal ConvertWeightsToPounds(List<EventAttendeeRoute> routes)
+        {
+            var totalWeightInPounds = 0m;
+            foreach (var route in routes)
+            {
+                if (route.WeightCollected.HasValue && route.WeightCollected.Value > 0)
+                {
+                    totalWeightInPounds += route.WeightUnitId == (int)WeightUnitEnum.Kilogram
+                        ? route.WeightCollected.Value * KilogramsToPoundsMultiplier
+                        : route.WeightCollected.Value;
+                }
+            }
+
+            return totalWeightInPounds;
         }
 
         private static List<SortableLocation> ExtractLocations(Geometry userPath)
