@@ -80,6 +80,7 @@
 | [Project 40 - AI Community Sales Agent](./Projects/Project_40_AI_Community_Sales_Agent.md) | AI-powered community discovery, outreach, and onboarding | ✅ Complete |
 | [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md) | "For Communities" landing page, home page CTAs, enrollment funnel | In Progress (Phases 1-4 Complete) |
 | [Project 46 - Product Support](./Projects/Project_46_Product_Support.md) | Define product support role, channels, onboarding, and knowledge base | Not Started |
+| [Project 50 - News & Blog](./Projects/Project_50_News_Blog.md) | Blog-style news page powered by Strapi CMS with pagination and categories | Not Started |
 
 #### Low Priority (Nice-to-Have)
 
@@ -146,6 +147,7 @@
 - [Project 40 - AI Community Sales Agent](./Projects/Project_40_AI_Community_Sales_Agent.md)
 - [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md)
 - [Project 46 - Product Support](./Projects/Project_46_Product_Support.md)
+- [Project 50 - News & Blog](./Projects/Project_50_News_Blog.md)
 
 ---
 
