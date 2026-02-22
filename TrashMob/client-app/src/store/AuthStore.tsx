@@ -186,7 +186,8 @@ export async function initializeMsalClient(): Promise<msal.PublicClientApplicati
 }
 
 export function validateToken(idTokenClaims: object): boolean {
-    if (!idTokenClaims.hasOwnProperty('email')) {
+    // CIAM id_tokens may not include an email claim — accept tokens with either email or oid
+    if (!idTokenClaims.hasOwnProperty('email') && !idTokenClaims.hasOwnProperty('oid')) {
         return false;
     }
 
