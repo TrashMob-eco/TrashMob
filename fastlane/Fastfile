@@ -76,7 +76,7 @@ platform :ios do
       automatic_release: false,
       force: true, # Skip HTML preview in CI
       precheck_include_in_app_purchases: false,
-      screenshots_path: "fastlane/screenshots",
+      screenshots_path: "screenshots",
       overwrite_screenshots: true,
       submission_information: {
         add_id_info_uses_idfa: false
@@ -88,8 +88,9 @@ platform :ios do
   # ── Private helpers ──────────────────────────────────────────
 
   private_lane :prepare_screenshots do
-    screenshots_dir = "fastlane/screenshots/en-US"
-    assets_dir = "Planning/StoreAssets/Screenshots"
+    # Fastlane runs from the fastlane/ directory, so use ../ to reach repo root
+    screenshots_dir = "screenshots/en-US"
+    assets_dir = "../Planning/StoreAssets/Screenshots"
 
     # Clean staging directory
     Dir.glob("#{screenshots_dir}/*.png").each { |f| File.delete(f) }
@@ -117,7 +118,7 @@ platform :ios do
 
   private_lane :apply_frames do
     frameit(
-      path: "fastlane/screenshots/en-US",
+      path: "screenshots/en-US",
       force_device_type: nil
     )
   end
@@ -127,7 +128,7 @@ platform :ios do
       skip_binary_upload: true,
       skip_metadata: true,
       skip_screenshots: false,
-      screenshots_path: "fastlane/screenshots",
+      screenshots_path: "screenshots",
       overwrite_screenshots: true,
       force: true,
       submit_for_review: false,
