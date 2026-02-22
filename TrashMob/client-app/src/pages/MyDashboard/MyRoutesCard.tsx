@@ -9,25 +9,10 @@ import { Button } from '@/components/ui/button';
 import { GoogleMapWithKey } from '@/components/Map/GoogleMap';
 import { GetMyRoutes } from '@/services/event-routes';
 import { DisplayUserRouteHistory } from '@/components/Models/RouteData';
+import { formatDistance, formatDuration } from '@/lib/route-format';
 import moment from 'moment';
 
 const MY_ROUTES_MAP_ID = 'myRoutesMap';
-
-function formatDistance(meters: number): string {
-    if (meters >= 1609) {
-        return `${(meters / 1609.34).toFixed(1)} mi`;
-    }
-    return `${meters.toLocaleString()} m`;
-}
-
-function formatDuration(minutes: number): string {
-    if (minutes >= 60) {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-    }
-    return `${minutes}m`;
-}
 
 const privacyColors: Record<string, string> = {
     Public: 'bg-green-100 text-green-700',

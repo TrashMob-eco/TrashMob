@@ -229,7 +229,6 @@ export const CommunityDetailPage = () => {
                                 events={events}
                                 teams={teams}
                                 litterReports={litterReports}
-                                areas={areas}
                                 centerLat={community.latitude!}
                                 centerLng={community.longitude!}
                                 boundsNorth={community.boundsNorth}
