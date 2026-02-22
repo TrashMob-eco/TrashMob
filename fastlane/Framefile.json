@@ -1,0 +1,56 @@
+{
+  "default": {
+    "keyword": {
+      "font": "./fonts/SF-Pro-Display-Bold.otf",
+      "color": "#FFFFFF",
+      "font_size": 72
+    },
+    "title": {
+      "font": "./fonts/SF-Pro-Display-Bold.otf",
+      "color": "#FFFFFF",
+      "font_size": 48
+    },
+    "background": "#00a651",
+    "padding": 50,
+    "show_complete_frame": false,
+    "stack_title": false
+  },
+  "data": [
+    {
+      "filter": "01_welcome",
+      "keyword": "Join Your Community Cleanup"
+    },
+    {
+      "filter": "02_home",
+      "keyword": "Find Events Near You"
+    },
+    {
+      "filter": "03_explore",
+      "keyword": "Discover Cleanup Events on the Map"
+    },
+    {
+      "filter": "04_createevent",
+      "keyword": "Organize Your Own Cleanup"
+    },
+    {
+      "filter": "05_login",
+      "keyword": "Sign In Securely"
+    },
+    {
+      "filter": "06_impact",
+      "keyword": "Track Your Environmental Impact"
+    },
+    {
+      "filter": "07_profile",
+      "keyword": "Manage Your Volunteer Profile"
+    },
+    {
+      "filter": "08_locationpreference",
+      "keyword": "Set Your Location Preferences"
+    },
+    {
+      "filter": "09_reportlitter",
+      "keyword": "Report Litter in Your Area"
+    }
+  ]
+}

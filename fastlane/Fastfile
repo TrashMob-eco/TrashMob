@@ -4,11 +4,26 @@
 #   iOS:
 #     ios_upload       — Upload IPA to TestFlight (replaces xcrun altool)
 #     ios_submit       — Submit latest TestFlight build for App Store review
+#     ios_screenshots  — Frame and upload screenshots to App Store Connect
 #   Android:
 #     android_promote  — Promote from internal track to production with staged rollout
 #     android_rollout  — Update rollout percentage for production track
 
 default_platform(:ios)
+
+# Screenshot ordering — controls display order in App Store listing.
+# Each entry maps a sequential prefix to the source filename (without extension).
+SCREENSHOT_ORDER = %w[
+  welcome
+  home
+  explore
+  createevent
+  login
+  impact
+  profile
+  locationpreference
+  reportlitter
+].freeze
 
 # ── iOS Lanes ──────────────────────────────────────────────────
 
@@ -41,9 +56,19 @@ platform :ios do
     )
   end
 
+  desc "Frame and upload screenshots to App Store Connect"
+  lane :ios_screenshots do
+    prepare_screenshots
+    frame_screenshots
+    upload_screenshots
+  end
+
   desc "Submit latest TestFlight build for App Store review"
   lane :ios_submit do |options|
     build_number = options[:build_number]
+
+    prepare_screenshots
+    frame_screenshots
 
     deliver(
       skip_binary_upload: true,
@@ -51,10 +76,62 @@ platform :ios do
       automatic_release: false,
       force: true, # Skip HTML preview in CI
       precheck_include_in_app_purchases: false,
+      screenshots_path: "fastlane/screenshots",
+      overwrite_screenshots: true,
       submission_information: {
         add_id_info_uses_idfa: false
       },
       build_number: build_number
+    )
+  end
+
+  # ── Private helpers ──────────────────────────────────────────
+
+  private_lane :prepare_screenshots do
+    screenshots_dir = "fastlane/screenshots/en-US"
+    assets_dir = "Planning/StoreAssets/Screenshots"
+
+    # Clean staging directory
+    Dir.glob("#{screenshots_dir}/*.png").each { |f| File.delete(f) }
+
+    # Copy screenshots with sequential prefixes for ordering
+    %w[iPhone_6.9 iPad_13].each do |device_dir|
+      source_dir = "#{assets_dir}/#{device_dir}"
+      UI.user_error!("Screenshot source not found: #{source_dir}") unless Dir.exist?(source_dir)
+
+      SCREENSHOT_ORDER.each_with_index do |name, index|
+        src = "#{source_dir}/#{name}.png"
+        next unless File.exist?(src)
+
+        prefix = format("%02d", index + 1)
+        dest = "#{screenshots_dir}/#{device_dir}_#{prefix}_#{name}.png"
+        FileUtils.cp(src, dest)
+        UI.message("Copied #{src} → #{dest}")
+      end
+    end
+
+    screenshot_count = Dir.glob("#{screenshots_dir}/*.png").length
+    UI.message("Prepared #{screenshot_count} screenshots for upload")
+    UI.user_error!("No screenshots found — check Planning/StoreAssets/Screenshots/") if screenshot_count == 0
+  end
+
+  private_lane :frame_screenshots do
+    frameit(
+      path: "fastlane/screenshots/en-US",
+      force_device_type: nil
+    )
+  end
+
+  private_lane :upload_screenshots do
+    deliver(
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: false,
+      screenshots_path: "fastlane/screenshots",
+      overwrite_screenshots: true,
+      force: true,
+      submit_for_review: false,
+      run_precheck_before_submit: false
     )
   end
 end
