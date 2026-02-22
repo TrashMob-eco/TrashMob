@@ -59,7 +59,10 @@ platform :ios do
   desc "Frame and upload screenshots to App Store Connect"
   lane :ios_screenshots do
     prepare_screenshots
-    apply_frames
+    # frameit disabled: deliver prefers _framed files but framed dimensions
+    # don't match App Store sizes, causing 0 uploads. Re-enable once frameit
+    # supports iPhone 6.9" and iPad 13" dimensions.
+    # apply_frames
     upload_screenshots
   end
 
@@ -68,7 +71,7 @@ platform :ios do
     build_number = options[:build_number]
 
     prepare_screenshots
-    apply_frames
+    # apply_frames (see ios_screenshots comment)
 
     deliver(
       app_identifier: ENV["IOS_BUNDLE_ID"] || "eco.trashmob",
@@ -112,16 +115,23 @@ platform :ios do
       end
     end
 
-    # Create 6.5" Display versions (1284x2778) from 6.9" originals so deliver
-    # can upload to apps that don't yet have the 6.9" display category.
-    SCREENSHOT_ORDER.each_with_index do |name, index|
-      prefix = format("%02d", index + 1)
-      src = "#{screenshots_dir}/iPhone_6.9_#{prefix}_#{name}.png"
-      next unless File.exist?(src)
+    # Create additional display size versions from 6.9" originals using
+    # standard dimensions that deliver recognizes for upload.
+    resize_targets = {
+      "iPhone_6.7" => "1290x2796",  # 6.7" Display
+      "iPhone_6.5" => "1242x2688",  # 6.5" Display
+    }
 
-      dest = "#{screenshots_dir}/iPhone_6.5_#{prefix}_#{name}.png"
-      sh("magick", src, "-resize", "1284x2778!", dest)
-      UI.message("Resized → #{dest} (6.5\" Display)")
+    resize_targets.each do |device_prefix, dimensions|
+      SCREENSHOT_ORDER.each_with_index do |name, index|
+        prefix = format("%02d", index + 1)
+        src = "#{screenshots_dir}/iPhone_6.9_#{prefix}_#{name}.png"
+        next unless File.exist?(src)
+
+        dest = "#{screenshots_dir}/#{device_prefix}_#{prefix}_#{name}.png"
+        sh("magick", src, "-resize", "#{dimensions}!", dest)
+        UI.message("Resized → #{dest} (#{dimensions})")
+      end
     end
 
     screenshot_count = Dir.glob("#{screenshots_dir}/*.png").length
