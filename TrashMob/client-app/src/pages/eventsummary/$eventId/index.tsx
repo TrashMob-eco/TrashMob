@@ -270,15 +270,12 @@ export const EditEventSummary = () => {
                     <CardHeader>
                         <CardTitle>Enter Event Summary Information</CardTitle>
                         <CardDescription>Please enter information about how the event went.</CardDescription>
-                        {isFromRouteData && isNewSummary && (
-                            <Alert className='border-primary/30 bg-primary/5'>
+                        {isFromRouteData && isNewSummary ? <Alert className='border-primary/30 bg-primary/5'>
                                 <AlertDescription className='text-primary text-sm'>
                                     Pre-filled from route tracking data. Review and adjust values as needed.
                                 </AlertDescription>
-                            </Alert>
-                        )}
-                        {showResyncBanner && (
-                            <Alert className='border-amber-500/30 bg-amber-50 dark:bg-amber-950/20'>
+                            </Alert> : null}
+                        {showResyncBanner ? <Alert className='border-amber-500/30 bg-amber-50 dark:bg-amber-950/20'>
                                 <AlertDescription className='flex items-center justify-between text-sm'>
                                     <span className='text-amber-700 dark:text-amber-400'>
                                         Route data has been updated since this summary was saved.
@@ -301,8 +298,7 @@ export const EditEventSummary = () => {
                                         Refresh totals
                                     </Button>
                                 </AlertDescription>
-                            </Alert>
-                        )}
+                            </Alert> : null}
                     </CardHeader>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>

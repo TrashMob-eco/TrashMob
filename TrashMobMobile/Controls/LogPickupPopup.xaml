@@ -63,8 +63,7 @@
             <VerticalStackLayout Spacing="4">
                 <Label Text="Notes (optional)" FontSize="13" FontFamily="LexendSemibold" />
                 <controls:TMEntry x:Name="notesEntry"
-                                  Placeholder="e.g. Lots of plastic bottles"
-                                  MaxLength="200" />
+                                  Placeholder="e.g. Lots of plastic bottles" />
             </VerticalStackLayout>
 
             <Button Text="Save"
