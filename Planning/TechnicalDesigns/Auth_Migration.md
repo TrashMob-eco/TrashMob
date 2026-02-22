@@ -279,11 +279,42 @@ The backend uses custom authorization policies:
 | Aspect | Details |
 |--------|---------|
 | **MSAL libraries** | Same libraries on all platforms — config changes only |
-| **JWT token format** | Standard JWT with email claim |
-| **User identity resolution** | Email from JWT → database lookup (no change) |
-| **Authorization policies** | Same custom authorization handlers |
+| **JWT token format** | Standard JWT (but see CIAM Token Differences below) |
+| **Authorization policies** | Same custom authorization handlers (enhanced with OID + Graph API fallback) |
 | **API scopes** | Same scope names (new tenant domain) |
 | **`/api/config` pattern** | Same endpoint, updated values |
+
+### CIAM Token Differences (Critical)
+
+**The `email` claim behaves differently in CIAM vs B2C:**
+
+| Token Type | B2C | CIAM (Entra External ID) |
+|------------|-----|--------------------------|
+| **id_token** | Contains `email` claim | **No `email` claim** — CIAM stores emails in `identities` collection, not `mail` property |
+| **access_token** | Contains `email` claim | Contains `email` claim (populated from sign-in identity) |
+
+**Impact:**
+- **Frontend** reads `idTokenClaims` → email is unavailable → must fall back to `oid` for user lookup
+- **Backend** reads claims from access_token → email IS available → can still use email-based lookup
+- **Token validation** (`validateToken()` in `AuthStore.tsx`) must accept tokens with `oid` (not just `email`)
+- **User identity resolution** changed from email-only to 4-step: email → ObjectId → Graph API → auto-create
+
+**User Identity Resolution (Updated):**
+```
+Access Token (from CIAM)
+    ↓
+Step 1: Extract email claim → GetUserByEmailAsync(email)
+    ↓ (if found, auto-link CIAM ObjectId for B2C→CIAM migration)
+Step 2: If not found, extract oid → GetUserByObjectIdAsync(oid)
+    ↓
+Step 3: If still not found, call CiamGraphService.GetUserEmailAsync(oid)
+    ↓ (Graph API resolves email from CIAM directory identities collection)
+Step 4: If still not found, auto-create user from available claims
+    ↓
+Store UserId in HttpContext.Items["UserId"]
+    ↓
+Controllers access via base.UserId property
+```
 
 ### Key Insight: MSAL Compatibility
 
@@ -480,19 +511,33 @@ Minor account upgraded from limited to full access
 
 ## Lessons Learned
 
-*This section will be updated as the migration progresses.*
-
 ### Phase 0 Lessons
 
 1. **App registrations must be added to the user flow.** After creating app registrations and a sign-up/sign-in user flow in the Entra External ID portal, you must explicitly add each app registration to the user flow. Without this step, the sign-in page will only show email/password sign-in — no sign-up option and no social identity providers will appear.
 
-2. **Tenant naming must avoid existing B2C namespaces.** Our B2C tenants use `trashmobdev` and `trashmob` domain prefixes. Since these are already claimed, the Entra External ID tenants need different names. We used `TrashMobEcoDev` (domain: `trashmobecodev.ciamlogin.com`) for development and `TrashMobEco` (domain: `trashmobeco.ciamlogin.com`) for production.
+2. **Tenant naming must avoid existing B2C namespaces.** Our B2C tenants use `trashmobdev` and `trashmob` domain prefixes. Since these are already claimed, the Entra External ID tenants need different names. We used `TrashMobEcoDev` (domain: `trashmobecodev.ciamlogin.com`) for development and `TrashMobEcoPr` (domain: `trashmobecopr.ciamlogin.com`) for production.
 
 3. **User flow attribute collection requires explicit configuration.** Custom attributes (e.g., `givenName`, `surname`, `dateOfBirth`) must be explicitly added to the user flow's attribute collection step in the portal. If attributes are not added, the sign-up form will only collect email and password — users won't be prompted for name or birthdate.
 
 4. **Config section is `AzureAdEntra`, not `AzureAd`.** The actual implementation uses a dedicated `AzureAdEntra` config section (see `appsettings.json`) to allow both B2C and Entra configs to coexist during the feature-flag transition period (`UseEntraExternalId`).
 
 5. **Built-in branding logo sizing.** The banner logo on the Entra External ID sign-in page displays at approximately 260x36 pixels. Standard logos may be hard to read at this size — consider creating a simplified or higher-contrast version specifically for the sign-in page.
+
+### Phase 5 Lessons (Production Cutover — February 2026)
+
+6. **CIAM id_tokens do NOT include email claims.** This was the biggest surprise during production cutover. CIAM stores sign-up emails in the `identities` collection (with `signInType: "emailAddress"`), not in the `mail` property. The `email` optional claim reads from `mail`, so it has nothing to emit. The email DOES appear in access_tokens. **Workaround:** Backend uses Microsoft Graph API (`User.Read.All` application permission) to resolve emails from the CIAM directory. Frontend falls back to ObjectId-based user lookup.
+
+7. **Backend API app must be "Single tenant only."** Setting the backend API app registration to "Any Entra ID Tenant + Personal Microsoft accounts" (multi-tenant) causes `AADSTS500207: The account type can't be used for the resource you've requested`. Must use "Accounts in this organizational directory only" for CIAM tenants.
+
+8. **Application ID URI format matters.** The Application ID URI for the backend API must use the CIAM domain format: `https://trashmobecopr.onmicrosoft.com/api` (not `api://<client-id>`). Using the wrong format causes `AADSTS500011: The resource principal named ... was not found`.
+
+9. **Frontend token validation must not require email.** The original `validateToken()` function checked for `email` in `idTokenClaims`. Since CIAM id_tokens lack email, this rejected all tokens and caused `CanceledError: User not found!` on every protected API call. Fix: accept tokens with either `email` or `oid`.
+
+10. **OID auto-linking enables zero-downtime B2C→CIAM migration.** Instead of bulk migrating users, existing B2C users are auto-linked to their CIAM identity on first sign-in. The auth handler finds the user by email (from access token) and updates their `ObjectId` to the new CIAM value. This eliminates the need for a migration window.
+
+11. **Graph API requires a client secret in Key Vault.** The `CiamGraphService` uses `ClientSecretCredential` (app-only) to call Graph API. The secret must be stored as `AzureAdEntra--ClientSecret` in Key Vault. The service gracefully degrades when the secret is not configured — it simply returns null for email resolution.
+
+12. **`isUserLoaded` check must handle empty GUIDs.** The frontend `UserData.id` defaults to `Guid.createEmpty()` (`00000000-0000-0000-0000-000000000000`), which is truthy in JavaScript. After removing the email-based check, `isUserLoaded` must explicitly exclude the empty GUID: `!!currentUser.id && currentUser.id !== EMPTY_GUID`.
 
 ### Known Limitations
 
@@ -501,6 +546,8 @@ Minor account upgraded from limited to full access
 2. **No profile edit user flow:** Entra External ID does not offer a profile edit user flow. Profile management must be built in-app using Microsoft Graph API. This is actually an advantage — full control over the UX.
 
 3. **JIT password migration:** B2C password hashes cannot be exported. The Microsoft migration tool supports Just-In-Time password migration where users re-authenticate on first login. Users who signed up via social providers (Google, Microsoft, etc.) migrate seamlessly.
+
+4. **CIAM sign-out shows empty account picker.** After sign-out, the CIAM sign-out flow sometimes shows an empty "Pick an account" dialog. Workaround: clear session storage manually. Root cause under investigation.
 
 ---
 
@@ -535,15 +582,21 @@ Minor account upgraded from limited to full access
 | Client ID | API app registration client ID | New API app registration client ID |
 | Config section | `AzureAdB2C` | `AzureAdEntra` |
 
-### Files That Need to Change
+### Files Changed
 
-| File | What Changes |
+| File | What Changed |
 |------|-------------|
-| `TrashMob/appsettings.json` | Authority URL, client IDs, domain |
+| `TrashMob/appsettings.json` | Authority URL, client IDs, domain, added `ClientSecret` for Graph API |
 | `TrashMob/appsettings.Development.json` | Dev tenant configuration |
-| `TrashMob/Program.cs` | Config section name (`AzureAdB2C` → `AzureAdEntra`) |
+| `TrashMob/Program.cs` | Config section name (`AzureAdB2C` → `AzureAdEntra`), DI for `CiamGraphService` |
 | `TrashMob/Controllers/ConfigController.cs` | Config response format, remove policy references |
-| `TrashMob/client-app/src/store/AuthStore.tsx` | Authority format, remove policies, update fallback |
+| `TrashMob/Controllers/UsersController.cs` | Added `GetUserByObjectId` endpoint for OID-based lookup |
+| `TrashMob/Security/UserIsValidUserAuthHandler.cs` | 4-step user resolution: email → OID → Graph API → auto-create |
+| `TrashMob/Services/CiamGraphService.cs` | **New** — Graph API email resolution from CIAM directory |
+| `TrashMob/Services/ICiamGraphService.cs` | **New** — Interface for CIAM Graph service |
+| `TrashMob/client-app/src/store/AuthStore.tsx` | Authority format, `validateToken` accepts `oid` (not just `email`) |
+| `TrashMob/client-app/src/hooks/useLogin.ts` | OID-based user lookup fallback, `isUserLoaded` empty GUID check |
+| `TrashMob/client-app/src/services/users.ts` | Added `GetUserByObjectId` service |
 | `TrashMobMobile/Authentication/AuthConstants.cs` | Tenant domain, authority format, client IDs |
 | `TrashMobMobile/Authentication/AuthService.cs` | Authority construction (remove `/tfp/` prefix) |
 
@@ -614,6 +667,6 @@ Built-in branding (logo, colors, background image) is **portal-only**:
 
 ---
 
-**Last Updated:** February 9, 2026
-**Status:** Living document — updated as migration progresses
-**Next Update:** After Phase 1 implementation
+**Last Updated:** February 22, 2026
+**Status:** Living document — production cutover complete, CIAM token workarounds documented
+**Next Update:** After Privo API integration (Phase 3)
