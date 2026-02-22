@@ -71,6 +71,7 @@ platform :ios do
     apply_frames
 
     deliver(
+      app_identifier: ENV["IOS_BUNDLE_ID"] || "eco.trashmob",
       skip_binary_upload: true,
       submit_for_review: true,
       automatic_release: false,
@@ -127,6 +128,7 @@ platform :ios do
 
   private_lane :upload_screenshots do
     deliver(
+      app_identifier: ENV["IOS_BUNDLE_ID"] || "eco.trashmob",
       skip_binary_upload: true,
       skip_metadata: true,
       skip_screenshots: false,
