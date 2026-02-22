@@ -59,7 +59,7 @@ platform :ios do
   desc "Frame and upload screenshots to App Store Connect"
   lane :ios_screenshots do
     prepare_screenshots
-    frame_screenshots
+    apply_frames
     upload_screenshots
   end
 
@@ -68,7 +68,7 @@ platform :ios do
     build_number = options[:build_number]
 
     prepare_screenshots
-    frame_screenshots
+    apply_frames
 
     deliver(
       skip_binary_upload: true,
@@ -115,7 +115,7 @@ platform :ios do
     UI.user_error!("No screenshots found — check Planning/StoreAssets/Screenshots/") if screenshot_count == 0
   end
 
-  private_lane :frame_screenshots do
+  private_lane :apply_frames do
     frameit(
       path: "fastlane/screenshots/en-US",
       force_device_type: nil
