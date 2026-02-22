@@ -3,6 +3,7 @@ import {
     DisplayAnonymizedRoute,
     DisplayEventRouteStats,
     DisplayUserRouteHistory,
+    EventSummaryPrefill,
 } from '../components/Models/RouteData';
 
 export type GetEventRoutes_Params = { eventId: string };
@@ -33,6 +34,17 @@ export const GetMyRoutes = () => ({
     service: async () =>
         ApiService('protected').fetchData<GetMyRoutes_Response>({
             url: '/users/me/routes',
+            method: 'get',
+        }),
+});
+
+export type GetEventSummaryPrefill_Params = { eventId: string; weightUnitId?: number };
+export type GetEventSummaryPrefill_Response = EventSummaryPrefill;
+export const GetEventSummaryPrefill = (params: GetEventSummaryPrefill_Params) => ({
+    key: ['/events/', params.eventId, '/routes/summary-prefill'],
+    service: async () =>
+        ApiService('protected').fetchData<GetEventSummaryPrefill_Response>({
+            url: `/events/${params.eventId}/routes/summary-prefill?weightUnitId=${params.weightUnitId ?? 1}`,
             method: 'get',
         }),
 });

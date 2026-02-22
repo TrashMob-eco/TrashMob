@@ -48,6 +48,11 @@ namespace TrashMob.Models
         public int PickedWeightUnitId { get; set; }
 
         /// <summary>
+        /// Gets or sets whether this summary was auto-populated from route data.
+        /// </summary>
+        public bool IsFromRouteData { get; set; }
+
+        /// <summary>
         /// Gets or sets any additional notes about the event.
         /// </summary>
         public string Notes { get; set; }

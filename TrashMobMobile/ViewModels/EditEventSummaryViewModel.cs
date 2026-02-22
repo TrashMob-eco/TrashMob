@@ -6,10 +6,15 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Services;
 
-public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager, INotificationService notificationService, IUserManager userManager) : BaseViewModel(notificationService)
+public partial class EditEventSummaryViewModel(
+    IMobEventManager mobEventManager,
+    INotificationService notificationService,
+    IUserManager userManager,
+    IEventAttendeeRouteRestService eventAttendeeRouteRestService) : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IUserManager userManager = userManager;
+    private readonly IEventAttendeeRouteRestService eventAttendeeRouteRestService = eventAttendeeRouteRestService;
 
     [ObservableProperty]
     private bool enableSaveEventSummary;
@@ -19,6 +24,9 @@ public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager,
 
     [ObservableProperty]
     private WeightUnit selectedWeightUnit = null!;
+
+    [ObservableProperty]
+    private bool isFromRouteData;
 
     public ObservableCollection<WeightUnit> WeightUnits { get; } =
     [
@@ -47,6 +55,8 @@ public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager,
                     PickedWeightUnitId = EventSummary.PickedWeightUnitId,
                 };
 
+                IsFromRouteData = EventSummary.IsFromRouteData;
+
                 // Set selected weight unit based on saved value or user preference
                 var savedUnitId = EventSummary.PickedWeightUnitId;
                 if (savedUnitId > 0)
@@ -61,10 +71,38 @@ public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager,
                         : (int)WeightUnitEnum.Pound;
                     SelectedWeightUnit = WeightUnits.FirstOrDefault(u => u.Id == defaultUnitId) ?? WeightUnits[0];
                 }
+
+                // Pre-fill from route data if this is a new summary
+                if (EventSummary.CreatedByUserId == Guid.Empty)
+                {
+                    await TryPrefillFromRouteData(new Guid(eventId));
+                }
             }
 
             EnableSaveEventSummary = true;
         }, "An error has occurred while loading the event summary. Please wait and try again in a moment.");
+    }
+
+    private async Task TryPrefillFromRouteData(Guid eventId)
+    {
+        try
+        {
+            var targetUnitId = SelectedWeightUnit?.Id ?? (int)WeightUnitEnum.Pound;
+            var prefill = await eventAttendeeRouteRestService.GetEventSummaryPrefillAsync(eventId, targetUnitId);
+
+            if (prefill is { HasRouteData: true })
+            {
+                EventSummaryViewModel.NumberOfBags = prefill.NumberOfBags;
+                EventSummaryViewModel.PickedWeight = prefill.PickedWeight;
+                EventSummaryViewModel.DurationInMinutes = prefill.DurationInMinutes;
+                EventSummaryViewModel.ActualNumberOfAttendees = prefill.ActualNumberOfAttendees;
+                IsFromRouteData = true;
+            }
+        }
+        catch
+        {
+            // Pre-fill is best effort — don't fail the summary load
+        }
     }
 
     [RelayCommand]
@@ -78,6 +116,7 @@ public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager,
             EventSummary.Notes = EventSummaryViewModel.Notes;
             EventSummary.PickedWeight = EventSummaryViewModel.PickedWeight;
             EventSummary.PickedWeightUnitId = SelectedWeightUnit?.Id ?? (int)WeightUnitEnum.Pound;
+            EventSummary.IsFromRouteData = IsFromRouteData;
 
             if (EventSummary.CreatedByUserId == Guid.Empty)
             {

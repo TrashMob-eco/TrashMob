@@ -109,5 +109,17 @@
                 return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(responseContent)!;
             }
         }
+
+        public async Task<EventSummaryPrefill> GetEventSummaryPrefillAsync(Guid eventId, int weightUnitId = 1, CancellationToken cancellationToken = default)
+        {
+            var requestUri = $"events/{eventId}/routes/summary-prefill?weightUnitId={weightUnitId}";
+
+            using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonConvert.DeserializeObject<EventSummaryPrefill>(content)!;
+            }
+        }
     }
 }
