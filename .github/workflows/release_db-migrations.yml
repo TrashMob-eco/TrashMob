@@ -95,7 +95,6 @@ jobs:
             --project TrashMob.Shared/TrashMob.Shared.csproj \
             --startup-project TrashMob/TrashMob.csproj \
             --connection "${{ steps.get-connection-string.outputs.connection_string }}" \
-            --no-build=false \
             2>&1 | tee /tmp/migrations-list.txt
 
           # Count pending (not yet applied) migrations
