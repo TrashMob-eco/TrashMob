@@ -8,7 +8,7 @@
 ## Key dependencies
 
 - `CommunityToolkit.Maui` and `CommunityToolkit.Mvvm` for UI behaviors and MVVM.
-- `Microsoft.Identity.Client` (MSAL) for Azure B2C authentication.
+- `Microsoft.Identity.Client` (MSAL) for Entra External ID authentication.
 - `Microsoft.Maui.Controls.Maps` for map support.
 - `Sharpnado.Tabs.Maui` for tabbed navigation UI.
 - `Sentry.Maui` for crash/error reporting.

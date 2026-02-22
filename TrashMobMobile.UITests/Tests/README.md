@@ -99,6 +99,6 @@ TrashMobMobile.UITests/
 
 ## Known Limitations
 
-- **Authentication**: Tests cannot automate the Azure B2C / Entra login flow since it opens an external browser. Log in manually first, then run tests.
+- **Authentication**: Tests cannot automate the Entra External ID login flow since it opens an external browser. Log in manually first, then run tests.
 - **Network dependency**: Tests require the device to have network access for API calls.
 - **Screenshots**: Failed test screenshots are saved to `TestResults/Screenshots/` in the build output directory.
