@@ -37,6 +37,9 @@ export interface DisplayUserRouteHistory {
     privacyLevel: string;
     bagsCollected: number | null;
     weightCollected: number | null;
+    eventLatitude: number;
+    eventLongitude: number;
     startTime: string;
     endTime: string;
+    locations: SortableLocation[];
 }

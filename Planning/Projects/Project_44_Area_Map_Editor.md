@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1-4 Complete, Phase 6 Planned) |
+| **Status** | ✅ Complete (Phases 1-7) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
@@ -72,43 +72,56 @@ This project replaces the GeoJSON textarea with an interactive map editor, adds 
 - [x] Batch create with progress indicator
 - [x] Import history log (who imported, when, how many areas)
 
-### Phase 5 — Export
-- [ ] Export community areas to GeoJSON FeatureCollection
-- [ ] Export to KML for Google Earth/Maps compatibility
-- [ ] Include area metadata in exports (name, type, status, adoption info)
+### Phase 5 — Export ✅
+- [x] Export community areas to GeoJSON FeatureCollection
+- [x] Export to KML for Google Earth/Maps compatibility
+- [x] Include area metadata in exports (name, type, status, adoption info)
 
-### Phase 6 — AI Bulk Area Generation
+### Phase 6 — AI Bulk Area Generation ✅
 Generate adoptable areas in bulk for an entire community using AI + public geodata (OSM Nominatim, Overpass API). Targets common feature categories:
 
 **Feature Categories:**
-- [ ] All schools (public/private elementary, middle, high schools)
-- [ ] All parks (city parks, pocket parks, dog parks, nature preserves)
-- [ ] All interchanges (highway on/off ramps, freeway interchanges)
-- [ ] All blocks (street segments between intersections)
+- [x] All schools (public/private elementary, middle, high schools)
+- [x] All parks (city parks, pocket parks, dog parks, nature preserves)
+- [x] All interchanges (highway on/off ramps, freeway interchanges) — enriched with parent motorway refs (e.g., "I 90 Exit 17") (PR #2806)
+- [x] All streets (merge disjoint OSM segments into continuous paths, split into ~0.25-mile compass-labeled sections, e.g., "Front St West", "Front St Central", "Front St East") (PR #2806)
+- [x] All neighborhoods (residential/suburb boundaries from OSM) — closed ways detected as proper Polygon geometry (PR #2808)
 
 **Deduplication & Naming:**
-- [ ] Check existing areas by name similarity and geographic overlap before creating
-- [ ] Naming convention per category (e.g., "Roosevelt Elementary School", "Maple Leaf Park", "I-90/Rainier Ave Interchange", "Main St — 200 Block")
-- [ ] Flag potential duplicates for human review rather than silently skipping
+- [x] Check existing areas by name similarity and geographic overlap before creating
+- [x] Naming convention per category (e.g., "Roosevelt Elementary School", "Maple Leaf Park", "I-90/Rainier Ave Interchange", "Main St — 200 Block")
+- [x] Flag potential duplicates for human review rather than silently skipping
 
 **Approval Workflow:**
-- [ ] Generate candidate areas into a staging/review table (not directly into adoptable areas)
-- [ ] Review UI: map showing all candidates, checkbox to approve/reject each
-- [ ] Bulk approve/reject with filters (approve all schools, reject specific entries)
-- [ ] Only approved candidates get created as actual adoptable areas
+- [x] Generate candidate areas into a staging/review table (not directly into adoptable areas)
+- [x] Review UI: map showing all candidates, checkbox to approve/reject each
+- [x] Bulk approve/reject with filters (approve all schools, reject specific entries)
+- [x] Only approved candidates get created as actual adoptable areas
 
 **Execution Model:**
-- [ ] Long-running job (could be hundreds or thousands of areas for a large city)
-- [ ] Background processing via triggered Azure Container App Job or similar
-- [ ] Progress tracking: areas discovered, areas processed, areas pending review
+- [x] Long-running job (could be hundreds or thousands of areas for a large city)
+- [x] Background processing via BackgroundService + Channel queue within web API
+- [x] Progress tracking: areas discovered, areas processed, areas pending review
 - [ ] Resumable: if job is interrupted, pick up where it left off
-- [ ] Rate limiting for external APIs (Nominatim requires 1 req/sec)
+- [x] Rate limiting for external APIs (Nominatim requires 1 req/sec)
+
+**Map & Geometry Handling:**
+- [x] Point geometry support in frontend GeoJSON parser and map overlay (PR #2808)
+- [x] Closed-way polygon detection: OSM ways where first coord == last coord emit Polygon instead of LineString (PR #2808)
+- [x] Centroid marker pins for all geometry types (Polygon, LineString, Point)
 
 **Quality Controls:**
-- [ ] Minimum polygon size filter (skip tiny features that aren't meaningful areas)
-- [ ] Maximum polygon size filter (skip features that are too large to adopt)
-- [ ] Geographic bounds: only generate areas within community boundary
-- [ ] Confidence scoring: flag low-confidence areas for closer review
+- [x] Minimum polygon size filter (skip tiny features that aren't meaningful areas)
+- [x] Maximum polygon size filter (skip features that are too large to adopt)
+- [x] Geographic bounds: only generate areas within community boundary
+- [x] Confidence scoring: flag low-confidence areas for closer review
+
+### Phase 7 — Admin Tools ✅
+- [x] **Clear All Areas** button on Adoptable Areas page with strong confirmation dialog ("Are you REALLY sure?") (PR #2810)
+  - Soft-deletes all adoptable areas (`IsActive = false`) — preserves FK integrity with TeamAdoption/SponsoredAdoption
+  - Hard-deletes all generation batches (staged areas cascade-delete)
+  - Returns counts of areas deactivated, batches deleted, staged areas deleted
+  - `DELETE /api/communities/{partnerId}/areas/clear-all` endpoint with `UserIsPartnerUserOrIsAdmin` authorization
 
 ---
 
@@ -250,6 +263,7 @@ PUT    /api/communities/{partnerId}/areas/staged/{id}/approve — Approve a stag
 PUT    /api/communities/{partnerId}/areas/staged/{id}/reject  — Reject a staged area
 POST   /api/communities/{partnerId}/areas/staged/approve-batch — Bulk approve staged areas
 POST   /api/communities/{partnerId}/areas/staged/create-approved — Create adoptable areas from approved staged areas
+DELETE /api/communities/{partnerId}/areas/clear-all           — Clear all areas + generation history
 ```
 
 ### Web UX Changes
@@ -324,13 +338,19 @@ POST   /api/communities/{partnerId}/areas/staged/create-approved — Create adop
 ### Phase 6: AI Bulk Area Generation
 - **Data Source:** OSM Nominatim search + Overpass API for polygon boundaries
   - Nominatim: search by category within community bounding box (e.g., `amenity=school`, `leisure=park`)
-  - Overpass: fetch actual polygon/multipolygon geometry for each result
+  - Overpass: fetch actual polygon/multipolygon geometry for each result; two-pass parsing enriches junction nodes with parent motorway refs
+  - Closed-way detection: OSM ways where first coord == last coord emit Polygon geometry (neighborhoods, schools with outlined boundaries)
   - Fallback: if no polygon exists, create approximate rectangle from Nominatim bounding box
+- **Post-processing by category:**
+  - Streets: greedy segment chaining merges disjoint OSM segments, then splits into ~0.25-mile sections with compass-based naming (West/Central/East or South/Central/North)
+  - Interchanges: deduplicate by enriched name (e.g., "I 90 Exit 17" prevents EB/WB duplicates)
+  - Other categories: deduplicate by name similarity
 - **Naming Engine:** AI (Claude) generates standardized names from OSM tags
   - Schools: `{name}` (e.g., "Roosevelt Elementary School")
   - Parks: `{name}` (e.g., "Maple Leaf Park"), fall back to `{leisure} near {street}` if unnamed
-  - Interchanges: `{highway} / {cross_street} Interchange`
-  - Blocks: `{street} — {block_number} Block`
+  - Interchanges: `{highway_ref} Exit {ref}` (e.g., "I 90 Exit 17") — enriched via two-pass Overpass parsing that maps junction nodes to parent motorway way refs
+  - Streets: `{street_name} {compass_label}` (e.g., "Front St West", "Front St Central", "Front St East") — disjoint OSM segments merged via greedy nearest-endpoint chaining, then split into ~0.25-mile sections with compass labels based on dominant direction
+  - Neighborhoods: `{name}` from OSM `place=neighbourhood/suburb` tags
 - **Staging Table:** New `StagedAdoptableArea` entity with `ReviewStatus` (Pending/Approved/Rejected) and `GenerationBatchId` to group results from a single run
 - **Background Job:** Triggered Container App Job (similar to existing daily/hourly jobs pattern)
   - Input: partnerId, feature category, optional sub-filters
@@ -345,6 +365,12 @@ POST   /api/communities/{partnerId}/areas/staged/create-approved — Create adop
   - Name fuzzy matching (Levenshtein distance or similar)
   - Geographic overlap check (reuse existing `useOverlapDetection` pattern)
   - Existing areas shown as dimmed overlay on review map
+
+### Phase 7: Admin Tools
+- "Clear All Areas" button on Adoptable Areas page
+- Strong confirmation dialog with destructive styling
+- Backend endpoint: soft-delete all adoptable areas + hard-delete all generation batches/staged areas
+- `AreaBulkClearResult` POCO returns counts for success toast
 
 **Note:** Phases are sequential but not time-bound. Volunteers pick up work as available.
 
@@ -362,7 +388,7 @@ The admin sees a configuration form:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| **Feature Category** | Dropdown (single-select) | Schools, Parks (Interchanges, Blocks in future) |
+| **Feature Category** | Dropdown (single-select) | Schools, Parks, Interchanges, Streets, Neighborhoods |
 | **Geographic Scope** | Map + auto-populated | Defaults to community boundary; admin can optionally draw a sub-region to limit scope |
 | **Preview Count** | Read-only estimate | After selecting category, a quick Nominatim count query shows "~47 schools found in this area" so the admin knows what to expect before committing |
 
@@ -485,7 +511,7 @@ Each row links to its review page (read-only for completed batches).
    **Resolved:** Container App Job (triggered). Costs nothing when not running. ✅
 
 6. ~~**What OSM feature categories should we support initially?**~~
-   **Resolved:** Schools and parks first. Interchanges and blocks in a follow-up iteration. ✅
+   **Resolved:** Schools, parks, interchanges, streets, and neighborhoods all implemented. ✅
 
 7. ~~**How long should staged (pending review) areas persist?**~~
    **Resolved:** 90 days, auto-delete after expiration. ✅
@@ -509,7 +535,7 @@ Each row links to its review page (read-only for completed batches).
 
 ---
 
-**Last Updated:** February 15, 2026
+**Last Updated:** February 18, 2026
 **Owner:** Product & Engineering Team
-**Status:** In Progress (Phases 1-4 Complete, Phase 6 Planned)
-**Next Review:** When volunteer picks up work
+**Status:** ✅ Complete (Phases 1-7)
+**Next Review:** N/A — Project Complete

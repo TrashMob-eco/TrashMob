@@ -32,6 +32,56 @@ namespace TrashMob.Shared.Managers.Areas
             string category,
             (double North, double South, double East, double West) bounds,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Queries the Overpass API for all OSM features matching specific tags within a bounding box.
+        /// Use this instead of SearchByCategoryAsync when you need tag-based queries
+        /// (e.g., all highway=motorway_junction nodes) rather than text-based name searches.
+        /// </summary>
+        /// <param name="overpassQuery">The Overpass QL query body (the part inside the parentheses).</param>
+        /// <param name="bounds">The bounding box (North, South, East, West).</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A list of results with geometry and metadata.</returns>
+        Task<IEnumerable<NominatimResult>> SearchByOverpassAsync(
+            string overpassQuery,
+            (double North, double South, double East, double West) bounds,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Looks up geographic bounding box for a location query using Nominatim search API.
+        /// </summary>
+        /// <param name="query">Location query string (e.g., "Issaquah, Washington, United States").</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Bounding box tuple (North, South, East, West) or null if not found.</returns>
+        Task<(double North, double South, double East, double West)?> LookupBoundsAsync(
+            string query,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Looks up geographic bounding box AND polygon geometry for a location query (single Nominatim call).
+        /// </summary>
+        /// <param name="query">Location query string (e.g., "Issaquah, Washington, United States").</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Bounds with optional GeoJSON polygon, or null if not found.</returns>
+        Task<BoundsWithGeometry?> LookupBoundsWithGeometryAsync(
+            string query,
+            CancellationToken cancellationToken = default);
+    }
+
+    /// <summary>
+    /// Bounding box with optional polygon geometry from Nominatim.
+    /// </summary>
+    public class BoundsWithGeometry
+    {
+        public double North { get; set; }
+        public double South { get; set; }
+        public double East { get; set; }
+        public double West { get; set; }
+
+        /// <summary>
+        /// Serialized GeoJSON geometry (Polygon or LineString), or null if no polygon was returned.
+        /// </summary>
+        public string? GeoJson { get; set; }
     }
 
     public class NominatimResult

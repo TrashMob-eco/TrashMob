@@ -4,62 +4,262 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              x:Class="TrashMobMobile.Views.EditEvent.TabDetails">
-    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *" MaximumWidthRequest="400">
+    <ScrollView>
+        <VerticalStackLayout Spacing="0" Margin="0" Padding="0,8">
 
-        <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="4">
-            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Name" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-            <controls:TMEntry Text="{Binding EventViewModel.Name}" />
-        </VerticalStackLayout>
+            <!-- Event Name -->
+            <Border Style="{StaticResource RoundBorder}" Margin="8,4">
+                <VerticalStackLayout Spacing="4" Margin="0">
+                    <Label Style="{StaticResource FieldLabel}">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Event Name" />
+                                <Span Text=" *" TextColor="{StaticResource Destructive}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <controls:TMEntry Text="{Binding EventViewModel.Name}" />
+                </VerticalStackLayout>
+            </Border>
 
-        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Event Date" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-            <controls:TMDatePicker Date="{Binding EventViewModel.EventDateOnly, Mode=TwoWay}" />
-        </VerticalStackLayout>
+            <!-- Date & Time -->
+            <Border Style="{StaticResource RoundBorder}" Margin="8,4">
+                <VerticalStackLayout Spacing="8" Margin="0">
+                    <HorizontalStackLayout Spacing="8">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconCalendarCheck}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Date &amp; Time"
+                               FontFamily="LexendSemibold"
+                               FontSize="Small"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
 
-        <VerticalStackLayout Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2">
-            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Event Time" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-            <controls:TMTimePicker Time="{Binding EventViewModel.EventTime, Mode=TwoWay}" />
-        </VerticalStackLayout>
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12" RowDefinitions="Auto" Margin="0">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4" Margin="0">
+                            <Label Style="{StaticResource FieldLabel}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Date" />
+                                        <Span Text=" *" TextColor="{StaticResource Destructive}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <controls:TMDatePicker Date="{Binding EventViewModel.EventDateOnly, Mode=TwoWay}" />
+                        </VerticalStackLayout>
 
-        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Duration Hours" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-            <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.DurationHours}" />
-        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4" Margin="0">
+                            <Label Style="{StaticResource FieldLabel}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Time" />
+                                        <Span Text=" *" TextColor="{StaticResource Destructive}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <controls:TMTimePicker Time="{Binding EventViewModel.EventTime, Mode=TwoWay}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
 
-        <VerticalStackLayout Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2">
-            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Duration Minutes" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-            <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.DurationMinutes}" />
-        </VerticalStackLayout>
+            <!-- Duration -->
+            <Border Style="{StaticResource RoundBorder}" Margin="8,4">
+                <VerticalStackLayout Spacing="8" Margin="0">
+                    <HorizontalStackLayout Spacing="8">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconTimerOutline}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Duration"
+                               FontFamily="LexendSemibold"
+                               FontSize="Small"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
 
-        <VerticalStackLayout Grid.Row="3" Grid.ColumnSpan="4">
-            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Description" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-            <controls:TMEditor Text="{Binding EventViewModel.Description}" />
-        </VerticalStackLayout>
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12" RowDefinitions="Auto" Margin="0">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4" Margin="0">
+                            <Label Style="{StaticResource FieldLabel}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Hours" />
+                                        <Span Text=" *" TextColor="{StaticResource Destructive}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.DurationHours}" />
+                        </VerticalStackLayout>
 
-        <VerticalStackLayout Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
-            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Event Type" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-            <controls:TMPicker Title="Event Type" ItemsSource="{Binding ETypes}"
-                                    SelectedItem="{Binding SelectedEventType, Mode=TwoWay}" />
-        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4" Margin="0">
+                            <Label Style="{StaticResource FieldLabel}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Minutes" />
+                                        <Span Text=" *" TextColor="{StaticResource Destructive}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.DurationMinutes}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
 
-        <VerticalStackLayout Grid.Row="4" Grid.Column="2">
-            <Label Text="Max Attendees" Style="{StaticResource FieldLabel}" />
-            <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.MaxNumberOfParticipants}" />
-        </VerticalStackLayout>
+            <!-- Description -->
+            <Border Style="{StaticResource RoundBorder}" Margin="8,4">
+                <VerticalStackLayout Spacing="4" Margin="0">
+                    <HorizontalStackLayout Spacing="8">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconFileDocument}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Style="{StaticResource FieldLabel}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Description" />
+                                    <Span Text=" *" TextColor="{StaticResource Destructive}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </HorizontalStackLayout>
+                    <controls:TMEditor Text="{Binding EventViewModel.Description}" />
+                </VerticalStackLayout>
+            </Border>
 
-        <VerticalStackLayout Grid.Row="4" Grid.Column="3">
-            <Label Text="Visibility" Style="{StaticResource FieldLabel}" />
-            <controls:TMPicker Title="Visibility"
-                               ItemsSource="{Binding VisibilityOptions}"
-                               SelectedItem="{Binding SelectedVisibility, Mode=TwoWay}" />
-        </VerticalStackLayout>
+            <!-- Event Settings -->
+            <Border Style="{StaticResource RoundBorder}" Margin="8,4">
+                <VerticalStackLayout Spacing="8" Margin="0">
+                    <HorizontalStackLayout Spacing="8">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconTag}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Event Settings"
+                               FontFamily="LexendSemibold"
+                               FontSize="Small"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
 
-        <VerticalStackLayout Grid.Row="5" Grid.ColumnSpan="4"
-                             IsVisible="{Binding IsTeamPickerVisible}">
-            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Team" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-            <controls:TMPicker Title="Select Team"
-                               ItemsSource="{Binding TeamNames}"
-                               SelectedItem="{Binding SelectedTeam, Mode=TwoWay}" />
+                    <VerticalStackLayout Spacing="4" Margin="0">
+                        <Label Style="{StaticResource FieldLabel}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Event Type" />
+                                    <Span Text=" *" TextColor="{StaticResource Destructive}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Border Padding="12,10" Style="{StaticResource InputStyle}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectEventTypeCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Text="{Binding SelectedEventType, TargetNullValue='Select Event Type'}"
+                                       FontSize="14" VerticalOptions="Center" />
+                                <Image Grid.Column="1" MaximumWidthRequest="16" MaximumHeightRequest="16" VerticalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                         Glyph="{StaticResource IconChevronDown}"
+                                                         Size="16"
+                                                         Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12" RowDefinitions="Auto" Margin="0">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4" Margin="0">
+                            <Label Text="Max Attendees" Style="{StaticResource FieldLabel}" />
+                            <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.MaxNumberOfParticipants}" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="4" Margin="0">
+                            <Label Text="Visibility" Style="{StaticResource FieldLabel}" />
+                            <Border Padding="12,10" Style="{StaticResource InputStyle}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectVisibilityCommand}" />
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Text="{Binding SelectedVisibility}"
+                                           FontSize="14" VerticalOptions="Center" />
+                                    <Image Grid.Column="1" MaximumWidthRequest="16" MaximumHeightRequest="16" VerticalOptions="Center">
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                             Glyph="{StaticResource IconChevronDown}"
+                                                             Size="16"
+                                                             Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        </Image.Source>
+                                    </Image>
+                                </Grid>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Team (conditional) -->
+            <Border Style="{StaticResource RoundBorder}" Margin="8,4"
+                    IsVisible="{Binding IsTeamPickerVisible}">
+                <VerticalStackLayout Spacing="4" Margin="0">
+                    <HorizontalStackLayout Spacing="8">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconAccountMultiple}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Style="{StaticResource FieldLabel}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Team" />
+                                    <Span Text=" *" TextColor="{StaticResource Destructive}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </HorizontalStackLayout>
+                    <Border Padding="12,10" Style="{StaticResource InputStyle}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectTeamCommand}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Text="{Binding SelectedTeam, TargetNullValue='Select Team'}"
+                                   FontSize="14" VerticalOptions="Center" />
+                            <Image Grid.Column="1" MaximumWidthRequest="16" MaximumHeightRequest="16" VerticalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                     Glyph="{StaticResource IconChevronDown}"
+                                                     Size="16"
+                                                     Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                </Image.Source>
+                            </Image>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Bottom spacing for save button -->
+            <BoxView HeightRequest="16" BackgroundColor="Transparent" />
+
         </VerticalStackLayout>
-    </Grid>
+    </ScrollView>
 </ContentView>

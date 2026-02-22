@@ -1,6 +1,7 @@
 namespace TrashMobMobile.ViewModels;
 
 using System.Collections.ObjectModel;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Services;
@@ -63,13 +64,10 @@ public partial class NewsletterPreferencesViewModel(
     [RelayCommand]
     private async Task UnsubscribeAll()
     {
-        var confirm = await Shell.Current.DisplayAlertAsync(
-            "Unsubscribe from All",
-            "Are you sure you want to unsubscribe from all newsletters?",
-            "Unsubscribe All",
-            "Cancel");
-
-        if (!confirm)
+        var popup = new Controls.ConfirmPopup("Unsubscribe from All",
+            "Are you sure you want to unsubscribe from all newsletters?", "Unsubscribe All");
+        var result = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        if (result?.Result != Controls.ConfirmPopup.Confirmed)
         {
             return;
         }

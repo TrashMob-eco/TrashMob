@@ -1,0 +1,16 @@
+# App identifiers for TrashMob mobile apps.
+# Environment-specific values are set via environment variables in CI.
+
+# iOS
+app_identifier ENV["IOS_BUNDLE_ID"] || "eco.trashmob"
+apple_id ENV["APPLE_ID"] || "joe@trashmob.eco"
+team_name ENV["APPLE_TEAM_NAME"] || "TrashMob"
+
+# App Store Connect API key (preferred over Apple ID for CI)
+# Set via environment variables:
+#   APP_STORE_CONNECT_API_KEY_KEY_ID
+#   APP_STORE_CONNECT_API_KEY_ISSUER_ID
+#   APP_STORE_CONNECT_API_KEY_KEY (base64-encoded .p8 contents)
+
+# Android
+json_key_data ENV["SUPPLY_JSON_KEY_DATA"] || ""

@@ -58,44 +58,56 @@
             <Border Style="{StaticResource RoundBorder}" Margin="4,0">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Date &amp; Time" Style="{StaticResource SectionHeader}" Margin="0" />
-                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
                         <VerticalStackLayout Grid.Column="0" Spacing="4">
                             <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Date" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
                             <controls:TMDatePicker HeightRequest="45"
-                                       Date="{Binding EventViewModel.EventDateOnly}" />
+                                       Date="{Binding EventViewModel.EventDateOnly, Mode=TwoWay}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="1" Spacing="4">
-                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Start" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-                            <controls:TMTimePicker Time="{Binding StartTime, Mode=TwoWay}" />
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Time" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMTimePicker Time="{Binding EventViewModel.EventTime, Mode=TwoWay}" />
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="2" Spacing="4">
-                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="End" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-                            <controls:TMTimePicker Time="{Binding EndTime, Mode=TwoWay}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Duration Card -->
+            <Border Style="{StaticResource RoundBorder}" Margin="4,0">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Duration" Style="{StaticResource SectionHeader}" Margin="0" />
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Hours" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMEntry Keyboard="Numeric" HeightRequest="40"
+                                              Text="{Binding EventViewModel.DurationHours}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Minutes" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMEntry Keyboard="Numeric" HeightRequest="40"
+                                              Text="{Binding EventViewModel.DurationMinutes}" />
                         </VerticalStackLayout>
                     </Grid>
                     <Label Style="{StaticResource ErrorLabel}"
                            IsVisible="{Binding EventDurationError, Converter={StaticResource StringToBoolConverter}}"
                            Text="{Binding EventDurationError}" />
-                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
-                        <VerticalStackLayout Grid.Column="0" Spacing="4">
-                            <Label Text="Duration" Style="{StaticResource FieldLabel}" />
-                            <Label Text="{Binding FormattedEventDuration}" FontSize="Small"
-                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="1" Spacing="4">
-                            <Label Text="Max Attendees" Style="{StaticResource FieldLabel}" />
-                            <controls:TMEntry Keyboard="Numeric"
-                                  HeightRequest="40"
-                                  Text="{Binding EventViewModel.MaxNumberOfParticipants}">
-                                <controls:TMEntry.Behaviors>
-                                    <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
-                                                           x:Name="maxNumberOfParticipantsValidator"
-                                                           MinimumValue="0"
-                                                           MaximumDecimalPlaces="0" />
-                                </controls:TMEntry.Behaviors>
-                            </controls:TMEntry>
-                        </VerticalStackLayout>
-                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Max Attendees Card -->
+            <Border Style="{StaticResource RoundBorder}" Margin="4,0">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Max Attendees" Style="{StaticResource FieldLabel}" />
+                    <controls:TMEntry Keyboard="Numeric"
+                          HeightRequest="40"
+                          Text="{Binding EventViewModel.MaxNumberOfParticipants}">
+                        <controls:TMEntry.Behaviors>
+                            <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
+                                                   x:Name="maxNumberOfParticipantsValidator"
+                                                   MinimumValue="0"
+                                                   MaximumDecimalPlaces="0" />
+                        </controls:TMEntry.Behaviors>
+                    </controls:TMEntry>
                 </VerticalStackLayout>
             </Border>
 

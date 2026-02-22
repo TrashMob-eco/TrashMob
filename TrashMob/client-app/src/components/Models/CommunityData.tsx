@@ -49,6 +49,8 @@ class CommunityData {
 
     boundsWest: number | null = null;
 
+    boundaryGeoJson: string = '';
+
     logoUrl: string = '';
 
     contactEmail: string = '';

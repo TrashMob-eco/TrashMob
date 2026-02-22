@@ -124,6 +124,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private bool enableSimulateRoute;
 
     [ObservableProperty]
+    private bool isRecordingRoute;
+
+    [ObservableProperty]
     private bool areRoutesFound;
 
     [ObservableProperty]
@@ -194,9 +197,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await LoadLitterReports();
             await LoadPhotos();
 
-#if USETEST
-            EnableSimulateRoute = true;
-#endif
+            EnableSimulateRoute = DeviceInfo.DeviceType == DeviceType.Virtual;
 
             var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
             LoadRouteViewModels(routes);
@@ -359,10 +360,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             RouteEndTime = DateTimeOffset.Now;
             EnableStopTrackEventRoute = true;
             EnableStartTrackEventRoute = false;
+            IsRecordingRoute = true;
         }
 
         cancellationToken.Register(async () =>
         {
+            IsRecordingRoute = false;
             RouteEndTime = DateTimeOffset.Now;
             await SaveRoute();
             Locations.Clear();
@@ -623,10 +626,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             return;
         }
 
-        var confirm = await Shell.Current.DisplayAlertAsync(
-            "Delete Photo", "Are you sure you want to delete this photo?", "Delete", "Cancel");
-
-        if (!confirm)
+        var popup = new Controls.ConfirmPopup("Delete Photo", "Are you sure you want to delete this photo?", "Delete");
+        var result = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        if (result?.Result != Controls.ConfirmPopup.Confirmed)
         {
             return;
         }
@@ -664,10 +666,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             return;
         }
 
-        var confirm = await Shell.Current.DisplayAlertAsync(
-            "Delete Route", "Are you sure you want to delete this route?", "Delete", "Cancel");
-
-        if (!confirm)
+        var popup = new Controls.ConfirmPopup("Delete Route", "Are you sure you want to delete this route?", "Delete");
+        var result = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        if (result?.Result != Controls.ConfirmPopup.Confirmed)
         {
             return;
         }
@@ -698,14 +699,24 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             return;
         }
 
+        var popup = new Controls.PrivacyPopup();
+        var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        var selectedPrivacy = popupResult?.Result;
+        if (string.IsNullOrEmpty(selectedPrivacy))
+        {
+            return;
+        }
+
         await ExecuteAsync(async () =>
         {
             var request = new UpdateRouteMetadataRequest
             {
-                PrivacyLevel = routeVm.PrivacyLevel,
+                PrivacyLevel = selectedPrivacy,
             };
 
             var updated = await eventAttendeeRouteRestService.UpdateRouteMetadataAsync(routeVm.Id, request);
+
+            routeVm.PrivacyLevel = updated.PrivacyLevel;
 
             var rawRoute = EventAttendeeRoutes.FirstOrDefault(r => r.Id == routeVm.Id);
             if (rawRoute != null)

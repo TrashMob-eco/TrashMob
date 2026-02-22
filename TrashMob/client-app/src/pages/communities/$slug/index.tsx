@@ -21,10 +21,13 @@ import {
     GetCommunityLitterReports,
     GetCommunityStats,
 } from '@/services/communities';
+import { GetAvailableAreas } from '@/services/adoptable-areas';
+import AdoptableAreaData from '@/components/Models/AdoptableAreaData';
 import { CommunityStatsWidget } from '@/components/communities/community-stats-widget';
 import { CommunityContactCard } from '@/components/communities/community-contact-card';
 import { CommunityEventsSection } from '@/components/communities/community-events-section';
 import { CommunityTeamsSection } from '@/components/communities/community-teams-section';
+import { CommunityAreasSection } from '@/components/communities/community-areas-section';
 import { CommunityDetailMap } from '@/components/communities/community-detail-map';
 import { CommunityPhotoGallery } from '@/components/communities/CommunityPhotoGallery';
 import { CommunityPhotoUploader } from '@/components/communities/CommunityPhotoUploader';
@@ -71,6 +74,17 @@ export const CommunityDetailPage = () => {
         queryFn: GetCommunityStats({ slug }).service,
         select: (res) => res.data,
         enabled: !!slug && !!community,
+    });
+
+    const { data: areas = [], isLoading: areasLoading } = useQuery<
+        AxiosResponse<AdoptableAreaData[]>,
+        unknown,
+        AdoptableAreaData[]
+    >({
+        queryKey: GetAvailableAreas({ partnerId: community?.id ?? '' }).key,
+        queryFn: GetAvailableAreas({ partnerId: community?.id ?? '' }).service,
+        select: (res) => res.data,
+        enabled: !!community?.id,
     });
 
     if (isLoading) {
@@ -215,12 +229,14 @@ export const CommunityDetailPage = () => {
                                 events={events}
                                 teams={teams}
                                 litterReports={litterReports}
+                                areas={areas}
                                 centerLat={community.latitude!}
                                 centerLng={community.longitude!}
                                 boundsNorth={community.boundsNorth}
                                 boundsSouth={community.boundsSouth}
                                 boundsEast={community.boundsEast}
                                 boundsWest={community.boundsWest}
+                                boundaryGeoJson={community.boundaryGeoJson}
                             />
                         ) : null}
 
@@ -229,6 +245,14 @@ export const CommunityDetailPage = () => {
 
                         {/* Teams Section */}
                         <CommunityTeamsSection teams={teams} isLoading={teamsLoading} />
+
+                        {/* Adoptable Areas Section */}
+                        <CommunityAreasSection
+                            areas={areas}
+                            isLoading={areasLoading}
+                            communityId={community.id}
+                            boundaryGeoJson={community.boundaryGeoJson}
+                        />
 
                         {/* Photo Gallery Section */}
                         <CommunityPhotoGallery

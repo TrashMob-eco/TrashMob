@@ -1,9 +1,12 @@
 namespace TrashMobMobile.Pages;
 
+using TrashMobMobile.Views.ViewEvent;
+
 [QueryProperty(nameof(EventId), nameof(EventId))]
 public partial class ViewEventPage : ContentPage
 {
     private readonly ViewEventViewModel viewModel;
+    private bool isInitialized;
 
     public ViewEventPage(ViewEventViewModel viewModel)
     {
@@ -19,28 +22,28 @@ public partial class ViewEventPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await viewModel.Init(new Guid(EventId), UpdateRoutes);
-        Switcher.SelectedIndex = 0;
+
+        // Only initialize on first navigation, not when returning from popups
+        if (!isInitialized)
+        {
+            isInitialized = true;
+            await viewModel.Init(new Guid(EventId), RenderRoutesOnDetailsMap);
+            Switcher.SelectedIndex = 0;
+        }
     }
 
-    private void UpdateRoutes()
+    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
-        //eventLocationMap.MapElements.Clear();
+        base.OnNavigatedFrom(args);
+        // Reset so re-entering this page (for a different event) will re-initialize
+        isInitialized = false;
+    }
 
-        //foreach (var route in viewModel.EventAttendeeRoutes)
-        //{
-        //    var polyline = new Polyline
-        //    {
-        //        StrokeColor = Color.FromArgb("c7d762"),
-        //        StrokeWidth = 5,
-        //    };
-
-        //    foreach (var location in route.Locations)
-        //    {
-        //        polyline.Geopath.Add(new Location(location.Latitude, location.Longitude));
-        //    }
-
-        //    eventLocationMap.MapElements.Add(polyline);
-        //}
+    private void RenderRoutesOnDetailsMap()
+    {
+        if (tabDetails.Content is TabDetails details)
+        {
+            details.RenderRoutes(viewModel.EventAttendeeRoutes);
+        }
     }
 }

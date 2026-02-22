@@ -145,5 +145,42 @@ namespace TrashMob.Shared.Managers.Adoptions
 
             return result;
         }
+
+        /// <inheritdoc />
+        public async Task<int> ClearAllByPartnerAsync(
+            Guid partnerId,
+            Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            var areas = await Repo.Get(a => a.PartnerId == partnerId, withNoTracking: false)
+                .Include(a => a.Adoptions)
+                .Include(a => a.SponsoredAdoptions)
+                .ToListAsync(cancellationToken);
+
+            var deleted = 0;
+
+            foreach (var area in areas)
+            {
+                if (area.Adoptions.Count > 0 || area.SponsoredAdoptions.Count > 0)
+                {
+                    // Cannot hard-delete areas with adoptions; soft-delete instead
+                    if (area.IsActive)
+                    {
+                        area.IsActive = false;
+                        area.LastUpdatedByUserId = userId;
+                        area.LastUpdatedDate = DateTimeOffset.UtcNow;
+                        await Repo.UpdateAsync(area);
+                        deleted++;
+                    }
+                }
+                else
+                {
+                    await Repo.DeleteAsync(area);
+                    deleted++;
+                }
+            }
+
+            return deleted;
+        }
     }
 }

@@ -1,0 +1,111 @@
+# TrashMob Fastlane Configuration
+#
+# Lanes:
+#   iOS:
+#     ios_upload       — Upload IPA to TestFlight (replaces xcrun altool)
+#     ios_submit       — Submit latest TestFlight build for App Store review
+#   Android:
+#     android_promote  — Promote from internal track to production with staged rollout
+#     android_rollout  — Update rollout percentage for production track
+
+default_platform(:ios)
+
+# ── iOS Lanes ──────────────────────────────────────────────────
+
+platform :ios do
+  before_all do
+    # Configure App Store Connect API key from environment
+    if ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"]
+      app_store_connect_api_key(
+        key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+        issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+        key_content: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+        is_key_content_base64: true,
+        in_house: false
+      )
+    end
+  end
+
+  desc "Upload IPA to TestFlight"
+  lane :ios_upload do |options|
+    ipa_path = options[:ipa] || Dir["*.ipa"].first
+
+    UI.user_error!("No IPA file found") unless ipa_path && File.exist?(ipa_path)
+    UI.message("Uploading #{ipa_path} to TestFlight...")
+
+    pilot(
+      ipa: ipa_path,
+      skip_waiting_for_build_processing: true,
+      skip_submission: true,
+      distribute_external: false
+    )
+  end
+
+  desc "Submit latest TestFlight build for App Store review"
+  lane :ios_submit do |options|
+    build_number = options[:build_number]
+
+    deliver(
+      skip_binary_upload: true,
+      submit_for_review: true,
+      automatic_release: false,
+      force: true, # Skip HTML preview in CI
+      precheck_include_in_app_purchases: false,
+      submission_information: {
+        add_id_info_uses_idfa: false
+      },
+      build_number: build_number
+    )
+  end
+end
+
+# ── Android Lanes ──────────────────────────────────────────────
+
+platform :android do
+  desc "Promote from internal track to production with staged rollout"
+  lane :android_promote do |options|
+    package_name = options[:package_name] || ENV["ANDROID_BUNDLE_ID"] || "eco.trashmob.trashmobmobileapp"
+    rollout = (options[:rollout] || 0.1).to_f
+
+    UI.message("Promoting #{package_name} from internal → production at #{(rollout * 100).to_i}% rollout")
+
+    supply(
+      package_name: package_name,
+      track: "internal",
+      track_promote_to: "production",
+      rollout: rollout.to_s,
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Update rollout percentage for production track"
+  lane :android_rollout do |options|
+    package_name = options[:package_name] || ENV["ANDROID_BUNDLE_ID"] || "eco.trashmob.trashmobmobileapp"
+    rollout = options[:rollout].to_f
+
+    UI.user_error!("rollout must be between 0 and 1") unless rollout > 0 && rollout <= 1
+
+    if rollout >= 1.0
+      UI.message("Completing rollout for #{package_name} (100%)")
+    else
+      UI.message("Updating #{package_name} production rollout to #{(rollout * 100).to_i}%")
+    end
+
+    supply(
+      package_name: package_name,
+      track: "production",
+      rollout: rollout.to_s,
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end

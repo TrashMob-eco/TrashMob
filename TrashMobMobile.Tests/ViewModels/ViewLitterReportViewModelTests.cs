@@ -14,6 +14,7 @@ public class ViewLitterReportViewModelTests
     private readonly Mock<IEventLitterReportManager> mockEventLitterReportManager;
     private readonly Mock<INotificationService> mockNotificationService;
     private readonly Mock<IUserManager> mockUserManager;
+    private readonly Mock<IWaiverManager> mockWaiverManager;
     private readonly ViewLitterReportViewModel sut;
 
     public ViewLitterReportViewModelTests()
@@ -22,6 +23,7 @@ public class ViewLitterReportViewModelTests
         mockEventLitterReportManager = new Mock<IEventLitterReportManager>();
         mockNotificationService = new Mock<INotificationService>();
         mockUserManager = new Mock<IUserManager>();
+        mockWaiverManager = new Mock<IWaiverManager>();
 
         var testUser = TestHelpers.CreateTestUser();
         App.CurrentUser = testUser;
@@ -31,7 +33,8 @@ public class ViewLitterReportViewModelTests
             mockLitterReportManager.Object,
             mockEventLitterReportManager.Object,
             mockNotificationService.Object,
-            mockUserManager.Object);
+            mockUserManager.Object,
+            mockWaiverManager.Object);
     }
 
     [Fact]

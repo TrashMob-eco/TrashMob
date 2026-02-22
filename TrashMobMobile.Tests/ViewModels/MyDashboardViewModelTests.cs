@@ -15,6 +15,7 @@ public class MyDashboardViewModelTests
     private readonly Mock<ILitterReportManager> mockLitterReportManager;
     private readonly Mock<INotificationService> mockNotificationService;
     private readonly Mock<IUserManager> mockUserManager;
+    private readonly Mock<IWaiverManager> mockWaiverManager;
     private readonly MyDashboardViewModel sut;
 
     public MyDashboardViewModelTests()
@@ -24,6 +25,7 @@ public class MyDashboardViewModelTests
         mockLitterReportManager = new Mock<ILitterReportManager>();
         mockNotificationService = new Mock<INotificationService>();
         mockUserManager = new Mock<IUserManager>();
+        mockWaiverManager = new Mock<IWaiverManager>();
 
         var testUser = TestHelpers.CreateTestUser();
         mockUserManager.Setup(m => m.CurrentUser).Returns(testUser);
@@ -33,7 +35,8 @@ public class MyDashboardViewModelTests
             mockStatsRestService.Object,
             mockLitterReportManager.Object,
             mockNotificationService.Object,
-            mockUserManager.Object);
+            mockUserManager.Object,
+            mockWaiverManager.Object);
     }
 
     [Fact]

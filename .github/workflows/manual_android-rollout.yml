@@ -1,0 +1,71 @@
+# Adjust Google Play production rollout percentage.
+# Use this to increase rollout (10% → 50% → 100%) without redeploying.
+#
+# Prerequisites:
+#   - GCP_SERVICE_ACCOUNT secret with Google Play Developer API access
+#   - An existing staged rollout on the production track
+
+name: Android - Adjust Rollout
+
+on:
+  workflow_dispatch:
+    inputs:
+      rollout_percentage:
+        description: 'Rollout percentage (10, 25, 50, 100)'
+        required: true
+        type: choice
+        options:
+          - '10'
+          - '25'
+          - '50'
+          - '100'
+      package_name:
+        description: 'Package name'
+        required: false
+        default: 'eco.trashmob.trashmobmobileapp'
+
+permissions:
+  contents: read
+
+jobs:
+  rollout:
+    name: Update production rollout
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout (for Fastlane config)
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Adjust rollout
+        env:
+          SUPPLY_JSON_KEY_DATA: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          ANDROID_BUNDLE_ID: ${{ github.event.inputs.package_name }}
+        run: |
+          ROLLOUT=$(echo "scale=2; ${{ github.event.inputs.rollout_percentage }} / 100" | bc)
+          echo "Adjusting ${{ github.event.inputs.package_name }} production rollout to ${{ github.event.inputs.rollout_percentage }}%"
+
+          bundle exec fastlane android android_rollout rollout:$ROLLOUT
+
+      - name: Summary
+        run: |
+          echo ""
+          echo "========================================="
+          echo " Google Play Rollout Updated"
+          echo "========================================="
+          echo " Package:  ${{ github.event.inputs.package_name }}"
+          echo " Rollout:  ${{ github.event.inputs.rollout_percentage }}%"
+          echo "========================================="
+          if [ "${{ github.event.inputs.rollout_percentage }}" = "100" ]; then
+            echo ""
+            echo "✅ Full rollout complete — all users will receive this version."
+          else
+            echo ""
+            echo "Run this workflow again with a higher percentage to increase rollout."
+          fi

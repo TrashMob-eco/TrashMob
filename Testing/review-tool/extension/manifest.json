@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "TrashMob Page Review Tracker",
+  "version": "1.0.0",
+  "description": "Floating overlay to track page-by-page review of dev.trashmob.eco",
+  "permissions": ["activeTab"],
+  "host_permissions": ["http://localhost:3456/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://dev.trashmob.eco/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

@@ -2135,6 +2135,9 @@ namespace TrashMob.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("BoundaryGeoJson")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double?>("BoundsEast")
                         .HasColumnType("float");
 

@@ -1,6 +1,7 @@
 namespace TrashMobMobile.ViewModels;
 
 using System.Collections.ObjectModel;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Extensions;
@@ -109,17 +110,18 @@ public partial class ViewTeamViewModel(
 
             if (availableEvents.Count == 0)
             {
-                await Shell.Current.DisplayAlertAsync("No Events",
-                    "You have no upcoming events available to link to this team.",
-                    "OK");
+                var alertPopup = new Controls.ConfirmPopup("No Events",
+                    "You have no upcoming events available to link to this team.", "OK");
+                await Shell.Current.CurrentPage.ShowPopupAsync<string>(alertPopup);
                 return;
             }
 
             var eventNames = availableEvents.Select(e => e.Name).ToArray();
-            var selected = await Shell.Current.DisplayActionSheetAsync(
-                "Select an event to link", "Cancel", null, eventNames);
+            var listPopup = new Controls.ListSelectorPopup("Select an event to link", eventNames);
+            var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(listPopup);
+            var selected = popupResult?.Result;
 
-            if (string.IsNullOrEmpty(selected) || selected == "Cancel")
+            if (string.IsNullOrEmpty(selected))
             {
                 return;
             }
@@ -139,13 +141,10 @@ public partial class ViewTeamViewModel(
             return;
         }
 
-        var confirm = await Shell.Current.DisplayAlertAsync(
-            "Unlink Event",
-            $"Remove \"{eventVm.Name}\" from this team?",
-            "Unlink",
-            "Cancel");
-
-        if (!confirm)
+        var popup = new Controls.ConfirmPopup("Unlink Event",
+            $"Remove \"{eventVm.Name}\" from this team?", "Unlink");
+        var result = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        if (result?.Result != Controls.ConfirmPopup.Confirmed)
         {
             return;
         }

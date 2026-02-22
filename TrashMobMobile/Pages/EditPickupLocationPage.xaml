@@ -25,15 +25,13 @@
                                                                     x:Name="nameValidator" />
                                 </controls:TMEntry.Behaviors>
                             </controls:TMEntry>
+                            <Label FontSize="Micro" TextColor="Red" Margin="4,0,0,0"
+                                   Text="Name is required and must be at least 5 characters."
+                                   IsVisible="{Binding Source={x:Reference nameValidator}, Path=IsNotValid}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout>
-                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Description" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-                            <controls:TMEditor Text="{Binding PickupLocationViewModel.Notes}">
-                                <controls:TMEditor.Behaviors>
-                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10"
-                                                                    x:Name="notesValidator" />
-                                </controls:TMEditor.Behaviors>
-                            </controls:TMEditor>
+                            <Label Text="Description" Style="{StaticResource FieldLabel}" />
+                            <controls:TMEditor Text="{Binding PickupLocationViewModel.Notes}" />
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
@@ -42,45 +40,13 @@
                         Style="{StaticResource PrimaryLargeButton}"
                         Margin="10,8,10,10">
                     <Button.Triggers>
-                        <MultiTrigger TargetType="Button">
-                            <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                                  Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference notesValidator}, Path=IsValid}"
-                                                  Value="True" />
-                            </MultiTrigger.Conditions>
+                        <DataTrigger TargetType="Button"
+                                     Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
+                                     Value="True">
                             <Setter Property="IsEnabled" Value="True" />
-                        </MultiTrigger>
+                        </DataTrigger>
                     </Button.Triggers>
                 </Button>
-
-                <Label
-                    FontSize="Micro"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Center"
-                    HorizontalTextAlignment="Center"
-                    TextColor="Red">
-                    <Label.Triggers>
-                        <MultiTrigger TargetType="Label">
-                            <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                                  Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference notesValidator}, Path=IsValid}"
-                                                  Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter Property="IsVisible" Value="False" />
-                        </MultiTrigger>
-                        <DataTrigger TargetType="Label"
-                                     Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="False">
-                            <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Label"
-                                     Binding="{Binding Source={x:Reference notesValidator}, Path=IsValid}"
-                                     Value="False">
-                            <Setter Property="Text" Value="Notes is required and must be at least 10 characters." />
-                        </DataTrigger>
-                    </Label.Triggers>
-                </Label>
 
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"

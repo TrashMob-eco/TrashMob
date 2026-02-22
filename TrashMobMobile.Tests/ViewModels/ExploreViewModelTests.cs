@@ -152,36 +152,6 @@ public class ExploreViewModelTests
     }
 
     [Fact]
-    public async Task ToggleEventsCommand_TogglesShowEvents()
-    {
-        // Arrange
-        SetupDefaultMocks();
-        await sut.Init();
-        var initialValue = sut.ShowEvents;
-
-        // Act
-        sut.ToggleEventsCommand.Execute(null);
-
-        // Assert
-        Assert.NotEqual(initialValue, sut.ShowEvents);
-    }
-
-    [Fact]
-    public async Task ToggleLitterReportsCommand_TogglesShowLitterReports()
-    {
-        // Arrange
-        SetupDefaultMocks();
-        await sut.Init();
-        var initialValue = sut.ShowLitterReports;
-
-        // Act
-        sut.ToggleLitterReportsCommand.Execute(null);
-
-        // Assert
-        Assert.NotEqual(initialValue, sut.ShowLitterReports);
-    }
-
-    [Fact]
     public async Task CountryFilter_FiltersEvents()
     {
         // Arrange

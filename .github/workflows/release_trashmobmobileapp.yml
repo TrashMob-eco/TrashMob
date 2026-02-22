@@ -141,10 +141,11 @@ jobs:
 
   calliOSDeploy:
     name: Call iOS deploy workflow
-    needs: calliOSBuild
+    needs: [calliOSBuild, exposeEnvironmentVariables]
     uses: ./.github/workflows/publish-ios.yml
     with:
       artifact_name: ${{ needs.calliOSBuild.outputs.artifact_name }}
+      environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
     secrets:
       APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
       APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}

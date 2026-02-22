@@ -70,7 +70,7 @@ public class CancelEventViewModelTests
         Assert.Equal(testEvent.Name, sut.EventViewModel.Name);
         Assert.Equal(testEvent.Description, sut.EventViewModel.Description);
         Assert.Equal(testEvent.EventDate, sut.EventViewModel.EventDate);
-        Assert.Equal(testEvent.IsEventPublic, sut.EventViewModel.IsEventPublic);
+        Assert.Equal(testEvent.EventVisibilityId, sut.EventViewModel.EventVisibilityId);
     }
 
     [Fact]

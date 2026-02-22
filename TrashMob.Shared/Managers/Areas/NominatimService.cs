@@ -226,7 +226,8 @@ namespace TrashMob.Shared.Managers.Areas
                             }
                         }
                         else if (string.Equals(geoType, "Polygon", StringComparison.OrdinalIgnoreCase)
-                            || string.Equals(geoType, "LineString", StringComparison.OrdinalIgnoreCase))
+                            || string.Equals(geoType, "LineString", StringComparison.OrdinalIgnoreCase)
+                            || string.Equals(geoType, "Point", StringComparison.OrdinalIgnoreCase))
                         {
                             geoJson = JsonSerializer.Serialize(item.Geojson, JsonOptions);
                         }
@@ -260,6 +261,335 @@ namespace TrashMob.Shared.Managers.Areas
             return allResults;
         }
 
+        /// <inheritdoc />
+        public async Task<(double North, double South, double East, double West)?> LookupBoundsAsync(
+            string query,
+            CancellationToken cancellationToken = default)
+        {
+            var url = $"https://nominatim.openstreetmap.org/search?q={Uri.EscapeDataString(query)}&format=jsonv2&limit=1";
+
+            httpClient.DefaultRequestHeaders.UserAgent.Clear();
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TrashMob.eco/1.0");
+
+            logger.LogInformation("Nominatim bounds lookup: {Query}", query);
+
+            var response = await httpClient.GetAsync(url, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogWarning("Nominatim bounds lookup failed with status {StatusCode}", response.StatusCode);
+                return null;
+            }
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            var results = JsonSerializer.Deserialize<List<NominatimApiResult>>(content, JsonOptions);
+
+            var bb = results is not null && results.Count > 0 ? results[0].Boundingbox : null;
+
+            if (bb is null || bb.Length < 4)
+            {
+                logger.LogInformation("Nominatim returned no bounding box for: {Query}", query);
+                return null;
+            }
+
+            // Nominatim boundingbox format: [south_lat, north_lat, west_lon, east_lon]
+            if (double.TryParse(bb[0], CultureInfo.InvariantCulture, out var south)
+                && double.TryParse(bb[1], CultureInfo.InvariantCulture, out var north)
+                && double.TryParse(bb[2], CultureInfo.InvariantCulture, out var west)
+                && double.TryParse(bb[3], CultureInfo.InvariantCulture, out var east))
+            {
+                return (north, south, east, west);
+            }
+
+            logger.LogWarning("Failed to parse Nominatim bounding box values for: {Query}", query);
+            return null;
+        }
+
+        /// <inheritdoc />
+        public async Task<BoundsWithGeometry?> LookupBoundsWithGeometryAsync(
+            string query,
+            CancellationToken cancellationToken = default)
+        {
+            // Single call with polygon_geojson=1 to get both bounds and geometry
+            var url = $"https://nominatim.openstreetmap.org/search?q={Uri.EscapeDataString(query)}&format=jsonv2&polygon_geojson=1&limit=1";
+
+            httpClient.DefaultRequestHeaders.UserAgent.Clear();
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TrashMob.eco/1.0");
+
+            logger.LogInformation("Nominatim bounds+geometry lookup: {Query}", query);
+
+            var response = await httpClient.GetAsync(url, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogWarning("Nominatim bounds+geometry lookup failed with status {StatusCode}", response.StatusCode);
+                return null;
+            }
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            var results = JsonSerializer.Deserialize<List<NominatimApiResult>>(content, JsonOptions);
+
+            if (results is null || results.Count == 0)
+            {
+                logger.LogInformation("Nominatim returned no results for: {Query}", query);
+                return null;
+            }
+
+            var top = results[0];
+
+            // Parse bounding box
+            var bb = top.Boundingbox;
+            if (bb is null || bb.Length < 4)
+            {
+                logger.LogInformation("Nominatim returned no bounding box for: {Query}", query);
+                return null;
+            }
+
+            if (!double.TryParse(bb[0], CultureInfo.InvariantCulture, out var south)
+                || !double.TryParse(bb[1], CultureInfo.InvariantCulture, out var north)
+                || !double.TryParse(bb[2], CultureInfo.InvariantCulture, out var west)
+                || !double.TryParse(bb[3], CultureInfo.InvariantCulture, out var east))
+            {
+                logger.LogWarning("Failed to parse Nominatim bounding box values for: {Query}", query);
+                return null;
+            }
+
+            // Extract GeoJSON polygon if available
+            string? geoJson = null;
+            if (top.Geojson is not null)
+            {
+                var geoType = top.Geojson.Type;
+
+                if (string.Equals(geoType, "MultiPolygon", StringComparison.OrdinalIgnoreCase))
+                {
+                    var converted = ConvertMultiPolygonToPolygon(top.Geojson);
+                    if (converted is not null)
+                    {
+                        geoJson = JsonSerializer.Serialize(converted, JsonOptions);
+                    }
+                }
+                else if (string.Equals(geoType, "Polygon", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(geoType, "LineString", StringComparison.OrdinalIgnoreCase))
+                {
+                    geoJson = JsonSerializer.Serialize(top.Geojson, JsonOptions);
+                }
+            }
+
+            return new BoundsWithGeometry
+            {
+                North = north,
+                South = south,
+                East = east,
+                West = west,
+                GeoJson = geoJson,
+            };
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<NominatimResult>> SearchByOverpassAsync(
+            string overpassQuery,
+            (double North, double South, double East, double West) bounds,
+            CancellationToken cancellationToken = default)
+        {
+            var allResults = new List<NominatimResult>();
+
+            var south = bounds.South.ToString(CultureInfo.InvariantCulture);
+            var west = bounds.West.ToString(CultureInfo.InvariantCulture);
+            var north = bounds.North.ToString(CultureInfo.InvariantCulture);
+            var east = bounds.East.ToString(CultureInfo.InvariantCulture);
+            var bbox = $"{south},{west},{north},{east}";
+
+            // Build the full Overpass QL query — caller provides the filter body with {{bbox}} placeholders
+            var fullQuery = overpassQuery.Replace("{{bbox}}", bbox, StringComparison.OrdinalIgnoreCase);
+
+            logger.LogInformation("Overpass query: {Query}", fullQuery);
+
+            httpClient.DefaultRequestHeaders.UserAgent.Clear();
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TrashMob.eco/1.0");
+
+            var requestContent = new FormUrlEncodedContent([
+                new KeyValuePair<string, string>("data", fullQuery),
+            ]);
+
+            var response = await httpClient.PostAsync("https://overpass-api.de/api/interpreter", requestContent, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogWarning("Overpass query failed with status {StatusCode}", response.StatusCode);
+                return allResults;
+            }
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            using var doc = JsonDocument.Parse(content);
+
+            if (!doc.RootElement.TryGetProperty("elements", out var elements))
+            {
+                return allResults;
+            }
+
+            // First pass: collect parent way refs for node enrichment.
+            // When the query returns both junction nodes and parent motorway ways,
+            // map each node ID to the parent way's ref tag (e.g., "I 90").
+            var parentWayRefs = new Dictionary<long, string>();
+            foreach (var element in elements.EnumerateArray())
+            {
+                if (!string.Equals(element.GetProperty("type").GetString(), "way", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (!element.TryGetProperty("tags", out var wayTags)
+                    || !wayTags.TryGetProperty("ref", out var wayRefProp))
+                    continue;
+
+                var wayRef = wayRefProp.GetString();
+                if (string.IsNullOrWhiteSpace(wayRef))
+                    continue;
+
+                // Only enrich from ways that have node lists (fetched with "out body", not "out body geom")
+                if (!element.TryGetProperty("nodes", out var wayNodes))
+                    continue;
+
+                foreach (var nodeId in wayNodes.EnumerateArray())
+                {
+                    parentWayRefs.TryAdd(nodeId.GetInt64(), wayRef!);
+                }
+            }
+
+            // Second pass: parse features
+            foreach (var element in elements.EnumerateArray())
+            {
+                var type = element.GetProperty("type").GetString();
+                var numericId = element.TryGetProperty("id", out var idProp) ? idProp.GetInt64() : 0;
+                var osmId = $"{type}:{numericId}";
+
+                // Skip non-node elements that lack geometry — they're enrichment context (e.g., parent motorway ways)
+                if (!string.Equals(type, "node", StringComparison.OrdinalIgnoreCase)
+                    && !element.TryGetProperty("geometry", out _))
+                {
+                    continue;
+                }
+
+                // Get name from tags — try name, then build from ref/description
+                string name = "";
+                string refTag = "";
+                if (element.TryGetProperty("tags", out var tags))
+                {
+                    if (tags.TryGetProperty("name", out var nameProp))
+                    {
+                        name = nameProp.GetString() ?? "";
+                    }
+
+                    if (tags.TryGetProperty("ref", out var refProp))
+                    {
+                        refTag = refProp.GetString() ?? "";
+                    }
+
+                    // For motorway junctions, build name from ref (e.g., "Exit 17")
+                    if (string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(refTag))
+                    {
+                        var highway = tags.TryGetProperty("highway", out var hwProp) ? hwProp.GetString() : null;
+                        if (string.Equals(highway, "motorway_junction", StringComparison.OrdinalIgnoreCase))
+                        {
+                            name = $"Exit {refTag}";
+                        }
+                        else
+                        {
+                            name = refTag;
+                        }
+                    }
+
+                    // Last resort: try description
+                    if (string.IsNullOrWhiteSpace(name) && tags.TryGetProperty("description", out var descProp))
+                    {
+                        name = descProp.GetString() ?? "";
+                    }
+                }
+
+                // For unnamed junction nodes, generate a fallback name from the parent highway ref.
+                // Many junctions are tagged noref=yes (no exit number) but are still valid interchange locations.
+                if (string.IsNullOrWhiteSpace(name)
+                    && string.Equals(type, "node", StringComparison.OrdinalIgnoreCase)
+                    && parentWayRefs.TryGetValue(numericId, out var fallbackRef))
+                {
+                    name = $"{fallbackRef} Junction";
+                }
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    continue; // Skip truly unnamed features
+                }
+
+                // Enrich junction node names with parent highway ref (e.g., "Exit 17" → "I 90 Exit 17")
+                if (string.Equals(type, "node", StringComparison.OrdinalIgnoreCase)
+                    && parentWayRefs.TryGetValue(numericId, out var parentRef)
+                    && !name.Contains(parentRef, StringComparison.OrdinalIgnoreCase))
+                {
+                    name = $"{parentRef} {name}";
+                }
+
+                double lat = 0, lon = 0;
+                string geoJson = "";
+
+                if (string.Equals(type, "node", StringComparison.OrdinalIgnoreCase))
+                {
+                    lat = element.TryGetProperty("lat", out var latProp) ? latProp.GetDouble() : 0;
+                    lon = element.TryGetProperty("lon", out var lonProp) ? lonProp.GetDouble() : 0;
+                    geoJson = JsonSerializer.Serialize(new { type = "Point", coordinates = new[] { lon, lat } }, JsonOptions);
+                }
+                else if (element.TryGetProperty("geometry", out var geometry))
+                {
+                    // Ways/relations with out geom; have a geometry array
+                    var coords = new List<double[]>();
+                    double sumLat = 0, sumLon = 0;
+                    var count = 0;
+
+                    foreach (var point in geometry.EnumerateArray())
+                    {
+                        var pLat = point.TryGetProperty("lat", out var pLatProp) ? pLatProp.GetDouble() : 0;
+                        var pLon = point.TryGetProperty("lon", out var pLonProp) ? pLonProp.GetDouble() : 0;
+                        coords.Add([pLon, pLat]);
+                        sumLat += pLat;
+                        sumLon += pLon;
+                        count++;
+                    }
+
+                    if (count > 0)
+                    {
+                        lat = sumLat / count;
+                        lon = sumLon / count;
+                    }
+
+                    if (coords.Count >= 4
+                        && coords[0][0] == coords[^1][0]
+                        && coords[0][1] == coords[^1][1])
+                    {
+                        // Closed way → Polygon (e.g., neighborhood boundary, school outline)
+                        geoJson = JsonSerializer.Serialize(
+                            new { type = "Polygon", coordinates = new[] { coords } }, JsonOptions);
+                    }
+                    else if (coords.Count >= 2)
+                    {
+                        geoJson = JsonSerializer.Serialize(
+                            new { type = "LineString", coordinates = coords }, JsonOptions);
+                    }
+                }
+
+                allResults.Add(new NominatimResult
+                {
+                    GeoJson = geoJson,
+                    DisplayName = name,
+                    Category = "",
+                    Type = type ?? "",
+                    OsmId = osmId,
+                    Name = name,
+                    Latitude = lat,
+                    Longitude = lon,
+                });
+            }
+
+            logger.LogInformation("Overpass search complete: {Count} results", allResults.Count);
+            return allResults;
+        }
+
         // Internal DTOs for Nominatim API response parsing
 
         private sealed class NominatimApiResult
@@ -268,6 +598,7 @@ namespace TrashMob.Shared.Managers.Areas
             public string? Category { get; set; }
             public string? Type { get; set; }
             public NominatimGeoJson? Geojson { get; set; }
+            public string[]? Boundingbox { get; set; }
         }
 
         private sealed class NominatimCategoryApiResult

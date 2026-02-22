@@ -2,19 +2,23 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { Loader2, Sparkles, ArrowLeft, X, Clock, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
+import { Loader2, Sparkles, ArrowLeft, X, Clock, CheckCircle2, AlertCircle, XCircle, MapPin } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import AreaGenerationBatchData, { BatchStatus } from '@/components/Models/AreaGenerationBatchData';
+import CommunityData from '@/components/Models/CommunityData';
+import { GetCommunityForAdmin } from '@/services/communities';
 import {
     StartAreaGeneration,
     GetGenerationStatus,
+    GetGenerationBatch,
     GetGenerationBatches,
     CancelGeneration,
 } from '@/services/adoptable-areas';
@@ -23,6 +27,10 @@ const CATEGORIES = [
     { value: 'School', label: 'Schools' },
     { value: 'Park', label: 'Parks' },
     { value: 'Trail', label: 'Trails' },
+    { value: 'Interchange', label: 'Interchanges' },
+    { value: 'Street', label: 'Streets' },
+    { value: 'CityBlock', label: 'Neighborhoods' },
+    { value: 'HighwaySection', label: 'Highway / Interstate Sections' },
 ];
 
 const statusIcons: Record<BatchStatus, React.ReactNode> = {
@@ -53,8 +61,26 @@ export const PartnerCommunityAreasGenerate = () => {
     const [isRunning, setIsRunning] = useState(false);
     const [activeBatchId, setActiveBatchId] = useState<string | null>(null);
 
+    // Fetch community data to check bounds
+    const { data: community } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
+        queryKey: GetCommunityForAdmin({ communityId: partnerId }).key,
+        queryFn: GetCommunityForAdmin({ communityId: partnerId }).service,
+        select: (res) => res.data,
+        enabled: !!partnerId,
+    });
+
+    const hasBounds =
+        community?.boundsNorth != null &&
+        community?.boundsSouth != null &&
+        community?.boundsEast != null &&
+        community?.boundsWest != null;
+
     // Poll for active batch status
-    const { data: activeStatus } = useQuery<AxiosResponse<AreaGenerationBatchData>, unknown, AreaGenerationBatchData>({
+    const {
+        data: activeStatus,
+        error: statusError,
+        isError: isStatusError,
+    } = useQuery<AxiosResponse<AreaGenerationBatchData>, unknown, AreaGenerationBatchData>({
         queryKey: GetGenerationStatus({ partnerId }).key,
         queryFn: GetGenerationStatus({ partnerId }).service,
         select: (res) => res.data,
@@ -62,6 +88,17 @@ export const PartnerCommunityAreasGenerate = () => {
         refetchInterval: isRunning ? 3000 : false,
         retry: false,
     });
+
+    // When status returns 404 (batch already finished), fetch the specific batch to get final status
+    const { data: finishedBatch } = useQuery<AxiosResponse<AreaGenerationBatchData>, unknown, AreaGenerationBatchData>({
+        queryKey: GetGenerationBatch({ partnerId, batchId: activeBatchId ?? '' }).key,
+        queryFn: GetGenerationBatch({ partnerId, batchId: activeBatchId ?? '' }).service,
+        select: (res) => res.data,
+        enabled: !!activeBatchId && isRunning && !!statusError,
+    });
+
+    // When status endpoint errors (404 = no active batch), prefer finishedBatch over stale activeStatus
+    const currentBatchStatus = isStatusError ? finishedBatch : activeStatus;
 
     // Fetch batch history
     const { data: batches } = useQuery<AxiosResponse<AreaGenerationBatchData[]>, unknown, AreaGenerationBatchData[]>({
@@ -74,7 +111,7 @@ export const PartnerCommunityAreasGenerate = () => {
     // Start generation
     const { mutate: startGeneration, isPending: isStarting } = useMutation({
         mutationKey: StartAreaGeneration().key,
-        mutationFn: StartAreaGeneration().service,
+        mutationFn: (body: { category: string }) => StartAreaGeneration().service({ partnerId }, body),
         onSuccess: (res) => {
             setActiveBatchId(res.data.id);
             setIsRunning(true);
@@ -103,16 +140,23 @@ export const PartnerCommunityAreasGenerate = () => {
 
     // Monitor active status for completion
     useEffect(() => {
-        if (activeStatus && ['Complete', 'Failed', 'Cancelled'].includes(activeStatus.status)) {
+        if (currentBatchStatus && ['Complete', 'Failed', 'Cancelled'].includes(currentBatchStatus.status)) {
             setIsRunning(false);
             queryClient.invalidateQueries({ queryKey: GetGenerationBatches({ partnerId }).key });
+            if (currentBatchStatus.status === 'Failed') {
+                toast({
+                    variant: 'destructive',
+                    title: 'Generation failed',
+                    description: currentBatchStatus.errorMessage || 'An unexpected error occurred.',
+                });
+            }
         }
-    }, [activeStatus, partnerId, queryClient]);
+    }, [currentBatchStatus, partnerId, queryClient, toast]);
 
     const handleStart = useCallback(() => {
         if (!category) return;
-        startGeneration({ partnerId }, { category });
-    }, [category, partnerId, startGeneration]);
+        startGeneration({ category });
+    }, [category, startGeneration]);
 
     const handleCancel = useCallback(() => {
         if (!activeBatchId) return;
@@ -120,8 +164,8 @@ export const PartnerCommunityAreasGenerate = () => {
     }, [activeBatchId, partnerId, cancelGeneration]);
 
     const progressPercent =
-        activeStatus && activeStatus.discoveredCount > 0
-            ? Math.round((activeStatus.processedCount / activeStatus.discoveredCount) * 100)
+        currentBatchStatus && currentBatchStatus.discoveredCount > 0
+            ? Math.round((currentBatchStatus.processedCount / currentBatchStatus.discoveredCount) * 100)
             : 0;
 
     return (
@@ -151,14 +195,16 @@ export const PartnerCommunityAreasGenerate = () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {isRunning && activeStatus ? (
+                    {isRunning && currentBatchStatus ? (
                         // Progress view
                         <div className='space-y-6'>
                             <div className='flex items-center justify-between'>
                                 <div className='flex items-center gap-2'>
-                                    {statusIcons[activeStatus.status]}
-                                    <span className='font-medium capitalize'>{activeStatus.status}</span>
-                                    <Badge className={statusColors[activeStatus.status]}>{activeStatus.category}</Badge>
+                                    {statusIcons[currentBatchStatus.status]}
+                                    <span className='font-medium capitalize'>{currentBatchStatus.status}</span>
+                                    <Badge className={statusColors[currentBatchStatus.status]}>
+                                        {currentBatchStatus.category}
+                                    </Badge>
                                 </div>
                                 <Button variant='outline' size='sm' onClick={handleCancel}>
                                     <X className='h-4 w-4 mr-2' />
@@ -169,7 +215,8 @@ export const PartnerCommunityAreasGenerate = () => {
                             <div className='space-y-2'>
                                 <div className='flex justify-between text-sm text-muted-foreground'>
                                     <span>
-                                        {activeStatus.processedCount} of {activeStatus.discoveredCount} processed
+                                        {currentBatchStatus.processedCount} of {currentBatchStatus.discoveredCount}{' '}
+                                        processed
                                     </span>
                                     <span>{progressPercent}%</span>
                                 </div>
@@ -178,20 +225,20 @@ export const PartnerCommunityAreasGenerate = () => {
 
                             <div className='grid grid-cols-3 gap-4 text-center'>
                                 <div>
-                                    <div className='text-2xl font-bold'>{activeStatus.discoveredCount}</div>
+                                    <div className='text-2xl font-bold'>{currentBatchStatus.discoveredCount}</div>
                                     <div className='text-sm text-muted-foreground'>Discovered</div>
                                 </div>
                                 <div>
-                                    <div className='text-2xl font-bold'>{activeStatus.stagedCount}</div>
+                                    <div className='text-2xl font-bold'>{currentBatchStatus.stagedCount}</div>
                                     <div className='text-sm text-muted-foreground'>Staged</div>
                                 </div>
                                 <div>
-                                    <div className='text-2xl font-bold'>{activeStatus.skippedCount}</div>
+                                    <div className='text-2xl font-bold'>{currentBatchStatus.skippedCount}</div>
                                     <div className='text-sm text-muted-foreground'>Skipped</div>
                                 </div>
                             </div>
                         </div>
-                    ) : activeStatus && activeStatus.status === 'Complete' ? (
+                    ) : currentBatchStatus && currentBatchStatus.status === 'Complete' ? (
                         // Completed view
                         <div className='space-y-6'>
                             <div className='flex items-center gap-2 text-green-600'>
@@ -200,37 +247,54 @@ export const PartnerCommunityAreasGenerate = () => {
                             </div>
                             <div className='grid grid-cols-3 gap-4 text-center'>
                                 <div>
-                                    <div className='text-2xl font-bold'>{activeStatus.discoveredCount}</div>
+                                    <div className='text-2xl font-bold'>{currentBatchStatus.discoveredCount}</div>
                                     <div className='text-sm text-muted-foreground'>Discovered</div>
                                 </div>
                                 <div>
-                                    <div className='text-2xl font-bold'>{activeStatus.stagedCount}</div>
+                                    <div className='text-2xl font-bold'>{currentBatchStatus.stagedCount}</div>
                                     <div className='text-sm text-muted-foreground'>Staged for Review</div>
                                 </div>
                                 <div>
-                                    <div className='text-2xl font-bold'>{activeStatus.skippedCount}</div>
+                                    <div className='text-2xl font-bold'>{currentBatchStatus.skippedCount}</div>
                                     <div className='text-sm text-muted-foreground'>Skipped</div>
                                 </div>
                             </div>
-                            {activeStatus.stagedCount > 0 && (
+                            {currentBatchStatus.stagedCount > 0 && (
                                 <Button
                                     onClick={() =>
                                         navigate(
-                                            `/partnerdashboard/${partnerId}/community/areas/review?batchId=${activeStatus.id}`,
+                                            `/partnerdashboard/${partnerId}/community/areas/review?batchId=${currentBatchStatus.id}`,
                                         )
                                     }
                                 >
-                                    Review {activeStatus.stagedCount} Staged Areas
+                                    Review {currentBatchStatus.stagedCount} Staged Areas
                                 </Button>
                             )}
                         </div>
                     ) : (
                         // Configuration view
                         <div className='space-y-4'>
+                            {!hasBounds && (
+                                <Alert>
+                                    <MapPin className='h-4 w-4' />
+                                    <AlertDescription>
+                                        Community geographic bounds must be configured before generating areas.{' '}
+                                        <Button
+                                            variant='link'
+                                            className='h-auto p-0'
+                                            onClick={() =>
+                                                navigate(`/partnerdashboard/${partnerId}/community/regional-settings`)
+                                            }
+                                        >
+                                            Set bounds in Regional Settings
+                                        </Button>
+                                    </AlertDescription>
+                                </Alert>
+                            )}
                             <div className='flex items-end gap-4'>
                                 <div className='flex-1'>
                                     <label className='text-sm font-medium mb-2 block'>Category</label>
-                                    <Select value={category} onValueChange={setCategory}>
+                                    <Select value={category} onValueChange={setCategory} disabled={!hasBounds}>
                                         <SelectTrigger>
                                             <SelectValue placeholder='Select a category...' />
                                         </SelectTrigger>
@@ -243,7 +307,7 @@ export const PartnerCommunityAreasGenerate = () => {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <Button onClick={handleStart} disabled={!category || isStarting}>
+                                <Button onClick={handleStart} disabled={!category || isStarting || !hasBounds}>
                                     {isStarting ? (
                                         <Loader2 className='h-4 w-4 mr-2 animate-spin' />
                                     ) : (

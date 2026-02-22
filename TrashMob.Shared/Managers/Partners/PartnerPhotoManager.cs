@@ -23,6 +23,7 @@ namespace TrashMob.Shared.Managers.Partners
         public async Task<IEnumerable<PartnerPhoto>> GetByPartnerIdAsync(Guid partnerId, CancellationToken cancellationToken = default)
         {
             return await Repository.Get()
+                .AsNoTracking()
                 .Where(p => p.PartnerId == partnerId)
                 .OrderByDescending(p => p.UploadedDate)
                 .ToListAsync(cancellationToken);

@@ -20,6 +20,7 @@ env:
   DOTNET_VERSION2: '10.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release      # Values: Debug, Release
   ENVIRONMENT: test         # Values: test, production
+  ANDROID_BUNDLE_ID: 'eco.trashmobdev.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile'
   IOS_BUNDLE_ID: 'eco.trashmobdev.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
   IOS_PROFILE_TYPE: 'IOS_APP_STORE'           # Values: 'IOS_APP_DEVELOPMENT', 'IOS_APP_STORE'
 
@@ -69,7 +70,8 @@ jobs:
     outputs:
       environment: ${{ steps.expose_environment_variables.outputs.environment }}
       configuration: ${{ steps.expose_environment_variables.outputs.configuration }}
-      bundle_id: ${{ steps.expose_environment_variables.outputs.bundle_id }}
+      android_bundle_id: ${{ steps.expose_environment_variables.outputs.android_bundle_id }}
+      ios_bundle_id: ${{ steps.expose_environment_variables.outputs.ios_bundle_id }}
       dotnet_version: ${{ steps.expose_environment_variables.outputs.dotnet_version }}
       ios_provisioning_profile_type: ${{ steps.expose_environment_variables.outputs.ios_provisioning_profile_type }}
     steps:
@@ -80,8 +82,10 @@ jobs:
           echo "environment=${{ env.ENVIRONMENT }}" >> $GITHUB_OUTPUT
           echo "configuration=${{ env.CONFIGURATION }}" >> $GITHUB_ENV
           echo "configuration=${{ env.CONFIGURATION }}" >> $GITHUB_OUTPUT
-          echo "bundle_id=${{ env.IOS_BUNDLE_ID }}" >> $GITHUB_ENV
-          echo "bundle_id=${{ env.IOS_BUNDLE_ID }}" >> $GITHUB_OUTPUT
+          echo "android_bundle_id=${{ env.ANDROID_BUNDLE_ID }}" >> $GITHUB_ENV
+          echo "android_bundle_id=${{ env.ANDROID_BUNDLE_ID }}" >> $GITHUB_OUTPUT
+          echo "ios_bundle_id=${{ env.IOS_BUNDLE_ID }}" >> $GITHUB_ENV
+          echo "ios_bundle_id=${{ env.IOS_BUNDLE_ID }}" >> $GITHUB_OUTPUT
           echo "dotnet_version=${{ env.DOTNET_VERSION }}" >> $GITHUB_ENV
           echo "dotnet_version=${{ env.DOTNET_VERSION }}" >> $GITHUB_OUTPUT
           echo "ios_provisioning_profile_type=${{ env.IOS_PROFILE_TYPE }}" >> $GITHUB_ENV
@@ -98,7 +102,7 @@ jobs:
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
       release_number: ${{ needs.generate-build-number.outputs.releaseNumber }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
-      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
+      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.android_bundle_id }}
       android_key_name: "upload"
       define_constants: "USETEST"
     secrets:
@@ -116,7 +120,7 @@ jobs:
       environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
-      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
+      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.ios_bundle_id }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       ios_provisioning_profile_type: ${{ needs.exposeEnvironmentVariables.outputs.ios_provisioning_profile_type }}
       define_constants: "USETEST"
@@ -140,10 +144,11 @@ jobs:
 
   calliOSDeploy:
     name: Call iOS deploy workflow
-    needs: calliOSBuild
+    needs: [calliOSBuild, exposeEnvironmentVariables]
     uses: ./.github/workflows/publish-ios.yml
     with:
       artifact_name: ${{ needs.calliOSBuild.outputs.artifact_name }}
+      environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
     secrets:
       APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
       APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}

@@ -33,6 +33,17 @@ export const GetUserByEmail = (params: GetUserByEmail_Params) => ({
         }),
 });
 
+export type GetUserByObjectId_Params = { objectId: string };
+export type GetUserByObjectId_Response = UserData | null;
+export const GetUserByObjectId = (params: GetUserByObjectId_Params) => ({
+    key: ['/Users/getbyobjectid', params],
+    service: async () =>
+        ApiService('protected').fetchData<GetUserByObjectId_Response>({
+            url: `/Users/getbyobjectid/${params.objectId}`,
+            method: 'get',
+        }),
+});
+
 export type UpdateUser_Body = UserData;
 export type UpdateUser_Response = unknown;
 export const UpdateUser = () => ({

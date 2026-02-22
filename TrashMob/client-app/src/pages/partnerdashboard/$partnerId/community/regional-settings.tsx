@@ -1,11 +1,11 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2 } from 'lucide-react';
+import { Loader2, MapPin } from 'lucide-react';
 
 import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
 import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import CommunityData from '@/components/Models/CommunityData';
-import { GetCommunityForAdmin, UpdateCommunityContent } from '@/services/communities';
+import { GetCommunityForAdmin, UpdateCommunityContent, SuggestCommunityBounds } from '@/services/communities';
 import { GetPartnerById } from '@/services/partners';
 import { RegionType } from '@/lib/community-utils';
 import { BoundsPreviewMap } from '@/components/communities/bounds-preview-map';
@@ -23,23 +23,11 @@ import { BoundsPreviewMap } from '@/components/communities/bounds-preview-map';
 interface FormInputs {
     regionType: string;
     countyName: string;
-    latitude: string;
-    longitude: string;
-    boundsNorth: string;
-    boundsSouth: string;
-    boundsEast: string;
-    boundsWest: string;
 }
 
 const formSchema = z.object({
     regionType: z.string(),
     countyName: z.string().max(256, 'County name must be less than 256 characters'),
-    latitude: z.string().refine((v) => v === '' || !isNaN(Number(v)), 'Must be a valid number'),
-    longitude: z.string().refine((v) => v === '' || !isNaN(Number(v)), 'Must be a valid number'),
-    boundsNorth: z.string().refine((v) => v === '' || !isNaN(Number(v)), 'Must be a valid number'),
-    boundsSouth: z.string().refine((v) => v === '' || !isNaN(Number(v)), 'Must be a valid number'),
-    boundsEast: z.string().refine((v) => v === '' || !isNaN(Number(v)), 'Must be a valid number'),
-    boundsWest: z.string().refine((v) => v === '' || !isNaN(Number(v)), 'Must be a valid number'),
 });
 
 const regionTypeOptions = [
@@ -52,12 +40,22 @@ const regionTypeOptions = [
 ];
 
 const toStr = (v: number | null | undefined): string => (v != null ? String(v) : '');
-const toNumOrNull = (v: string): number | null => (v === '' ? null : Number(v));
 
 export const CommunityRegionalSettings = () => {
     const queryClient = useQueryClient();
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
     const { toast } = useToast();
+
+    // Derived geographic values stored in state (not in form — auto-detected from Nominatim)
+    const [boundaryGeoJson, setBoundaryGeoJson] = useState<string>('');
+    const [derivedBounds, setDerivedBounds] = useState<{
+        north: number | null;
+        south: number | null;
+        east: number | null;
+        west: number | null;
+        centerLat: number | null;
+        centerLng: number | null;
+    }>({ north: null, south: null, east: null, west: null, centerLat: null, centerLng: null });
 
     const { data: currentValues, isLoading } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
         queryKey: GetCommunityForAdmin({ communityId: partnerId }).key,
@@ -93,17 +91,44 @@ export const CommunityRegionalSettings = () => {
         },
     });
 
+    const { mutate: detectBoundary, isPending: isDetecting } = useMutation({
+        mutationFn: async () => {
+            const result = await SuggestCommunityBounds({ communityId: partnerId }).service();
+            return result.data;
+        },
+        onSuccess: (data) => {
+            setDerivedBounds({
+                north: data.north,
+                south: data.south,
+                east: data.east,
+                west: data.west,
+                centerLat: data.centerLatitude,
+                centerLng: data.centerLongitude,
+            });
+            if (data.boundaryGeoJson) {
+                setBoundaryGeoJson(data.boundaryGeoJson);
+            }
+            toast({
+                variant: 'primary',
+                title: 'Boundary detected',
+                description: `Geographic boundary derived from "${data.query}". Review the map and save.`,
+            });
+        },
+        onError: (error: any) => {
+            const message = error?.response?.data || 'Could not detect boundary. Check the community location fields.';
+            toast({
+                variant: 'destructive',
+                title: 'Detection failed',
+                description: String(message),
+            });
+        },
+    });
+
     const form = useForm<FormInputs>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             regionType: String(RegionType.City),
             countyName: '',
-            latitude: '',
-            longitude: '',
-            boundsNorth: '',
-            boundsSouth: '',
-            boundsEast: '',
-            boundsWest: '',
         },
     });
 
@@ -112,12 +137,15 @@ export const CommunityRegionalSettings = () => {
             form.reset({
                 regionType: toStr(currentValues.regionType) || String(RegionType.City),
                 countyName: currentValues.countyName || '',
-                latitude: toStr(currentValues.latitude),
-                longitude: toStr(currentValues.longitude),
-                boundsNorth: toStr(currentValues.boundsNorth),
-                boundsSouth: toStr(currentValues.boundsSouth),
-                boundsEast: toStr(currentValues.boundsEast),
-                boundsWest: toStr(currentValues.boundsWest),
+            });
+            setBoundaryGeoJson(currentValues.boundaryGeoJson || '');
+            setDerivedBounds({
+                north: currentValues.boundsNorth ?? null,
+                south: currentValues.boundsSouth ?? null,
+                east: currentValues.boundsEast ?? null,
+                west: currentValues.boundsWest ?? null,
+                centerLat: currentValues.latitude ?? null,
+                centerLng: currentValues.longitude ?? null,
             });
         }
     }, [currentValues, form]);
@@ -128,31 +156,24 @@ export const CommunityRegionalSettings = () => {
 
             const body: CommunityData = {
                 ...currentValues,
-                regionType: toNumOrNull(formValues.regionType),
+                regionType: formValues.regionType === '' ? null : Number(formValues.regionType),
                 countyName: formValues.countyName || '',
-                latitude: toNumOrNull(formValues.latitude),
-                longitude: toNumOrNull(formValues.longitude),
-                boundsNorth: toNumOrNull(formValues.boundsNorth),
-                boundsSouth: toNumOrNull(formValues.boundsSouth),
-                boundsEast: toNumOrNull(formValues.boundsEast),
-                boundsWest: toNumOrNull(formValues.boundsWest),
+                latitude: derivedBounds.centerLat,
+                longitude: derivedBounds.centerLng,
+                boundsNorth: derivedBounds.north,
+                boundsSouth: derivedBounds.south,
+                boundsEast: derivedBounds.east,
+                boundsWest: derivedBounds.west,
+                boundaryGeoJson: boundaryGeoJson,
             };
 
             mutate(body);
         },
-        [currentValues, mutate],
+        [currentValues, mutate, boundaryGeoJson, derivedBounds],
     );
 
     const watchedRegionType = form.watch('regionType');
-    const isNonCity = watchedRegionType !== String(RegionType.City);
     const isCounty = watchedRegionType === String(RegionType.County);
-
-    const watchedNorth = form.watch('boundsNorth');
-    const watchedSouth = form.watch('boundsSouth');
-    const watchedEast = form.watch('boundsEast');
-    const watchedWest = form.watch('boundsWest');
-    const watchedLat = form.watch('latitude');
-    const watchedLng = form.watch('longitude');
 
     if (isLoading) {
         return (
@@ -162,18 +183,25 @@ export const CommunityRegionalSettings = () => {
         );
     }
 
+    const hasGeoJson = !!boundaryGeoJson;
+    const hasBounds =
+        derivedBounds.north != null &&
+        derivedBounds.south != null &&
+        derivedBounds.east != null &&
+        derivedBounds.west != null;
+    const hasCenterPoint = derivedBounds.centerLat != null && derivedBounds.centerLng != null;
+
     return (
         <div className='py-8'>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-                    {/* Region Type */}
+                    {/* Region Type & Boundary Detection */}
                     <Card>
                         <CardHeader>
                             <CardTitle>Community Type</CardTitle>
                             <CardDescription>
-                                Define the geographic scope of your community. City communities match events by
-                                city/region. County, state, and other regional types use a bounding box to find events
-                                within their geographic area.
+                                Define the geographic scope of your community. Use &ldquo;Detect Boundary&rdquo; to
+                                automatically derive the boundary from your community&rsquo;s location.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className='space-y-4'>
@@ -198,8 +226,7 @@ export const CommunityRegionalSettings = () => {
                                             </SelectContent>
                                         </Select>
                                         <FormDescription>
-                                            City communities use exact city/region matching. All other types use
-                                            geographic bounds.
+                                            Defines the geographic scope of your community.
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
@@ -245,130 +272,33 @@ export const CommunityRegionalSettings = () => {
                                     </div>
                                 </div>
                             ) : null}
+
+                            <Button
+                                type='button'
+                                variant='outline'
+                                disabled={isDetecting}
+                                onClick={() => detectBoundary()}
+                            >
+                                {isDetecting ? (
+                                    <Loader2 className='h-4 w-4 animate-spin mr-2' />
+                                ) : (
+                                    <MapPin className='h-4 w-4 mr-2' />
+                                )}
+                                Detect Boundary
+                            </Button>
                         </CardContent>
                     </Card>
 
-                    {/* Center Point */}
-                    {isNonCity ? (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Center Point</CardTitle>
-                                <CardDescription>
-                                    The center coordinates for the community map. This is used when no bounding box is
-                                    configured.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                                    <FormField
-                                        control={form.control}
-                                        name='latitude'
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Latitude</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder='e.g., 47.6062' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='longitude'
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Longitude</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder='e.g., -122.3321' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ) : null}
-
-                    {/* Geographic Bounds */}
-                    {isNonCity ? (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Geographic Bounds</CardTitle>
-                                <CardDescription>
-                                    Define the bounding box for your community. Events, stats, and litter reports within
-                                    these bounds will appear on your community page.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className='space-y-4'>
-                                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                                    <FormField
-                                        control={form.control}
-                                        name='boundsNorth'
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>North Latitude</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder='e.g., 47.78' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='boundsSouth'
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>South Latitude</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder='e.g., 47.34' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='boundsEast'
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>East Longitude</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder='e.g., -121.83' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='boundsWest'
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>West Longitude</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder='e.g., -122.54' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ) : null}
-
                     {/* Map Preview */}
-                    {isNonCity && watchedLat && watchedLng ? (
+                    {hasGeoJson || hasBounds || hasCenterPoint ? (
                         <BoundsPreviewMap
-                            centerLat={Number(watchedLat) || 0}
-                            centerLng={Number(watchedLng) || 0}
-                            boundsNorth={toNumOrNull(watchedNorth)}
-                            boundsSouth={toNumOrNull(watchedSouth)}
-                            boundsEast={toNumOrNull(watchedEast)}
-                            boundsWest={toNumOrNull(watchedWest)}
+                            centerLat={derivedBounds.centerLat ?? 0}
+                            centerLng={derivedBounds.centerLng ?? 0}
+                            boundsNorth={derivedBounds.north}
+                            boundsSouth={derivedBounds.south}
+                            boundsEast={derivedBounds.east}
+                            boundsWest={derivedBounds.west}
+                            boundaryGeoJson={boundaryGeoJson}
                         />
                     ) : null}
 

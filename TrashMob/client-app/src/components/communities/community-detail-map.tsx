@@ -2,9 +2,12 @@ import { useRef, useState } from 'react';
 import { AdvancedMarker, InfoWindow, MapProps } from '@vis.gl/react-google-maps';
 import { GoogleMapWithKey as GoogleMap } from '../Map/GoogleMap';
 import { EventDetailInfoWindowHeader, EventDetailInfoWindowContent } from '../Map/EventInfoWindowContent';
+import { ExistingAreasOverlay } from '../Map/AreaMapEditor/ExistingAreasOverlay';
+import { CommunityBoundsOverlay } from '../Map/CommunityBoundsOverlay';
 import EventData from '../Models/EventData';
 import TeamData from '../Models/TeamData';
 import LitterReportData from '../Models/LitterReportData';
+import AdoptableAreaData from '../Models/AdoptableAreaData';
 import { LitterReportStatusEnum } from '../Models/LitterReportStatus';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
 import { cn } from '@/lib/utils';
@@ -40,17 +43,21 @@ const getLitterReportColor = (statusId: number): string => {
     }
 };
 
+const COMMUNITY_MAP_ID = 'community-detail-map';
+
 interface CommunityDetailMapProps extends MapProps {
     id?: string;
     events: EventData[];
     teams: TeamData[];
     litterReports: LitterReportData[];
+    areas?: AdoptableAreaData[];
     centerLat: number;
     centerLng: number;
     boundsNorth?: number | null;
     boundsSouth?: number | null;
     boundsEast?: number | null;
     boundsWest?: number | null;
+    boundaryGeoJson?: string;
 }
 
 export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
@@ -59,21 +66,26 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
         events,
         teams,
         litterReports,
+        areas,
         centerLat,
         centerLng,
         boundsNorth,
         boundsSouth,
         boundsEast,
         boundsWest,
+        boundaryGeoJson,
         gestureHandling,
         ...rest
     } = props;
+
+    const mapId = id || COMMUNITY_MAP_ID;
 
     const hasBounds = boundsNorth != null && boundsSouth != null && boundsEast != null && boundsWest != null;
 
     const [showEvents, setShowEvents] = useState(true);
     const [showTeams, setShowTeams] = useState(true);
     const [showLitterReports, setShowLitterReports] = useState(true);
+    const [showAreas, setShowAreas] = useState(true);
 
     const eventMarkersRef = useRef<Record<string, google.maps.marker.AdvancedMarkerElement>>({});
     const teamMarkersRef = useRef<Record<string, google.maps.marker.AdvancedMarkerElement>>({});
@@ -171,12 +183,24 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                             Litter Reports ({litterReportsWithLocation.length})
                         </Label>
                     </div>
+                    {areas && areas.length > 0 ? (
+                        <div className='flex items-center space-x-2'>
+                            <Checkbox
+                                id='show-areas'
+                                checked={showAreas}
+                                onCheckedChange={(checked) => setShowAreas(checked === true)}
+                            />
+                            <Label htmlFor='show-areas' className='text-sm cursor-pointer'>
+                                Adoptable Areas ({areas.length})
+                            </Label>
+                        </div>
+                    ) : null}
                 </div>
             </CardHeader>
             <CardContent ref={ref}>
                 <div className='h-[400px] rounded-lg overflow-hidden'>
                     <GoogleMap
-                        id={id}
+                        id={mapId}
                         gestureHandling={gestureHandling || 'cooperative'}
                         defaultCenter={{ lat: centerLat, lng: centerLng }}
                         {...(hasBounds
@@ -191,6 +215,9 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                             : { defaultZoom: 11 })}
                         {...rest}
                     >
+                        {/* Community Boundary */}
+                        {boundaryGeoJson ? <CommunityBoundsOverlay mapId={mapId} geoJson={boundaryGeoJson} /> : null}
+
                         {/* Event Markers */}
                         {showEvents
                             ? eventsWithLocation.map((event) => (
@@ -253,6 +280,11 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                                   </AdvancedMarker>
                               ))
                             : null}
+
+                        {/* Adoptable Areas Overlay */}
+                        {showAreas && areas && areas.length > 0 ? (
+                            <ExistingAreasOverlay mapId={mapId} areas={areas} />
+                        ) : null}
 
                         {/* Event Info Window */}
                         {showingEvent ? (

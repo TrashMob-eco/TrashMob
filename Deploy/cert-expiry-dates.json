@@ -1,0 +1,28 @@
+{
+  "certificates": [
+    {
+      "name": "iOS Distribution Certificate",
+      "expiryDate": "2027-02-21",
+      "renewUrl": "https://developer.apple.com/account/resources/certificates/list",
+      "notes": "Update this date after regenerating the .p12 certificate. See R1 in deployment checklist."
+    },
+    {
+      "name": "App Store Connect API Key",
+      "expiryDate": "2099-12-31",
+      "renewUrl": "https://appstoreconnect.apple.com/access/integrations/api",
+      "notes": "API keys don't expire unless revoked. Set to 2099 as placeholder. Update if you set an expiry."
+    },
+    {
+      "name": "Apple Sign-In Client Secret (Entra IDP)",
+      "expiryDate": "2026-08-20",
+      "renewUrl": "https://developer.apple.com/account/resources/authkeys/list",
+      "notes": "Apple client secrets expire every 6 months. Regenerate using d:/tools/Apple/generate-apple-secret.js"
+    },
+    {
+      "name": "Android Upload Keystore",
+      "expiryDate": "2036-01-15",
+      "renewUrl": "https://play.google.com/console",
+      "notes": "Created with 10000-day validity. Rarely needs renewal unless compromised."
+    }
+  ]
+}

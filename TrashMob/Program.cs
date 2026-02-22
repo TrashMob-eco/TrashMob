@@ -226,6 +226,9 @@ public class Program
         builder.Services.AddScoped<IAuthorizationHandler, UserIsEventLeadOrIsAdminAuthHandler>();
         builder.Services.AddScoped<IAuthorizationHandler, UserIsProfessionalCompanyUserOrIsAdminAuthHandler>();
 
+        builder.Services.AddHttpClient("CiamGraph");
+        builder.Services.AddSingleton<ICiamGraphService, CiamGraphService>();
+
         builder.Services.AddManagers();
         builder.Services.AddRepositories();
 

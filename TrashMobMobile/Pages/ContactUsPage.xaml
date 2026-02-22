@@ -31,6 +31,9 @@
                                                                         x:Name="nameValidator" />
                                 </controls:TMEntry.Behaviors>
                             </controls:TMEntry>
+                            <Label FontSize="Micro" TextColor="Red" Margin="4,0,0,0"
+                                   Text="Name is required and must be at least 5 characters."
+                                   IsVisible="{Binding Source={x:Reference nameValidator}, Path=IsNotValid}" />
                         </VerticalStackLayout>
 
                         <VerticalStackLayout>
@@ -48,6 +51,9 @@
                                     </toolkit:MultiValidationBehavior>
                                 </controls:TMEntry.Behaviors>
                             </controls:TMEntry>
+                            <Label FontSize="Micro" TextColor="Red" Margin="4,0,0,0"
+                                   Text="{Binding Source={x:Reference EmailValidator}, Path=Errors[0]}"
+                                   IsVisible="{Binding Source={x:Reference EmailValidator}, Path=IsNotValid}" />
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
@@ -66,6 +72,9 @@
                                                                         Flags="ValidateOnValueChanged" MinimumLength="10" />
                                 </controls:TMEditor.Behaviors>
                             </controls:TMEditor>
+                            <Label FontSize="Micro" TextColor="Red" Margin="4,0,0,0"
+                                   Text="Message is required and must be at least 10 characters."
+                                   IsVisible="{Binding Source={x:Reference messageValidator}, Path=IsNotValid}" />
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
@@ -93,47 +102,6 @@
                     </Button.Triggers>
                 </Button>
 
-                <Label
-                    Margin="10,0"
-                    FontSize="Micro"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Center"
-                    HorizontalTextAlignment="Center"
-                    TextColor="Red">
-                    <Label.Triggers>
-                        <MultiTrigger TargetType="Label">
-                            <MultiTrigger.Conditions>
-                                <BindingCondition
-                                    Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                    Value="True" />
-                                <BindingCondition
-                                    Binding="{Binding Source={x:Reference EmailValidator}, Path=IsValid}"
-                                    Value="True" />
-                                <BindingCondition
-                                    Binding="{Binding Source={x:Reference messageValidator}, Path=IsValid}"
-                                    Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter Property="IsVisible" Value="False" />
-                        </MultiTrigger>
-                        <DataTrigger TargetType="Label"
-                                     Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                     Value="False">
-                            <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Label"
-                                     Binding="{Binding Source={x:Reference EmailValidator}, Path=IsValid}"
-                                     Value="False">
-                            <Setter Property="Text"
-                                    Value="{Binding Source={x:Reference EmailValidator}, Path=Errors[0]}" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Label"
-                                     Binding="{Binding Source={x:Reference messageValidator}, Path=IsValid}"
-                                     Value="False">
-                            <Setter Property="Text"
-                                    Value="Message is required and must be at least 10 characters." />
-                        </DataTrigger>
-                    </Label.Triggers>
-                </Label>
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />

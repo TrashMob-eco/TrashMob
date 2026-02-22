@@ -93,6 +93,32 @@ export const DeleteAdoptableArea = () => ({
         }),
 });
 
+export type ClearAllAreas_Params = { partnerId: string };
+export type ClearAllAreas_Response = { areasRemoved: number; stagedAreasDeleted: number; batchesDeleted: number };
+export const ClearAllAreas = () => ({
+    key: ['/communities/areas', 'clear-all'],
+    service: async (params: ClearAllAreas_Params) =>
+        ApiService('protected').fetchData<ClearAllAreas_Response>({
+            url: `/communities/${params.partnerId}/areas/clear-all`,
+            method: 'delete',
+        }),
+});
+
+// ============================================================================
+// Export
+// ============================================================================
+
+export type ExportAreas_Params = { partnerId: string; format: 'geojson' | 'kml' };
+export const ExportAreas = (params: ExportAreas_Params) => ({
+    key: ['/communities/', params.partnerId, '/areas/export', params.format],
+    service: async () =>
+        ApiService('protected').fetchData<Blob>({
+            url: `/communities/${params.partnerId}/areas/export?format=${params.format}`,
+            method: 'get',
+            responseType: 'blob',
+        }),
+});
+
 // ============================================================================
 // AI Area Suggestion
 // ============================================================================

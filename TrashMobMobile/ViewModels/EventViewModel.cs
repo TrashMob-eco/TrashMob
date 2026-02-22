@@ -27,6 +27,11 @@ public partial class EventViewModel : ObservableObject
     [ObservableProperty]
     private int durationMinutes;
 
+    public string DisplayDuration => $"{DurationHours}h {DurationMinutes}m";
+
+    partial void OnDurationHoursChanged(int value) => OnPropertyChanged(nameof(DisplayDuration));
+    partial void OnDurationMinutesChanged(int value) => OnPropertyChanged(nameof(DisplayDuration));
+
     [ObservableProperty]
     private int eventStatusId;
 

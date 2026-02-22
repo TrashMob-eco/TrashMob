@@ -18,6 +18,7 @@ public class EditEventViewModelTests
     private readonly Mock<IEventPartnerLocationServiceRestService> mockEventPartnerLocationServiceRestService;
     private readonly Mock<ILitterReportManager> mockLitterReportManager;
     private readonly Mock<IEventLitterReportManager> mockEventLitterReportManager;
+    private readonly Mock<ITeamManager> mockTeamManager;
     private readonly EditEventViewModel sut;
 
     private readonly User testUser;
@@ -33,6 +34,7 @@ public class EditEventViewModelTests
         mockEventPartnerLocationServiceRestService = new Mock<IEventPartnerLocationServiceRestService>();
         mockLitterReportManager = new Mock<ILitterReportManager>();
         mockEventLitterReportManager = new Mock<IEventLitterReportManager>();
+        mockTeamManager = new Mock<ITeamManager>();
 
         testUser = TestHelpers.CreateTestUser();
         testEvent = TestHelpers.CreateTestEvent(createdByUserId: testUser.Id);
@@ -47,7 +49,8 @@ public class EditEventViewModelTests
             mockUserManager.Object,
             mockEventPartnerLocationServiceRestService.Object,
             mockLitterReportManager.Object,
-            mockEventLitterReportManager.Object);
+            mockEventLitterReportManager.Object,
+            mockTeamManager.Object);
     }
 
     private void SetupDefaultMocks(Event? mobEvent = null)
@@ -286,7 +289,7 @@ public class EditEventViewModelTests
         Assert.Equal(testEvent.Description, sut.EventViewModel.Description);
         Assert.Equal(testEvent.EventDate, sut.EventViewModel.EventDate);
         Assert.Equal(testEvent.EventTypeId, sut.EventViewModel.EventTypeId);
-        Assert.Equal(testEvent.IsEventPublic, sut.EventViewModel.IsEventPublic);
+        Assert.Equal(testEvent.EventVisibilityId, sut.EventViewModel.EventVisibilityId);
         Assert.Equal(testEvent.MaxNumberOfParticipants, sut.EventViewModel.MaxNumberOfParticipants);
     }
 

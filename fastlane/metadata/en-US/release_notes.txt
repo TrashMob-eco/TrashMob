@@ -1,0 +1,8 @@
+- Background route tracking — keeps recording when you switch apps
+- Event visibility controls — team-only and community events
+- Redesigned Create/Edit Event pages with card-based layouts
+- Image cropping and camera capture for photo uploads
+- Map view for your routes with colored polylines
+- Modern sign-in with improved reliability
+- Inline validation and required field indicators
+- Bug fixes and stability improvements

@@ -1,0 +1,29 @@
+Make a real difference in your neighborhood.
+
+TrashMob connects you with community cleanup events happening near you. Whether you want to organize a cleanup or join one, TrashMob makes it easy to take action against litter and build a cleaner world.
+
+Find and join events
+Browse cleanup events on an interactive map. See what's happening near you today, this week, or this month. One tap to RSVP and get directions.
+
+Report litter
+Spot a mess? Snap a photo to create a litter report. Your report appears on the community map so others can see problem areas and organize cleanups where they're needed most.
+
+Track your route
+Turn on route tracking during a cleanup to see exactly where you covered. Your path shows on the event map so the team can see the area cleaned.
+
+See your impact
+Your personal dashboard shows your stats: events attended, hours volunteered, bags collected, and litter reports submitted. Watch your impact grow with every cleanup.
+
+Build a team
+Create or join a team to track collective impact. Compete on leaderboards, coordinate events, and celebrate milestones together.
+
+Pickup coordination
+After a cleanup, drop pins where bags of trash are waiting. Hauling partners can see pickup locations and collect them — no bags left behind.
+
+Why TrashMob?
+- 100% free, no ads, open source
+- Events in cities across the United States and Canada
+- Works offline for route tracking
+- Available on iOS and Android
+
+Join thousands of volunteers making their communities cleaner. Download TrashMob and start your first cleanup today.
