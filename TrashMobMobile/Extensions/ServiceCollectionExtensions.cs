@@ -46,6 +46,8 @@
             services.AddSingleton<IPickupLocationManager, PickupLocationManager>();
             services.AddSingleton<IPickupLocationRestService, PickupLocationRestService>();
             services.AddSingleton<IServiceTypeRestService, ServiceTypeRestService>();
+            services.AddSingleton<IAppVersionRestService, AppVersionRestService>();
+            services.AddSingleton<IAppVersionCheckService, AppVersionCheckService>();
             services.AddSingleton<IStatsRestService, StatsRestService>();
             services.AddSingleton<ITeamManager, TeamManager>();
             services.AddSingleton<ITeamRestService, TeamRestService>();
