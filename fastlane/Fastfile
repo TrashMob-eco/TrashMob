@@ -158,7 +158,9 @@ platform :ios do
       overwrite_screenshots: true,
       force: true,
       submit_for_review: false,
-      run_precheck_before_submit: false
+      run_precheck_before_submit: false,
+      edit_live: true,
+      use_live_version: true
     )
   end
 end
