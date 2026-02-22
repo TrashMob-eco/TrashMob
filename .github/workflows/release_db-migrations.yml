@@ -88,6 +88,9 @@ jobs:
           echo "::add-mask::$CONNECTION_STRING"
           echo "connection_string=$CONNECTION_STRING" >> $GITHUB_OUTPUT
 
+      - name: Restore NuGet packages
+        run: dotnet restore TrashMob.sln
+
       - name: List pending migrations
         run: |
           echo "Checking for pending migrations..."
