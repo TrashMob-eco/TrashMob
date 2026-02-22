@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobile.Controls.UpdateRequiredPopup">
+
+    <Border Padding="24"
+            BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+            StrokeShape="RoundRectangle 16"
+            Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+            StrokeThickness="1"
+            WidthRequest="280">
+        <VerticalStackLayout Spacing="16">
+
+            <Label x:Name="titleLabel"
+                   FontFamily="LexendSemibold"
+                   FontSize="18"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+
+            <Label x:Name="messageLabel"
+                   FontSize="14"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+            <Button Text="Update Now"
+                    Style="{StaticResource PrimaryLargeButton}"
+                    Clicked="OnUpdateNowClicked" />
+
+            <Button x:Name="laterButton"
+                    Text="Later"
+                    Style="{StaticResource SecondaryLargeButton}"
+                    Clicked="OnLaterClicked" />
+
+        </VerticalStackLayout>
+    </Border>
+</ContentView>
