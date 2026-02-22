@@ -1,21 +1,5 @@
 // Configuration service - fetches app config from backend
 
-export interface B2CConfig {
-    clientId: string;
-    authorityDomain: string;
-    policies: {
-        signUpSignIn: string;
-        deleteUser: string;
-        profileEdit: string;
-    };
-    authorities: {
-        signUpSignIn: string;
-        deleteUser: string;
-        profileEdit: string;
-    };
-    scopes: string[];
-}
-
 export interface EntraConfig {
     clientId: string;
     authorityDomain: string;
@@ -23,12 +7,8 @@ export interface EntraConfig {
     scopes: string[];
 }
 
-export type AuthProvider = 'b2c' | 'entra';
-
 export interface AppConfig {
     applicationInsightsKey: string | null;
-    authProvider?: AuthProvider;
-    azureAdB2C?: B2CConfig | null;
     azureAdEntra?: EntraConfig | null;
 }
 
@@ -62,10 +42,8 @@ export async function getAppConfig(): Promise<AppConfig> {
         })
         .catch((error) => {
             console.error('Failed to fetch app config:', error);
-            // Return a default config — defaults to Entra (fallback config in AuthStore handles the rest)
             const defaultConfig: AppConfig = {
                 applicationInsightsKey: null,
-                authProvider: 'entra',
             };
             cachedConfig = defaultConfig;
             return defaultConfig;

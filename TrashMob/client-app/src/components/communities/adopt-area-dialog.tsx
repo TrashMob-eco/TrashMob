@@ -77,7 +77,7 @@ export const AdoptAreaDialog = ({ area, communityId, open, onOpenChange }: Adopt
     function handleAgeGateConfirm() {
         setShowAgeGate(false);
         const apiConfig = getApiConfig();
-        getMsalClientInstance().loginRedirect({ scopes: apiConfig.b2cScopes });
+        getMsalClientInstance().loginRedirect({ scopes: apiConfig.scopes });
     }
 
     function handleSignIn() {

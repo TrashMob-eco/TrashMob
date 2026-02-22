@@ -67,9 +67,8 @@ az keyvault secret set --vault-name $keyVaultName --name TMDBServerConnectionStr
 az keyvault secret set --vault-name $keyVaultName --name StorageAccountKey --value $storageKey
 az keyvault secret set --vault-name $keyVaultName --name sendGridApiKey --value $sendGridApiKey
 
-# Note: Azure AD B2C configuration is now set via environment variables in containerApp.bicep
-# The B2C settings are public configuration values (not secrets) and are determined by the 'environment' parameter
-# This includes both backend (JWT validation) and frontend (MSAL) client IDs
+# Note: Azure AD Entra External ID configuration is set via environment variables in containerApp.bicep
+# The Entra settings are public configuration values (not secrets) and are determined by the 'environment' parameter
 
 # Set the webapp to the correct keyvaulturi
 az webapp config appsettings set --name $appServiceName --resource-group $rgName --settings "VaultUri=https://$keyVaultName.vault.azure.net"

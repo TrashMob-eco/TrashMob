@@ -15,7 +15,7 @@ namespace TrashMob.Controllers
         /// Gets client-side configuration settings.
         /// </summary>
         /// <remarks>Returns configuration needed by the client-side application including
-        /// Application Insights and Azure AD B2C settings for authentication.</remarks>
+        /// Application Insights and Azure AD Entra External ID settings for authentication.</remarks>
         [HttpGet]
         public IActionResult GetConfig()
         {
@@ -36,75 +36,6 @@ namespace TrashMob.Controllers
                 }
             }
 
-            var useEntraExternalId = configuration.GetValue<bool>("UseEntraExternalId");
-
-            if (useEntraExternalId)
-            {
-                return Ok(BuildEntraConfig(instrumentationKey));
-            }
-
-            return Ok(BuildB2CConfig(instrumentationKey));
-        }
-
-        private object BuildB2CConfig(string instrumentationKey)
-        {
-            var b2cInstance = configuration["AzureAdB2C:Instance"]?.TrimEnd('/');
-            var b2cDomain = configuration["AzureAdB2C:Domain"];
-            var b2cFrontendClientId = configuration["AzureAdB2C:FrontendClientId"];
-            var b2cSignUpSignInPolicyId = configuration["AzureAdB2C:SignUpSignInPolicyId"];
-
-            string signUpSignInAuthority = null;
-            string deleteUserAuthority = null;
-            string profileEditAuthority = null;
-            string authorityDomain = null;
-
-            if (!string.IsNullOrWhiteSpace(b2cInstance) && !string.IsNullOrWhiteSpace(b2cDomain))
-            {
-                var baseAuthority = $"{b2cInstance}/{b2cDomain}";
-                signUpSignInAuthority = $"{baseAuthority}/{b2cSignUpSignInPolicyId}";
-                deleteUserAuthority = $"{baseAuthority}/B2C_1A_TM_DEREGISTER";
-                profileEditAuthority = $"{baseAuthority}/B2C_1A_TM_PROFILEEDIT";
-
-                if (b2cInstance.StartsWith("https://"))
-                {
-                    authorityDomain = b2cInstance.Substring("https://".Length);
-                }
-            }
-
-            return new
-            {
-                applicationInsightsKey = instrumentationKey,
-                authProvider = "b2c",
-                azureAdB2C = new
-                {
-                    clientId = b2cFrontendClientId,
-                    authorityDomain,
-                    policies = new
-                    {
-                        signUpSignIn = b2cSignUpSignInPolicyId,
-                        deleteUser = "B2C_1A_TM_DEREGISTER",
-                        profileEdit = "B2C_1A_TM_PROFILEEDIT",
-                    },
-                    authorities = new
-                    {
-                        signUpSignIn = signUpSignInAuthority,
-                        deleteUser = deleteUserAuthority,
-                        profileEdit = profileEditAuthority,
-                    },
-                    scopes = b2cDomain is not null
-                        ? new[]
-                        {
-                            $"https://{b2cDomain}/api/TrashMob.Read",
-                            $"https://{b2cDomain}/api/TrashMob.Writes",
-                            "email",
-                        }
-                        : null,
-                },
-            };
-        }
-
-        private object BuildEntraConfig(string instrumentationKey)
-        {
             var entraInstance = configuration["AzureAdEntra:Instance"]?.TrimEnd('/');
             var entraDomain = configuration["AzureAdEntra:Domain"];
             var entraFrontendClientId = configuration["AzureAdEntra:FrontendClientId"];
@@ -124,7 +55,7 @@ namespace TrashMob.Controllers
                 }
             }
 
-            return new
+            return Ok(new
             {
                 applicationInsightsKey = instrumentationKey,
                 authProvider = "entra",
@@ -142,7 +73,7 @@ namespace TrashMob.Controllers
                         }
                         : null,
                 },
-            };
+            });
         }
     }
 }

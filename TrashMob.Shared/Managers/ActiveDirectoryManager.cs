@@ -8,7 +8,7 @@ namespace TrashMob.Shared.Managers
     using User = TrashMob.Models.User;
 
     /// <summary>
-    /// Manages Azure Active Directory B2C user lifecycle operations including creation, validation, and profile updates.
+    /// Manages Azure Active Directory user lifecycle operations including creation, validation, and profile updates.
     /// </summary>
     public class ActiveDirectoryManager(IUserManager userManager) : IActiveDirectoryManager
     {
