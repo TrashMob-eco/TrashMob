@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phase 1 Complete) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
@@ -47,33 +47,33 @@ This project addresses all three gaps by adding route-level metric entry, a litt
 
 #### Backend
 
-- [ ] Add `WeightUnitId` (int?, FK to WeightUnits) to `EventAttendeeRoute` — currently has `WeightCollected` as decimal but no unit
-- [ ] Add `PUT /api/routes/{routeId}/metrics` endpoint for updating route metrics (bags, weight, weight unit, notes)
-- [ ] Create `IRouteMetricsAggregator` service that:
+- [x] Add `WeightUnitId` (int?, FK to WeightUnits) to `EventAttendeeRoute` — migration `20260222160059_AddRouteWeightUnitAndSummaryRouteFlag`
+- [x] Add `PUT /api/routes/{routeId}` endpoint for updating route metrics (bags, weight, weight unit, notes) — `RouteMetadataController`
+- [x] Create aggregation logic in `EventAttendeeRouteManager`:
   - Sums `BagsCollected` across all routes for an event
   - Sums `WeightCollected` (converting to a common unit if mixed) across all routes
   - Sums `DurationMinutes` across all routes
-  - Returns `RouteMetricsAggregate` DTO
-- [ ] Add `GET /api/events/{eventId}/routes/aggregate` endpoint returning the aggregate
-- [ ] Update `EventSummaryManager` to optionally auto-populate from route aggregates when the event lead creates/updates the summary (pre-fill, not overwrite)
-- [ ] Add `IsFromRouteData` boolean to `EventSummary` to indicate whether totals were auto-populated vs manually entered
+  - Returns `DisplayEventRouteStats` DTO
+- [x] Add `GET /api/events/{eventId}/routes/stats` endpoint returning the aggregate — `EventRoutesController`
+- [x] Add `GET /api/events/{eventId}/routes/summary-prefill` endpoint for event summary pre-fill
+- [x] Add `IsFromRouteData` boolean to `EventSummary` to indicate whether totals were auto-populated vs manually entered
 
 #### Mobile App
 
-- [ ] Add "Log Pickup" screen accessible from the active route tracking view
+- [x] Add "Log Pickup" popup accessible from the active route tracking view — `LogPickupPopup`
   - Bags collected (integer stepper, 0-99)
   - Weight picked (decimal input with unit picker: lb / kg)
   - Notes (optional text, 200 chars)
-  - Save button → calls `PUT /api/routes/{routeId}/metrics`
-- [ ] Show route metrics summary on route completion screen
-- [ ] Pre-fill event summary form with route aggregates when event lead taps "Complete Event"
-- [ ] Show "(from route data)" indicator when summary values came from aggregation
+  - Save button → calls `PUT /api/routes/{routeId}`
+- [x] Show route metrics summary on route completion screen
+- [x] Pre-fill event summary form with route aggregates when event lead taps "Complete Event" — `EditEventSummaryViewModel.TryPrefillFromRouteData()`
+- [x] Show "(from route data)" indicator when summary values came from aggregation
 
 #### Web App
 
-- [ ] Show per-route metrics in the event details route list (bags, weight, distance)
-- [ ] Show route aggregate totals card on event details page
-- [ ] Pre-fill event summary form from route aggregates
+- [x] Show per-route metrics in the event details route list (bags, weight, distance)
+- [x] Show route aggregate totals card on event details page — `EventRouteStatsCard`
+- [x] Pre-fill event summary form from route aggregates
 
 ### Phase 2 — Litter Density Color Gradient
 
@@ -408,5 +408,5 @@ _To be created on project start._
 
 **Last Updated:** February 22, 2026
 **Owner:** @JoeBeernink
-**Status:** Not Started
-**Next Review:** On project kickoff
+**Status:** In Progress (Phase 1 Complete)
+**Next Review:** Phase 2 kickoff
