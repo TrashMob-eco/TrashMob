@@ -50,11 +50,11 @@ Strapi CMS is already deployed and managing home page content (hero, what-is-tra
 - ✅ Add TypeScript types and service factories in `services/cms.ts`
 
 ### Phase 2 — News Listing Page
-- ❌ Create `/news` page with responsive card grid layout
-- ❌ Each card shows: cover image, category badge, title, excerpt, date, read time
-- ❌ Server-side pagination (10 posts per page) with page navigation
-- ❌ Category filter tabs/pills at the top
-- ❌ Empty state when no posts exist
+- ✅ Create `/news` page with responsive card grid layout
+- ✅ Each card shows: cover image, category badge, title, excerpt, date, read time
+- ✅ Server-side pagination (9 posts per page) with page navigation
+- ✅ Category filter tabs/pills at the top
+- ✅ Empty state when no posts exist
 
 ### Phase 3 — Post Detail Page
 - ❌ Create `/news/:slug` page with full article layout
@@ -318,5 +318,5 @@ None in this project. Mobile news feed would be a separate future project.
 
 **Last Updated:** February 22, 2026
 **Owner:** Product & Engineering Team
-**Status:** In Progress — Phase 1 complete (content types + API proxy)
-**Next Review:** When ready to begin Phase 2 (News Listing Page)
+**Status:** In Progress — Phases 1-2 complete (content types + API proxy + news listing page)
+**Next Review:** When ready to begin Phase 3 (Post Detail Page)
