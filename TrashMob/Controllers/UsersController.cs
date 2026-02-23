@@ -4,6 +4,7 @@ namespace TrashMob.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
@@ -17,7 +18,7 @@ namespace TrashMob.Controllers
     /// Controller for managing users, including retrieval, update, and deletion operations.
     /// </summary>
     [Route("api/users")]
-    public class UsersController(IUserManager userManager, IEventAttendeeMetricsManager metricsManager, IImageManager imageManager) : SecureController
+    public class UsersController(IUserManager userManager, IEventAttendeeMetricsManager metricsManager, IImageManager imageManager, IUserDataExportManager exportManager) : SecureController
     {
         /// <summary>
         /// Retrieves all users. Admin access required.
@@ -230,6 +231,56 @@ namespace TrashMob.Controllers
 
             var impactStats = await metricsManager.GetUserImpactStatsAsync(userId, cancellationToken);
             return Ok(impactStats);
+        }
+
+        /// <summary>
+        /// Exports all personal data for a user as a JSON file download.
+        /// Users can only export their own data unless they are a site admin.
+        /// Rate limited to one export per 24 hours.
+        /// </summary>
+        /// <param name="id">The ID of the user whose data to export.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("{id}/export")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+        public async Task<IActionResult> ExportUserData(Guid id, CancellationToken cancellationToken)
+        {
+            var currentUser = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken);
+
+            if (currentUser is null)
+            {
+                return NotFound();
+            }
+
+            if (id != UserId && !currentUser.IsSiteAdmin)
+            {
+                return Forbid();
+            }
+
+            // Rate limit: once per 24 hours
+            if (currentUser.LastDataExportRequestedDate.HasValue &&
+                currentUser.LastDataExportRequestedDate.Value > DateTimeOffset.UtcNow.AddHours(-24))
+            {
+                return StatusCode(StatusCodes.Status429TooManyRequests,
+                    "Data export is limited to once per 24 hours.");
+            }
+
+            // Update rate limit timestamp before streaming (can't change status after body starts)
+            currentUser.LastDataExportRequestedDate = DateTimeOffset.UtcNow;
+            await userManager.UpdateAsync(currentUser, cancellationToken);
+
+            // Stream JSON directly to response body to avoid timeout for large exports
+            var timestamp = DateTimeOffset.UtcNow.ToString("yyyyMMdd-HHmmss");
+            Response.ContentType = "application/json";
+            Response.Headers.Append("Content-Disposition",
+                $"attachment; filename=\"trashmob-data-export-{timestamp}.json\"");
+
+            await exportManager.WriteExportToStreamAsync(id, Response.Body, cancellationToken);
+
+            TrackEvent(nameof(ExportUserData));
+            return new EmptyResult();
         }
 
         /// <summary>

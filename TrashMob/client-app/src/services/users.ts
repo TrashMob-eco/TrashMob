@@ -84,6 +84,17 @@ export const UploadProfilePhoto = () => ({
     },
 });
 
+export type ExportUserData_Params = { userId: string };
+export const ExportUserData = (params: ExportUserData_Params) => ({
+    key: ['/users/export', params.userId],
+    service: async () =>
+        ApiService('protected').fetchData<Blob>({
+            url: `/users/${params.userId}/export`,
+            method: 'get',
+            responseType: 'blob',
+        }),
+});
+
 export type DeleteUserById_Params = { id: string };
 export type DeleteUserById_Response = UserData | null;
 export const DeleteUserById = () => ({

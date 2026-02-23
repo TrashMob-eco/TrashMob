@@ -4,7 +4,7 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Camera, CircleUserRound, Loader2 } from 'lucide-react';
+import { Camera, CircleUserRound, Download, Loader2 } from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +13,7 @@ import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { GetUserById, UpdateUser, UploadProfilePhoto, VerifyUniqueUserName } from '@/services/users';
+import { ExportUserData, GetUserById, UpdateUser, UploadProfilePhoto, VerifyUniqueUserName } from '@/services/users';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import UserData from '@/components/Models/UserData';
@@ -36,6 +36,7 @@ export const MyProfile = () => {
     const { toast } = useToast();
     const { currentUser, handleUserUpdated } = useLogin();
     const [userNameError, setUserNameError] = useState<string | null>(null);
+    const [isExporting, setIsExporting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const uploadPhoto = useMutation({
@@ -189,6 +190,27 @@ export const MyProfile = () => {
         },
         [navigate],
     );
+
+    const handleExport = useCallback(async () => {
+        if (!currentUser?.id) return;
+        setIsExporting(true);
+        try {
+            const response = await ExportUserData({ userId: currentUser.id }).service();
+            const url = URL.createObjectURL(response.data);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `trashmob-data-export.json`;
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            toast({ variant: 'primary', title: 'Your data export has been downloaded.' });
+        } catch {
+            toast({ variant: 'destructive', title: 'Failed to export your data. Please try again.' });
+        } finally {
+            setIsExporting(false);
+        }
+    }, [currentUser?.id, toast]);
 
     if (!user) return null;
 
@@ -409,6 +431,35 @@ export const MyProfile = () => {
                             </CardFooter>
                         </form>
                     </Form>
+                </Card>
+
+                <Card className='mt-6'>
+                    <CardHeader>
+                        <CardTitle>Data & Privacy</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className='text-sm text-muted-foreground mb-3'>
+                            Download a copy of all your personal data, including your profile, event history, routes,
+                            and more. Exports are limited to once per 24 hours.
+                        </p>
+                        <Button
+                            variant='outline'
+                            onClick={handleExport}
+                            disabled={isExporting}
+                        >
+                            {isExporting ? (
+                                <>
+                                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                                    Exporting...
+                                </>
+                            ) : (
+                                <>
+                                    <Download className='mr-2 h-4 w-4' />
+                                    Download My Data
+                                </>
+                            )}
+                        </Button>
+                    </CardContent>
                 </Card>
             </div>
         </div>
