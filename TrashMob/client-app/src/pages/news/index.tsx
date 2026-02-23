@@ -48,9 +48,11 @@ function NewsCard({ post }: { post: { id: number; attributes: NewsPostData } }) 
 
                 <CardContent className='p-4'>
                     {/* Category badge */}
-                    {categoryName ? <Badge variant='outline' className='mb-2'>
+                    {categoryName ? (
+                        <Badge variant='outline' className='mb-2'>
                             {categoryName}
-                        </Badge> : null}
+                        </Badge>
+                    ) : null}
 
                     {/* Title */}
                     <h3 className='mb-2 text-lg font-semibold leading-tight line-clamp-2 group-hover:text-primary'>
@@ -70,10 +72,12 @@ function NewsCard({ post }: { post: { id: number; attributes: NewsPostData } }) 
                             <Calendar className='h-3 w-3' />
                             {formatDate(attributes.publishedAt)}
                         </span>
-                        {attributes.estimatedReadTime ? <span className='flex items-center gap-1'>
+                        {attributes.estimatedReadTime ? (
+                            <span className='flex items-center gap-1'>
                                 <Clock className='h-3 w-3' />
                                 {attributes.estimatedReadTime} min read
-                            </span> : null}
+                            </span>
+                        ) : null}
                     </div>
                 </CardContent>
             </Card>
@@ -152,14 +156,12 @@ export const NewsPage = () => {
     return (
         <div>
             <PageHead title='News' description='Latest news, updates, and community stories from TrashMob.eco.' />
-            <HeroSection
-                Title='News'
-                Description='Stories, updates, and highlights from the TrashMob community.'
-            />
+            <HeroSection Title='News' Description='Stories, updates, and highlights from the TrashMob community.' />
 
             <div className='container py-8'>
                 {/* Category filter pills */}
-                {categories && categories.length > 0 ? <div className='mb-6'>
+                {categories && categories.length > 0 ? (
+                    <div className='mb-6'>
                         <ToggleGroup
                             type='single'
                             value={selectedCategory}
@@ -175,7 +177,8 @@ export const NewsPage = () => {
                                 </ToggleGroupItem>
                             ))}
                         </ToggleGroup>
-                    </div> : null}
+                    </div>
+                ) : null}
 
                 {/* Content area */}
                 {isLoading ? (
@@ -185,7 +188,9 @@ export const NewsPage = () => {
                         {/* Post count */}
                         <p className='mb-4 text-sm text-muted-foreground'>
                             {pagination.total} post{pagination.total !== 1 ? 's' : ''}
-                            {currentCategory ? ` in "${categories?.find((c) => c.slug === currentCategory)?.name || currentCategory}"` : ''}
+                            {currentCategory
+                                ? ` in "${categories?.find((c) => c.slug === currentCategory)?.name || currentCategory}"`
+                                : ''}
                         </p>
 
                         {/* Card grid */}
@@ -223,9 +228,11 @@ export const NewsPage = () => {
                         )}
 
                         {/* Fetching overlay */}
-                        {isFetching && !isLoading ? <div className='mt-4 flex justify-center'>
+                        {isFetching && !isLoading ? (
+                            <div className='mt-4 flex justify-center'>
                                 <Loader2 className='h-5 w-5 animate-spin text-muted-foreground' />
-                            </div> : null}
+                            </div>
+                        ) : null}
                     </>
                 ) : (
                     /* Empty state */
@@ -239,13 +246,11 @@ export const NewsPage = () => {
                                         ? 'No posts found in this category. Try selecting a different category.'
                                         : 'Check back soon for news and updates from the TrashMob community.'}
                                 </p>
-                                {currentCategory ? <Button
-                                        variant='outline'
-                                        className='mt-4'
-                                        onClick={() => handleCategoryChange('')}
-                                    >
+                                {currentCategory ? (
+                                    <Button variant='outline' className='mt-4' onClick={() => handleCategoryChange('')}>
                                         View all posts
-                                    </Button> : null}
+                                    </Button>
+                                ) : null}
                             </div>
                         </CardContent>
                     </Card>
