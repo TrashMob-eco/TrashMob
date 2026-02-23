@@ -55,6 +55,7 @@
             services.AddSingleton<IUserRestService, UserRestService>();
             services.AddSingleton<IWaiverManager, WaiverManager>();
             services.AddSingleton<IWaiverRestService, WaiverRestService>();
+            services.AddSingleton<IRouteTrackingSessionManager, RouteTrackingSessionManager>();
 
             return services;
         }

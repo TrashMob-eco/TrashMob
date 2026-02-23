@@ -23,7 +23,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IUserManager userManager,
     IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
     ILitterReportManager litterReportManager,
-    IEventPhotoManager eventPhotoManager) : BaseViewModel(notificationService)
+    IEventPhotoManager eventPhotoManager,
+    IRouteTrackingSessionManager routeTrackingSessionManager) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
@@ -198,6 +199,14 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             EnableStartTrackEventRoute = !mobEvent.IsCompleted();
             EnableStopTrackEventRoute = false;
+
+            // If this event is already being tracked, restore recording UI state
+            if (routeTrackingSessionManager.IsTracking && routeTrackingSessionManager.ActiveEventId == eventId)
+            {
+                EnableStartTrackEventRoute = false;
+                EnableStopTrackEventRoute = true;
+                IsRecordingRoute = true;
+            }
 
             WhatToExpect =
                 "What to Expect:\n\u2022 Cleanup supplies provided\n\u2022 Meet fellow community members\n\u2022 Contribute to a cleaner environment";
@@ -384,6 +393,21 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
     private async Task RealTimeLocationTracker(CancellationToken cancellationToken)
     {
+        // Prevent concurrent tracking across different events
+        if (routeTrackingSessionManager.IsTracking && routeTrackingSessionManager.ActiveEventId != mobEvent.Id)
+        {
+            var popup = new ConfirmPopup(
+                "Route In Progress",
+                $"You're already tracking a route for \"{routeTrackingSessionManager.ActiveEventName}\". Only one route can be tracked at a time.",
+                "OK");
+            await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+
+            EnableStopTrackEventRoute = false;
+            EnableStartTrackEventRoute = true;
+            IsRecordingRoute = false;
+            return;
+        }
+
         if (EnableStartTrackEventRoute)
         {
             RouteStartTime = DateTimeOffset.Now;
@@ -391,6 +415,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             EnableStopTrackEventRoute = true;
             EnableStartTrackEventRoute = false;
             IsRecordingRoute = true;
+            routeTrackingSessionManager.TryStartSession(mobEvent.Id, mobEvent.Name);
         }
 
         if (DeviceInfo.DeviceType == DeviceType.Virtual)
@@ -401,6 +426,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             {
                 IsRecordingRoute = false;
                 RouteEndTime = DateTimeOffset.Now;
+                routeTrackingSessionManager.EndSession();
                 tcs.TrySetResult();
             });
 
@@ -416,6 +442,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         {
             IsRecordingRoute = false;
             RouteEndTime = DateTimeOffset.Now;
+            routeTrackingSessionManager.EndSession();
             await SaveRoute();
             Locations.Clear();
             EnableStopTrackEventRoute = false;
