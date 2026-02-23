@@ -120,13 +120,10 @@ public partial class MainViewModel(IAuthService authService,
 
                 Addresses.Clear();
 
-                var tasks = new List<Task>
-                {
+                await Task.WhenAll(
                     RefreshEvents(),
                     RefreshLitterReports(),
-                };
-
-                await Task.WhenAll(tasks);
+                    RefreshStatistics());
 
                 IsMapSelected = true;
                 IsListSelected = false;
@@ -135,8 +132,6 @@ public partial class MainViewModel(IAuthService authService,
             {
                 await Shell.Current.GoToAsync($"//{nameof(WelcomePage)}");
             }
-
-            await RefreshStatistics();
         }, "An error occurred while initializing the application. Please wait and try again in a moment.");
     }
 
@@ -190,9 +185,13 @@ public partial class MainViewModel(IAuthService authService,
             EventStatusId = null,
         };
 
-        var events = await mobEventManager.GetFilteredEventsAsync(eventFilter);
+        var eventsTask = mobEventManager.GetFilteredEventsAsync(eventFilter);
+        var attendingTask = mobEventManager.GetEventsUserIsAttending(userManager.CurrentUser.Id);
 
-        var eventsUserIsAttending = await mobEventManager.GetEventsUserIsAttending(userManager.CurrentUser.Id);
+        await Task.WhenAll(eventsTask, attendingTask);
+
+        var events = await eventsTask;
+        var eventsUserIsAttending = await attendingTask;
 
         foreach (var mobEvent in events.OrderBy(e => e.EventDate))
         {
