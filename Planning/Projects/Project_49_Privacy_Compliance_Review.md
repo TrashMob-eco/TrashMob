@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | Complete |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Medium |
@@ -48,39 +48,43 @@ The existing "Delete My Data" feature performs a mix of hard deletes and anonymi
 
 Comprehensive audit of the `UserManager.DeleteAsync()` flow against every table in `MobDbContext` that references a user.
 
-- [ ] Map every table and column that stores user references (UserId, CreatedByUserId, LastUpdatedByUserId, LeadUserId, etc.)
-- [ ] Compare the deletion flow against the full map — identify any tables or columns missed
-- [ ] Verify profile photo deletion from Azure Blob Storage occurs in `UserManager.DeleteAsync()`
-- [ ] Verify litter reports created by the user have their `CreatedByUserId` anonymized
-- [ ] Verify team membership records are cleaned up (user removed from teams)
-- [ ] Verify team lead ownership is handled (transfer or anonymize, not orphan)
-- [ ] Verify `UserAchievement` records are deleted or anonymized
-- [ ] Verify `UserFeedback` records are deleted or anonymized
-- [ ] Verify `UserWaiver` records are handled per legal retention requirements (preserve waiver, anonymize user link after retention period)
-- [ ] Wrap the entire deletion flow in a database transaction for atomicity
-- [ ] Add integration tests that create a user with data in every related table, delete the user, and verify no PII remains
-- [ ] Document what is deleted vs anonymized vs preserved and why
+- [x] Map every table and column that stores user references (UserId, CreatedByUserId, LastUpdatedByUserId, LeadUserId, etc.)
+- [x] Compare the deletion flow against the full map — identify any tables or columns missed
+- [x] Verify profile photo deletion from Azure Blob Storage occurs in `UserManager.DeleteAsync()`
+- [x] Verify litter reports created by the user have their `CreatedByUserId` anonymized
+- [x] Verify team membership records are cleaned up (user removed from teams)
+- [x] Verify team lead ownership is handled (transfer or anonymize, not orphan)
+- [x] Verify `UserAchievement` records are deleted or anonymized
+- [x] Verify `UserFeedback` records are deleted or anonymized
+- [x] Verify `UserWaiver` records are handled per legal retention requirements (preserve waiver, anonymize user link after retention period)
+- [x] Wrap the entire deletion flow in a database transaction for atomicity
+- [x] Add integration tests that create a user with data in every related table, delete the user, and verify no PII remains
+- [x] Document what is deleted vs anonymized vs preserved and why
+
+> **Implementation:** `UserDeletionService.cs` with 7-phase deletion (A-H) across 40+ entities, transaction-wrapped. PR #2867.
 
 ### Phase 2 — Aggregate Preservation Verification
 
 Verify that key metrics survive user deletion.
 
-- [ ] Write integration tests that:
+- [x] Write integration tests that:
   - Create a user, create events with summaries, add attendance records, add route data
   - Record the aggregate totals (total bags, weight, distance, event count)
   - Delete the user
   - Verify aggregate totals remain unchanged
-- [ ] Verify community dashboard metrics are unaffected by user deletion
-- [ ] Verify leaderboard data handles deleted users gracefully (no broken references, no PII displayed)
-- [ ] Verify the `EventSummary` table retains totals after the creating user is deleted
-- [ ] Verify `EventAttendeeMetrics` records are preserved for historical impact but have no resolvable user reference
-- [ ] Document the aggregate preservation strategy for stakeholders
+- [x] Verify community dashboard metrics are unaffected by user deletion
+- [x] Verify leaderboard data handles deleted users gracefully (no broken references, no PII displayed)
+- [x] Verify the `EventSummary` table retains totals after the creating user is deleted
+- [x] Verify `EventAttendeeMetrics` records are preserved for historical impact but have no resolvable user reference
+- [x] Document the aggregate preservation strategy for stakeholders
+
+> **Implementation:** 11 unit tests in `AggregatePreservationAfterDeletionTests.cs`. Guid.Empty seed user set to `ShowOnLeaderboards = false`. PR #2870.
 
 ### Phase 3 — Data Export (Download My Data)
 
 Allow users to export all personal data in machine-readable JSON format per GDPR Article 20.
 
-- [ ] Create `IUserDataExportManager` service that collects all user data:
+- [x] Create `IUserDataExportManager` service that collects all user data:
   - User profile (name, email, city, region, country, preferences)
   - Event participation history (events attended, events led)
   - Event summaries created by the user
@@ -92,29 +96,33 @@ Allow users to export all personal data in machine-readable JSON format per GDPR
   - Feedback submitted
   - Partner admin roles
   - Notification preferences
-- [ ] Create `GET /api/users/{userId}/export` endpoint returning a JSON file download
-- [ ] Add authorization: users can only export their own data; site admins can export any user
-- [ ] Add rate limiting: one export per user per 24 hours
-- [ ] Add "Download My Data" button to the user profile / settings page
-- [ ] Add "Download My Data" link on the Delete My Data page (encourage users to export before deleting)
-- [ ] Include a `README.txt` in the export explaining each data section
+- [x] Create `GET /api/users/{userId}/export` endpoint returning a JSON file download
+- [x] Add authorization: users can only export their own data; site admins can export any user
+- [x] Add rate limiting: one export per user per 24 hours
+- [x] Add "Download My Data" button to the user profile / settings page
+- [x] Add "Download My Data" link on the Delete My Data page (encourage users to export before deleting)
+- [ ] ~~Include a `README.txt` in the export explaining each data section~~ (Skipped — JSON `_metadata` section provides format documentation inline)
+
+> **Implementation:** `UserDataExportManager.cs` with streaming `Utf8JsonWriter` to avoid Front Door timeout. 13 data categories. Rate limited via `LastDataExportRequestedDate` on User model. PR #2872.
 
 ### Phase 4 — GDPR Documentation & Compliance
 
-- [ ] Create a data processing inventory documenting:
+- [x] Create a data processing inventory documenting:
   - What personal data is collected
   - Why it is collected (legal basis)
   - How long it is retained
   - Who has access to it
   - How it is protected
-- [ ] Document data retention policies:
+- [x] Document data retention policies:
   - Active user data: retained while account is active
   - Deleted user data: PII removed immediately, anonymized records retained indefinitely for aggregate metrics
   - Waiver data: retained per legal requirements (configurable retention period)
   - Route GPS data: anonymized on deletion (UserPath retained without user link for aggregate heatmaps)
-- [ ] Review and update the Privacy Policy page to accurately reflect current practices
-- [ ] Ensure the Delete My Data page clearly explains what will be deleted vs preserved
-- [ ] Add data processing documentation to the repository (for developer reference)
+- [x] Review and update the Privacy Policy page to accurately reflect current practices
+- [x] Ensure the Delete My Data page clearly explains what will be deleted vs preserved
+- [x] Add data processing documentation to the repository (for developer reference)
+
+> **Implementation:** `DATA_PROCESSING_INVENTORY.md`, `DEVELOPER_DATA_HANDLING_GUIDE.md`, Privacy Policy page rewritten to v1.0, Delete My Data page enhanced with collapsible data explanation.
 
 ---
 
