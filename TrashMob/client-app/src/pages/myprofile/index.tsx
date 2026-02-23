@@ -442,11 +442,7 @@ export const MyProfile = () => {
                             Download a copy of all your personal data, including your profile, event history, routes,
                             and more. Exports are limited to once per 24 hours.
                         </p>
-                        <Button
-                            variant='outline'
-                            onClick={handleExport}
-                            disabled={isExporting}
-                        >
+                        <Button variant='outline' onClick={handleExport} disabled={isExporting}>
                             {isExporting ? (
                                 <>
                                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />

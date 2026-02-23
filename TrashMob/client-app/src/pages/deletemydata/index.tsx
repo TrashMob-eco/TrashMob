@@ -105,11 +105,7 @@ export const DeleteMyData = () => {
                                         Before deleting your account, you may want to download a copy of all your
                                         personal data. This includes your profile, event history, routes, and more.
                                     </p>
-                                    <Button
-                                        variant='outline'
-                                        onClick={handleExport}
-                                        disabled={isExporting}
-                                    >
+                                    <Button variant='outline' onClick={handleExport} disabled={isExporting}>
                                         {isExporting ? (
                                             <>
                                                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
@@ -124,61 +120,61 @@ export const DeleteMyData = () => {
                                     </Button>
                                 </div>
                                 <AlertDialog
-                                open={dialogOpen}
-                                onOpenChange={(open) => {
-                                    setDialogOpen(open);
-                                    if (!open) setConfirmText('');
-                                }}
-                            >
-                                <AlertDialogTrigger asChild>
-                                    <Button variant='destructive'>Delete Account</Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle className='flex items-center gap-2'>
-                                            <TriangleAlert className='h-5 w-5 text-destructive' />
-                                            Are you absolutely sure?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This action cannot be undone. Your account will be permanently deleted and
-                                            all event-related data will be anonymized.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <div className='py-2'>
-                                        <Label htmlFor='confirm-delete'>
-                                            Type <span className='font-mono font-bold'>DELETE</span> to confirm
-                                        </Label>
-                                        <Input
-                                            id='confirm-delete'
-                                            value={confirmText}
-                                            onChange={(e) => setConfirmText(e.target.value)}
-                                            placeholder='DELETE'
-                                            className='mt-2'
-                                            autoComplete='off'
-                                        />
-                                    </div>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            disabled={!isConfirmed || isPending}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                handleConfirmDelete();
-                                            }}
-                                            className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
-                                        >
-                                            {isPending ? (
-                                                <>
-                                                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                                                    Deleting...
-                                                </>
-                                            ) : (
-                                                'Delete my account'
-                                            )}
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                                    open={dialogOpen}
+                                    onOpenChange={(open) => {
+                                        setDialogOpen(open);
+                                        if (!open) setConfirmText('');
+                                    }}
+                                >
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant='destructive'>Delete Account</Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle className='flex items-center gap-2'>
+                                                <TriangleAlert className='h-5 w-5 text-destructive' />
+                                                Are you absolutely sure?
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This action cannot be undone. Your account will be permanently deleted
+                                                and all event-related data will be anonymized.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <div className='py-2'>
+                                            <Label htmlFor='confirm-delete'>
+                                                Type <span className='font-mono font-bold'>DELETE</span> to confirm
+                                            </Label>
+                                            <Input
+                                                id='confirm-delete'
+                                                value={confirmText}
+                                                onChange={(e) => setConfirmText(e.target.value)}
+                                                placeholder='DELETE'
+                                                className='mt-2'
+                                                autoComplete='off'
+                                            />
+                                        </div>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                disabled={!isConfirmed || isPending}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleConfirmDelete();
+                                                }}
+                                                className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                                            >
+                                                {isPending ? (
+                                                    <>
+                                                        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                                                        Deleting...
+                                                    </>
+                                                ) : (
+                                                    'Delete my account'
+                                                )}
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </>
                         ) : (
                             <p className='text-muted-foreground'>Please sign in to manage your account.</p>
