@@ -144,6 +144,19 @@ namespace TrashMob.Shared.Tests.Builders
             return this;
         }
 
+        /// <summary>
+        /// Configures the metrics as belonging to an anonymized (deleted) user.
+        /// Sets UserId to Guid.Empty and clears the User navigation property.
+        /// </summary>
+        public EventAttendeeMetricsBuilder AsAnonymized()
+        {
+            _metrics.UserId = Guid.Empty;
+            _metrics.User = null;
+            _metrics.CreatedByUserId = Guid.Empty;
+            _metrics.LastUpdatedByUserId = Guid.Empty;
+            return this;
+        }
+
         public EventAttendeeMetrics Build() => _metrics;
     }
 }
