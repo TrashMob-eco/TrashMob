@@ -39,50 +39,9 @@ TrashMob/
 - `SecureController : BaseController` — Adds `UserId`, `AuthorizationService`, `IsAuthorizedAsync()`
 - `KeyedController<T> : SecureController` — Generic CRUD for entities with GUID keys (provides `Manager` property)
 
-### Standard REST Controller Template
-
-```csharp
-// Use primary constructors — this is the current standard pattern
-public class ThingsController(
-    IThingManager thingManager,
-    IOtherManager otherManager)
-    : KeyedController<Thing>(thingManager)
-{
-    /// <summary>
-    /// Gets a thing by ID.
-    /// </summary>
-    [HttpGet("{id}")]
-    [ProducesResponseType(typeof(Thing), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
-    {
-        return Ok(await Manager.GetAsync(id, cancellationToken));
-    }
-
-    /// <summary>
-    /// Creates a new thing.
-    /// </summary>
-    [HttpPost]
-    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-    [RequiredScope(Constants.TrashMobWriteScope)]
-    [ProducesResponseType(typeof(Thing), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Add(Thing instance, CancellationToken cancellationToken)
-    {
-        // Authorization check (if entity-level access control needed)
-        var parent = await otherManager.GetAsync(instance.ParentId, cancellationToken);
-        if (!await IsAuthorizedAsync(parent, AuthorizationPolicyConstants.UserIsEventLead))
-        {
-            return Forbid();
-        }
-
-        var result = await Manager.AddAsync(instance, UserId, cancellationToken);
-        TrackEvent("AddThing");
-        return Ok(result);
-    }
-}
-```
-
 ### Controller Checklist (New Endpoints)
+
+See [root CLAUDE.md](../CLAUDE.md#controller-template-current-pattern) for the standard controller template.
 
 - [ ] Use **primary constructor** (not field injection)
 - [ ] Add **`CancellationToken cancellationToken`** as last parameter on all async methods
