@@ -57,11 +57,11 @@ Strapi CMS is already deployed and managing home page content (hero, what-is-tra
 - ✅ Empty state when no posts exist
 
 ### Phase 3 — Post Detail Page
-- ❌ Create `/news/:slug` page with full article layout
-- ❌ Render Strapi rich text (markdown or blocks) to HTML
-- ❌ Show cover image, title, author, date, category, estimated read time
-- ❌ "Back to News" navigation
-- ❌ Related posts section at the bottom (same category, max 3)
+- ✅ Create `/news/:slug` page with full article layout
+- ✅ Render Strapi Blocks JSON via `@strapi/blocks-react-renderer`
+- ✅ Show cover image, title, author, date, category, estimated read time
+- ✅ "Back to News" navigation
+- ✅ Related posts section at the bottom (same category, max 3)
 
 ### Phase 4 — Navigation & Home Page Integration
 - ❌ Add "News" to the main site navigation (top-level nav item)
@@ -318,5 +318,5 @@ None in this project. Mobile news feed would be a separate future project.
 
 **Last Updated:** February 22, 2026
 **Owner:** Product & Engineering Team
-**Status:** In Progress — Phases 1-2 complete (content types + API proxy + news listing page)
-**Next Review:** When ready to begin Phase 3 (Post Detail Page)
+**Status:** In Progress — Phases 1-3 complete (content types + API proxy + news listing + post detail)
+**Next Review:** When ready to begin Phase 4 (Navigation & Home Page Integration)
