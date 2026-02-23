@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress |
+| **Status** | Complete |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -64,16 +64,16 @@ Strapi CMS is already deployed and managing home page content (hero, what-is-tra
 - ✅ Related posts section at the bottom (same category, max 3)
 
 ### Phase 4 — Navigation & Home Page Integration
-- ❌ Add "News" to the main site navigation (top-level nav item)
-- ❌ Add "Latest News" section to the home page (3 most recent posts as cards)
-- ❌ Add "News" link to the site footer
-- ❌ Update sitemap generation to include news posts
+- ✅ Add "News" to the main site navigation (Explore dropdown + mobile nav)
+- ✅ Add "Latest News" section to the home page (3 most recent posts as cards)
+- ✅ Add "News" link to the site footer
+- ✅ Update sitemap to include `/news` page
 
 ### Phase 5 — SEO & Polish
-- ❌ Open Graph and Twitter Card meta tags per post
-- ❌ Structured data (JSON-LD Article schema) per post
-- ❌ RSS feed endpoint (`/news/feed.xml` or `/api/cms/news-feed`)
-- ❌ Social sharing buttons on post detail page
+- ✅ Open Graph (`og:image`, `og:type`) and Twitter Card (`twitter:card`, `twitter:site`) meta tags per post
+- ✅ Structured data (JSON-LD Article schema) per post
+- ✅ RSS feed endpoint (`GET /api/cms/news-feed`) with RSS autodiscovery `<link>` tag
+- ✅ Social sharing buttons on post detail page (reuses existing `ShareDialog` component)
 
 ---
 
@@ -318,5 +318,5 @@ None in this project. Mobile news feed would be a separate future project.
 
 **Last Updated:** February 22, 2026
 **Owner:** Product & Engineering Team
-**Status:** In Progress — Phases 1-3 complete (content types + API proxy + news listing + post detail)
-**Next Review:** When ready to begin Phase 4 (Navigation & Home Page Integration)
+**Status:** Complete — All 5 phases delivered (content types + API proxy + news listing + post detail + navigation & home page + SEO & polish)
+**Next Review:** Post-launch content review

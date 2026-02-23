@@ -1,6 +1,7 @@
 import type TeamData from '@/components/Models/TeamData';
 import type CommunityData from '@/components/Models/CommunityData';
 import type EventData from '@/components/Models/EventData';
+import type { NewsPostData } from '@/services/cms';
 import type { ShareableContent } from '@/components/sharing';
 import compact from 'lodash/compact';
 
@@ -150,4 +151,25 @@ export function getCancellationMessage(event: EventData, cancellationReason: str
         `Sorry everyone, we had to cancel our {{TrashMob}} event ${event.name} in #${event.city} on ${eventDate}. ${cancellationReason}.\n` +
         'Sign up using the link to get notified the next time we are having an event. Help us clean up the planet!'
     );
+}
+
+/**
+ * Creates ShareableContent for a news post
+ */
+export function getNewsPostShareableContent(post: NewsPostData, slug: string): ShareableContent {
+    return {
+        type: 'article',
+        title: post.title,
+        description: post.excerpt,
+        url: `${window.location.origin}/news/${slug}`,
+        imageUrl: post.coverImage?.data?.attributes?.url,
+    };
+}
+
+/**
+ * Gets a shareable message for a news post
+ */
+export function getNewsPostShareMessage(post: NewsPostData): string {
+    const truncated = post.excerpt.length > 100 ? post.excerpt.substring(0, 100) + '...' : post.excerpt;
+    return `Check out "${post.title}" on {{TrashMob}}! ${truncated}`;
 }

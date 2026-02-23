@@ -3,6 +3,7 @@ import { EventSection } from './event-section';
 import { FeaturedCommunitiesSection } from './featured-communities-section';
 import { GettingStartSection } from './getting-start-section';
 import { HeroSection } from './hero-section';
+import { LatestNewsSection } from './latest-news-section';
 import { WhatIsTrashmobSection } from './whatistrashmob-section';
 
 export const Home = () => {
@@ -12,6 +13,7 @@ export const Home = () => {
             <WhatIsTrashmobSection />
             <StatsSection />
             <FeaturedCommunitiesSection />
+            <LatestNewsSection />
             <EventSection />
             <GettingStartSection />
         </>

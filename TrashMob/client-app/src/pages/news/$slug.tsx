@@ -1,12 +1,16 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Calendar, Clock, Loader2, Newspaper, User } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
+import { ArrowLeft, Calendar, Clock, Loader2, Newspaper, Share2, User } from 'lucide-react';
 import { BlocksRenderer, type BlocksContent } from '@strapi/blocks-react-renderer';
 
 import { PageHead } from '@/components/SEO/PageHead';
+import { ShareDialog } from '@/components/sharing/ShareDialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { getNewsPostShareableContent, getNewsPostShareMessage } from '@/lib/sharing-messages';
 import { GetNewsPostBySlug, GetNewsPosts, NewsPostData } from '@/services/cms';
 import { Services } from '@/config/services.config';
 
@@ -49,8 +53,11 @@ function RelatedPostCard({ post }: { post: { id: number; attributes: NewsPostDat
     );
 }
 
+const BASE_URL = 'https://www.trashmob.eco';
+
 export const NewsPostDetailPage = () => {
     const { slug } = useParams<{ slug: string }>() as { slug: string };
+    const [shareOpen, setShareOpen] = useState(false);
 
     // Fetch the post
     const { data: post, isLoading } = useQuery({
@@ -111,17 +118,43 @@ export const NewsPostDetailPage = () => {
         );
     }
 
+    const canonicalUrl = `${BASE_URL}/news/${slug}`;
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: post.title,
+        description: post.excerpt,
+        image: coverUrl || undefined,
+        author: { '@type': 'Person', name: post.author },
+        publisher: { '@type': 'Organization', name: 'TrashMob.eco', url: BASE_URL },
+        datePublished: post.publishedAt,
+        mainEntityOfPage: canonicalUrl,
+    };
+
     return (
         <div>
-            <PageHead title={post.title} description={post.excerpt} />
+            <PageHead title={post.title} description={post.excerpt} image={coverUrl} type='article' />
+            <Helmet>
+                <script type='application/ld+json'>{JSON.stringify(jsonLd)}</script>
+            </Helmet>
+
+            <ShareDialog
+                content={getNewsPostShareableContent(post, slug)}
+                open={shareOpen}
+                onOpenChange={setShareOpen}
+                message={getNewsPostShareMessage(post)}
+            />
 
             <div className='container py-8'>
                 {/* Back navigation */}
-                <div className='mb-6'>
+                <div className='mb-6 flex items-center justify-between'>
                     <Button variant='outline' asChild>
                         <Link to='/news'>
                             <ArrowLeft className='h-4 w-4 mr-2' /> Back to News
                         </Link>
+                    </Button>
+                    <Button variant='outline' onClick={() => setShareOpen(true)}>
+                        <Share2 className='h-4 w-4 mr-2' /> Share
                     </Button>
                 </div>
 

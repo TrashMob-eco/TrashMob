@@ -1,9 +1,13 @@
 namespace TrashMob.Controllers
 {
     using System;
+    using System.Collections.Generic;
+    using System.Globalization;
     using System.Net.Http;
+    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Xml.Linq;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Http;
@@ -223,6 +227,82 @@ namespace TrashMob.Controllers
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             TrackEvent(nameof(GetNewsCategories));
             return Content(content, "application/json");
+        }
+
+        /// <summary>
+        /// Gets an RSS 2.0 feed of recent news posts. Public endpoint.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Returns the 20 most recent published news posts as an RSS 2.0 XML feed.</remarks>
+        [HttpGet("news-feed")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+        public async Task<IActionResult> GetNewsFeed(CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(strapiBaseUrl))
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS not configured");
+            }
+
+            var client = httpClientFactory.CreateClient("Strapi");
+            var url = $"{strapiBaseUrl}/api/news-posts?populate=*&sort=publishedAt:desc&pagination[page]=1&pagination[pageSize]=20";
+            var response = await client.GetAsync(url, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return StatusCode((int)response.StatusCode);
+            }
+
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
+            var doc = JsonDocument.Parse(json);
+
+            var items = new List<XElement>();
+
+            if (doc.RootElement.TryGetProperty("data", out var dataArray))
+            {
+                foreach (var item in dataArray.EnumerateArray())
+                {
+                    if (!item.TryGetProperty("attributes", out var attrs))
+                    {
+                        continue;
+                    }
+
+                    var title = attrs.TryGetProperty("title", out var t) ? t.GetString() : "Untitled";
+                    var slug = attrs.TryGetProperty("slug", out var s) ? s.GetString() : "";
+                    var excerpt = attrs.TryGetProperty("excerpt", out var e) ? e.GetString() : "";
+                    var publishedAt = attrs.TryGetProperty("publishedAt", out var p) ? p.GetString() : null;
+
+                    var link = $"https://www.trashmob.eco/news/{slug}";
+
+                    var itemElement = new XElement("item",
+                        new XElement("title", title),
+                        new XElement("link", link),
+                        new XElement("description", excerpt),
+                        new XElement("guid", new XAttribute("isPermaLink", "true"), link));
+
+                    if (publishedAt != null && DateTime.TryParse(publishedAt, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var pubDate))
+                    {
+                        itemElement.Add(new XElement("pubDate", pubDate.ToString("R")));
+                    }
+
+                    items.Add(itemElement);
+                }
+            }
+
+            var rss = new XDocument(
+                new XDeclaration("1.0", "utf-8", null),
+                new XElement("rss",
+                    new XAttribute("version", "2.0"),
+                    new XElement("channel",
+                        new XElement("title", "TrashMob.eco News"),
+                        new XElement("link", "https://www.trashmob.eco/news"),
+                        new XElement("description", "Stories, updates, and highlights from the TrashMob community."),
+                        new XElement("language", "en-us"),
+                        items)));
+
+            TrackEvent(nameof(GetNewsFeed));
+            return Content(rss.Declaration + rss.ToString(), "application/rss+xml");
         }
 
         /// <summary>

@@ -68,6 +68,8 @@ export const ShareDialog = ({ content, open, onOpenChange, message, emailSubject
                 return 'Share Team';
             case 'community':
                 return 'Share Community';
+            case 'article':
+                return 'Share Article';
             default:
                 return 'Share';
         }
@@ -82,6 +84,8 @@ export const ShareDialog = ({ content, open, onOpenChange, message, emailSubject
                 return `Check out this team on TrashMob.eco: ${content.title}`;
             case 'community':
                 return `Check out this community on TrashMob.eco: ${content.title}`;
+            case 'article':
+                return `${content.title} — TrashMob.eco News`;
             default:
                 return `Check out this on TrashMob.eco: ${content.title}`;
         }
