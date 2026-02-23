@@ -70,9 +70,9 @@
             using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
+                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(responseContent)!;
             }
-
-            return await GetEventAttendeeRouteAsync(eventAttendeeRoute.Id, cancellationToken);
         }
 
         public async Task DeleteEventAttendeeRouteAsync(Guid id, CancellationToken cancellationToken = default)

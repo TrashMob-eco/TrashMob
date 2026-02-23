@@ -27,10 +27,6 @@
                         BackgroundColor="{StaticResource Destructive}"
                         TextColor="White"
                         Style="{StaticResource PrimarySmallButton}" />
-                <Button Text="Simulate Route"
-                        Command="{Binding SimulateRouteCommand}"
-                        IsVisible="{Binding EnableSimulateRoute}"
-                        Style="{StaticResource PrimarySmallButton}" />
             </HorizontalStackLayout>
         </Grid>
 
