@@ -1605,7 +1605,7 @@
                     new User
                     {
                         Id = Guid.Empty, City = "Anytown", Country = "AnyCountry", Email = "info@trashmob.eco",
-                        Region = "AnyState", UserName = "TrashMob",
+                        Region = "AnyState", UserName = "TrashMob", ShowOnLeaderboards = false,
                     });
 
                 entity.HasOne(d => d.CreatedByUser)
