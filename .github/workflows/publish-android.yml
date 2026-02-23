@@ -33,6 +33,22 @@ jobs:
               with:
                     name: ${{ inputs.artifact_name }}
 
+            - name: Check for debug artifacts
+              id: debug_files
+              run: |
+                if [ -f "native-debug-symbols.zip" ]; then
+                  echo "debug_symbols=native-debug-symbols.zip" >> $GITHUB_OUTPUT
+                  echo "Found native debug symbols"
+                else
+                  echo "No native debug symbols found in artifact"
+                fi
+                if [ -f "mapping.txt" ]; then
+                  echo "mapping_file=mapping.txt" >> $GITHUB_OUTPUT
+                  echo "Found R8 mapping file"
+                else
+                  echo "No R8 mapping file found in artifact"
+                fi
+
             - name: Upload signed AAB
               uses: r0adkll/upload-google-play@v1
               with:
@@ -42,6 +58,8 @@ jobs:
                     track: internal
                     status: completed
                     changesNotSentForReview: false
+                    debugSymbols: ${{ steps.debug_files.outputs.debug_symbols }}
+                    mappingFile: ${{ steps.debug_files.outputs.mapping_file }}
 
             - name: Promote to production (staged rollout)
               if: inputs.promote_to_production
