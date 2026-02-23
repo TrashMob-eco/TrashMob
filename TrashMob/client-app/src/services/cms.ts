@@ -85,6 +85,90 @@ export const GetGettingStarted = () => ({
             .catch(() => null),
 });
 
+// Strapi collection response wrapper (for collection types like news)
+interface StrapiCollectionResponse<T> {
+    data: Array<{ id: number; attributes: T }>;
+    meta: { pagination: { page: number; pageSize: number; pageCount: number; total: number } };
+}
+
+// News Category types
+export interface NewsCategoryData {
+    name: string;
+    slug: string;
+    description?: string;
+}
+
+// News Post types
+export interface NewsPostData {
+    title: string;
+    slug: string;
+    excerpt: string;
+    body: unknown; // Strapi Blocks JSON — rendered by @strapi/blocks-react-renderer
+    author: string;
+    publishedAt: string;
+    isFeatured: boolean;
+    estimatedReadTime?: number;
+    tags?: string[];
+    coverImage?: {
+        data?: {
+            attributes: {
+                url: string;
+                alternativeText?: string;
+                formats?: Record<string, { url: string; width: number; height: number }>;
+            };
+        };
+    };
+    category?: {
+        data: {
+            id: number;
+            attributes: NewsCategoryData;
+        } | null;
+    };
+}
+
+// News service functions
+export interface NewsPostsParams {
+    page?: number;
+    pageSize?: number;
+    category?: string;
+}
+
+export type GetNewsPosts_Response = StrapiCollectionResponse<NewsPostData>;
+export const GetNewsPosts = (params: NewsPostsParams = {}) => ({
+    key: ['/cms/news-posts', params],
+    service: async () => {
+        const searchParams = new URLSearchParams();
+        if (params.page) searchParams.set('page', String(params.page));
+        if (params.pageSize) searchParams.set('pageSize', String(params.pageSize));
+        if (params.category) searchParams.set('category', params.category);
+        const qs = searchParams.toString();
+        return ApiService('public')
+            .fetchData<GetNewsPosts_Response>({ url: `/cms/news-posts${qs ? `?${qs}` : ''}`, method: 'get' })
+            .then((res) => res.data)
+            .catch(() => ({ data: [], meta: { pagination: { page: 1, pageSize: 10, pageCount: 0, total: 0 } } }));
+    },
+});
+
+export type GetNewsPostBySlug_Response = StrapiCollectionResponse<NewsPostData>;
+export const GetNewsPostBySlug = (slug: string) => ({
+    key: ['/cms/news-posts', slug],
+    service: async () =>
+        ApiService('public')
+            .fetchData<GetNewsPostBySlug_Response>({ url: `/cms/news-posts/${slug}`, method: 'get' })
+            .then((res) => res.data?.data?.[0]?.attributes ?? null)
+            .catch(() => null),
+});
+
+export type GetNewsCategories_Response = StrapiCollectionResponse<NewsCategoryData>;
+export const GetNewsCategories = () => ({
+    key: ['/cms/news-categories'],
+    service: async () =>
+        ApiService('public')
+            .fetchData<GetNewsCategories_Response>({ url: '/cms/news-categories', method: 'get' })
+            .then((res) => res.data?.data?.map((item) => item.attributes) ?? [])
+            .catch(() => []),
+});
+
 // Admin URL service (protected)
 export type GetCmsAdminUrl_Response = { adminUrl: string };
 export const GetCmsAdminUrl = () => ({

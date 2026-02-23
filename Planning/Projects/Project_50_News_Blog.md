@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -43,11 +43,11 @@ Strapi CMS is already deployed and managing home page content (hero, what-is-tra
 ## Scope
 
 ### Phase 1 — Strapi Content Type & API Proxy
-- ❌ Create `news-post` collection type in Strapi with fields: title, slug, excerpt, body (rich text), coverImage (media), author, category, tags, publishedAt, isFeatured
-- ❌ Create `news-category` collection type: name, slug, description
-- ❌ Seed initial categories: "Platform Update", "Community Spotlight", "Event Recap", "Tips & Guides"
-- ❌ Add CMS proxy endpoints to `CmsController`: list posts (paginated), get post by slug, list categories
-- ❌ Add TypeScript types and service factories in `services/cms.ts`
+- ✅ Create `news-post` collection type in Strapi with fields: title, slug, excerpt, body (rich text), coverImage (media), author, category, tags, publishedAt, isFeatured
+- ✅ Create `news-category` collection type: name, slug, description
+- ❌ Seed initial categories: "Platform Update", "Community Spotlight", "Event Recap", "Tips & Guides" *(manual — create via Strapi admin after deploy)*
+- ✅ Add CMS proxy endpoints to `CmsController`: list posts (paginated), get post by slug, list categories
+- ✅ Add TypeScript types and service factories in `services/cms.ts`
 
 ### Phase 2 — News Listing Page
 - ❌ Create `/news` page with responsive card grid layout
@@ -318,5 +318,5 @@ None in this project. Mobile news feed would be a separate future project.
 
 **Last Updated:** February 22, 2026
 **Owner:** Product & Engineering Team
-**Status:** Not Started
-**Next Review:** When ready to begin Phase 1
+**Status:** In Progress — Phase 1 complete (content types + API proxy)
+**Next Review:** When ready to begin Phase 2 (News Listing Page)
