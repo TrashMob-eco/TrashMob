@@ -17,6 +17,7 @@ import {
     BookOpen,
     HelpCircle,
     MessageCircleQuestion,
+    Newspaper,
     ShoppingBag,
     List,
     Users,
@@ -118,6 +119,9 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                                         icon={<Trophy className='h-4 w-4' />}
                                     >
                                         See top volunteers and teams.
+                                    </ListItem>
+                                    <ListItem to='/news' title='News' icon={<Newspaper className='h-4 w-4' />}>
+                                        Stories and updates from the TrashMob community.
                                     </ListItem>
                                 </ul>
                             </NavigationMenuContent>
@@ -249,6 +253,7 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                     <MobileNavItem to='/teams'>Teams</MobileNavItem>
                     <MobileNavItem to='/communities'>Communities</MobileNavItem>
                     <MobileNavItem to='/leaderboards'>Leaderboards</MobileNavItem>
+                    <MobileNavItem to='/news'>News</MobileNavItem>
                 </div>
                 <div className='border-l-2 border-muted pl-3 ml-2 space-y-1'>
                     <p className='text-xs text-muted-foreground uppercase tracking-wide pt-1'>Take Action</p>

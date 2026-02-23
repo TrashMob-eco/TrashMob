@@ -14,6 +14,7 @@ export const SiteFooter = () => {
         { href: '/partnerships', title: 'Partners' },
         { href: '/for-communities', title: 'For Communities' },
         { href: '/faq', title: 'FAQ' },
+        { href: '/news', title: 'News' },
         { href: '/volunteeropportunities', title: 'Recruiting' },
         { href: '/contactus', title: 'Contact us' },
         { href: '/privacypolicy', title: 'Privacy policy' },

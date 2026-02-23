@@ -1,6 +1,6 @@
 // Shareable content types for social sharing
 
-export type ShareableContentType = 'event' | 'team' | 'community';
+export type ShareableContentType = 'event' | 'team' | 'community' | 'article';
 
 export interface ShareableContent {
     type: ShareableContentType;
