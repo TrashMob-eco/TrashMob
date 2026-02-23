@@ -2919,7 +2919,7 @@
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.UserWaivers)
                     .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_UserWaivers_User");
 
                 entity.HasOne(d => d.WaiverVersion)

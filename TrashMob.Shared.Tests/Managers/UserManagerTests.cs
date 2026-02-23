@@ -19,32 +19,14 @@ namespace TrashMob.Shared.Tests.Managers
     public class UserManagerTests
     {
         private readonly Mock<IKeyedRepository<User>> _userRepository;
-        private readonly Mock<IBaseRepository<EventAttendee>> _eventAttendeesRepository;
-        private readonly Mock<IKeyedRepository<UserNotification>> _userNotificationRepository;
-        private readonly Mock<IKeyedRepository<NonEventUserNotification>> _nonEventUserNotificationRepository;
-        private readonly Mock<IKeyedRepository<PartnerRequest>> _partnerRequestRepository;
-        private readonly Mock<IBaseRepository<EventSummary>> _eventSummaryRepository;
-        private readonly Mock<IBaseRepository<EventPartnerLocationService>> _eventPartnerRepository;
-        private readonly Mock<IKeyedRepository<Event>> _eventRepository;
-        private readonly Mock<IKeyedRepository<Partner>> _partnerRepository;
-        private readonly Mock<IBaseRepository<PartnerAdmin>> _partnerAdminRepository;
-        private readonly Mock<IKeyedRepository<PartnerLocation>> _partnerLocationRepository;
+        private readonly Mock<IUserDeletionService> _userDeletionService;
         private readonly Mock<IEmailManager> _emailManager;
         private readonly UserManager _sut;
 
         public UserManagerTests()
         {
             _userRepository = new Mock<IKeyedRepository<User>>();
-            _eventAttendeesRepository = new Mock<IBaseRepository<EventAttendee>>();
-            _userNotificationRepository = new Mock<IKeyedRepository<UserNotification>>();
-            _nonEventUserNotificationRepository = new Mock<IKeyedRepository<NonEventUserNotification>>();
-            _partnerRequestRepository = new Mock<IKeyedRepository<PartnerRequest>>();
-            _eventSummaryRepository = new Mock<IBaseRepository<EventSummary>>();
-            _eventPartnerRepository = new Mock<IBaseRepository<EventPartnerLocationService>>();
-            _eventRepository = new Mock<IKeyedRepository<Event>>();
-            _partnerRepository = new Mock<IKeyedRepository<Partner>>();
-            _partnerAdminRepository = new Mock<IBaseRepository<PartnerAdmin>>();
-            _partnerLocationRepository = new Mock<IKeyedRepository<PartnerLocation>>();
+            _userDeletionService = new Mock<IUserDeletionService>();
             _emailManager = new Mock<IEmailManager>();
 
             // Default email manager setup
@@ -60,16 +42,7 @@ namespace TrashMob.Shared.Tests.Managers
 
             _sut = new UserManager(
                 _userRepository.Object,
-                _eventAttendeesRepository.Object,
-                _userNotificationRepository.Object,
-                _nonEventUserNotificationRepository.Object,
-                _partnerRequestRepository.Object,
-                _eventSummaryRepository.Object,
-                _eventPartnerRepository.Object,
-                _eventRepository.Object,
-                _partnerRepository.Object,
-                _partnerAdminRepository.Object,
-                _partnerLocationRepository.Object,
+                _userDeletionService.Object,
                 _emailManager.Object);
         }
 
