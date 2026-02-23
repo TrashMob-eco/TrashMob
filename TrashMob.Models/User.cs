@@ -152,6 +152,11 @@ namespace TrashMob.Models
         public DateTimeOffset? MemberSince { get; set; }
 
         /// <summary>
+        /// Gets or sets the date of the user's last data export request (used for rate limiting).
+        /// </summary>
+        public DateTimeOffset? LastDataExportRequestedDate { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of events the user is attending.
         /// </summary>
         public virtual ICollection<EventAttendee> EventAttendees { get; set; }
