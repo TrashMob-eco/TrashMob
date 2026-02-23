@@ -86,6 +86,36 @@
         public DateTimeOffset? ExpiresDate { get; set; }
 
         /// <summary>
+        /// Gets or sets whether this route has been time-trimmed.
+        /// </summary>
+        public bool IsTimeTrimmed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the original end time before time trimming.
+        /// </summary>
+        public DateTimeOffset? OriginalEndTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the original total distance in meters before time trimming.
+        /// </summary>
+        public int? OriginalTotalDistanceMeters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the original duration in minutes before time trimming.
+        /// </summary>
+        public int? OriginalDurationMinutes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the litter density in grams per meter. Null if no metric data available.
+        /// </summary>
+        public double? DensityGramsPerMeter { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hex color code for density visualization.
+        /// </summary>
+        public string DensityColor { get; set; } = "#9E9E9E";
+
+        /// <summary>
         /// Gets or sets the list of location points that make up the route, sorted by order.
         /// </summary>
         public List<SortableLocation> Locations { get; set; } = [];

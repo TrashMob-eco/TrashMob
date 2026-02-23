@@ -2,14 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router';
 import { useMap, InfoWindow } from '@vis.gl/react-google-maps';
-import { List, Map as MapIcon } from 'lucide-react';
+import { List, Map as MapIcon, Scissors } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { GoogleMapWithKey } from '@/components/Map/GoogleMap';
 import { GetMyRoutes } from '@/services/event-routes';
 import { DisplayUserRouteHistory } from '@/components/Models/RouteData';
-import { formatDistance, formatDuration } from '@/lib/route-format';
+import { formatDistance, formatDuration, formatDensity } from '@/lib/route-format';
+import { RouteTimeTrimDialog } from '@/components/events/RouteTimeTrimDialog';
 import moment from 'moment';
 
 const MY_ROUTES_MAP_ID = 'myRoutesMap';
@@ -55,7 +56,7 @@ const RoutePolylines = ({
                 .sort((a, b) => a.sortOrder - b.sortOrder)
                 .map((loc) => ({ lat: loc.latitude, lng: loc.longitude }));
 
-            const color = ROUTE_COLORS[index % ROUTE_COLORS.length];
+            const color = route.densityColor || ROUTE_COLORS[index % ROUTE_COLORS.length];
 
             const polyline = new google.maps.Polyline({
                 map,
@@ -149,6 +150,7 @@ const RoutesMapView = ({ routes }: { routes: DisplayUserRouteHistory[] }) => {
 
 export const MyRoutesCard = () => {
     const [viewMode, setViewMode] = useState<'table' | 'map'>('table');
+    const [trimRoute, setTrimRoute] = useState<DisplayUserRouteHistory | null>(null);
 
     const { data: routes, isLoading } = useQuery({
         queryKey: GetMyRoutes().key,
@@ -211,7 +213,10 @@ export const MyRoutesCard = () => {
                                 <TableHead>Date</TableHead>
                                 <TableHead>Distance</TableHead>
                                 <TableHead>Duration</TableHead>
+                                <TableHead>Density</TableHead>
                                 <TableHead>Privacy</TableHead>
+                                <TableHead />
+
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -229,6 +234,19 @@ export const MyRoutesCard = () => {
                                     <TableCell>{formatDistance(route.totalDistanceMeters)}</TableCell>
                                     <TableCell>{formatDuration(route.durationMinutes)}</TableCell>
                                     <TableCell>
+                                        {route.densityGramsPerMeter != null ? (
+                                            <span className='flex items-center gap-1.5'>
+                                                <span
+                                                    className='inline-block w-2.5 h-2.5 rounded-full'
+                                                    style={{ backgroundColor: route.densityColor }}
+                                                />
+                                                {formatDensity(route.densityGramsPerMeter)}
+                                            </span>
+                                        ) : (
+                                            <span className='text-muted-foreground'>--</span>
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
                                         <span
                                             className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                                                 privacyColors[route.privacyLevel] || 'bg-blue-100 text-blue-700'
@@ -237,12 +255,30 @@ export const MyRoutesCard = () => {
                                             {route.privacyLevel}
                                         </span>
                                     </TableCell>
+                                    <TableCell>
+                                        <Button
+                                            variant='ghost'
+                                            size='sm'
+                                            onClick={() => setTrimRoute(route)}
+                                            title='Trim route end time'
+                                        >
+                                            <Scissors className='h-3.5 w-3.5' />
+                                            {route.isTimeTrimmed ? (
+                                                <span className='ml-1 text-xs text-muted-foreground'>Trimmed</span>
+                                            ) : null}
+                                        </Button>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 )}
             </CardContent>
+            <RouteTimeTrimDialog
+                route={trimRoute}
+                open={trimRoute !== null}
+                onOpenChange={(open) => { if (!open) setTrimRoute(null); }}
+            />
         </Card>
     );
 };

@@ -121,5 +121,30 @@
                 return JsonConvert.DeserializeObject<EventSummaryPrefill>(content)!;
             }
         }
+
+        public async Task<DisplayEventAttendeeRoute> TrimRouteTimeAsync(Guid routeId, TrimRouteTimeRequest request, CancellationToken cancellationToken = default)
+        {
+            var requestUri = "routes/" + routeId + "/trim-time";
+            var content = JsonContent.Create(request, typeof(TrimRouteTimeRequest), null, SerializerOptions);
+
+            using (var response = await AuthorizedHttpClient.PutAsync(requestUri, content, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(responseContent)!;
+            }
+        }
+
+        public async Task<DisplayEventAttendeeRoute> RestoreRouteTimeAsync(Guid routeId, CancellationToken cancellationToken = default)
+        {
+            var requestUri = "routes/" + routeId + "/restore-time";
+
+            using (var response = await AuthorizedHttpClient.PutAsync(requestUri, null, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(responseContent)!;
+            }
+        }
     }
 }

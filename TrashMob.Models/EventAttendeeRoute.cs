@@ -104,6 +104,30 @@ namespace TrashMob.Models
 
         #endregion
 
+        #region Time Trimming
+
+        /// <summary>
+        /// Gets or sets whether this route has been time-trimmed by the user.
+        /// </summary>
+        public bool IsTimeTrimmed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the original end time before time trimming. Null if never trimmed.
+        /// </summary>
+        public DateTimeOffset? OriginalEndTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the original total distance in meters before time trimming. Null if never trimmed.
+        /// </summary>
+        public int? OriginalTotalDistanceMeters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the original duration in minutes before time trimming. Null if never trimmed.
+        /// </summary>
+        public int? OriginalDurationMinutes { get; set; }
+
+        #endregion
+
         #region Decay
 
         /// <summary>

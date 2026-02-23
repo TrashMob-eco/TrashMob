@@ -5,6 +5,7 @@ import { GoogleMapWithKey } from '@/components/Map/GoogleMap/GoogleMap';
 import { GetEventRoutes } from '@/services/event-routes';
 import { DisplayAnonymizedRoute } from '@/components/Models/RouteData';
 import { RoutePolylines } from '@/components/Map/RoutePolylines';
+import { DensityLegend } from '@/components/Map/DensityLegend';
 
 const HeatmapOverlay = ({ routes }: { routes: DisplayAnonymizedRoute[] }) => {
     const map = useMap();
@@ -43,7 +44,7 @@ const HeatmapOverlay = ({ routes }: { routes: DisplayAnonymizedRoute[] }) => {
     return null;
 };
 
-type ViewMode = 'routes' | 'heatmap';
+type ViewMode = 'routes' | 'density' | 'heatmap';
 
 interface EventRoutesMapProps {
     eventId: string;
@@ -94,6 +95,17 @@ export const EventRoutesMap = ({ eventId, defaultCenter }: EventRoutesMapProps) 
                 </button>
                 <button
                     type='button'
+                    onClick={() => setViewMode('density')}
+                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                        viewMode === 'density'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                >
+                    Density
+                </button>
+                <button
+                    type='button'
                     onClick={() => setViewMode('heatmap')}
                     className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                         viewMode === 'heatmap'
@@ -104,13 +116,20 @@ export const EventRoutesMap = ({ eventId, defaultCenter }: EventRoutesMapProps) 
                     Heatmap
                 </button>
             </div>
-            <GoogleMapWithKey defaultCenter={defaultCenter} style={{ width: '100%', height: '400px' }}>
-                {viewMode === 'routes' ? (
-                    <RoutePolylines routes={routeList} fitBounds />
-                ) : (
-                    <HeatmapOverlay routes={routeList} />
-                )}
-            </GoogleMapWithKey>
+            <div className='relative'>
+                <GoogleMapWithKey defaultCenter={defaultCenter} style={{ width: '100%', height: '400px' }}>
+                    {viewMode === 'heatmap' ? (
+                        <HeatmapOverlay routes={routeList} />
+                    ) : (
+                        <RoutePolylines
+                            routes={routeList}
+                            fitBounds
+                            colorMode={viewMode === 'density' ? 'density' : 'index'}
+                        />
+                    )}
+                </GoogleMapWithKey>
+                {viewMode === 'density' && <DensityLegend />}
+            </div>
         </div>
     );
 };

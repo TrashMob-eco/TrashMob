@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GetEventRouteStats } from '@/services/event-routes';
-import { formatDistance, formatDuration, formatArea } from '@/lib/route-format';
+import { formatDistance, formatDuration, formatArea, formatDensity } from '@/lib/route-format';
 
 interface EventRouteStatsCardProps {
     eventId: string;
@@ -53,6 +53,24 @@ export const EventRouteStatsCard = ({ eventId }: EventRouteStatsCardProps) => {
                         </div>
                     )}
                 </div>
+                {stats.averageDensityGramsPerMeter != null && (
+                    <div className='grid grid-cols-2 gap-4 mt-4 pt-4 border-t'>
+                        <div className='text-center'>
+                            <p className='text-2xl font-bold'>
+                                {formatDensity(stats.averageDensityGramsPerMeter)}
+                            </p>
+                            <p className='text-sm text-muted-foreground'>Avg Density</p>
+                        </div>
+                        {stats.maxDensityGramsPerMeter != null && (
+                            <div className='text-center'>
+                                <p className='text-2xl font-bold'>
+                                    {formatDensity(stats.maxDensityGramsPerMeter)}
+                                </p>
+                                <p className='text-sm text-muted-foreground'>Max Density</p>
+                            </div>
+                        )}
+                    </div>
+                )}
                 {(stats.totalBagsCollected > 0 || stats.totalWeightCollected > 0) && (
                     <div className='grid grid-cols-2 gap-4 mt-4 pt-4 border-t'>
                         {stats.totalBagsCollected > 0 && (

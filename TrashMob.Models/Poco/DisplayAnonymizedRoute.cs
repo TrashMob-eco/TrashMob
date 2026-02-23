@@ -51,6 +51,16 @@
         public int? WeightUnitId { get; set; }
 
         /// <summary>
+        /// Gets or sets the litter density in grams per meter. Null if no metric data available.
+        /// </summary>
+        public double? DensityGramsPerMeter { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hex color code for density visualization.
+        /// </summary>
+        public string DensityColor { get; set; } = "#9E9E9E";
+
+        /// <summary>
         /// Gets or sets the list of location points that make up the route.
         /// </summary>
         public List<SortableLocation> Locations { get; set; } = [];
