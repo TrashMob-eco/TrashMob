@@ -20,7 +20,8 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { DeleteUserById, ExportUserData } from '@/services/users';
-import { Download, Loader2, TriangleAlert } from 'lucide-react';
+import { ChevronDown, Download, Loader2, TriangleAlert } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 export const DeleteMyData = () => {
     const { currentUser, isUserLoaded } = useLogin();
@@ -29,6 +30,7 @@ export const DeleteMyData = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const [isExporting, setIsExporting] = useState(false);
+    const [detailsOpen, setDetailsOpen] = useState(false);
 
     const handleExport = async () => {
         if (!currentUser?.id) return;
@@ -119,6 +121,54 @@ export const DeleteMyData = () => {
                                         )}
                                     </Button>
                                 </div>
+                                <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
+                                    <CollapsibleTrigger asChild>
+                                        <Button variant='ghost' className='flex items-center gap-2 px-0'>
+                                            <ChevronDown
+                                                className={`h-4 w-4 transition-transform ${detailsOpen ? 'rotate-180' : ''}`}
+                                            />
+                                            What happens to my data?
+                                        </Button>
+                                    </CollapsibleTrigger>
+                                    <CollapsibleContent>
+                                        <div className='rounded-lg border p-4 mt-2 space-y-3 text-sm'>
+                                            <div>
+                                                <h4 className='font-medium mb-1'>Permanently deleted</h4>
+                                                <p className='text-muted-foreground'>
+                                                    Your account profile (name, email, photo, location), event
+                                                    registrations, notification history and preferences, team
+                                                    memberships, achievement records, and partner admin roles.
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <h4 className='font-medium mb-1'>
+                                                    Anonymized (your name removed, data preserved)
+                                                </h4>
+                                                <p className='text-muted-foreground'>
+                                                    Cleanup routes (GPS paths preserved for community heatmaps), cleanup
+                                                    metrics (bags, weight, duration preserved for aggregate totals),
+                                                    event summaries you submitted, events you created (remain visible,
+                                                    your name removed), and feedback you submitted.
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <h4 className='font-medium mb-1'>Retained for legal compliance</h4>
+                                                <p className='text-muted-foreground'>
+                                                    Signed waiver records are kept for up to 7 years from the event date
+                                                    per liability requirements. Your name is anonymized immediately, but
+                                                    the waiver record is preserved.
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p className='text-muted-foreground'>
+                                                    Photos you uploaded to events are preserved for community
+                                                    documentation, but your name is removed from the upload record.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </CollapsibleContent>
+                                </Collapsible>
+
                                 <AlertDialog
                                     open={dialogOpen}
                                     onOpenChange={(open) => {
