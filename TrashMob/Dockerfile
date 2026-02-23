@@ -23,7 +23,8 @@ COPY . .
 # Build the React app
 WORKDIR "/src/TrashMob/client-app"
 # Remove lockfile to regenerate for Linux platform (handles cross-platform native deps like rollup)
-RUN rm -f package-lock.json && npm install
+# --ignore-scripts prevents lifecycle scripts (e.g. husky install) from failing in containers
+RUN rm -f package-lock.json && npm install --ignore-scripts
 RUN npm run build
 
 # Use dev robots.txt for non-production environments (blocks all crawlers)
