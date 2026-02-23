@@ -222,7 +222,7 @@ Both containers use these environment variables:
 - `InstanceName=as-tm-<env>-<region>` (Jobs only)
 
 Azure AD Entra External ID configuration (public values, set based on environment parameter in Bicep):
-- `AzureAdEntra__Instance` - Entra login endpoint (e.g., https://trashmobecodev.ciamlogin.com/)
+- `AzureAdEntra__Instance` - Entra login endpoint (e.g., https://auth-dev.trashmob.eco/)
 - `AzureAdEntra__ClientId` - Backend API client ID for JWT validation
 - `AzureAdEntra__FrontendClientId` - Frontend SPA client ID for MSAL
 - `AzureAdEntra__Domain` - Entra tenant domain (e.g., TrashMobEcoDev.onmicrosoft.com)

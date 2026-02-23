@@ -91,7 +91,7 @@ export async function loginWithEntra(page: Page, email: string, password: string
     await page.getByRole('button', { name: /sign in/i }).click();
 
     // Wait for Entra External ID redirect and fill credentials
-    await page.waitForURL(/.*ciamlogin\.com.*/);
+    await page.waitForURL(/.*(?:ciamlogin\.com|auth(?:-dev)?\.trashmob\.eco).*/);
 
     // Fill email
     await page.fill('input[type="email"], input[name="signInName"], #email', email);

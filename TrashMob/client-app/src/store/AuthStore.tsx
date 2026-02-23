@@ -5,8 +5,8 @@ import { getAppConfig, getCachedConfig, type EntraConfig } from '../services/con
 // Uses dev settings as fallback since they're safer for testing
 const fallbackEntraConfig: EntraConfig = {
     clientId: '1e6ae74d-0160-4a01-9d75-04048e03b17e',
-    authorityDomain: 'trashmobecodev.ciamlogin.com',
-    authority: 'https://trashmobecodev.ciamlogin.com/',
+    authorityDomain: 'auth-dev.trashmob.eco',
+    authority: 'https://auth-dev.trashmob.eco/',
     scopes: [
         'https://TrashMobEcoDev.onmicrosoft.com/api/TrashMob.Read',
         'https://TrashMobEcoDev.onmicrosoft.com/api/TrashMob.Writes',

@@ -1706,8 +1706,8 @@ Replace `trashmobecopr.ciamlogin.com` with a branded domain (e.g., `auth.trashmo
 - [ ] **197.** Configure custom URL domain in Entra portal: External Identities > Custom URL domains > Add `auth.trashmob.eco`
 - [ ] **198.** Update redirect URIs in all 3 app registrations (Web SPA, API, Mobile) to use `auth.trashmob.eco`
 - [ ] **199.** Update social IDP redirect URIs (Google, Facebook, Apple) to use `auth.trashmob.eco`
-- [ ] **200.** Update `Deploy/containerApp.bicep` `entraInstance` to `https://auth.trashmob.eco/`
-- [ ] **201.** Update mobile `AuthConstants.cs` with new auth domain
+- [x] **200.** Update `Deploy/containerApp.bicep` `entraInstance` to `https://auth.trashmob.eco/`
+- [x] **201.** Update mobile `AuthConstants.cs` with new auth domain
 - [ ] **202.** Test sign-in on web and mobile with the new domain
 
 ---

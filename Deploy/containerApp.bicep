@@ -23,7 +23,7 @@ var appInsightsName = 'ai-tm-${environment}-${region}'
 
 // Azure AD Entra External ID configuration - these are public values, not secrets
 // Note: Microsoft accounts work natively in Entra External ID (no external IDP setup needed)
-var entraInstance = environment == 'dev' ? 'https://trashmobecodev.ciamlogin.com/' : 'https://trashmobecopr.ciamlogin.com/'
+var entraInstance = environment == 'dev' ? 'https://auth-dev.trashmob.eco/' : 'https://auth.trashmob.eco/'
 var entraDomain = environment == 'dev' ? 'TrashMobEcoDev.onmicrosoft.com' : 'trashmobecopr.onmicrosoft.com'
 var entraBackendClientId = environment == 'dev' ? '84df543d-6535-45f5-afab-4d38528b721a' : 'dc09e17b-bce4-4af9-82ab-f7b12af586b4'
 var entraTenantId = environment == 'dev' ? '8577fa31-4b86-4e4b-8b02-93fba708cb19' : 'b5fc8717-29eb-496e-8e09-cf90d344ce9f'

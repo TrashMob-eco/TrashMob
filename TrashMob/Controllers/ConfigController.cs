@@ -46,7 +46,7 @@ namespace TrashMob.Controllers
 
             if (!string.IsNullOrWhiteSpace(entraInstance) && !string.IsNullOrWhiteSpace(entraTenantId))
             {
-                // Entra External ID authority: https://{tenant}.ciamlogin.com/{tenantId}
+                // Entra External ID authority: https://{customDomain}/{tenantId}
                 authority = $"{entraInstance}/{entraTenantId}";
 
                 if (entraInstance.StartsWith("https://"))
