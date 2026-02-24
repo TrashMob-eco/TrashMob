@@ -59,7 +59,7 @@ jobs:
           RESULT=$(az rest --method post \
             --url "${{ steps.resource.outputs.resource_id }}/query?api-version=2018-04-20" \
             --body '{
-              "query": "exceptions | where timestamp > ago(24h) | summarize Count=count(), FirstSeen=min(timestamp), LastSeen=max(timestamp), SampleDetails=take_any(details) by type, outerMessage | order by Count desc"
+              "query": "exceptions | where timestamp > ago(24h) | where type !in (\"System.Threading.Tasks.TaskCanceledException\", \"Microsoft.AspNetCore.Server.Kestrel.Core.BadHttpRequestException\") | where outerMessage !has \"SPA default page middleware\" | where type !has \"ModuleError\" | summarize Count=count(), FirstSeen=min(timestamp), LastSeen=max(timestamp), SampleDetails=take_any(details) by type, outerMessage | order by Count desc"
             }' 2>/dev/null) || true
 
           # Check if the query returned valid data
