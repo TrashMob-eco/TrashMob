@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Ready for Dev Review |
+| **Status** | In Progress (Phases 1-3 Complete; Phase 4 Partial; Phases 5-6 Not Started) |
 | **Priority** | Critical |
 | **Risk** | Moderate |
 | **Size** | Medium |
@@ -46,18 +46,20 @@ Restore and modernize CI/CD pipelines to enable reliable, frequent deployments. 
 - ✅ Set up Azure Container Registry
 - ✅ Deploy to Azure Container Apps (ACA) instead of App Service
 
-### Phase 3 - Mobile Automation Review
-- ☐ Review existing iOS build and TestFlight upload workflow
-- ☐ Review existing Android build and Google Play Beta upload workflow
-- ☐ Verify versioning strategy is working correctly
-- ☐ Verify code signing certificate management
-- ☐ Document current workflows and identify any improvements
+### Phase 3 - Mobile Automation Review ✅
+- [x] Review existing iOS build and TestFlight upload workflow (`build-ios.yml` → `publish-ios.yml` → `manual_ios-submit.yml`)
+- [x] Review existing Android build and Google Play upload workflow (`build-android.yml` → `publish-android.yml` → `manual_android-rollout.yml`)
+- [x] Verify versioning strategy is working correctly (GitVersion semVer + offset)
+- [x] Verify code signing certificate management (Android keystore + iOS certs via GitHub secrets)
+- [x] Document current workflows and identify any improvements (screenshot workflows added: `manual_capture-screenshots.yml`, `manual_ios-upload-screenshots.yml`)
 
-### Phase 4 - Monitoring
-- ? Deployment health dashboards (Grafana or Azure Monitor)
-- ? Alerting for failed deployments
-- ? Rollback automation
-- ? Deployment metrics tracking
+### Phase 4 - Monitoring (Partial)
+- [ ] Deployment health dashboards (Grafana or Azure Monitor)
+- [x] Alerting for failed deployments (`exception-monitor.yml`)
+- [x] Rollback documentation (documented in CLAUDE.md; revision-based rollback via Azure CLI)
+- [x] Post-deploy smoke tests (`release_smoke-tests.yml`)
+- [x] Certificate expiry monitoring (`scheduled_cert-expiry-check.yml`)
+- [ ] Deployment metrics tracking
 
 ### Phase 5 - Cost Optimization
 - ? Analyze current Azure spend
@@ -742,7 +744,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 5, 2026
+**Last Updated:** February 23, 2026
 **Owner:** DevOps/Build Engineer
-**Status:** In Progress
-**Next Review:** Regular standups during development
+**Status:** In Progress (Phases 1-3 Complete, Phase 4 Partial — web/API containerized on ACA, mobile CI/CD fully automated for iOS TestFlight + Android Google Play, monitoring partially in place)
+**Next Review:** Ongoing — remaining work is cost optimization (Phase 5) and security scanning (Phase 6)
