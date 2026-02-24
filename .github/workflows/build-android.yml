@@ -182,10 +182,21 @@ jobs:
             cd TrashMobMobile
             jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.android_keystore_password }}" -signedjar bin/${{ inputs.configuration }}/net10.0-android/publish/${{ inputs.bundle_id }}-Signed.aab bin/${{ inputs.configuration }}/net10.0-android/publish/${{ inputs.bundle_id }}.aab ${{ inputs.android_key_name }}
 
+        - name: Stage artifacts into flat directory
+          shell: pwsh
+          run: |
+            New-Item -ItemType Directory -Path artifact-staging -Force | Out-Null
+            Copy-Item TrashMobMobile\bin\${{ inputs.configuration }}\net10.0-android\publish\*.aab artifact-staging\
+            if (Test-Path TrashMobMobile\native-debug-symbols.zip) {
+              Copy-Item TrashMobMobile\native-debug-symbols.zip artifact-staging\
+            }
+            if (Test-Path TrashMobMobile\mapping.txt) {
+              Copy-Item TrashMobMobile\mapping.txt artifact-staging\
+            }
+            Write-Host "Staged artifacts:"
+            Get-ChildItem artifact-staging
+
         - uses: actions/upload-artifact@v4.6.2
           with:
             name: artifacts-android-${{ env.semVer }}
-            path: |
-              TrashMobMobile\bin\${{ inputs.configuration }}\net10.0-android\publish\*.aab
-              TrashMobMobile\native-debug-symbols.zip
-              TrashMobMobile\mapping.txt
+            path: artifact-staging\
