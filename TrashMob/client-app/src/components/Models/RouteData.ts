@@ -14,6 +14,8 @@ export interface DisplayAnonymizedRoute {
     bagsCollected: number | null;
     weightCollected: number | null;
     weightUnitId: number | null;
+    densityGramsPerMeter: number | null;
+    densityColor: string;
     locations: SortableLocation[];
 }
 
@@ -27,6 +29,34 @@ export interface DisplayEventRouteStats {
     totalWeightCollected: number;
     totalWeightUnitId: number;
     coverageAreaSquareMeters: number;
+    averageDensityGramsPerMeter: number | null;
+    maxDensityGramsPerMeter: number | null;
+}
+
+export interface DisplayEventAttendeeRoute {
+    id: string;
+    eventId: string;
+    userId: string;
+    startTime: string;
+    endTime: string;
+    totalDistanceMeters: number;
+    durationMinutes: number;
+    privacyLevel: string;
+    isTrimmed: boolean;
+    trimStartMeters: number;
+    trimEndMeters: number;
+    bagsCollected: number | null;
+    weightCollected: number | null;
+    weightUnitId: number | null;
+    notes: string | null;
+    expiresDate: string | null;
+    isTimeTrimmed: boolean;
+    originalEndTime: string | null;
+    originalTotalDistanceMeters: number | null;
+    originalDurationMinutes: number | null;
+    densityGramsPerMeter: number | null;
+    densityColor: string;
+    locations: SortableLocation[];
 }
 
 export interface DisplayUserRouteHistory {
@@ -40,6 +70,9 @@ export interface DisplayUserRouteHistory {
     bagsCollected: number | null;
     weightCollected: number | null;
     weightUnitId: number | null;
+    densityGramsPerMeter: number | null;
+    densityColor: string;
+    isTimeTrimmed: boolean;
     eventLatitude: number;
     eventLongitude: number;
     startTime: string;

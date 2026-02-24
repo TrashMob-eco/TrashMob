@@ -76,6 +76,21 @@
         public DateTimeOffset EndTime { get; set; }
 
         /// <summary>
+        /// Gets or sets whether this route has been time-trimmed.
+        /// </summary>
+        public bool IsTimeTrimmed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the litter density in grams per meter. Null if no metric data available.
+        /// </summary>
+        public double? DensityGramsPerMeter { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hex color code for density visualization.
+        /// </summary>
+        public string DensityColor { get; set; } = "#9E9E9E";
+
+        /// <summary>
         /// Gets or sets the GPS path coordinates for map display.
         /// </summary>
         public List<SortableLocation> Locations { get; set; } = [];

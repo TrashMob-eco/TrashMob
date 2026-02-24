@@ -46,7 +46,26 @@ public partial class EventAttendeeRouteViewModel : ObservableObject
 
     public bool CanChangePrivacy => IsOwnRoute;
 
-    public bool HasMetrics => !string.IsNullOrEmpty(BagsDisplay) || !string.IsNullOrEmpty(WeightDisplay);
+    public bool HasMetrics => !string.IsNullOrEmpty(BagsDisplay) || !string.IsNullOrEmpty(WeightDisplay)
+                              || !string.IsNullOrEmpty(DensityDisplay);
+
+    public string DensityDisplay { get; set; } = string.Empty;
+
+    public string DensityColorHex { get; set; } = "#9E9E9E";
+
+    public Color DensityColor => Color.FromArgb(DensityColorHex.TrimStart('#'));
+
+    public bool IsTimeTrimmed { get; set; }
+
+    public DateTimeOffset StartTime { get; set; }
+
+    public DateTimeOffset EndTime { get; set; }
+
+    public DateTimeOffset? OriginalEndTime { get; set; }
+
+    public bool CanTrimRoute => IsOwnRoute;
+
+    public string TrimButtonText => IsTimeTrimmed ? "Restore Route" : "Trim End";
 
     public List<SortableLocation> Locations { get; set; } = [];
 
@@ -68,6 +87,12 @@ public partial class EventAttendeeRouteViewModel : ObservableObject
             Notes = route.Notes,
             BagsDisplay = route.BagsCollected.HasValue ? $"{route.BagsCollected} bags" : string.Empty,
             WeightDisplay = route.WeightCollected.HasValue ? $"{route.WeightCollected:F1} {weightUnitLabel}" : string.Empty,
+            DensityDisplay = route.DensityGramsPerMeter.HasValue ? $"{route.DensityGramsPerMeter:F1} g/m" : string.Empty,
+            DensityColorHex = route.DensityColor ?? "#9E9E9E",
+            IsTimeTrimmed = route.IsTimeTrimmed,
+            StartTime = route.StartTime,
+            EndTime = route.EndTime,
+            OriginalEndTime = route.OriginalEndTime,
             IsOwnRoute = route.UserId == currentUserId,
             Locations = route.Locations,
         };

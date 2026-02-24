@@ -877,6 +877,75 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         }, "An error occurred while saving pickup data.");
     }
 
+    [RelayCommand]
+    private async Task TrimRouteTime(EventAttendeeRouteViewModel? routeVm)
+    {
+        if (routeVm == null || !routeVm.IsOwnRoute)
+        {
+            return;
+        }
+
+        if (routeVm.IsTimeTrimmed)
+        {
+            // Restore original route
+            var confirmPopup = new ConfirmPopup("Restore Route", "Restore this route to its original end time?", "Restore");
+            var confirmResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(confirmPopup);
+            if (confirmResult?.Result != ConfirmPopup.Confirmed)
+            {
+                return;
+            }
+
+            await ExecuteAsync(async () =>
+            {
+                var updated = await eventAttendeeRouteRestService.RestoreRouteTimeAsync(routeVm.Id);
+                RefreshRouteViewModel(routeVm, updated);
+                await NotificationService.Notify("Route restored.");
+            }, "An error occurred while restoring the route.");
+        }
+        else
+        {
+            // Trim end time
+            var popup = new TrimRoutePopup(routeVm.StartTime, routeVm.EndTime);
+            var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+            var resultString = popupResult?.Result;
+
+            if (string.IsNullOrEmpty(resultString) || !DateTimeOffset.TryParse(resultString, out var newEndTime))
+            {
+                return;
+            }
+
+            await ExecuteAsync(async () =>
+            {
+                var request = new TrimRouteTimeRequest { NewEndTime = newEndTime };
+                var updated = await eventAttendeeRouteRestService.TrimRouteTimeAsync(routeVm.Id, request);
+                RefreshRouteViewModel(routeVm, updated);
+                await NotificationService.Notify("Route trimmed.");
+            }, "An error occurred while trimming the route.");
+        }
+    }
+
+    private void RefreshRouteViewModel(EventAttendeeRouteViewModel routeVm, DisplayEventAttendeeRoute updated)
+    {
+        var refreshed = EventAttendeeRouteViewModel.FromRoute(updated, userManager.CurrentUser.Id);
+        routeVm.DistanceDisplay = refreshed.DistanceDisplay;
+        routeVm.DurationDisplay = refreshed.DurationDisplay;
+        routeVm.IsTimeTrimmed = refreshed.IsTimeTrimmed;
+        routeVm.StartTime = refreshed.StartTime;
+        routeVm.EndTime = refreshed.EndTime;
+        routeVm.OriginalEndTime = refreshed.OriginalEndTime;
+        routeVm.Locations = refreshed.Locations;
+
+        // Update the raw route data for map re-rendering
+        var rawRoute = EventAttendeeRoutes.FirstOrDefault(r => r.Id == routeVm.Id);
+        if (rawRoute != null)
+        {
+            var index = EventAttendeeRoutes.IndexOf(rawRoute);
+            EventAttendeeRoutes[index] = updated;
+        }
+
+        UpdateRouteStats();
+    }
+
     private void LoadRouteViewModels(IEnumerable<DisplayEventAttendeeRoute> routes)
     {
         EventAttendeeRoutes.Clear();

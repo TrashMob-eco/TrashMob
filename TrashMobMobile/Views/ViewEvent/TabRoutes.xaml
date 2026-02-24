@@ -121,6 +121,8 @@
                                        TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                                 <Label Text="{Binding WeightDisplay}" FontSize="Micro"
                                        TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Label Text="{Binding DensityDisplay}" FontSize="Micro"
+                                       TextColor="{Binding DensityColor}" />
                             </HorizontalStackLayout>
 
                             <!-- Actions row (own routes only) -->
@@ -135,6 +137,11 @@
                                         Command="{Binding Source={x:Reference TabRoutesView}, Path=BindingContext.ChangeRoutePrivacyCommand}"
                                         CommandParameter="{Binding .}"
                                         IsVisible="{Binding CanChangePrivacy}"
+                                        Style="{StaticResource SecondarySmallButton}" />
+                                <Button Text="{Binding TrimButtonText}"
+                                        Command="{Binding Source={x:Reference TabRoutesView}, Path=BindingContext.TrimRouteTimeCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding CanTrimRoute}"
                                         Style="{StaticResource SecondarySmallButton}" />
                                 <Button Text="Delete"
                                         Command="{Binding Source={x:Reference TabRoutesView}, Path=BindingContext.DeleteRouteCommand}"

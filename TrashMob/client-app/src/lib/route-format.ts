@@ -26,3 +26,7 @@ export function formatArea(sqMeters: number): string {
 export function formatWeight(weight: number, weightUnitId: number | null): string {
     return `${weight.toFixed(1)} ${weightUnitId === 2 ? 'kg' : 'lbs'}`;
 }
+
+export function formatDensity(gramsPerMeter: number): string {
+    return `${gramsPerMeter.toFixed(1)} g/m`;
+}

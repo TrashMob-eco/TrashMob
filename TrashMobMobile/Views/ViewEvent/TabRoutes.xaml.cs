@@ -70,9 +70,10 @@ public partial class TabRoutes : ContentView
 
         foreach (var route in routes)
         {
+            var colorHex = route.DensityColor?.TrimStart('#') ?? "9E9E9E";
             var polyline = new Polyline
             {
-                StrokeColor = Color.FromArgb("c7d762"),
+                StrokeColor = Color.FromArgb(colorHex),
                 StrokeWidth = 5,
             };
 

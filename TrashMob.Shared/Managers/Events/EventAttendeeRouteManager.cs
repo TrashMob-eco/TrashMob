@@ -79,6 +79,12 @@ namespace TrashMob.Shared.Managers.Events
                     && (r.ExpiresDate == null || r.ExpiresDate > now))
                 .ToListAsync(cancellationToken);
 
+            var densities = routes
+                .Select(r => CalculateDensity(r.BagsCollected, r.WeightCollected, r.WeightUnitId, r.TotalDistanceMeters))
+                .Where(d => d.HasValue)
+                .Select(d => d!.Value)
+                .ToList();
+
             return new DisplayEventRouteStats
             {
                 EventId = eventId,
@@ -90,6 +96,8 @@ namespace TrashMob.Shared.Managers.Events
                 TotalWeightCollected = Math.Round(ConvertWeightsToPounds(routes), 1),
                 TotalWeightUnitId = (int)WeightUnitEnum.Pound,
                 CoverageAreaSquareMeters = CalculateCoverageArea(routes),
+                AverageDensityGramsPerMeter = densities.Count > 0 ? Math.Round(densities.Average(), 1) : null,
+                MaxDensityGramsPerMeter = densities.Count > 0 ? Math.Round(densities.Max(), 1) : null,
             };
         }
 
@@ -103,23 +111,30 @@ namespace TrashMob.Shared.Managers.Events
                 .OrderByDescending(r => r.StartTime)
                 .ToListAsync(cancellationToken);
 
-            return routes.Select(r => new DisplayUserRouteHistory
+            return routes.Select(r =>
             {
-                RouteId = r.Id,
-                EventId = r.EventId,
-                EventName = r.Event?.Name,
-                EventDate = r.Event?.EventDate ?? r.StartTime,
-                TotalDistanceMeters = r.TotalDistanceMeters,
-                DurationMinutes = r.DurationMinutes,
-                PrivacyLevel = r.PrivacyLevel,
-                BagsCollected = r.BagsCollected,
-                WeightCollected = r.WeightCollected,
-                WeightUnitId = r.WeightUnitId,
-                EventLatitude = r.Event?.Latitude ?? 0,
-                EventLongitude = r.Event?.Longitude ?? 0,
-                StartTime = r.StartTime,
-                EndTime = r.EndTime,
-                Locations = ExtractLocations(r.UserPath),
+                var density = CalculateDensity(r.BagsCollected, r.WeightCollected, r.WeightUnitId, r.TotalDistanceMeters);
+                return new DisplayUserRouteHistory
+                {
+                    RouteId = r.Id,
+                    EventId = r.EventId,
+                    EventName = r.Event?.Name,
+                    EventDate = r.Event?.EventDate ?? r.StartTime,
+                    TotalDistanceMeters = r.TotalDistanceMeters,
+                    DurationMinutes = r.DurationMinutes,
+                    PrivacyLevel = r.PrivacyLevel,
+                    BagsCollected = r.BagsCollected,
+                    WeightCollected = r.WeightCollected,
+                    WeightUnitId = r.WeightUnitId,
+                    EventLatitude = r.Event?.Latitude ?? 0,
+                    EventLongitude = r.Event?.Longitude ?? 0,
+                    StartTime = r.StartTime,
+                    EndTime = r.EndTime,
+                    IsTimeTrimmed = r.IsTimeTrimmed,
+                    DensityGramsPerMeter = density,
+                    DensityColor = GetDensityColor(density),
+                    Locations = ExtractLocations(r.UserPath),
+                };
             });
         }
 
@@ -203,8 +218,127 @@ namespace TrashMob.Shared.Managers.Events
             };
         }
 
+        /// <inheritdoc />
+        public async Task<ServiceResult<EventAttendeeRoute>> TrimRouteTimeAsync(Guid routeId, Guid userId,
+            TrimRouteTimeRequest request, CancellationToken cancellationToken = default)
+        {
+            var route = await Repository.Get()
+                .Include(r => r.RoutePoints)
+                .FirstOrDefaultAsync(r => r.Id == routeId, cancellationToken);
+
+            if (route is null)
+            {
+                return ServiceResult<EventAttendeeRoute>.Failure("Route not found.");
+            }
+
+            if (route.UserId != userId)
+            {
+                return ServiceResult<EventAttendeeRoute>.Failure("You can only trim your own routes.");
+            }
+
+            if (request.NewEndTime <= route.StartTime)
+            {
+                return ServiceResult<EventAttendeeRoute>.Failure("New end time must be after the route start time.");
+            }
+
+            if (request.NewEndTime >= route.EndTime)
+            {
+                return ServiceResult<EventAttendeeRoute>.Failure("New end time must be before the current end time.");
+            }
+
+            // Preserve originals on first trim
+            route.OriginalEndTime ??= route.EndTime;
+            route.OriginalTotalDistanceMeters ??= route.TotalDistanceMeters;
+            route.OriginalDurationMinutes ??= route.DurationMinutes;
+
+            // Filter RoutePoints to those before new end time
+            var keptPoints = route.RoutePoints
+                .Where(rp => rp.Timestamp <= request.NewEndTime)
+                .OrderBy(rp => rp.Timestamp)
+                .ToList();
+
+            if (keptPoints.Count < 2)
+            {
+                return ServiceResult<EventAttendeeRoute>.Failure("Trimming to this time would leave fewer than 2 GPS points.");
+            }
+
+            // Rebuild the LineString from kept points
+            var factory = route.UserPath?.Factory ?? NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(4326);
+            var coordinates = keptPoints.Select(p => new Coordinate(p.Longitude, p.Latitude)).ToArray();
+            var newPath = factory.CreateLineString(coordinates);
+
+            route.UserPath = newPath;
+            route.EndTime = request.NewEndTime;
+            route.TotalDistanceMeters = (int)CalculateHaversineDistance(newPath);
+            route.DurationMinutes = (int)(route.EndTime - route.StartTime).TotalMinutes;
+            route.IsTimeTrimmed = true;
+
+            // Re-apply privacy trim on the new path
+            ApplyTrim(route);
+
+            var updated = await Repository.UpdateAsync(route);
+            return ServiceResult<EventAttendeeRoute>.Success(updated);
+        }
+
+        /// <inheritdoc />
+        public async Task<ServiceResult<EventAttendeeRoute>> RestoreRouteTimeAsync(Guid routeId, Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            var route = await Repository.Get()
+                .Include(r => r.RoutePoints)
+                .FirstOrDefaultAsync(r => r.Id == routeId, cancellationToken);
+
+            if (route is null)
+            {
+                return ServiceResult<EventAttendeeRoute>.Failure("Route not found.");
+            }
+
+            if (route.UserId != userId)
+            {
+                return ServiceResult<EventAttendeeRoute>.Failure("You can only restore your own routes.");
+            }
+
+            if (!route.IsTimeTrimmed)
+            {
+                return ServiceResult<EventAttendeeRoute>.Failure("This route has not been time-trimmed.");
+            }
+
+            // Rebuild the full path from ALL RoutePoints
+            var allPoints = route.RoutePoints
+                .OrderBy(rp => rp.Timestamp)
+                .ToList();
+
+            if (allPoints.Count < 2)
+            {
+                return ServiceResult<EventAttendeeRoute>.Failure("Cannot restore — insufficient route points.");
+            }
+
+            var factory = route.UserPath?.Factory ?? NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(4326);
+            var coordinates = allPoints.Select(p => new Coordinate(p.Longitude, p.Latitude)).ToArray();
+            route.UserPath = factory.CreateLineString(coordinates);
+
+            // Restore original values
+            route.EndTime = route.OriginalEndTime!.Value;
+            route.TotalDistanceMeters = route.OriginalTotalDistanceMeters!.Value;
+            route.DurationMinutes = route.OriginalDurationMinutes!.Value;
+
+            // Clear time-trim state
+            route.OriginalEndTime = null;
+            route.OriginalTotalDistanceMeters = null;
+            route.OriginalDurationMinutes = null;
+            route.IsTimeTrimmed = false;
+
+            // Re-apply privacy trim on the restored path
+            ApplyTrim(route);
+
+            var updated = await Repository.UpdateAsync(route);
+            return ServiceResult<EventAttendeeRoute>.Success(updated);
+        }
+
         private const decimal KilogramsToPoundsMultiplier = 2.20462m;
         private const decimal PoundsToKilogramsMultiplier = 0.453592m;
+        private const decimal GramsPerPound = 453.592m;
+        private const decimal GramsPerKilogram = 1000m;
 
         private static decimal ConvertWeightsToPounds(List<EventAttendeeRoute> routes)
         {
@@ -374,5 +508,45 @@ namespace TrashMob.Shared.Managers.Events
 
             return earthRadiusMeters * c;
         }
+
+        #region Density Calculation
+
+        private static double? CalculateDensity(int? bags, decimal? weight, int? weightUnitId, int distanceMeters)
+        {
+            if (distanceMeters <= 0)
+            {
+                return null;
+            }
+
+            if (weight.HasValue && weight.Value > 0)
+            {
+                var grams = weightUnitId == (int)WeightUnitEnum.Kilogram
+                    ? weight.Value * GramsPerKilogram
+                    : weight.Value * GramsPerPound;
+                return (double)(grams / distanceMeters);
+            }
+
+            if (bags.HasValue && bags.Value > 0)
+            {
+                var distanceKm = distanceMeters / 1000.0;
+                return distanceKm > 0 ? bags.Value / distanceKm : null;
+            }
+
+            return null;
+        }
+
+        private static string GetDensityColor(double? density) => density switch
+        {
+            null or < 0.01 => "#9E9E9E",
+            < 5 => "#4CAF50",
+            < 15 => "#8BC34A",
+            < 30 => "#FFC107",
+            < 60 => "#FF9800",
+            < 120 => "#FF5722",
+            _ => "#F44336",
+        };
+
+
+        #endregion
     }
 }

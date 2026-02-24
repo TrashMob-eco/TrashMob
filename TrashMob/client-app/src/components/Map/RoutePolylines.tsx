@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useMap } from '@vis.gl/react-google-maps';
 import { DisplayAnonymizedRoute } from '@/components/Models/RouteData';
-import { formatDistance, formatDuration, formatWeight } from '@/lib/route-format';
+import { formatDistance, formatDuration, formatWeight, formatDensity } from '@/lib/route-format';
+
+export type RouteColorMode = 'index' | 'density';
 
 const ROUTE_COLORS = [
     '#3B82F6',
@@ -20,7 +22,7 @@ function getRouteColor(index: number): string {
     return ROUTE_COLORS[index % ROUTE_COLORS.length];
 }
 
-function buildInfoContent(route: DisplayAnonymizedRoute): string {
+function buildInfoContent(route: DisplayAnonymizedRoute, colorMode: RouteColorMode): string {
     const lines: string[] = [];
     lines.push(`<strong>${formatDistance(route.totalDistanceMeters)}</strong>`);
     lines.push(formatDuration(route.durationMinutes));
@@ -30,6 +32,9 @@ function buildInfoContent(route: DisplayAnonymizedRoute): string {
     if (route.weightCollected && route.weightCollected > 0) {
         lines.push(formatWeight(route.weightCollected, route.weightUnitId));
     }
+    if (colorMode === 'density' && route.densityGramsPerMeter != null) {
+        lines.push(formatDensity(route.densityGramsPerMeter));
+    }
     return `<div style="font-size:12px;line-height:1.4">${lines.join(' &middot; ')}</div>`;
 }
 
@@ -37,9 +42,10 @@ interface RoutePolylinesProps {
     mapId?: string;
     routes: DisplayAnonymizedRoute[];
     fitBounds?: boolean;
+    colorMode?: RouteColorMode;
 }
 
-export const RoutePolylines = ({ mapId, routes, fitBounds = false }: RoutePolylinesProps) => {
+export const RoutePolylines = ({ mapId, routes, fitBounds = false, colorMode = 'index' }: RoutePolylinesProps) => {
     const map = useMap(mapId);
     const polylinesRef = useRef<google.maps.Polyline[]>([]);
     const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
@@ -67,9 +73,11 @@ export const RoutePolylines = ({ mapId, routes, fitBounds = false }: RoutePolyli
                     return latLng;
                 });
 
+            const strokeColor = colorMode === 'density' ? route.densityColor || '#9E9E9E' : getRouteColor(index);
+
             const polyline = new google.maps.Polyline({
                 path,
-                strokeColor: getRouteColor(index),
+                strokeColor,
                 strokeOpacity: 0.8,
                 strokeWeight: 3,
                 map,
@@ -79,7 +87,7 @@ export const RoutePolylines = ({ mapId, routes, fitBounds = false }: RoutePolyli
                 if (!infoWindowRef.current) {
                     infoWindowRef.current = new google.maps.InfoWindow();
                 }
-                infoWindowRef.current.setContent(buildInfoContent(route));
+                infoWindowRef.current.setContent(buildInfoContent(route, colorMode));
                 if (e.latLng) {
                     infoWindowRef.current.setPosition(e.latLng);
                 }
@@ -107,7 +115,7 @@ export const RoutePolylines = ({ mapId, routes, fitBounds = false }: RoutePolyli
                 infoWindowRef.current = null;
             }
         };
-    }, [map, routes, fitBounds]);
+    }, [map, routes, fitBounds, colorMode]);
 
     return null;
 };
