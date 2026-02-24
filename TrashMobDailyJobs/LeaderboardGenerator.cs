@@ -87,7 +87,7 @@ namespace TrashMobDailyJobs
                 var region = reader.IsDBNull(2) ? null : reader.GetString(2);
                 var city = reader.IsDBNull(3) ? null : reader.GetString(3);
                 var score = reader.GetDecimal(4);
-                var rank = reader.GetInt32(5);
+                var rank = (int)reader.GetInt64(5);
 
                 // Insert Global entry
                 await InsertLeaderboardEntry(conn, "User", userId, userName, leaderboardType, timeRange, "Global", null, score, rank, computedDate);
@@ -199,7 +199,7 @@ ORDER BY Rank";
                 var region = reader.IsDBNull(2) ? null : reader.GetString(2);
                 var city = reader.IsDBNull(3) ? null : reader.GetString(3);
                 var score = reader.GetDecimal(4);
-                var rank = reader.GetInt32(5);
+                var rank = (int)reader.GetInt64(5);
 
                 // Insert Global entry
                 await InsertLeaderboardEntry(conn, "Team", teamId, teamName, leaderboardType, timeRange, "Global", null, score, rank, computedDate);

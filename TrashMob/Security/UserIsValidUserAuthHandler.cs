@@ -9,7 +9,6 @@ namespace TrashMob.Security
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using TrashMob.Services;
     using TrashMob.Shared.Managers.Interfaces;
 
@@ -162,8 +161,8 @@ namespace TrashMob.Security
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred while authenticating user. {0}",
-                    JsonConvert.SerializeObject(context.User));
+                var claimsSummary = string.Join(", ", context.User.Claims.Select(c => $"{c.Type}={c.Value}"));
+                logger.LogError(ex, "Error occurred while authenticating user. Claims: {Claims}", claimsSummary);
             }
         }
 
