@@ -56,16 +56,12 @@ export const EventRouteStatsCard = ({ eventId }: EventRouteStatsCardProps) => {
                 {stats.averageDensityGramsPerMeter != null && (
                     <div className='grid grid-cols-2 gap-4 mt-4 pt-4 border-t'>
                         <div className='text-center'>
-                            <p className='text-2xl font-bold'>
-                                {formatDensity(stats.averageDensityGramsPerMeter)}
-                            </p>
+                            <p className='text-2xl font-bold'>{formatDensity(stats.averageDensityGramsPerMeter)}</p>
                             <p className='text-sm text-muted-foreground'>Avg Density</p>
                         </div>
                         {stats.maxDensityGramsPerMeter != null && (
                             <div className='text-center'>
-                                <p className='text-2xl font-bold'>
-                                    {formatDensity(stats.maxDensityGramsPerMeter)}
-                                </p>
+                                <p className='text-2xl font-bold'>{formatDensity(stats.maxDensityGramsPerMeter)}</p>
                                 <p className='text-sm text-muted-foreground'>Max Density</p>
                             </div>
                         )}

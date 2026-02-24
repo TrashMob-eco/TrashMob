@@ -73,8 +73,7 @@ export const RoutePolylines = ({ mapId, routes, fitBounds = false, colorMode = '
                     return latLng;
                 });
 
-            const strokeColor =
-                colorMode === 'density' ? (route.densityColor || '#9E9E9E') : getRouteColor(index);
+            const strokeColor = colorMode === 'density' ? route.densityColor || '#9E9E9E' : getRouteColor(index);
 
             const polyline = new google.maps.Polyline({
                 path,
