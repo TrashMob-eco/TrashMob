@@ -110,6 +110,7 @@ namespace TrashMob.Shared.Managers
             var events = await context.Events
                 .AsNoTracking()
                 .Where(e => e.CreatedByUserId == userId)
+                .OrderByDescending(e => e.EventDate)
                 .Select(e => new ExportedEventLed(
                     e.Id,
                     e.Name,
@@ -119,7 +120,6 @@ namespace TrashMob.Shared.Managers
                     e.Region,
                     e.DurationHours,
                     e.DurationMinutes))
-                .OrderByDescending(e => e.EventDate)
                 .ToListAsync(ct);
 
             writer.WritePropertyName("eventsLed");
@@ -265,6 +265,7 @@ namespace TrashMob.Shared.Managers
             var waivers = await context.UserWaivers
                 .AsNoTracking()
                 .Where(uw => uw.UserId == userId)
+                .OrderByDescending(uw => uw.AcceptedDate)
                 .Select(uw => new ExportedWaiver(
                     uw.AcceptedDate,
                     uw.ExpiryDate,
@@ -273,7 +274,6 @@ namespace TrashMob.Shared.Managers
                     uw.IsMinor,
                     uw.GuardianName,
                     uw.GuardianRelationship))
-                .OrderByDescending(w => w.AcceptedDate)
                 .ToListAsync(ct);
 
             writer.WritePropertyName("waivers");
@@ -286,12 +286,12 @@ namespace TrashMob.Shared.Managers
             var feedback = await context.UserFeedback
                 .AsNoTracking()
                 .Where(uf => uf.UserId == userId)
+                .OrderByDescending(uf => uf.CreatedDate)
                 .Select(uf => new ExportedFeedback(
                     uf.Category,
                     uf.Description,
                     uf.Status,
                     uf.CreatedDate))
-                .OrderByDescending(f => f.CreatedDate)
                 .ToListAsync(ct);
 
             writer.WritePropertyName("feedback");
