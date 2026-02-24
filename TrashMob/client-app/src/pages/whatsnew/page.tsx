@@ -21,6 +21,13 @@ import {
     Smartphone,
     Newspaper,
     BarChart3,
+    ImagePlus,
+    Globe,
+    PenSquare,
+    Lock,
+    BookOpen,
+    Megaphone,
+    Handshake,
 } from 'lucide-react';
 
 interface FeatureCardProps {
@@ -137,6 +144,40 @@ const completedFeatures = [
         description:
             'Stay connected with TrashMob news delivered to your inbox. Manage your newsletter subscription preferences directly from the app.',
     },
+    {
+        icon: <ImagePlus className='h-5 w-5' />,
+        title: 'Before & After Photos',
+        description:
+            'Capture the impact of your cleanups with before and after photos. Show the transformation and inspire others to get involved in their community.',
+    },
+    {
+        icon: <Globe className='h-5 w-5' />,
+        title: 'Regional Communities',
+        description:
+            'County and state-level community pages bring together cleanup efforts across larger regions. See aggregated impact and discover events near you.',
+        link: '/communities',
+        linkText: 'View Communities',
+    },
+    {
+        icon: <PenSquare className='h-5 w-5' />,
+        title: 'Area Map Editor',
+        description:
+            'Draw and edit cleanup areas on an interactive map. Define service boundaries for communities, visualize coverage, and import or export area data.',
+    },
+    {
+        icon: <Lock className='h-5 w-5' />,
+        title: 'Team-Only Events',
+        description:
+            'Create private events visible only to your team members. Perfect for corporate volunteer days, school groups, or any organized team cleanup.',
+    },
+    {
+        icon: <BookOpen className='h-5 w-5' />,
+        title: 'News & Blog',
+        description:
+            'Stay up to date with the latest TrashMob news, stories, and announcements. Read about community highlights and platform updates.',
+        link: '/news',
+        linkText: 'Read News',
+    },
 ];
 
 const upcomingFeatures = [
@@ -158,15 +199,29 @@ const upcomingFeatures = [
         icon: <Wrench className='h-5 w-5' />,
         title: 'Modern Authentication',
         description:
-            'Migrating to Microsoft Entra External ID for improved security, SSO support, and better partner integrations.',
-        status: 'Planning',
+            'Migrating to Microsoft Entra External ID for improved security, SSO support, and better partner integrations. Core migration is live — finishing SSO and partner features.',
+        status: 'In Progress',
     },
     {
         icon: <Smartphone className='h-5 w-5' />,
         title: 'Mobile Improvements',
         description:
-            'Stability improvements, better error handling, and new features coming to the iOS and Android apps.',
-        status: 'In Development',
+            'Stability improvements, better error handling, and new features coming to the iOS and Android apps including teams, leaderboards, and photo support.',
+        status: 'In Progress',
+    },
+    {
+        icon: <Megaphone className='h-5 w-5' />,
+        title: 'Community Showcase',
+        description:
+            'A dedicated landing page for cities and organizations to learn about TrashMob communities, see success stories, and start the enrollment process.',
+        status: 'In Progress',
+    },
+    {
+        icon: <Handshake className='h-5 w-5' />,
+        title: 'Sponsored Adoptions',
+        description:
+            'Partners can sponsor professional cleanup crews for adopted locations. Track sponsor-funded cleanups alongside volunteer efforts.',
+        status: 'In Progress',
     },
 ];
 

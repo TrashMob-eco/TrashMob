@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 0-5 Complete — Production Live; Phase 6-7 Remaining) |
+| **Status** | In Progress (Phases 0-5a Complete — Production Live; Phase 6 Partial, Phase 7 Remaining) |
 | **Priority** | Critical |
 | **Risk** | High |
 | **Size** | Large |
@@ -552,5 +552,5 @@ For each provider (Google, Microsoft, Apple, Facebook):
 
 **Last Updated:** February 22, 2026
 **Owner:** Security Engineer + Product Lead
-**Status:** In Progress (Phases 0-5 Complete — Production Live on Entra External ID; Phase 5a CIAM token workarounds complete; Phase 6 mobile app update partially done; Phase 7 minor protections and Privo API integration remaining)
+**Status:** In Progress (Phases 0-5a Complete — Production Live on Entra External ID; Phase 6 code changes done, mobile testing and store submission remaining; Phase 7 minor protections and Privo API integration remaining)
 **Next Review:** After Phase 6 mobile testing and store submission
