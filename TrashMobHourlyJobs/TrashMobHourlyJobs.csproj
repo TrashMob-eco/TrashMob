@@ -7,10 +7,12 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.6.0" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.13.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.2" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TrashMob.Shared\TrashMob.Shared.csproj" />
