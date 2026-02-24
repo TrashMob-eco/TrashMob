@@ -88,15 +88,16 @@ namespace TrashMob.Shared.Managers
                 .AsNoTracking()
                 .Where(ea => ea.UserId == userId)
                 .Join(context.Events, ea => ea.EventId, e => e.Id,
-                    (ea, e) => new ExportedEventParticipation(
-                        e.Id,
-                        e.Name,
-                        e.EventDate,
-                        e.City,
-                        ea.SignUpDate,
-                        ea.CanceledDate,
-                        ea.IsEventLead))
-                .OrderByDescending(e => e.EventDate)
+                    (ea, e) => new { ea, e })
+                .OrderByDescending(x => x.e.EventDate)
+                .Select(x => new ExportedEventParticipation(
+                    x.e.Id,
+                    x.e.Name,
+                    x.e.EventDate,
+                    x.e.City,
+                    x.ea.SignUpDate,
+                    x.ea.CanceledDate,
+                    x.ea.IsEventLead))
                 .ToListAsync(ct);
 
             writer.WritePropertyName("eventParticipation");
@@ -227,11 +228,12 @@ namespace TrashMob.Shared.Managers
                 .AsNoTracking()
                 .Where(tm => tm.UserId == userId)
                 .Join(context.Teams, tm => tm.TeamId, t => t.Id,
-                    (tm, t) => new ExportedTeamMembership(
-                        t.Id,
-                        t.Name,
-                        tm.IsTeamLead,
-                        tm.JoinedDate))
+                    (tm, t) => new { tm, t })
+                .Select(x => new ExportedTeamMembership(
+                    x.t.Id,
+                    x.t.Name,
+                    x.tm.IsTeamLead,
+                    x.tm.JoinedDate))
                 .ToListAsync(ct);
 
             writer.WritePropertyName("teamMemberships");
@@ -245,11 +247,12 @@ namespace TrashMob.Shared.Managers
                 .AsNoTracking()
                 .Where(ua => ua.UserId == userId)
                 .Join(context.Set<AchievementType>(), ua => ua.AchievementTypeId, at => at.Id,
-                    (ua, at) => new ExportedAchievement(
-                        at.Name,
-                        at.Id,
-                        ua.EarnedDate))
-                .OrderByDescending(a => a.EarnedDate)
+                    (ua, at) => new { ua, at })
+                .OrderByDescending(x => x.ua.EarnedDate)
+                .Select(x => new ExportedAchievement(
+                    x.at.Name,
+                    x.at.Id,
+                    x.ua.EarnedDate))
                 .ToListAsync(ct);
 
             writer.WritePropertyName("achievements");
@@ -302,10 +305,11 @@ namespace TrashMob.Shared.Managers
                 .AsNoTracking()
                 .Where(pa => pa.UserId == userId)
                 .Join(context.Partners, pa => pa.PartnerId, p => p.Id,
-                    (pa, p) => new ExportedPartnerAdminRole(
-                        p.Id,
-                        p.Name,
-                        pa.CreatedDate))
+                    (pa, p) => new { pa, p })
+                .Select(x => new ExportedPartnerAdminRole(
+                    x.p.Id,
+                    x.p.Name,
+                    x.pa.CreatedDate))
                 .ToListAsync(ct);
 
             writer.WritePropertyName("partnerAdminRoles");
