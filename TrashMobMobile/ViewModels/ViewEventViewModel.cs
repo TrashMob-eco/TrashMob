@@ -23,7 +23,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IUserManager userManager,
     IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
     ILitterReportManager litterReportManager,
-    IEventPhotoManager eventPhotoManager) : BaseViewModel(notificationService)
+    IEventPhotoManager eventPhotoManager,
+    IRouteTrackingSessionManager routeTrackingSessionManager) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
@@ -166,11 +167,20 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<EventAttendeeRouteViewModel> EventAttendeeRouteViewModels { get; set; } = [];
 
+    private bool partnersLoaded;
+    private bool litterLoaded;
+    private bool photosLoaded;
+    private bool routesLoaded;
+
     public async Task Init(Guid eventId, Action updRoutes)
     {
         await ExecuteAsync(async () =>
         {
             UpdateRoutes = updRoutes;
+            partnersLoaded = false;
+            litterLoaded = false;
+            photosLoaded = false;
+            routesLoaded = false;
 
             mobEvent = await mobEventManager.GetEventAsync(eventId);
             EventViewModel = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
@@ -187,23 +197,50 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             EnableEditEvent = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
             EnableViewEventSummary = mobEvent.IsCompleted();
 
-            EnableStartTrackEventRoute = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
+            EnableStartTrackEventRoute = !mobEvent.IsCompleted();
             EnableStopTrackEventRoute = false;
+
+            // If this event is already being tracked, restore recording UI state
+            if (routeTrackingSessionManager.IsTracking && routeTrackingSessionManager.ActiveEventId == eventId)
+            {
+                EnableStartTrackEventRoute = false;
+                EnableStopTrackEventRoute = true;
+                IsRecordingRoute = true;
+            }
 
             WhatToExpect =
                 "What to Expect:\n\u2022 Cleanup supplies provided\n\u2022 Meet fellow community members\n\u2022 Contribute to a cleaner environment";
 
-            await SetRegistrationOptions();
-            await GetAttendeeCount();
-            await LoadPartners();
-            await LoadLitterReports();
-            await LoadPhotos();
-
-            EnableSimulateRoute = DeviceInfo.DeviceType == DeviceType.Virtual;
-
-            var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
-            LoadRouteViewModels(routes);
+            // Load only what the Details tab needs — registration status and attendee count
+            await Task.WhenAll(SetRegistrationOptions(), GetAttendeeCount());
         }, "An error occurred while loading the event. Please try again.");
+    }
+
+    /// <summary>
+    /// Called when a tab becomes visible. Loads data for that tab on first view.
+    /// </summary>
+    public async Task OnTabSelected(int tabIndex)
+    {
+        switch (tabIndex)
+        {
+            case 1 when !partnersLoaded:
+                partnersLoaded = true;
+                await LoadPartners();
+                break;
+            case 3 when !litterLoaded:
+                litterLoaded = true;
+                await LoadLitterReports();
+                break;
+            case 4 when !photosLoaded:
+                photosLoaded = true;
+                await LoadPhotos();
+                break;
+            case 5 when !routesLoaded:
+                routesLoaded = true;
+                var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(EventViewModel.Id);
+                LoadRouteViewModels(routes);
+                break;
+        }
     }
     
     [RelayCommand]
@@ -356,6 +393,21 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
     private async Task RealTimeLocationTracker(CancellationToken cancellationToken)
     {
+        // Prevent concurrent tracking across different events
+        if (routeTrackingSessionManager.IsTracking && routeTrackingSessionManager.ActiveEventId != mobEvent.Id)
+        {
+            var popup = new ConfirmPopup(
+                "Route In Progress",
+                $"You're already tracking a route for \"{routeTrackingSessionManager.ActiveEventName}\". Only one route can be tracked at a time.",
+                "OK");
+            await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+
+            EnableStopTrackEventRoute = false;
+            EnableStartTrackEventRoute = true;
+            IsRecordingRoute = false;
+            return;
+        }
+
         if (EnableStartTrackEventRoute)
         {
             RouteStartTime = DateTimeOffset.Now;
@@ -363,12 +415,34 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             EnableStopTrackEventRoute = true;
             EnableStartTrackEventRoute = false;
             IsRecordingRoute = true;
+            routeTrackingSessionManager.TryStartSession(mobEvent.Id, mobEvent.Name);
+        }
+
+        if (DeviceInfo.DeviceType == DeviceType.Virtual)
+        {
+            // On emulators, wait for Stop to be pressed, then simulate
+            var tcs = new TaskCompletionSource();
+            cancellationToken.Register(() =>
+            {
+                IsRecordingRoute = false;
+                RouteEndTime = DateTimeOffset.Now;
+                routeTrackingSessionManager.EndSession();
+                tcs.TrySetResult();
+            });
+
+            await tcs.Task;
+
+            await SimulateRoute();
+            EnableStopTrackEventRoute = false;
+            EnableStartTrackEventRoute = true;
+            return;
         }
 
         cancellationToken.Register(async () =>
         {
             IsRecordingRoute = false;
             RouteEndTime = DateTimeOffset.Now;
+            routeTrackingSessionManager.EndSession();
             await SaveRoute();
             Locations.Clear();
             EnableStopTrackEventRoute = false;

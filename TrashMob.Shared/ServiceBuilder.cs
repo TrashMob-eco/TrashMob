@@ -54,6 +54,8 @@
             services.AddScoped<ILookupManager<ServiceType>, LookupManager<ServiceType>>();
             services.AddScoped<ILookupManager<SocialMediaAccountType>, LookupManager<SocialMediaAccountType>>();
             services.AddScoped<IKeyedManager<NonEventUserNotification>, KeyedManager<NonEventUserNotification>>();
+            services.AddScoped<IUserDeletionService, UserDeletionService>();
+            services.AddScoped<IUserDataExportManager, UserDataExportManager>();
             services.AddScoped<IKeyedManager<User>, UserManager>();
             services.AddScoped<IKeyedManager<UserNotification>, UserNotificationManager>();
             services.AddScoped<ILookupManager<WeightUnit>, LookupManager<WeightUnit>>();

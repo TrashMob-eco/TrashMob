@@ -2,7 +2,7 @@ import { test as base, Page, BrowserContext } from '@playwright/test';
 import path from 'path';
 
 /**
- * Test user credentials - configure these in Azure B2C dev tenant.
+ * Test user credentials - configure these in the Entra External ID dev tenant.
  * Passwords should be stored in environment variables for CI.
  */
 export const TEST_USERS = {
@@ -76,23 +76,22 @@ export const test = base.extend<{
 export { expect } from '@playwright/test';
 
 /**
- * Helper to perform login via Azure B2C.
+ * Helper to perform login via Entra External ID.
  * Call this in global setup to generate auth state files.
  *
  * @param page - Playwright page
  * @param email - User email
  * @param password - User password
  */
-export async function loginWithB2C(page: Page, email: string, password: string): Promise<void> {
+export async function loginWithEntra(page: Page, email: string, password: string): Promise<void> {
     // Navigate to a page that triggers login
     await page.goto('/');
 
     // Click sign in button
     await page.getByRole('button', { name: /sign in/i }).click();
 
-    // Wait for B2C redirect and fill credentials
-    // Note: The exact selectors depend on your B2C configuration
-    await page.waitForURL(/.*b2clogin\.com.*|.*ciamlogin\.com.*/);
+    // Wait for Entra External ID redirect and fill credentials
+    await page.waitForURL(/.*ciamlogin\.com.*/);
 
     // Fill email
     await page.fill('input[type="email"], input[name="signInName"], #email', email);

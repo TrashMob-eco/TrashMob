@@ -118,8 +118,7 @@ public class Program
             }
         });
 
-        var useEntraExternalId = builder.Configuration.GetValue<bool>("UseEntraExternalId");
-        var authConfigSection = useEntraExternalId ? "AzureAdEntra" : "AzureAdB2C";
+        var authConfigSection = "AzureAdEntra";
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(options =>

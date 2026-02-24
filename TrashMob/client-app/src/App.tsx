@@ -68,6 +68,10 @@ import { TeamInviteDetailsPage } from './pages/teams/$teamId/invites/$batchId';
 /** Leaderboards */
 import { LeaderboardsPage } from './pages/leaderboards/page';
 
+/** News */
+import { NewsPage } from './pages/news';
+import { NewsPostDetailPage } from './pages/news/$slug';
+
 /** Achievements */
 import { AchievementsPage } from './pages/achievements/page';
 
@@ -680,6 +684,8 @@ const AppContent: FC = () => {
                             <Route path='/teams' element={<TeamsPage />} />
                             <Route path='/teams/:teamId' element={<TeamDetailPage />} />
                             <Route path='/leaderboards' element={<LeaderboardsPage />} />
+                            <Route path='/news' element={<NewsPage />} />
+                            <Route path='/news/:slug' element={<NewsPostDetailPage />} />
                             <Route path='/communities' element={<CommunitiesPage />} />
                             <Route path='/communities/:slug' element={<CommunityDetailPage />} />
                             <Route

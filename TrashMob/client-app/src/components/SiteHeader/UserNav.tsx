@@ -31,7 +31,7 @@ export const UserNav = (props: UserNavProps) => {
         const apiConfig = getApiConfig();
 
         getMsalClientInstance().loginRedirect({
-            scopes: apiConfig.b2cScopes,
+            scopes: apiConfig.scopes,
         });
     }
 
@@ -44,7 +44,7 @@ export const UserNav = (props: UserNavProps) => {
         setShowAgeGate(false);
         const apiConfig = getApiConfig();
         getMsalClientInstance().loginRedirect({
-            scopes: apiConfig.b2cScopes,
+            scopes: apiConfig.scopes,
         });
     }
 

@@ -6,7 +6,7 @@
     using TrashMob.Shared.Poco;
 
     /// <summary>
-    /// Defines operations for managing users in Azure Active Directory B2C.
+    /// Defines operations for managing users in Azure Active Directory.
     /// </summary>
     public interface IActiveDirectoryManager
     {

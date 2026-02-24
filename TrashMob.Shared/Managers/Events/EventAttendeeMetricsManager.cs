@@ -344,7 +344,7 @@ namespace TrashMob.Shared.Managers.Events
             var summary = new EventMetricsPublicSummary
             {
                 EventId = eventId,
-                ContributorCount = approvedMetrics.Count
+                ContributorCount = approvedMetrics.Count(m => m.UserId != Guid.Empty)
             };
 
             foreach (var metrics in approvedMetrics)
@@ -389,8 +389,8 @@ namespace TrashMob.Shared.Managers.Events
                     summary.TotalDurationMinutes += duration.Value;
                 }
 
-                // Add to contributors list (all approved metrics are public by default)
-                if (metrics.User is not null)
+                // Add to contributors list — skip anonymized (deleted) users
+                if (metrics.User is not null && metrics.UserId != Guid.Empty)
                 {
                     summary.Contributors.Add(new PublicAttendeeMetrics
                     {

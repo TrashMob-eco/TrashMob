@@ -85,11 +85,18 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
             IsMapSelected = true;
             IsListSelected = false;
 
-            var mobEvent = await mobEventManager.GetEventAsync(eventId);
+            // Load all data in parallel — these are independent
+            var eventTask = mobEventManager.GetEventAsync(eventId);
+            var summaryTask = mobEventManager.GetEventSummaryAsync(eventId);
+            var pickupTask = pickupLocationManager.GetPickupLocationsAsync(eventId, ImageSizeEnum.Thumb);
+            var routesTask = eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
+
+            await Task.WhenAll(eventTask, summaryTask, pickupTask, routesTask);
+
+            var mobEvent = await eventTask;
             EventViewModel = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
-            var eventSummary = await mobEventManager.GetEventSummaryAsync(eventId);
-
+            var eventSummary = await summaryTask;
             if (eventSummary != null)
             {
                 EventSummaryViewModel = new EventSummaryViewModel
@@ -107,8 +114,7 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
             EnableEditEventSummary = mobEvent.IsEventLead(userManager.CurrentUser.Id);
             EnableAddPickupLocation = mobEvent.IsEventLead(userManager.CurrentUser.Id);
 
-            var pickupLocations = await pickupLocationManager.GetPickupLocationsAsync(eventId, ImageSizeEnum.Thumb);
-
+            var pickupLocations = await pickupTask;
             PickupLocations.Clear();
             foreach (var pickupLocation in pickupLocations)
             {
@@ -139,10 +145,8 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
                 PickupLocations.Add(pickupLocationViewModel);
             }
 
-            var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
             EventAttendeeRoutes.Clear();
-
-            foreach (var eventAttendeeRoute in routes)
+            foreach (var eventAttendeeRoute in await routesTask)
             {
                 EventAttendeeRoutes.Add(eventAttendeeRoute);
             }

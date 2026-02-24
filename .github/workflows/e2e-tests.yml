@@ -37,8 +37,9 @@ jobs:
         run: |
           cd TrashMob/client-app
           # Remove lockfile to regenerate for Linux platform (handles cross-platform native deps like rollup)
+          # --ignore-scripts prevents lifecycle scripts (e.g. husky install) from failing in CI
           rm -f package-lock.json
-          npm install
+          npm install --ignore-scripts
 
       - name: Install Playwright browsers
         run: |

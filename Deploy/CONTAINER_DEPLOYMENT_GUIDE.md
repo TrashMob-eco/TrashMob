@@ -221,12 +221,12 @@ Both containers use these environment variables:
 - `EnableSwagger=true/false` (Web App only, based on environment)
 - `InstanceName=as-tm-<env>-<region>` (Jobs only)
 
-Azure AD B2C configuration (public values, set based on environment parameter in Bicep):
-- `AzureAdB2C__Instance` - B2C login endpoint (e.g., https://trashmobdev.b2clogin.com/)
-- `AzureAdB2C__ClientId` - Backend API client ID for JWT validation
-- `AzureAdB2C__FrontendClientId` - Frontend SPA client ID for MSAL
-- `AzureAdB2C__Domain` - B2C tenant domain (e.g., trashmobdev.onmicrosoft.com)
-- `AzureAdB2C__SignUpSignInPolicyId` - B2C policy ID
+Azure AD Entra External ID configuration (public values, set based on environment parameter in Bicep):
+- `AzureAdEntra__Instance` - Entra login endpoint (e.g., https://trashmobecodev.ciamlogin.com/)
+- `AzureAdEntra__ClientId` - Backend API client ID for JWT validation
+- `AzureAdEntra__FrontendClientId` - Frontend SPA client ID for MSAL
+- `AzureAdEntra__Domain` - Entra tenant domain (e.g., TrashMobEcoDev.onmicrosoft.com)
+- `AzureAdEntra__TenantId` - Entra tenant ID
 
 Secrets are retrieved from Key Vault using managed identity:
 - `AzureMapsKey`

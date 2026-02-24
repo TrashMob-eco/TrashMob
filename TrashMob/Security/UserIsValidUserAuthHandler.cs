@@ -41,7 +41,7 @@ namespace TrashMob.Security
                 {
                     user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
 
-                    // Auto-link CIAM ObjectId when existing user found by email (B2C → CIAM migration)
+                    // Auto-link Entra ObjectId when existing user found by email but ObjectId differs
                     if (user is not null && objectId.HasValue && user.ObjectId != objectId.Value)
                     {
                         logger.LogInformation(

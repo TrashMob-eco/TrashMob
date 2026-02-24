@@ -123,6 +123,48 @@ jobs:
           run: |
             dotnet publish TrashMobMobile/TrashMobMobile.csproj -c:${{ inputs.configuration }} -f:net10.0-android --no-restore /p:AndroidPackageFormat="aab"
 
+        - name: Collect native debug symbols
+          shell: pwsh
+          run: |
+            $objDir = "TrashMobMobile\obj\${{ inputs.configuration }}\net10.0-android"
+            $symbolsRoot = "TrashMobMobile\native-debug-symbols"
+            $found = $false
+
+            # Look for native .so files in intermediate android lib directories
+            $androidLibDir = Join-Path $objDir "android\lib"
+            if (Test-Path $androidLibDir) {
+              Get-ChildItem -Path $androidLibDir -Directory | ForEach-Object {
+                $abi = $_.Name
+                $soFiles = Get-ChildItem -Path $_.FullName -Filter "*.so" -ErrorAction SilentlyContinue
+                if ($soFiles) {
+                  $destDir = Join-Path $symbolsRoot "lib\$abi"
+                  New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+                  $soFiles | Copy-Item -Destination $destDir
+                  $found = $true
+                  Write-Host "Found $($soFiles.Count) .so files for ABI: $abi"
+                }
+              }
+            }
+
+            if ($found) {
+              Compress-Archive -Path (Join-Path $symbolsRoot "lib") -DestinationPath "TrashMobMobile\native-debug-symbols.zip" -Force
+              Write-Host "::notice::Native debug symbols zip created successfully"
+            } else {
+              Write-Host "::warning::No native debug symbols found in intermediate output at $androidLibDir"
+            }
+
+        - name: Collect R8 mapping file
+          shell: pwsh
+          run: |
+            $objDir = "TrashMobMobile\obj\${{ inputs.configuration }}\net10.0-android"
+            $mapping = Get-ChildItem -Path $objDir -Recurse -Filter "mapping.txt" -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($mapping) {
+              Copy-Item $mapping.FullName "TrashMobMobile\mapping.txt"
+              Write-Host "::notice::R8 mapping file found at $($mapping.FullName)"
+            } else {
+              Write-Host "::notice::No R8 mapping file found (expected for .NET MAUI — Java code is not obfuscated)"
+            }
+
         # Store Android Signing Keystore and password in Secrets using base64 encoding
         # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
         # command line util to encode to base64 on windows
@@ -145,3 +187,5 @@ jobs:
             name: artifacts-android-${{ env.semVer }}
             path: |
               TrashMobMobile\bin\${{ inputs.configuration }}\net10.0-android\publish\*.aab
+              TrashMobMobile\native-debug-symbols.zip
+              TrashMobMobile\mapping.txt

@@ -13,6 +13,13 @@ public class AppVersionCheckService(IAppVersionRestService appVersionRestService
 
         hasChecked = true;
 
+        // Skip version check on emulators — store links don't work and
+        // the dev build version will always mismatch.
+        if (DeviceInfo.DeviceType == DeviceType.Virtual)
+        {
+            return VersionCheckResult.Skipped;
+        }
+
         var versionInfo = await appVersionRestService.GetAppVersionAsync(cancellationToken);
 
         if (versionInfo is null)

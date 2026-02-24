@@ -4308,6 +4308,9 @@ namespace TrashMob.Migrations
                     b.Property<bool>("IsSiteAdmin")
                         .HasColumnType("bit");
 
+                    b.Property<DateTimeOffset?>("LastDataExportRequestedDate")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -4395,7 +4398,7 @@ namespace TrashMob.Migrations
                             ObjectId = new Guid("00000000-0000-0000-0000-000000000000"),
                             PrefersMetric = false,
                             Region = "AnyState",
-                            ShowOnLeaderboards = true,
+                            ShowOnLeaderboards = false,
                             TravelLimitForLocalEvents = 0,
                             UserName = "TrashMob"
                         });
@@ -6938,7 +6941,7 @@ namespace TrashMob.Migrations
                     b.HasOne("TrashMob.Models.User", "User")
                         .WithMany("UserWaivers")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_UserWaivers_User");
 

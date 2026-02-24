@@ -27,6 +27,7 @@ public partial class ViewEventPage : ContentPage
         if (!isInitialized)
         {
             isInitialized = true;
+            Switcher.PropertyChanged += OnSwitcherPropertyChanged;
             await viewModel.Init(new Guid(EventId), RenderRoutesOnDetailsMap);
             Switcher.SelectedIndex = 0;
         }
@@ -35,8 +36,17 @@ public partial class ViewEventPage : ContentPage
     protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
         base.OnNavigatedFrom(args);
+        Switcher.PropertyChanged -= OnSwitcherPropertyChanged;
         // Reset so re-entering this page (for a different event) will re-initialize
         isInitialized = false;
+    }
+
+    private async void OnSwitcherPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Switcher.SelectedIndex))
+        {
+            await viewModel.OnTabSelected(Switcher.SelectedIndex);
+        }
     }
 
     private void RenderRoutesOnDetailsMap()
