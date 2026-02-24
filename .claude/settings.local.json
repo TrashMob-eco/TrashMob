@@ -51,7 +51,31 @@
       "Bash(do)",
       "Bash(echo:*)",
       "Bash(az ad app permission grant:*)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(dotnet ef database update:*)",
+      "Bash(dotnet add:*)",
+      "Bash(dotnet remove:*)",
+      "Bash(name 'New'\" crash that blocked leaderboard and achievement updates\n- Wrap each daily job processor in try-catch so one failure doesn''t\n  prevent the others from running\n- Add OpenTelemetry logging with Azure Monitor exporter to both daily\n  and hourly jobs so exceptions appear in App Insights and get caught\n  by the exception-monitor workflow\n\nFixes #2881\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(az resource show:*)",
+      "Bash(az extension add:*)",
+      "Bash(az monitor app-insights query:*)",
+      "Bash(python -m json.tool:*)",
+      "Bash(# Query via ARM REST API \\(same as az monitor app-insights query uses under the hood\\) az rest --method post \\\\ --url \"\"/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/rg-trashmob-dev-westus2/providers/microsoft.insights/components/ai-tm-dev-westus2/query?api-version=2018-04-20\"\" \\\\ --body \"\"{\\\\\"\"query\\\\\"\": \\\\\"\"exceptions | where timestamp > ago\\(48h\\) | summarize Count=count\\(\\), FirstSeen=min\\(timestamp\\), LastSeen=max\\(timestamp\\), SampleDetails=take_any\\(details\\) by type, outerMessage | order by Count desc | take 2\\\\\"\"}\"\")",
+      "Bash(# Download the logs for the most recent run gh run view 22296561349 --log)",
+      "Bash(# Get the DEV job log to see what the query actually returned gh api repos/TrashMob-eco/TrashMob/actions/jobs/64494317089/logs)",
+      "Bash(# Get the relevant part of the DEV job log - the query step gh api repos/TrashMob-eco/TrashMob/actions/jobs/64494317089/logs)",
+      "Bash(az monitor log-analytics query:*)",
+      "Bash(git -C d:/repos/TrashMob branch --show-current:*)",
+      "Bash(git -C:*)",
+      "Bash(git -C d:/repos/TrashMob pull)",
+      "Bash(gh issue view:*)",
+      "Bash(for issue in 2886 2887 2888 2889 2890 2891 2892 2893)",
+      "Bash(do echo \"=== ISSUE #$issue ===\")",
+      "Bash(find:*)",
+      "Bash(gh issue close:*)",
+      "Bash(for issue in 302 215 1453 1462 1463 1465 1468 1475)",
+      "Bash(npx tsc:*)",
+      "Bash(git branch:*)"
     ]
   }
 }

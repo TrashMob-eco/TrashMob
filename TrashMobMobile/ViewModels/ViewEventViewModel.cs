@@ -24,7 +24,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
     ILitterReportManager litterReportManager,
     IEventPhotoManager eventPhotoManager,
-    IRouteTrackingSessionManager routeTrackingSessionManager) : BaseViewModel(notificationService)
+    IRouteTrackingSessionManager routeTrackingSessionManager,
+    IEventAttendeeMetricsRestService eventAttendeeMetricsRestService) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
@@ -35,6 +36,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IWaiverManager waiverManager = waiverManager;
     private readonly IEventPhotoManager eventPhotoManager = eventPhotoManager;
+    private readonly IEventAttendeeMetricsRestService eventAttendeeMetricsRestService = eventAttendeeMetricsRestService;
  
     [ObservableProperty]
     private string attendeeCount = string.Empty;
@@ -147,6 +149,32 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private string totalBagsDisplay = "0";
 
+    [ObservableProperty]
+    private bool showLogImpactButton;
+
+    [ObservableProperty]
+    private bool showMyContribution;
+
+    [ObservableProperty]
+    private int myBagsCollected;
+
+    [ObservableProperty]
+    private string myWeightDisplay = string.Empty;
+
+    [ObservableProperty]
+    private int myDurationMinutes;
+
+    [ObservableProperty]
+    private string myMetricsStatus = string.Empty;
+
+    [ObservableProperty]
+    private int pendingMetricsCount;
+
+    [ObservableProperty]
+    private bool showLeadMetricsActions;
+
+    private EventAttendeeMetrics? existingMetrics;
+
     public List<string> PrivacyOptions { get; } = ["Private", "EventOnly", "Public"];
 
     public ObservableCollection<EventPhotoViewModel> EventPhotos { get; set; } = [];
@@ -211,8 +239,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             WhatToExpect =
                 "What to Expect:\n\u2022 Cleanup supplies provided\n\u2022 Meet fellow community members\n\u2022 Contribute to a cleaner environment";
 
-            // Load only what the Details tab needs — registration status and attendee count
+            // Load only what the Details tab needs — registration status, attendee count, and metrics
             await Task.WhenAll(SetRegistrationOptions(), GetAttendeeCount());
+            await LoadMyMetrics();
         }, "An error occurred while loading the event. Please try again.");
     }
 
@@ -996,5 +1025,116 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
         var totalBags = EventAttendeeRoutes.Sum(r => r.BagsCollected ?? 0);
         TotalBagsDisplay = totalBags.ToString();
+    }
+
+    private async Task LoadMyMetrics()
+    {
+        if (!mobEvent.IsCompleted())
+        {
+            return;
+        }
+
+        var isAttending = await mobEventManager.IsUserAttendingAsync(mobEvent.Id, userManager.CurrentUser.Id);
+        var isLead = mobEvent.IsEventLead(userManager.CurrentUser.Id);
+
+        if (isAttending || isLead)
+        {
+            existingMetrics = await eventAttendeeMetricsRestService.GetMyMetricsAsync(mobEvent.Id);
+
+            if (existingMetrics != null)
+            {
+                MyBagsCollected = existingMetrics.BagsCollected ?? 0;
+                MyWeightDisplay = FormatWeight(existingMetrics.PickedWeight, existingMetrics.PickedWeightUnitId);
+                MyDurationMinutes = existingMetrics.DurationMinutes ?? 0;
+                MyMetricsStatus = existingMetrics.Status ?? "Pending";
+                ShowMyContribution = true;
+                ShowLogImpactButton = false;
+            }
+            else
+            {
+                ShowLogImpactButton = true;
+                ShowMyContribution = false;
+            }
+        }
+
+        if (isLead)
+        {
+            var publicMetrics = await eventAttendeeMetricsRestService.GetPublicMetricsAsync(mobEvent.Id);
+            PendingMetricsCount = publicMetrics.Contributors.Count(c => c.Status == "Pending");
+            ShowLeadMetricsActions = PendingMetricsCount > 0;
+        }
+    }
+
+    private static string FormatWeight(decimal? weight, int? unitId)
+    {
+        if (!weight.HasValue || weight.Value == 0)
+        {
+            return "0 lbs";
+        }
+
+        var unit = unitId == 2 ? "kg" : "lbs";
+        return $"{weight.Value:0.##} {unit}";
+    }
+
+    [RelayCommand]
+    private async Task LogImpact()
+    {
+        await ExecuteAsync(async () =>
+        {
+            var popup = new Controls.LogImpactPopup(existingMetrics);
+            var result = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+            var json = result?.Result;
+
+            if (string.IsNullOrEmpty(json))
+            {
+                return;
+            }
+
+            var impactResult = System.Text.Json.JsonSerializer.Deserialize<Controls.LogImpactPopup.LogImpactResult>(json);
+            if (impactResult == null)
+            {
+                return;
+            }
+
+            var metrics = new EventAttendeeMetrics
+            {
+                EventId = mobEvent.Id,
+                UserId = userManager.CurrentUser.Id,
+                BagsCollected = impactResult.BagsCollected,
+                PickedWeight = impactResult.PickedWeight,
+                PickedWeightUnitId = impactResult.PickedWeightUnitId,
+                DurationMinutes = impactResult.DurationMinutes,
+                Notes = impactResult.Notes,
+            };
+
+            await eventAttendeeMetricsRestService.SubmitMyMetricsAsync(mobEvent.Id, metrics);
+            await LoadMyMetrics();
+
+            await NotificationService.Notify("Your impact has been logged!");
+        }, "An error occurred while logging your impact. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task ApproveAllMetrics()
+    {
+        var popup = new Controls.ConfirmPopup(
+            "Approve All Metrics",
+            "Are you sure you want to approve all pending attendee metrics?",
+            "Approve All");
+        var confirmResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+
+        if (confirmResult?.Result != Controls.ConfirmPopup.Confirmed)
+        {
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            var count = await eventAttendeeMetricsRestService.ApproveAllPendingAsync(mobEvent.Id);
+            ShowLeadMetricsActions = false;
+            PendingMetricsCount = 0;
+
+            await NotificationService.Notify($"{count} metric submission(s) approved.");
+        }, "An error occurred while approving metrics. Please try again.");
     }
 }

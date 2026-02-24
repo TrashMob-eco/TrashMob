@@ -1,11 +1,14 @@
 namespace TrashMobMobile.ViewModels;
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TrashMob.Models.Poco;
 using TrashMobMobile.Services;
 
 public partial class ImpactViewModel(
     IStatsRestService statsRestService,
+    IEventAttendeeMetricsRestService eventAttendeeMetricsRestService,
     INotificationService notificationService,
     IUserManager userManager) : BaseViewModel(notificationService)
 {
@@ -15,13 +18,19 @@ public partial class ImpactViewModel(
     [ObservableProperty]
     private StatisticsViewModel communityStats = new();
 
+    [ObservableProperty]
+    private bool hasEventContributions;
+
+    public ObservableCollection<UserEventMetricsSummary> EventContributions { get; set; } = [];
+
     public async Task Init()
     {
         await ExecuteAsync(async () =>
         {
             await Task.WhenAll(
                 RefreshPersonalStats(),
-                RefreshCommunityStats());
+                RefreshCommunityStats(),
+                RefreshEventContributions());
         }, "Failed to load impact stats. Please try again.");
     }
 
@@ -66,5 +75,30 @@ public partial class ImpactViewModel(
             TotalLitterReportsSubmitted = stats.TotalLitterReportsSubmitted,
             TotalLitterReportsClosed = stats.TotalLitterReportsClosed,
         };
+    }
+
+    private async Task RefreshEventContributions()
+    {
+        var impact = await eventAttendeeMetricsRestService.GetUserImpactAsync(userManager.CurrentUser.Id);
+
+        EventContributions.Clear();
+
+        foreach (var item in impact.EventBreakdown.OrderByDescending(e => e.EventDate).Take(10))
+        {
+            EventContributions.Add(item);
+        }
+
+        HasEventContributions = EventContributions.Count > 0;
+    }
+
+    [RelayCommand]
+    private async Task ViewEventContribution(UserEventMetricsSummary? contribution)
+    {
+        if (contribution == null)
+        {
+            return;
+        }
+
+        await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={contribution.EventId}");
     }
 }

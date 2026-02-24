@@ -338,7 +338,7 @@
     <!-- <x:String x:Key="IconClipboardArrowLeft">&#xf014b;</x:String> -->
     <!-- <x:String x:Key="IconClipboardOutline">&#xf014c;</x:String> -->
     <x:String x:Key="IconClipboardText">&#xf014d;</x:String>
-    <!-- <x:String x:Key="IconClipboardCheck">&#xf014e;</x:String> -->
+    <x:String x:Key="IconClipboardCheck">&#xf014e;</x:String>
     <!-- <x:String x:Key="IconClippy">&#xf014f;</x:String> -->
      <x:String x:Key="IconClockOutline">&#xf0150;</x:String> 
     <!-- <x:String x:Key="IconClockEnd">&#xf0151;</x:String> -->
@@ -5443,7 +5443,7 @@
     <!-- <x:String x:Key="IconSortClockAscendingOutline">&#xf154a;</x:String> -->
     <!-- <x:String x:Key="IconSortClockDescending">&#xf154b;</x:String> -->
     <!-- <x:String x:Key="IconSortClockDescendingOutline">&#xf154c;</x:String> -->
-    <!-- <x:String x:Key="IconChartBox">&#xf154d;</x:String> -->
+    <x:String x:Key="IconChartBox">&#xf154d;</x:String>
     <!-- <x:String x:Key="IconChartBoxOutline">&#xf154e;</x:String> -->
     <!-- <x:String x:Key="IconChartBoxPlusOutline">&#xf154f;</x:String> -->
     <!-- <x:String x:Key="IconMouseMoveDown">&#xf1550;</x:String> -->

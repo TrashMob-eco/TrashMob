@@ -11,7 +11,7 @@ namespace TrashMob.Controllers
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Poco;
+    using TrashMob.Models.Poco;
 
     /// <summary>
     /// Controller for attendee-submitted event metrics.

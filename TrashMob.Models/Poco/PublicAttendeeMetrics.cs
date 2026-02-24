@@ -1,4 +1,4 @@
-namespace TrashMob.Shared.Poco
+namespace TrashMob.Models.Poco
 {
     using System;
 
@@ -16,7 +16,7 @@ namespace TrashMob.Shared.Poco
         /// <summary>
         /// Gets or sets the user's display name.
         /// </summary>
-        public string UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the bags collected (adjusted value if available, otherwise original).
@@ -36,7 +36,7 @@ namespace TrashMob.Shared.Poco
         /// <summary>
         /// Gets or sets the approval status.
         /// </summary>
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 
     /// <summary>
