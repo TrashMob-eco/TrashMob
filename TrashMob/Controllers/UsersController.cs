@@ -1,6 +1,7 @@
 namespace TrashMob.Controllers
 {
     using System;
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -271,16 +272,13 @@ namespace TrashMob.Controllers
             currentUser.LastDataExportRequestedDate = DateTimeOffset.UtcNow;
             await userManager.UpdateAsync(currentUser, cancellationToken);
 
-            // Stream JSON directly to response body to avoid timeout for large exports
             var timestamp = DateTimeOffset.UtcNow.ToString("yyyyMMdd-HHmmss");
-            Response.ContentType = "application/json";
-            Response.Headers.Append("Content-Disposition",
-                $"attachment; filename=\"trashmob-data-export-{timestamp}.json\"");
-
-            await exportManager.WriteExportToStreamAsync(id, Response.Body, cancellationToken);
+            var ms = new MemoryStream();
+            await exportManager.WriteExportToStreamAsync(id, ms, cancellationToken);
+            ms.Position = 0;
 
             TrackEvent(nameof(ExportUserData));
-            return new EmptyResult();
+            return File(ms, "application/json", $"trashmob-data-export-{timestamp}.json");
         }
 
         /// <summary>
