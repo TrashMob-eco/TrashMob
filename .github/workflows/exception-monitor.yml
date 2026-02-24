@@ -39,35 +39,36 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Install App Insights extension
-        run: az extension add --name application-insights --yes
+      - name: Get App Insights resource ID
+        id: resource
+        run: |
+          RESOURCE_ID=$(az resource show \
+            --resource-group "${{ matrix.resource_group }}" \
+            --resource-type "Microsoft.Insights/components" \
+            --name "${{ matrix.app_insights }}" \
+            --query id -o tsv)
+          echo "resource_id=$RESOURCE_ID" >> "$GITHUB_OUTPUT"
 
       - name: Query App Insights for exceptions
         id: query
         run: |
-          # Query distinct exceptions from the last 24 hours
-          # Do not use 2>&1 — stderr warnings from az CLI would break jq parsing
-          RESULT=$(az monitor app-insights query \
-            --app "${{ matrix.app_insights }}" \
-            --resource-group "${{ matrix.resource_group }}" \
-            --analytics-query "
-              exceptions
-              | where timestamp > ago(24h)
-              | summarize
-                  Count=count(),
-                  FirstSeen=min(timestamp),
-                  LastSeen=max(timestamp),
-                  SampleDetails=take_any(details)
-                by type, outerMessage
-              | order by Count desc
-            " \
-            --output json) || true
+          # Use the ARM management plane query endpoint instead of the
+          # application-insights extension. The extension uses the data plane
+          # API (api.applicationinsights.io) which returns 0 results for
+          # workspace-based App Insights resources.
+          RESULT=$(az rest --method post \
+            --url "${{ steps.resource.outputs.resource_id }}/query?api-version=2018-04-20" \
+            --body '{
+              "query": "exceptions | where timestamp > ago(24h) | where type !in (\"System.Threading.Tasks.TaskCanceledException\", \"Microsoft.AspNetCore.Server.Kestrel.Core.BadHttpRequestException\") | where outerMessage !has \"SPA default page middleware\" | where type !has \"ModuleError\" | summarize Count=count(), FirstSeen=min(timestamp), LastSeen=max(timestamp), SampleDetails=take_any(details) by type, outerMessage | order by Count desc"
+            }' 2>/dev/null) || true
 
           # Check if the query returned valid data
           if [ -z "$RESULT" ]; then
             echo "has_exceptions=false" >> "$GITHUB_OUTPUT"
             echo "Query returned no data. Check workflow logs for errors."
           elif echo "$RESULT" | jq -e '.tables[0].rows | length > 0' > /dev/null 2>&1; then
+            ROW_COUNT=$(echo "$RESULT" | jq '.tables[0].rows | length')
+            echo "Found $ROW_COUNT distinct exception types in the last 24 hours."
             echo "has_exceptions=true" >> "$GITHUB_OUTPUT"
             echo "$RESULT" > /tmp/exceptions.json
           else

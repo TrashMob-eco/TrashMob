@@ -37,5 +37,17 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// Gets route aggregate data suitable for pre-filling an event summary.
         /// </summary>
         Task<EventSummaryPrefill> GetEventSummaryPrefillAsync(Guid eventId, int targetWeightUnitId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Trims a route's end time, rebuilding the path from RoutePoints up to the new end time.
+        /// Only the route owner can trim.
+        /// </summary>
+        Task<ServiceResult<EventAttendeeRoute>> TrimRouteTimeAsync(Guid routeId, Guid userId, TrimRouteTimeRequest request, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Restores a time-trimmed route to its original values using preserved RoutePoints.
+        /// Only the route owner can restore.
+        /// </summary>
+        Task<ServiceResult<EventAttendeeRoute>> RestoreRouteTimeAsync(Guid routeId, Guid userId, CancellationToken cancellationToken = default);
     }
 }

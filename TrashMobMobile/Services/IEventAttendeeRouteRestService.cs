@@ -27,5 +27,9 @@
         Task<DisplayEventAttendeeRoute> UpdateRouteMetadataAsync(Guid routeId, UpdateRouteMetadataRequest request, CancellationToken cancellationToken = default);
 
         Task<EventSummaryPrefill> GetEventSummaryPrefillAsync(Guid eventId, int weightUnitId = 1, CancellationToken cancellationToken = default);
+
+        Task<DisplayEventAttendeeRoute> TrimRouteTimeAsync(Guid routeId, TrimRouteTimeRequest request, CancellationToken cancellationToken = default);
+
+        Task<DisplayEventAttendeeRoute> RestoreRouteTimeAsync(Guid routeId, CancellationToken cancellationToken = default);
     }
 }

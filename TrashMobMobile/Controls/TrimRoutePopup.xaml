@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobile.Controls.TrimRoutePopup">
+
+    <Border Padding="24"
+            BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+            StrokeShape="RoundRectangle 16"
+            Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+            StrokeThickness="1"
+            WidthRequest="300">
+        <VerticalStackLayout Spacing="16">
+
+            <Label Text="Trim Route End Time"
+                   FontFamily="LexendSemibold"
+                   FontSize="18"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+
+            <Label Text="Remove time from the end of your route (e.g., forgot to stop tracking)."
+                   FontSize="13"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+            <!-- Current info -->
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="4">
+                <Label Grid.Row="0" Grid.Column="0" Text="Current duration" FontSize="Micro"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                <Label Grid.Row="0" Grid.Column="1" x:Name="currentDurationLabel" FontSize="Micro" FontFamily="LexendSemibold" />
+
+                <Label Grid.Row="1" Grid.Column="0" Text="Current end time" FontSize="Micro"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                <Label Grid.Row="1" Grid.Column="1" x:Name="currentEndTimeLabel" FontSize="Micro" FontFamily="LexendSemibold" />
+            </Grid>
+
+            <!-- Slider -->
+            <VerticalStackLayout Spacing="4">
+                <Label x:Name="trimLabel" Text="Remove from end: 0 min" FontSize="13" FontFamily="LexendSemibold" />
+                <Slider x:Name="trimSlider" Minimum="0" Maximum="1"
+                        ValueChanged="OnSliderValueChanged"
+                        MinimumTrackColor="{StaticResource Primary}"
+                        MaximumTrackColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
+            </VerticalStackLayout>
+
+            <!-- Preview -->
+            <VerticalStackLayout x:Name="previewStack" Spacing="4" IsVisible="False">
+                <Label x:Name="newEndTimeLabel" FontSize="Micro"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                <Label x:Name="newDurationLabel" FontSize="Micro"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            </VerticalStackLayout>
+
+            <Button x:Name="saveButton" Text="Save Trim"
+                    Style="{StaticResource PrimaryLargeButton}"
+                    IsEnabled="False"
+                    Clicked="OnSaveClicked" />
+
+            <Button Text="Cancel"
+                    Style="{StaticResource SecondaryLargeButton}"
+                    Clicked="OnCancelClicked" />
+
+        </VerticalStackLayout>
+    </Border>
+</ContentView>

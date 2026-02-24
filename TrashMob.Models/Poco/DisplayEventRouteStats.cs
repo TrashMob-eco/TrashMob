@@ -49,5 +49,15 @@
         /// Gets or sets the estimated area covered in square meters, based on 25m grid cell aggregation.
         /// </summary>
         public double CoverageAreaSquareMeters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the average litter density across all routes in grams per meter. Null if no routes have data.
+        /// </summary>
+        public double? AverageDensityGramsPerMeter { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum litter density among all routes in grams per meter. Null if no routes have data.
+        /// </summary>
+        public double? MaxDensityGramsPerMeter { get; set; }
     }
 }

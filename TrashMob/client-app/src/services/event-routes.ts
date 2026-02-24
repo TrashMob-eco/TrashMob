@@ -1,6 +1,7 @@
 import { ApiService } from '.';
 import {
     DisplayAnonymizedRoute,
+    DisplayEventAttendeeRoute,
     DisplayEventRouteStats,
     DisplayUserRouteHistory,
     EventSummaryPrefill,
@@ -35,6 +36,27 @@ export const GetMyRoutes = () => ({
         ApiService('protected').fetchData<GetMyRoutes_Response>({
             url: '/users/me/routes',
             method: 'get',
+        }),
+});
+
+export type TrimRouteTime_Params = { routeId: string; newEndTime: string };
+export type TrimRouteTime_Response = DisplayEventAttendeeRoute;
+export const TrimRouteTime = (params: TrimRouteTime_Params) => ({
+    service: async () =>
+        ApiService('protected').fetchData<TrimRouteTime_Response>({
+            url: `/routes/${params.routeId}/trim-time`,
+            method: 'put',
+            data: { newEndTime: params.newEndTime },
+        }),
+});
+
+export type RestoreRouteTime_Params = { routeId: string };
+export type RestoreRouteTime_Response = DisplayEventAttendeeRoute;
+export const RestoreRouteTime = (params: RestoreRouteTime_Params) => ({
+    service: async () =>
+        ApiService('protected').fetchData<RestoreRouteTime_Response>({
+            url: `/routes/${params.routeId}/restore-time`,
+            method: 'put',
         }),
 });
 

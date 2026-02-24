@@ -492,6 +492,9 @@
                 entity.Property(e => e.Notes)
                     .HasMaxLength(2000);
 
+                entity.Property(e => e.IsTimeTrimmed)
+                    .HasDefaultValue(false);
+
                 entity.HasOne<WeightUnit>()
                     .WithMany()
                     .HasForeignKey(e => e.WeightUnitId)
