@@ -23,15 +23,30 @@ namespace TrashMobDailyJobs
 
             using var serviceProvider = services.BuildServiceProvider();
             using var scope = serviceProvider.CreateScope();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
-            var statGenerator = scope.ServiceProvider.GetRequiredService<StatGenerator>();
-            await statGenerator.RunAsync();
+            // Run each processor independently so one failure doesn't block the others
+            await RunProcessorAsync<StatGenerator>(scope, logger);
+            await RunProcessorAsync<LeaderboardGenerator>(scope, logger);
+            await RunProcessorAsync<AchievementProcessor>(scope, logger);
+        }
 
-            var leaderboardGenerator = scope.ServiceProvider.GetRequiredService<LeaderboardGenerator>();
-            await leaderboardGenerator.RunAsync();
-
-            var achievementProcessor = scope.ServiceProvider.GetRequiredService<AchievementProcessor>();
-            await achievementProcessor.RunAsync();
+        private static async Task RunProcessorAsync<T>(IServiceScope scope, ILogger logger) where T : class
+        {
+            var name = typeof(T).Name;
+            try
+            {
+                logger.LogInformation("Starting {Processor}...", name);
+                var processor = scope.ServiceProvider.GetRequiredService<T>();
+                var runMethod = typeof(T).GetMethod("RunAsync")
+                    ?? throw new InvalidOperationException($"{name} does not have a RunAsync method.");
+                await (Task)runMethod.Invoke(processor, null)!;
+                logger.LogInformation("{Processor} completed successfully.", name);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "{Processor} failed with error: {Message}", name, ex.Message);
+            }
         }
 
         private static void ConfigureServices(IServiceCollection services)
