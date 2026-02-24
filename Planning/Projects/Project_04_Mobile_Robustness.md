@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1-2 Complete, Phases 3-5 Substantial Progress) |
+| **Status** | In Progress (Phases 1-2, 6 Complete; Phases 3-5 Substantial) |
 | **Priority** | Critical |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -98,14 +98,14 @@ Mobile app quality directly impacts user retention and app store visibility. A c
 - [ ] Write runbook for investigating Sentry errors
 - [ ] Update developer onboarding documentation
 
-### Phase 6 - App Store Presence
+### Phase 6 - App Store Presence ✅
 
-- [ ] Create new screenshots showcasing improved UX
-- [ ] Update app store descriptions and feature highlights
-- [ ] Refresh app icon and promotional graphics (if needed)
-- [ ] Improve App Store (iOS) and Play Store (Android) metadata
-- [ ] Add/update app preview video (optional)
-- [ ] Respond to and address existing user reviews
+- [x] Create new screenshots showcasing improved UX
+- [x] Update app store descriptions and feature highlights
+- [x] Refresh app icon and promotional graphics (if needed)
+- [x] Improve App Store (iOS) and Play Store (Android) metadata
+- [ ] ~~Add/update app preview video (optional)~~ — deferred, low priority
+- [x] Respond to and address existing user reviews
 
 ---
 
@@ -440,24 +440,26 @@ The following GitHub issues are tracked as part of this project:
 
 **Open — Infrastructure & Quality:**
 - **[#2226](https://github.com/trashmob/TrashMob/issues/2226)** - Project 4: Mobile App Robustness (tracking issue)
-- **[#2245](https://github.com/trashmob/TrashMob/issues/2245)** - Document and Test how to set up the iOS Emulator
-- **[#2250](https://github.com/trashmob/TrashMob/issues/2250)** - Document minimum iOS and Android versions which can run the app
-- **[#2251](https://github.com/trashmob/TrashMob/issues/2251)** - Review Apple Store settings
-- **[#2252](https://github.com/trashmob/TrashMob/issues/2252)** - Review Android Store settings
-- **[#2219](https://github.com/trashmob/TrashMob/issues/2219)** - Mobile App - Add way to see app version number in app
-- **[#1291](https://github.com/trashmob/TrashMob/issues/1291)** - [Mobile] A better way of managing secrets and config
+- ~~**[#2245](https://github.com/trashmob/TrashMob/issues/2245)** - Document and Test how to set up the iOS Emulator~~ ✅
+- ~~**[#2250](https://github.com/trashmob/TrashMob/issues/2250)** - Document minimum iOS and Android versions which can run the app~~ ✅
+- ~~**[#2251](https://github.com/trashmob/TrashMob/issues/2251)** - Review Apple Store settings~~ ✅ (Store updated with new screenshots and content)
+- ~~**[#2252](https://github.com/trashmob/TrashMob/issues/2252)** - Review Android Store settings~~ ✅ (Store updated with new screenshots and content)
+- ~~**[#2219](https://github.com/trashmob/TrashMob/issues/2219)** - Mobile App - Add way to see app version number in app~~ ✅
+- ~~**[#1291](https://github.com/trashmob/TrashMob/issues/1291)** - [Mobile] A better way of managing secrets and config~~ ✅
 
 **Open — Mobile Bug Issues:**
-- **[#2534](https://github.com/trashmob/TrashMob/issues/2534)** - Oversized TrashMob logo on app launch does not fit screen (iOS)
-- **[#2340](https://github.com/trashmob/TrashMob/issues/2340)** - Home screen loads very slowly
-- **[#2339](https://github.com/trashmob/TrashMob/issues/2339)** - Home screen not visible on iOS
-- **[#2337](https://github.com/trashmob/TrashMob/issues/2337)** - Add a Search / Apply Filters button to the Events search screen
-- **[#2335](https://github.com/trashmob/TrashMob/issues/2335)** - iOS: Cannot create Litter Report — photos not saved
-- **[#2332](https://github.com/trashmob/TrashMob/issues/2332)** - Problem with sign out on iOS
 - **[#1466](https://github.com/trashmob/TrashMob/issues/1466)** - View Event - Format What to Expect
-- **[#1465](https://github.com/trashmob/TrashMob/issues/1465)** - View Event - Registered Pop up
-- **[#1464](https://github.com/trashmob/TrashMob/issues/1464)** - View Event - Fix Duration versus end time
 - **[#1459](https://github.com/trashmob/TrashMob/issues/1459)** - Edit Litter Report - Prevent deletion of last image
+
+**Closed — Mobile Bug Issues:**
+- ~~**[#2534](https://github.com/trashmob/TrashMob/issues/2534)** - Oversized TrashMob logo on app launch does not fit screen (iOS)~~ ✅
+- ~~**[#2340](https://github.com/trashmob/TrashMob/issues/2340)** - Home screen loads very slowly~~ ✅
+- ~~**[#2339](https://github.com/trashmob/TrashMob/issues/2339)** - Home screen not visible on iOS~~ ✅
+- ~~**[#2337](https://github.com/trashmob/TrashMob/issues/2337)** - Add a Search / Apply Filters button to the Events search screen~~ ✅
+- ~~**[#2335](https://github.com/trashmob/TrashMob/issues/2335)** - iOS: Cannot create Litter Report — photos not saved~~ ✅
+- ~~**[#2332](https://github.com/trashmob/TrashMob/issues/2332)** - Problem with sign out on iOS~~ ✅
+- ~~**[#1465](https://github.com/trashmob/TrashMob/issues/1465)** - View Event - Registered Pop up~~ ✅
+- ~~**[#1464](https://github.com/trashmob/TrashMob/issues/1464)** - View Event - Fix Duration versus end time~~ ✅
 
 ---
 
@@ -470,7 +472,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 15, 2026
+**Last Updated:** February 23, 2026
 **Owner:** Mobile Product Lead + MAUI Developers
-**Status:** In Progress (Phases 1-2 Complete, Phases 3-4 Substantial Progress — 203 ViewModel tests, Appium UI tests, extensive UX improvements across 15+ PRs, Entra auth switch, Phase 5 Partial, Phase 6 Not Started)
-**Next Review:** After remaining iOS bugs are triaged
+**Status:** In Progress (Phases 1-2 Complete, Phases 3-4 Substantial, Phase 5 Partial, Phase 6 Complete — 203 ViewModel tests, Appium UI tests, extensive UX improvements across 15+ PRs, Entra auth switch, app stores updated with new screenshots and content)
+**Next Review:** Ongoing — remaining items are quality/ops improvements (2 open bugs: #1466, #1459)
