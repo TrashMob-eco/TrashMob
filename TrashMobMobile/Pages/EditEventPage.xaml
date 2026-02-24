@@ -53,6 +53,7 @@
 
             <Button Margin="16,8,16,20"
                     Command="{Binding SaveEventCommand}"
+                    IsEnabled="{Binding HasChanges}"
                     Style="{StaticResource PrimaryLargeButton}"
                     Text="Save Event"
                     HorizontalOptions="Fill"

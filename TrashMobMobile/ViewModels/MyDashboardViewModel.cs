@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TrashMob.Models;
 using TrashMob.Models.Poco;
 using Sentry;
 using TrashMobMobile.Extensions;
@@ -40,6 +41,16 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
     public ObservableCollection<string> CompletedDateRanges { get; set; } = [];
 
     public ObservableCollection<string> CreatedDateRanges { get; set; } = [];
+
+    public List<string> EventFilterOptions { get; } = ["All", "My Events", "Attending"];
+
+    [ObservableProperty]
+    private string selectedEventFilter = "All";
+
+    partial void OnSelectedEventFilterChanged(string value)
+    {
+        HandleEventFilterChanged();
+    }
 
     [ObservableProperty]
     private bool areUpcomingEventsFound;
@@ -268,7 +279,9 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
         var upcomingEvents = await mobEventManager.GetUserEventsAsync(upcomingEventFilter, userManager.CurrentUser.Id);
 
-        foreach (var mobEvent in upcomingEvents.OrderByDescending(e => e.EventDate))
+        var filteredUpcoming = ApplyEventFilter(upcomingEvents);
+
+        foreach (var mobEvent in filteredUpcoming.OrderByDescending(e => e.EventDate))
         {
             var vm = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
             vm.IsUserAttending = true;
@@ -279,7 +292,9 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
         var completedEvents = await mobEventManager.GetUserEventsAsync(completedEventFilter, userManager.CurrentUser.Id);
 
-        foreach (var mobEvent in completedEvents.OrderByDescending(e => e.EventDate))
+        var filteredCompleted = ApplyEventFilter(completedEvents);
+
+        foreach (var mobEvent in filteredCompleted.OrderByDescending(e => e.EventDate))
         {
             var vm = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
             vm.IsUserAttending = true;
@@ -291,6 +306,28 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
         AreNoUpcomingEventsFound = !UpcomingEvents.Any();
         AreCompletedEventsFound = CompletedEvents.Any();
         AreNoCompletedEventsFound = !CompletedEvents.Any();
+    }
+
+    private IEnumerable<Event> ApplyEventFilter(IEnumerable<Event> events)
+    {
+        return SelectedEventFilter switch
+        {
+            "My Events" => events.Where(e => e.IsEventLead(userManager.CurrentUser.Id)),
+            "Attending" => events.Where(e => !e.IsEventLead(userManager.CurrentUser.Id)),
+            _ => events,
+        };
+    }
+
+    private async void HandleEventFilterChanged()
+    {
+        try
+        {
+            await ExecuteAsync(RefreshEvents, "Failed to refresh events. Please try again.");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private async Task RefreshLitterReports()

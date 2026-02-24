@@ -5,11 +5,18 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:Class="TrashMobMobile.Views.MyDashboard.TabCompletedEvents">
     <VerticalStackLayout>
-        <controls:TMPicker Title="Completed Date Range"
-                                   HeightRequest="40"
-                                   Margin="10, 0, 10, 0"
-                                   ItemsSource="{Binding CompletedDateRanges}"
-                                   SelectedItem="{Binding SelectedCompletedDateRange, Mode=TwoWay}" />
+        <Grid ColumnDefinitions="*, *" ColumnSpacing="8" Margin="10, 0, 10, 0">
+            <controls:TMPicker Grid.Column="0"
+                               Title="Date Range"
+                               HeightRequest="40"
+                               ItemsSource="{Binding CompletedDateRanges}"
+                               SelectedItem="{Binding SelectedCompletedDateRange, Mode=TwoWay}" />
+            <controls:TMPicker Grid.Column="1"
+                               Title="Filter"
+                               HeightRequest="40"
+                               ItemsSource="{Binding EventFilterOptions}"
+                               SelectedItem="{Binding SelectedEventFilter, Mode=TwoWay}" />
+        </Grid>
 
         <Label Text="There are no completed events matching the selected criteria." IsVisible="{Binding AreNoCompletedEventsFound}" Margin="10" />
 

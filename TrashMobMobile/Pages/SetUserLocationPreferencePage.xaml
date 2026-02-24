@@ -99,6 +99,7 @@
 
                 <Button Text="Update Location"
                         Command="{Binding UpdateLocationCommand}"
+                        IsEnabled="{Binding HasChanges}"
                         Style="{StaticResource PrimaryLargeButton}"
                         Margin="10,8,10,10" />
             </VerticalStackLayout>
