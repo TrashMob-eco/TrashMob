@@ -5,11 +5,18 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:Class="TrashMobMobile.Views.MyDashboard.TabUpcomingEvents">
     <VerticalStackLayout>
-        <controls:TMPicker Title="Upcoming Date Range"
-                                   HeightRequest="40"
-                                   Margin="10, 0, 10, 0"
-                                   ItemsSource="{Binding UpcomingDateRanges}"
-                                   SelectedItem="{Binding SelectedUpcomingDateRange, Mode=TwoWay}" />
+        <Grid ColumnDefinitions="*, *" ColumnSpacing="8" Margin="10, 0, 10, 0">
+            <controls:TMPicker Grid.Column="0"
+                               Title="Date Range"
+                               HeightRequest="40"
+                               ItemsSource="{Binding UpcomingDateRanges}"
+                               SelectedItem="{Binding SelectedUpcomingDateRange, Mode=TwoWay}" />
+            <controls:TMPicker Grid.Column="1"
+                               Title="Filter"
+                               HeightRequest="40"
+                               ItemsSource="{Binding EventFilterOptions}"
+                               SelectedItem="{Binding SelectedEventFilter, Mode=TwoWay}" />
+        </Grid>
 
         <Label Text="There are no upcoming events matching the selected criteria." IsVisible="{Binding AreNoUpcomingEventsFound}" Margin="10" />
 

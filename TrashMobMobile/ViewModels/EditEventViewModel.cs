@@ -159,6 +159,62 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     public Action UpdateMapLocation { get; set; } = null!;
 
+    // Dirty tracking
+    private string originalName = string.Empty;
+    private string originalDescription = string.Empty;
+    private int originalDurationHours;
+    private int originalDurationMinutes;
+    private DateTimeOffset originalEventDate;
+    private int originalEventTypeId;
+    private int originalMaxParticipants;
+    private int originalVisibilityId;
+    private Guid? originalTeamId;
+    private double? originalLatitude;
+    private double? originalLongitude;
+
+    [ObservableProperty]
+    private bool hasChanges;
+
+    private void SnapshotOriginalValues()
+    {
+        originalName = EventViewModel.Name;
+        originalDescription = EventViewModel.Description;
+        originalDurationHours = EventViewModel.DurationHours;
+        originalDurationMinutes = EventViewModel.DurationMinutes;
+        originalEventDate = EventViewModel.EventDate;
+        originalEventTypeId = EventViewModel.EventTypeId;
+        originalMaxParticipants = EventViewModel.MaxNumberOfParticipants;
+        originalVisibilityId = EventViewModel.EventVisibilityId;
+        originalTeamId = EventViewModel.TeamId;
+        originalLatitude = EventViewModel.Address.Latitude;
+        originalLongitude = EventViewModel.Address.Longitude;
+    }
+
+    private void CheckForChanges()
+    {
+        HasChanges = EventViewModel.Name != originalName
+                  || EventViewModel.Description != originalDescription
+                  || EventViewModel.DurationHours != originalDurationHours
+                  || EventViewModel.DurationMinutes != originalDurationMinutes
+                  || EventViewModel.EventDate != originalEventDate
+                  || EventViewModel.EventTypeId != originalEventTypeId
+                  || EventViewModel.MaxNumberOfParticipants != originalMaxParticipants
+                  || EventViewModel.EventVisibilityId != originalVisibilityId
+                  || EventViewModel.TeamId != originalTeamId
+                  || EventViewModel.Address.Latitude != originalLatitude
+                  || EventViewModel.Address.Longitude != originalLongitude;
+    }
+
+    private void OnEventViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        CheckForChanges();
+    }
+
+    private void OnAddressPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        CheckForChanges();
+    }
+
     public async Task Init(Guid eventId)
     {
         await ExecuteAsync(async () =>
@@ -205,6 +261,10 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             await LoadLitterReports();
 
             Events.Add(EventViewModel);
+
+            SnapshotOriginalValues();
+            EventViewModel.PropertyChanged += OnEventViewModelPropertyChanged;
+            EventViewModel.Address.PropertyChanged += OnAddressPropertyChanged;
         }, "An error has occurred while loading the event. Please wait and try again in a moment.");
     }
 
@@ -344,9 +404,40 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     private async Task<bool> Validate()
     {
+        if (string.IsNullOrWhiteSpace(EventViewModel.Name))
+        {
+            await NotificationService.NotifyError("Event name is required.");
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(EventViewModel.Description))
+        {
+            await NotificationService.NotifyError("Event description is required.");
+            return false;
+        }
+
+        var totalHours = EventViewModel.DurationHours + (EventViewModel.DurationMinutes / 60.0);
+        if (totalHours < 1)
+        {
+            await NotificationService.NotifyError("Event duration must be at least 1 hour.");
+            return false;
+        }
+        if (totalHours > 10)
+        {
+            await NotificationService.NotifyError("Event duration cannot exceed 10 hours.");
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(EventViewModel.Address.City) ||
+            string.IsNullOrWhiteSpace(EventViewModel.Address.Region))
+        {
+            await NotificationService.NotifyError("Event location (city and region) is required.");
+            return false;
+        }
+
         if (EventViewModel.EventVisibilityId == (int)EventVisibilityEnum.Public && EventViewModel.EventDate < DateTimeOffset.Now)
         {
-            await NotificationService.NotifyError("Event Dates for new public events must be in the future.");
+            await NotificationService.NotifyError("Event dates for public events must be in the future.");
             return false;
         }
 
