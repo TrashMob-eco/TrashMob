@@ -22,6 +22,12 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private AddressViewModel userLocation = new();
 
+    private const int PageSize = 25;
+    private int currentPageIndex;
+
+    [ObservableProperty]
+    private bool hasMoreResults;
+
     private IEnumerable<Event> AllEvents { get; set; } = [];
     private IEnumerable<Event> RawEvents { get; set; } = [];
 
@@ -143,25 +149,31 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
         }
     }
 
+    private (DateTimeOffset Start, DateTimeOffset End) GetCurrentDateRange()
+    {
+        if (IsUpcomingSelected)
+        {
+            var start = DateTimeOffset.Now.Date.AddDays(DateRanges.UpcomingRangeDictionary[SelectedUpcomingDateRange].Item1);
+            var end = DateTimeOffset.Now.Date.AddDays(DateRanges.UpcomingRangeDictionary[SelectedUpcomingDateRange].Item2);
+            return (start, end);
+        }
+        else
+        {
+            var start = DateTimeOffset.Now.Date.AddDays(DateRanges.CompletedRangeDictionary[SelectedCompletedDateRange].Item1);
+            var end = DateTimeOffset.Now.Date.AddDays(DateRanges.CompletedRangeDictionary[SelectedCompletedDateRange].Item2);
+            return (start, end);
+        }
+    }
+
     private async Task RefreshEvents()
     {
         Events.Clear();
         AreEventsFound = false;
         AreNoEventsFound = true;
+        currentPageIndex = 0;
+        HasMoreResults = false;
 
-        DateTimeOffset startDate;
-        DateTimeOffset endDate;
-
-        if (IsUpcomingSelected)
-        {
-            startDate = DateTimeOffset.Now.Date.AddDays(DateRanges.UpcomingRangeDictionary[SelectedUpcomingDateRange].Item1);
-            endDate = DateTimeOffset.Now.Date.AddDays(DateRanges.UpcomingRangeDictionary[SelectedUpcomingDateRange].Item2);
-        }
-        else
-        {
-            startDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CompletedRangeDictionary[SelectedCompletedDateRange].Item1);
-            endDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CompletedRangeDictionary[SelectedCompletedDateRange].Item2);
-        }
+        var (startDate, endDate) = GetCurrentDateRange();
 
         Locations = await mobEventManager.GetLocationsByTimeRangeAsync(startDate, endDate);
         PopulateCountries();
@@ -175,8 +187,8 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
         {
             StartDate = startDate,
             EndDate = endDate,
-            PageIndex = 0,
-            PageSize = 100,
+            PageIndex = currentPageIndex,
+            PageSize = PageSize,
             EventStatusId = null,
         };
 
@@ -192,6 +204,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
         }
 
         RawEvents = AllEvents;
+        HasMoreResults = events.Count >= PageSize;
 
         if (!RawEvents.Any())
         {
@@ -199,6 +212,54 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
         }
 
         UpdateEventReportViewModels();
+    }
+
+    [RelayCommand]
+    private async Task LoadMoreEvents()
+    {
+        IsBusy = true;
+
+        try
+        {
+            currentPageIndex++;
+            var (startDate, endDate) = GetCurrentDateRange();
+
+            var eventFilter = new EventFilter
+            {
+                StartDate = startDate,
+                EndDate = endDate,
+                PageIndex = currentPageIndex,
+                PageSize = PageSize,
+                EventStatusId = null,
+            };
+
+            var events = await mobEventManager.GetFilteredEventsAsync(eventFilter);
+
+            IEnumerable<Event> filtered;
+            if (IsUpcomingSelected)
+            {
+                filtered = events.Where(e => !e.IsCompleted()).ToList();
+            }
+            else
+            {
+                filtered = events.Where(e => e.IsCompleted()).ToList();
+            }
+
+            AllEvents = AllEvents.Concat(filtered).ToList();
+            RawEvents = AllEvents;
+            HasMoreResults = events.Count >= PageSize;
+
+            // Re-apply location filters and rebuild
+            ApplyFilters();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private async void HandleUpcomingDateRangeSelected()

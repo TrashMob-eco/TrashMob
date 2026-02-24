@@ -331,6 +331,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private async Task GetAttendeeCount()
     {
         var attendees = await eventAttendeeRestService.GetEventAttendeesAsync(mobEvent.Id);
+        currentAttendeeCount = attendees.Count();
         var eventLeads = await eventAttendeeRestService.GetEventLeadsAsync(mobEvent.Id);
         var eventLeadIds = new HashSet<Guid>(eventLeads.Select(l => l.Id));
 
@@ -532,7 +533,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await SetRegistrationOptions();
             await GetAttendeeCount();
 
-            await NotificationService.Notify("You have been registered for this event.");
+            var registerPopup = new ConfirmPopup("Registered!", "You have been registered for this event. We'll see you there!", "OK");
+            await Shell.Current.CurrentPage.ShowPopupAsync<string>(registerPopup);
         }, "An error occurred while registering you for this event. Please try again.");
     }
 
@@ -552,16 +554,27 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await SetRegistrationOptions();
             await GetAttendeeCount();
 
-            await NotificationService.Notify("You have been unregistered for this event.");
+            var unregisterPopup = new ConfirmPopup("Unregistered", "You have been unregistered from this event.", "OK");
+            await Shell.Current.CurrentPage.ShowPopupAsync<string>(unregisterPopup);
         }, "An error occurred while unregistering you for this event. Please try again.");
     }
+
+    private int currentAttendeeCount;
 
     private async Task SetRegistrationOptions()
     {
         var isAttending = await mobEventManager.IsUserAttendingAsync(mobEvent.Id, userManager.CurrentUser.Id);
 
-        EnableRegister = !mobEvent.IsEventLead(userManager.CurrentUser.Id) && !isAttending && mobEvent.AreNewRegistrationsAllowed();
-        EnableUnregister = !mobEvent.IsEventLead(userManager.CurrentUser.Id) && isAttending && mobEvent.AreUnregistrationsAllowed();
+        var isFull = mobEvent.MaxNumberOfParticipants > 0
+                     && currentAttendeeCount >= mobEvent.MaxNumberOfParticipants;
+
+        EnableRegister = !mobEvent.IsEventLead(userManager.CurrentUser.Id)
+                        && !isAttending
+                        && mobEvent.AreNewRegistrationsAllowed()
+                        && !isFull;
+        EnableUnregister = !mobEvent.IsEventLead(userManager.CurrentUser.Id)
+                          && isAttending
+                          && mobEvent.AreUnregistrationsAllowed();
     }
 
     [RelayCommand]

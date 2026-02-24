@@ -23,6 +23,31 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
 
     public ObservableCollection<AddressViewModel> Addresses { get; set; } = [];
 
+    // Dirty tracking
+    private int originalTravelDistance;
+    private string originalUnits = string.Empty;
+    private double? originalLatitude;
+    private double? originalLongitude;
+
+    [ObservableProperty]
+    private bool hasChanges;
+
+    private void SnapshotOriginalValues()
+    {
+        originalTravelDistance = TravelDistance;
+        originalUnits = Units;
+        originalLatitude = Address.Latitude;
+        originalLongitude = Address.Longitude;
+    }
+
+    private void CheckForChanges()
+    {
+        HasChanges = TravelDistance != originalTravelDistance
+                  || Units != originalUnits
+                  || Address.Latitude != originalLatitude
+                  || Address.Longitude != originalLongitude;
+    }
+
     public async Task Init()
     {
         await ExecuteAsync(async () =>
@@ -32,6 +57,10 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
             Addresses.Add(Address);
             TravelDistance = userManager.CurrentUser.TravelLimitForLocalEvents;
             Units = userManager.CurrentUser.PrefersMetric ? "Kilometers" : "Miles";
+
+            SnapshotOriginalValues();
+            PropertyChanged += (_, _) => CheckForChanges();
+            Address.PropertyChanged += (_, _) => CheckForChanges();
         }, "An error occurred while initializing the user location preference page.");
     }
 

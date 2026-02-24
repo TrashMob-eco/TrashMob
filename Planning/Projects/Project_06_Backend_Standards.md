@@ -72,6 +72,7 @@ Comprehensive code quality sweep across the entire backend:
 - ? Add `[Authorize]` attributes where missing
 - ? Validate input on all endpoints
 - ? Add rate limiting where appropriate
+- ? **Least-privilege database access** — Split database credentials so the application runtime user has only the permissions it needs (read/write on application tables) rather than admin/owner access. Create a separate migration user for schema changes. This reduces blast radius if the app is compromised.
 
 ### Phase 4 - Documentation
 - ✓ Add XML comments to all public APIs

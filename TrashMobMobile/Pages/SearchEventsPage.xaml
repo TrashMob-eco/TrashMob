@@ -106,7 +106,7 @@
                     </maps:Map.ItemTemplate>
                 </controls:CustomMap>
 
-                <Grid Grid.Row="3" IsVisible="{Binding IsListSelected}">
+                <VerticalStackLayout Grid.Row="3" IsVisible="{Binding IsListSelected}">
                     <Label Text="There are no events matching the selected criteria." IsVisible="{Binding AreNoEventsFound}" Margin="10" />
                     <CollectionView x:Name="EventsCollection"
                                     ItemsSource="{Binding Events}"
@@ -140,7 +140,12 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                </Grid>
+                    <Button Text="Load More"
+                            Command="{Binding LoadMoreEventsCommand}"
+                            IsVisible="{Binding HasMoreResults}"
+                            Style="{StaticResource SecondaryLargeButton}"
+                            Margin="10,4" />
+                </VerticalStackLayout>
             </Grid>
         </VerticalStackLayout>
         <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
