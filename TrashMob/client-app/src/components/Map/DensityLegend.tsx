@@ -14,10 +14,7 @@ export const DensityLegend = () => (
         <div className='flex flex-col gap-1'>
             {DENSITY_SCALE.map(({ color, label }) => (
                 <div key={color} className='flex items-center gap-2'>
-                    <span
-                        className='inline-block w-4 h-1 rounded-full'
-                        style={{ backgroundColor: color }}
-                    />
+                    <span className='inline-block w-4 h-1 rounded-full' style={{ backgroundColor: color }} />
                     <span className='text-muted-foreground'>{label}</span>
                 </div>
             ))}

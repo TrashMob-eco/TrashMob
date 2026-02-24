@@ -216,7 +216,6 @@ export const MyRoutesCard = () => {
                                 <TableHead>Density</TableHead>
                                 <TableHead>Privacy</TableHead>
                                 <TableHead />
-
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -277,7 +276,9 @@ export const MyRoutesCard = () => {
             <RouteTimeTrimDialog
                 route={trimRoute}
                 open={trimRoute !== null}
-                onOpenChange={(open) => { if (!open) setTrimRoute(null); }}
+                onOpenChange={(open) => {
+                    if (!open) setTrimRoute(null);
+                }}
             />
         </Card>
     );

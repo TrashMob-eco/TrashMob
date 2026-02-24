@@ -30,9 +30,7 @@ export const RouteTimeTrimDialog = ({ route, open, onOpenChange }: RouteTimeTrim
     const totalMinutes = Math.max(endTime.diff(startTime, 'minutes'), 1);
 
     const newEndTime = moment(startTime).add(totalMinutes - trimMinutes, 'minutes');
-    const removedDistance = route
-        ? Math.round((route.totalDistanceMeters / totalMinutes) * trimMinutes)
-        : 0;
+    const removedDistance = route ? Math.round((route.totalDistanceMeters / totalMinutes) * trimMinutes) : 0;
 
     const trimMutation = useMutation({
         mutationFn: async () => {
@@ -102,9 +100,7 @@ export const RouteTimeTrimDialog = ({ route, open, onOpenChange }: RouteTimeTrim
                     </div>
 
                     <div>
-                        <label className='block text-sm font-medium mb-1'>
-                            Remove from end: {trimMinutes} min
-                        </label>
+                        <label className='block text-sm font-medium mb-1'>Remove from end: {trimMinutes} min</label>
                         <input
                             type='range'
                             min={0}
@@ -122,14 +118,11 @@ export const RouteTimeTrimDialog = ({ route, open, onOpenChange }: RouteTimeTrim
                     {trimMinutes > 0 && (
                         <div className='bg-muted rounded-md p-3 text-sm space-y-1'>
                             <p>
-                                New end time:{' '}
-                                <span className='font-medium'>{newEndTime.format('h:mm A')}</span>
+                                New end time: <span className='font-medium'>{newEndTime.format('h:mm A')}</span>
                             </p>
                             <p>
                                 New duration:{' '}
-                                <span className='font-medium'>
-                                    {formatDuration(totalMinutes - trimMinutes)}
-                                </span>
+                                <span className='font-medium'>{formatDuration(totalMinutes - trimMinutes)}</span>
                             </p>
                             <p>
                                 Est. distance removed:{' '}
@@ -143,18 +136,11 @@ export const RouteTimeTrimDialog = ({ route, open, onOpenChange }: RouteTimeTrim
 
                 <DialogFooter>
                     {route.isTimeTrimmed ? (
-                        <Button
-                            variant='outline'
-                            onClick={() => restoreMutation.mutate()}
-                            disabled={isBusy}
-                        >
+                        <Button variant='outline' onClick={() => restoreMutation.mutate()} disabled={isBusy}>
                             Restore Original
                         </Button>
                     ) : null}
-                    <Button
-                        onClick={() => trimMutation.mutate()}
-                        disabled={trimMinutes === 0 || isBusy}
-                    >
+                    <Button onClick={() => trimMutation.mutate()} disabled={trimMinutes === 0 || isBusy}>
                         {trimMutation.isPending ? 'Saving...' : 'Save Trim'}
                     </Button>
                 </DialogFooter>
