@@ -4,11 +4,14 @@ namespace TrashMobDailyJobs
     using System.Threading.Tasks;
     using Azure.Extensions.AspNetCore.Configuration.Secrets;
     using Azure.Identity;
+    using Azure.Monitor.OpenTelemetry.Exporter;
     using Azure.Security.KeyVault.Secrets;
     using Microsoft.Extensions.Azure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using OpenTelemetry.Logs;
+    using OpenTelemetry.Resources;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Interfaces;
@@ -73,10 +76,25 @@ namespace TrashMobDailyJobs
 
             services.AddSingleton<IConfiguration>(configuration);
 
+            var appInsightsConnectionString = Environment.GetEnvironmentVariable("ApplicationInsights__ConnectionString");
+
             services.AddLogging(builder =>
             {
                 builder.AddConsole();
                 builder.SetMinimumLevel(LogLevel.Information);
+
+                builder.AddOpenTelemetry(logging =>
+                {
+                    logging.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("TrashMob.DailyJobs"));
+                    logging.IncludeFormattedMessage = true;
+                    logging.IncludeScopes = true;
+
+                    if (!string.IsNullOrEmpty(appInsightsConnectionString))
+                    {
+                        logging.AddAzureMonitorLogExporter(options =>
+                            options.ConnectionString = appInsightsConnectionString);
+                    }
+                });
             });
 
             services.AddScoped<StatGenerator>();
