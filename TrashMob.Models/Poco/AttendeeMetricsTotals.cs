@@ -1,4 +1,4 @@
-namespace TrashMob.Shared.Poco
+namespace TrashMob.Models.Poco
 {
     /// <summary>
     /// Represents aggregated metrics totals from approved attendee submissions.

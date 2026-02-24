@@ -180,6 +180,107 @@
                     Style="{StaticResource SecondarySmallButton}"
                     Margin="5,4" />
 
+            <!-- Log My Impact Button -->
+            <Button Text="Log My Impact"
+                    Command="{Binding LogImpactCommand}"
+                    IsVisible="{Binding ShowLogImpactButton}"
+                    HorizontalOptions="Fill"
+                    Margin="5,4" />
+
+            <!-- My Contribution Card -->
+            <Border Style="{x:StaticResource RoundBorder}"
+                    IsVisible="{Binding ShowMyContribution}">
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout Spacing="8">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconChartBox}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="My Contribution"
+                               FontFamily="LexendSemibold"
+                               FontSize="Small" />
+                        <Border Padding="6,2"
+                                StrokeShape="RoundRectangle 8"
+                                StrokeThickness="0"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                HorizontalOptions="EndAndExpand">
+                            <Label Text="{Binding MyMetricsStatus}"
+                                   FontSize="Micro"
+                                   TextColor="White" />
+                        </Border>
+                    </HorizontalStackLayout>
+
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                        <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                            <Label Text="{Binding MyBagsCollected}"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Medium"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Bags"
+                                   FontSize="Micro"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                            <Label Text="{Binding MyWeightDisplay}"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Medium"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Weight"
+                                   FontSize="Micro"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                            <Label Text="{Binding MyDurationMinutes, StringFormat='{0} min'}"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Medium"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Duration"
+                                   FontSize="Micro"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Button Text="Update My Impact"
+                            Command="{Binding LogImpactCommand}"
+                            Style="{StaticResource SecondarySmallButton}"
+                            HorizontalOptions="Fill" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Lead Metrics Actions -->
+            <Border Style="{x:StaticResource RoundBorder}"
+                    IsVisible="{Binding ShowLeadMetricsActions}">
+                <VerticalStackLayout Spacing="8">
+                    <HorizontalStackLayout Spacing="8">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconClipboardCheck}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Attendee Metrics"
+                               FontFamily="LexendSemibold"
+                               FontSize="Small" />
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding PendingMetricsCount, StringFormat='{0} submission(s) pending review'}"
+                           FontSize="Micro"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    <Button Text="Approve All"
+                            Command="{Binding ApproveAllMetricsCommand}"
+                            Style="{StaticResource SecondarySmallButton}"
+                            HorizontalOptions="Fill" />
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentView>

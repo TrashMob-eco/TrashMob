@@ -13,6 +13,7 @@ namespace TrashMob.Controllers
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Models.Poco;
     using TrashMob.Shared.Poco;
 
     /// <summary>
