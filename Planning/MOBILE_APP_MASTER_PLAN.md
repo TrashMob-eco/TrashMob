@@ -115,12 +115,11 @@ Execute in this order (by backend readiness and user value):
 - AchievementsPage (badge grid with progress)
 - ~1.5 weeks
 
-**5D. Attendee Metrics & Impact** (P1 — backend partial)
+**5D. Attendee Metrics & Impact** (P1 — ✅ Complete)
 - Weight entry on event summaries
 - Personal impact page with charts
 - Individual contribution logging
-- ~1.5 weeks
-- **Depends on:** Project 22 completion for full individual metrics API
+- LogImpactPopup, REST service, ViewEvent + Impact page integration
 
 ### Phase 6: Polish & Release
 **Goal:** Ship quality. Get back in the app stores with confidence.
