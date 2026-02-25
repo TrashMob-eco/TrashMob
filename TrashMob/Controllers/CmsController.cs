@@ -263,15 +263,11 @@ namespace TrashMob.Controllers
             {
                 foreach (var item in dataArray.EnumerateArray())
                 {
-                    if (!item.TryGetProperty("attributes", out var attrs))
-                    {
-                        continue;
-                    }
-
-                    var title = attrs.TryGetProperty("title", out var t) ? t.GetString() : "Untitled";
-                    var slug = attrs.TryGetProperty("slug", out var s) ? s.GetString() : "";
-                    var excerpt = attrs.TryGetProperty("excerpt", out var e) ? e.GetString() : "";
-                    var publishedAt = attrs.TryGetProperty("publishedAt", out var p) ? p.GetString() : null;
+                    // Strapi v5 flat format — properties are directly on the item (no attributes wrapper)
+                    var title = item.TryGetProperty("title", out var t) ? t.GetString() : "Untitled";
+                    var slug = item.TryGetProperty("slug", out var s) ? s.GetString() : "";
+                    var excerpt = item.TryGetProperty("excerpt", out var e) ? e.GetString() : "";
+                    var publishedAt = item.TryGetProperty("publishedAt", out var p) ? p.GetString() : null;
 
                     var link = $"https://www.trashmob.eco/news/{slug}";
 

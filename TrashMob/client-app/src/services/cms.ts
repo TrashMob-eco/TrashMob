@@ -1,11 +1,8 @@
 import { ApiService } from '.';
 
-// Strapi response wrapper type
+// Strapi v5 response wrapper type (flat format - no attributes nesting)
 interface StrapiResponse<T> {
-    data: {
-        id: number;
-        attributes: T;
-    } | null;
+    data: (T & { id: number; documentId?: string }) | null;
     meta: Record<string, unknown>;
 }
 
@@ -19,13 +16,10 @@ export interface HeroSectionData {
     googlePlayUrl?: string;
     appStoreUrl?: string;
     backgroundImage?: {
-        data?: {
-            attributes: {
-                url: string;
-                alternativeText?: string;
-            };
-        };
-    };
+        id: number;
+        url: string;
+        alternativeText?: string;
+    } | null;
 }
 
 // What Is TrashMob Section types
@@ -61,7 +55,7 @@ export const GetHeroSection = () => ({
     service: async () =>
         ApiService('public')
             .fetchData<GetHeroSection_Response>({ url: '/cms/hero-section', method: 'get' })
-            .then((res) => res.data?.data?.attributes ?? null)
+            .then((res) => res.data?.data ?? null)
             .catch(() => null),
 });
 
@@ -71,7 +65,7 @@ export const GetWhatIsTrashmob = () => ({
     service: async () =>
         ApiService('public')
             .fetchData<GetWhatIsTrashmob_Response>({ url: '/cms/what-is-trashmob', method: 'get' })
-            .then((res) => res.data?.data?.attributes ?? null)
+            .then((res) => res.data?.data ?? null)
             .catch(() => null),
 });
 
@@ -81,13 +75,13 @@ export const GetGettingStarted = () => ({
     service: async () =>
         ApiService('public')
             .fetchData<GetGettingStarted_Response>({ url: '/cms/getting-started', method: 'get' })
-            .then((res) => res.data?.data?.attributes ?? null)
+            .then((res) => res.data?.data ?? null)
             .catch(() => null),
 });
 
-// Strapi collection response wrapper (for collection types like news)
+// Strapi v5 collection response wrapper (flat format)
 interface StrapiCollectionResponse<T> {
-    data: Array<{ id: number; attributes: T }>;
+    data: Array<T & { id: number; documentId?: string }>;
     meta: { pagination: { page: number; pageSize: number; pageCount: number; total: number } };
 }
 
@@ -110,21 +104,16 @@ export interface NewsPostData {
     estimatedReadTime?: number;
     tags?: string[];
     coverImage?: {
-        data?: {
-            attributes: {
-                url: string;
-                alternativeText?: string;
-                formats?: Record<string, { url: string; width: number; height: number }>;
-            };
-        };
-    };
-    category?: {
-        data: {
-            id: number;
-            attributes: NewsCategoryData;
-        } | null;
-    };
+        id: number;
+        url: string;
+        alternativeText?: string;
+        formats?: Record<string, { url: string; width: number; height: number }>;
+    } | null;
+    category?: (NewsCategoryData & { id: number }) | null;
 }
+
+// News post item with id from Strapi v5 collection response
+export type NewsPostItem = NewsPostData & { id: number; documentId?: string };
 
 // News service functions
 export interface NewsPostsParams {
@@ -155,7 +144,7 @@ export const GetNewsPostBySlug = (slug: string) => ({
     service: async () =>
         ApiService('public')
             .fetchData<GetNewsPostBySlug_Response>({ url: `/cms/news-posts/${slug}`, method: 'get' })
-            .then((res) => res.data?.data?.[0]?.attributes ?? null)
+            .then((res) => res.data?.data?.[0] ?? null)
             .catch(() => null),
 });
 
@@ -165,7 +154,7 @@ export const GetNewsCategories = () => ({
     service: async () =>
         ApiService('public')
             .fetchData<GetNewsCategories_Response>({ url: '/cms/news-categories', method: 'get' })
-            .then((res) => res.data?.data?.map((item) => item.attributes) ?? [])
+            .then((res) => res.data?.data ?? [])
             .catch(() => []),
 });
 

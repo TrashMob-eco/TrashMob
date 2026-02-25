@@ -38,7 +38,7 @@ dotnet ef database update
 - `TrashMobDailyJobs/` & `TrashMobHourlyJobs/` - Azure Container App background jobs
 - `TrashMobMobile/` - .NET MAUI cross-platform mobile app
 - `Deploy/` - Bicep templates and deployment scripts
-- `Strapi/` - Strapi CMS for content management
+- `Strapi/` - Strapi v5 CMS (SQLite, persistent Azure Files storage, bootstrap auto-config)
 
 **Key Architectural Patterns:**
 

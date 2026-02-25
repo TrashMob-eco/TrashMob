@@ -42,6 +42,15 @@ resource strapiUploadsShare 'Microsoft.Storage/storageAccounts/fileServices/shar
   }
 }
 
+// Create file share for Strapi SQLite database (persistent across restarts)
+resource strapiDataShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01' = {
+  parent: fileServices
+  name: 'strapi-data'
+  properties: {
+    shareQuota: 1  // 1 GB quota for SQLite database
+  }
+}
+
 // Reference existing Container Apps Environment
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: split(containerAppsEnvironmentId, '/')[8]  // Extract name from resource ID
@@ -61,6 +70,23 @@ resource environmentUploadsStorage 'Microsoft.App/managedEnvironments/storages@2
   }
   dependsOn: [
     strapiUploadsShare
+  ]
+}
+
+// Add Azure Files storage for SQLite database persistence
+resource environmentDataStorage 'Microsoft.App/managedEnvironments/storages@2024-03-01' = {
+  parent: containerAppsEnvironment
+  name: 'strapi-data'
+  properties: {
+    azureFile: {
+      accountName: storageAccountName
+      accountKey: storageAccount.listKeys().keys[0].value
+      shareName: 'strapi-data'
+      accessMode: 'ReadWrite'
+    }
+  }
+  dependsOn: [
+    strapiDataShare
   ]
 }
 
@@ -121,7 +147,11 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           env: [
             {
               name: 'DATABASE_CLIENT'
-              value: 'sqlite'  // Strapi v5 dropped MSSQL support; SQLite with bootstrap seeding
+              value: 'sqlite'  // Strapi v5 dropped MSSQL support; SQLite on persistent Azure Files
+            }
+            {
+              name: 'DATABASE_FILENAME'
+              value: '/app/data/strapi.db'  // Persistent storage via Azure Files mount
             }
             {
               name: 'ADMIN_JWT_SECRET'
@@ -157,6 +187,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               volumeName: 'strapi-uploads'
               mountPath: '/app/public/uploads'
             }
+            {
+              volumeName: 'strapi-data'
+              mountPath: '/app/data'
+            }
           ]
           probes: [
             {
@@ -190,6 +224,11 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           storageType: 'AzureFile'
           storageName: 'strapi-uploads'
         }
+        {
+          name: 'strapi-data'
+          storageType: 'AzureFile'
+          storageName: 'strapi-data'
+        }
       ]
       scale: {
         minReplicas: minReplicas
@@ -202,6 +241,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   }
   dependsOn: [
     environmentUploadsStorage
+    environmentDataStorage
   ]
 }
 

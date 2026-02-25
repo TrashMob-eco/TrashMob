@@ -4,32 +4,15 @@ export default ({ env }) => {
   const connections = {
     sqlite: {
       connection: {
-        // Use local ephemeral storage for SQLite (Azure Files SMB has locking issues)
-        // Database is small and rebuilt on container restart
-        // Content types are defined in code, only data needs re-entry
+        // Deployed: DATABASE_FILENAME=/app/data/strapi.db (persistent Azure Files mount)
+        // Local dev: defaults to /app/.tmp/data.db (ephemeral)
+        // maxReplicas=1 in Bicep avoids SQLite locking issues with SMB
         filename: env('DATABASE_FILENAME', '/app/.tmp/data.db'),
       },
       useNullAsDefault: true,
       pool: {
         min: 1,
         max: 1, // SQLite only supports single connection for writes
-      },
-    },
-    mssql: {
-      connection: {
-        host: env('DATABASE_HOST'),
-        port: env.int('DATABASE_PORT', 1433),
-        database: env('DATABASE_NAME'),
-        user: env('DATABASE_USERNAME'),
-        password: env('DATABASE_PASSWORD'),
-        options: {
-          encrypt: true, // Required for Azure SQL
-          trustServerCertificate: false,
-        },
-      },
-      pool: {
-        min: env.int('DATABASE_POOL_MIN', 2),
-        max: env.int('DATABASE_POOL_MAX', 10),
       },
     },
   };
