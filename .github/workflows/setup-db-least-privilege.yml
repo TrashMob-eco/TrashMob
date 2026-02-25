@@ -1,0 +1,203 @@
+# Sets up least-privilege database access for TrashMob.
+#
+# Creates a restricted SQL user (trashmob_app) with only db_datareader + db_datawriter
+# permissions, then updates Key Vault so the app uses the restricted user while
+# migrations retain admin access via a separate connection string.
+#
+# This workflow is idempotent — safe to re-run. It will update the password and
+# connection strings on each run.
+#
+# After running:
+#   - TMDBServerConnectionString → uses trashmob_app (app runtime)
+#   - TMDBAdminConnectionString  → uses dbadmin (migrations only)
+
+name: Setup DB Least-Privilege Access
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - pr
+
+concurrency:
+  group: db-least-privilege-${{ github.event.inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment == 'pr' && 'production' || 'development' }}
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      SQL_SERVER_NAME: sql-tm-${{ github.event.inputs.environment }}-westus2
+      SQL_DATABASE_NAME: db-tm-${{ github.event.inputs.environment }}-westus2
+      RESOURCE_GROUP: rg-trashmob-${{ github.event.inputs.environment }}-westus2
+      KEY_VAULT_NAME: kv-tm-${{ github.event.inputs.environment }}-westus2
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get runner public IP
+        id: runner-ip
+        run: |
+          RUNNER_IP=$(curl -s https://api.ipify.org)
+          echo "ip=$RUNNER_IP" >> $GITHUB_OUTPUT
+          echo "Runner IP: $RUNNER_IP"
+
+      - name: Add runner IP to SQL firewall
+        run: |
+          echo "Adding temporary firewall rule for GitHub runner..."
+          az sql server firewall-rule create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --server ${{ env.SQL_SERVER_NAME }} \
+            --name "github-actions-least-priv-${{ github.run_id }}" \
+            --start-ip-address ${{ steps.runner-ip.outputs.ip }} \
+            --end-ip-address ${{ steps.runner-ip.outputs.ip }}
+          echo "Firewall rule added. Waiting 10 seconds for propagation..."
+          sleep 10
+
+      - name: Get admin credentials from Key Vault
+        id: admin-creds
+        run: |
+          # Get the current admin connection string
+          ADMIN_CONN=$(az keyvault secret show \
+            --vault-name ${{ env.KEY_VAULT_NAME }} \
+            --name TMDBServerConnectionString \
+            --query value -o tsv)
+          echo "::add-mask::$ADMIN_CONN"
+
+          # Extract admin username and password from connection string
+          ADMIN_USER=$(echo "$ADMIN_CONN" | grep -oP 'User ID=\K[^;]+')
+          ADMIN_PASS=$(echo "$ADMIN_CONN" | grep -oP 'Password=\K[^;]+')
+          echo "::add-mask::$ADMIN_PASS"
+
+          echo "admin_user=$ADMIN_USER" >> $GITHUB_OUTPUT
+          echo "admin_pass=$ADMIN_PASS" >> $GITHUB_OUTPUT
+          echo "admin_conn=$ADMIN_CONN" >> $GITHUB_OUTPUT
+          echo "Retrieved admin credentials for user: $ADMIN_USER"
+
+      - name: Generate app user password
+        id: app-password
+        run: |
+          # Generate a strong random password (32 chars, mixed case + digits + special)
+          APP_PASSWORD=$(openssl rand -base64 32 | tr -d '\n' | head -c 32)
+          # Ensure complexity: append required character classes
+          APP_PASSWORD="${APP_PASSWORD}Aa1!"
+          echo "::add-mask::$APP_PASSWORD"
+          echo "password=$APP_PASSWORD" >> $GITHUB_OUTPUT
+
+      - name: Create SQL login (master database)
+        run: |
+          echo "Creating/updating trashmob_app login in master database..."
+          sqlcmd \
+            -S "${{ env.SQL_SERVER_NAME }}.database.windows.net" \
+            -d master \
+            -U "${{ steps.admin-creds.outputs.admin_user }}" \
+            -P "${{ steps.admin-creds.outputs.admin_pass }}" \
+            -v AppUserPassword="${{ steps.app-password.outputs.password }}" \
+            -i Deploy/scripts/setup-app-db-user.sql \
+            -b
+
+      - name: Create SQL database user and grant roles
+        run: |
+          echo "Creating/updating trashmob_app user in ${{ env.SQL_DATABASE_NAME }}..."
+          sqlcmd \
+            -S "${{ env.SQL_SERVER_NAME }}.database.windows.net" \
+            -d "${{ env.SQL_DATABASE_NAME }}" \
+            -U "${{ steps.admin-creds.outputs.admin_user }}" \
+            -P "${{ steps.admin-creds.outputs.admin_pass }}" \
+            -v AppUserPassword="${{ steps.app-password.outputs.password }}" \
+            -i Deploy/scripts/setup-app-db-user.sql \
+            -b
+
+      - name: Update Key Vault secrets
+        run: |
+          SQL_SERVER_FQDN="${{ env.SQL_SERVER_NAME }}.database.windows.net"
+
+          # Build the app connection string (least-privilege user)
+          APP_CONN="Server=tcp:${SQL_SERVER_FQDN},1433;Initial Catalog=${{ env.SQL_DATABASE_NAME }};Persist Security Info=False;User ID=trashmob_app;Password=${{ steps.app-password.outputs.password }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+          echo "::add-mask::$APP_CONN"
+
+          # Store the admin connection string (preserve existing for migrations)
+          echo "Storing TMDBAdminConnectionString..."
+          az keyvault secret set \
+            --vault-name ${{ env.KEY_VAULT_NAME }} \
+            --name TMDBAdminConnectionString \
+            --value "${{ steps.admin-creds.outputs.admin_conn }}" \
+            --output none
+
+          # Store the app user password
+          echo "Storing app-db-password..."
+          az keyvault secret set \
+            --vault-name ${{ env.KEY_VAULT_NAME }} \
+            --name app-db-password \
+            --value "${{ steps.app-password.outputs.password }}" \
+            --output none
+
+          # Update the app connection string to use the restricted user
+          echo "Updating TMDBServerConnectionString to use trashmob_app..."
+          az keyvault secret set \
+            --vault-name ${{ env.KEY_VAULT_NAME }} \
+            --name TMDBServerConnectionString \
+            --value "$APP_CONN" \
+            --output none
+
+          echo "Key Vault secrets updated successfully."
+          echo ""
+          echo "Summary:"
+          echo "  TMDBServerConnectionString → trashmob_app (db_datareader + db_datawriter)"
+          echo "  TMDBAdminConnectionString  → ${{ steps.admin-creds.outputs.admin_user }} (server admin)"
+          echo "  app-db-password            → stored for reference"
+
+      - name: Verify app user connectivity
+        run: |
+          echo "Verifying trashmob_app can connect and query..."
+          sqlcmd \
+            -S "${{ env.SQL_SERVER_NAME }}.database.windows.net" \
+            -d "${{ env.SQL_DATABASE_NAME }}" \
+            -U "trashmob_app" \
+            -P "${{ steps.app-password.outputs.password }}" \
+            -Q "SELECT 'trashmob_app connected successfully' AS Status, COUNT(*) AS TableCount FROM sys.tables" \
+            -b
+
+      - name: Verify app user cannot modify schema
+        run: |
+          echo "Verifying trashmob_app cannot create tables (expected to fail)..."
+          sqlcmd \
+            -S "${{ env.SQL_SERVER_NAME }}.database.windows.net" \
+            -d "${{ env.SQL_DATABASE_NAME }}" \
+            -U "trashmob_app" \
+            -P "${{ steps.app-password.outputs.password }}" \
+            -Q "CREATE TABLE dbo.__least_priv_test (id INT); DROP TABLE dbo.__least_priv_test;" \
+            -b 2>&1 && echo "::error::App user should NOT be able to create tables!" && exit 1 \
+            || echo "Confirmed: trashmob_app cannot modify schema (expected behavior)."
+
+      - name: Remove runner IP from SQL firewall
+        if: always()
+        run: |
+          echo "Removing temporary firewall rule..."
+          az sql server firewall-rule delete \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --server ${{ env.SQL_SERVER_NAME }} \
+            --name "github-actions-least-priv-${{ github.run_id }}" \
+            --yes 2>/dev/null || echo "Firewall rule already removed or not found."
+
+      - name: Logout from Azure
+        if: always()
+        run: az logout

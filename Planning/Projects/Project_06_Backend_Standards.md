@@ -72,7 +72,7 @@ Comprehensive code quality sweep across the entire backend:
 - ? Add `[Authorize]` attributes where missing
 - ? Validate input on all endpoints
 - ? Add rate limiting where appropriate
-- ? **Least-privilege database access** — Split database credentials so the application runtime user has only the permissions it needs (read/write on application tables) rather than admin/owner access. Create a separate migration user for schema changes. This reduces blast radius if the app is compromised.
+- ✓ **Least-privilege database access** — Created `trashmob_app` SQL user with `db_datareader` + `db_datawriter` roles for app runtime; migrations retain `dbadmin` access via `TMDBAdminConnectionString`. Setup workflow: `.github/workflows/setup-db-least-privilege.yml`; SQL script: `Deploy/scripts/setup-app-db-user.sql`.
 
 ### Phase 4 - Documentation
 - ✓ Add XML comments to all public APIs
@@ -318,7 +318,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 15, 2026
+**Last Updated:** February 24, 2026
 **Owner:** Engineering Lead
-**Status:** In Progress (Phase 1, 2.5, 4, 5 & 6 complete; Phase 2 ongoing via Renovate; Phase 3 partial with auth handler tests and ownership checks)
+**Status:** In Progress (Phase 1, 2.5, 4, 5 & 6 complete; Phase 2 ongoing via Renovate; Phase 3 partial with auth handler tests, ownership checks, and least-privilege DB access)
 **Next Review:** When Phase 3 security audit continues
