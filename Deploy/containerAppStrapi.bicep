@@ -6,7 +6,7 @@ param containerImage string
 param storageAccountName string
 param environment string
 param minReplicas int = 1
-param maxReplicas int = 3  // Azure SQL supports multiple replicas
+param maxReplicas int = 1  // SQLite requires single replica
 
 // Strapi secrets
 @secure()
@@ -18,12 +18,7 @@ param strapiAppKeys string
 @secure()
 param strapiTransferTokenSalt string
 @secure()
-param strapiDbPassword string
-
-// Database settings
-var sqlServerName = 'sql-tm-${environment}-${region}'
-var databaseName = 'db-strapi-${environment}-${region}'
-var dbUsername = 'strapi-${environment}'
+param strapiDbPassword string  // Kept for backward compatibility, not used with SQLite
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: containerRegistryName
@@ -112,10 +107,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'transfer-token-salt'
           value: strapiTransferTokenSalt
         }
-        {
-          name: 'db-password'
-          value: strapiDbPassword
-        }
       ]
     }
     template: {
@@ -130,27 +121,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           env: [
             {
               name: 'DATABASE_CLIENT'
-              value: 'mssql'  // Azure SQL Server
-            }
-            {
-              name: 'DATABASE_HOST'
-              value: '${sqlServerName}${az.environment().suffixes.sqlServerHostname}'
-            }
-            {
-              name: 'DATABASE_PORT'
-              value: '1433'
-            }
-            {
-              name: 'DATABASE_NAME'
-              value: databaseName
-            }
-            {
-              name: 'DATABASE_USERNAME'
-              value: dbUsername
-            }
-            {
-              name: 'DATABASE_PASSWORD'
-              secretRef: 'db-password'
+              value: 'sqlite'  // Strapi v5 dropped MSSQL support; SQLite with bootstrap seeding
             }
             {
               name: 'ADMIN_JWT_SECRET'
