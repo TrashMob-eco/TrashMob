@@ -264,13 +264,45 @@ See `keyVault.bicep` and Project 26 documentation for technical details on the R
 
 ## Strapi CMS Infrastructure
 
-The Strapi CMS runs as a separate Container App (`ca-strapi-tm-dev-westus2`) with external ingress for admin access. It uses Azure SQL (`db-strapi-dev-westus2`) for persistent storage. The workflow automatically deploys the database and creates the SQL user.
+The Strapi CMS runs as a separate Container App with external ingress for admin access. It uses **SQLite** with persistent Azure Files storage for the database (Strapi v5 dropped MSSQL support). Media uploads are stored on a separate Azure Files share.
+
+| Environment | Container App | Storage Account |
+|-------------|---------------|-----------------|
+| **Development** | `ca-strapi-tm-dev-westus2` | `stortmdevwestus2` |
+| **Production** | `ca-strapi-tm-pr-westus2` | `stortmprwestus2` |
+
+### Storage Architecture
+
+| Azure Files Share | Mount Path | Purpose |
+|-------------------|------------|---------|
+| `strapi-data` | `/app/data` | SQLite database (`strapi.db`) — persistent across restarts |
+| `strapi-uploads` | `/app/public/uploads` | Media uploads (images, files) |
+
+**Important:** `maxReplicas` is set to 1 in the Bicep template because SQLite does not support concurrent writes from multiple replicas. Do not increase this without migrating to PostgreSQL.
+
+### Bootstrap (Auto-Configuration)
+
+On every startup, `Strapi/src/index.ts` runs a bootstrap function that:
+1. **Configures public read permissions** for news-posts, news-categories, hero-section, what-is-trashmob, and getting-started content types
+2. **Seeds default news categories** (Announcements, Community Stories, Tips & Guides) if they don't exist
+
+This ensures the CMS API is functional immediately after deployment without manual admin configuration.
+
+### Admin Setup
+
+After a fresh deployment (new persistent storage), register the first admin at:
+```
+POST https://<strapi-fqdn>/admin/register-admin
+```
+
+Or visit the admin panel in a browser at `https://<strapi-fqdn>/admin` and follow the registration wizard.
+
+### Key Vault Secrets
 
 **Note:** You need the `Key Vault Secrets Officer` RBAC role to create secrets (see Key Vault Access section above).
 
 | Secret Name | Purpose |
 |-------------|---------|
-| `strapi-db-password` | Password for Strapi's Azure SQL database |
 | `strapi-admin-jwt-secret` | JWT secret for admin panel authentication |
 | `strapi-api-token-salt` | Salt for API token generation |
 | `strapi-app-keys` | Application keys (comma-separated) |
@@ -279,17 +311,19 @@ The Strapi CMS runs as a separate Container App (`ca-strapi-tm-dev-westus2`) wit
 **Create secrets for a new environment:**
 ```bash
 # Replace kv-tm-dev-westus2 with appropriate Key Vault name
-az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
 az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-admin-jwt-secret --value "$(openssl rand -base64 32)"
 az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-api-token-salt --value "$(openssl rand -base64 32)"
 az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-app-keys --value "$(openssl rand -base64 32),$(openssl rand -base64 32)"
 az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-transfer-token-salt --value "$(openssl rand -base64 32)"
 ```
 
-**Key files:**
-- Bicep template: `containerAppStrapi.bicep`
-- Database template: `sqlDatabaseStrapi.bicep`
-- Workflow: `.github/workflows/container_strapi-tm-dev-westus2.yml`
+### Key Files
+
+- Bicep template: `Deploy/containerAppStrapi.bicep`
+- Database config: `Strapi/config/database.ts`
+- Bootstrap / seed: `Strapi/src/index.ts`
+- Dev workflow: `.github/workflows/container_strapi-tm-dev-westus2.yml`
+- Prod workflow: `.github/workflows/release_strapi-tm-pr-westus2.yml`
 - Source: `Strapi/`
 
-For local Strapi development setup, see `Strapi/README.md`.
+For local development setup, see `Strapi/README.md`.
