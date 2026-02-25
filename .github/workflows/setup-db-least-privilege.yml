@@ -51,7 +51,8 @@ jobs:
           curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --batch --yes --dearmor | sudo tee /usr/share/keyrings/microsoft-prod.gpg > /dev/null
           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/ubuntu/$(lsb_release -rs)/prod $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/microsoft-prod.list > /dev/null
           sudo apt-get update
-          sudo apt-get install -y sqlcmd
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc
+          echo "/opt/mssql-tools18/bin" >> $GITHUB_PATH
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -119,7 +120,7 @@ jobs:
             -P "${{ steps.admin-creds.outputs.admin_pass }}" \
             -v AppUserPassword="${{ steps.app-password.outputs.password }}" \
             -i Deploy/scripts/setup-app-db-user.sql \
-            -b
+            -C -b
 
       - name: Create SQL database user and grant roles
         run: |
@@ -131,7 +132,7 @@ jobs:
             -P "${{ steps.admin-creds.outputs.admin_pass }}" \
             -v AppUserPassword="${{ steps.app-password.outputs.password }}" \
             -i Deploy/scripts/setup-app-db-user.sql \
-            -b
+            -C -b
 
       - name: Update Key Vault secrets
         run: |
@@ -181,7 +182,7 @@ jobs:
             -U "trashmob_app" \
             -P "${{ steps.app-password.outputs.password }}" \
             -Q "SELECT 'trashmob_app connected successfully' AS Status, COUNT(*) AS TableCount FROM sys.tables" \
-            -b
+            -C -b
 
       - name: Verify app user cannot modify schema
         run: |
@@ -192,7 +193,7 @@ jobs:
             -U "trashmob_app" \
             -P "${{ steps.app-password.outputs.password }}" \
             -Q "CREATE TABLE dbo.__least_priv_test (id INT); DROP TABLE dbo.__least_priv_test;" \
-            -b 2>&1 && echo "::error::App user should NOT be able to create tables!" && exit 1 \
+            -C -b 2>&1 && echo "::error::App user should NOT be able to create tables!" && exit 1 \
             || echo "Confirmed: trashmob_app cannot modify schema (expected behavior)."
 
       - name: Remove runner IP from SQL firewall
