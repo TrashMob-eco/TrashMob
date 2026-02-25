@@ -443,6 +443,26 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
         if (EnableStartTrackEventRoute)
         {
+            // Show prominent disclosure the first time the user starts route tracking (Google Play policy)
+            const string disclosureKey = "RouteTrackingDisclosureShown";
+            if (!Preferences.Default.Get(disclosureKey, false))
+            {
+                var accepted = await Shell.Current.CurrentPage.DisplayAlert(
+                    "Location Permission Required",
+                    "TrashMob needs access to your location to record your cleanup route on a map. " +
+                    "Your location will be tracked while the route recording is active and a notification is shown. " +
+                    "You can stop recording at any time.",
+                    "Continue",
+                    "Cancel");
+
+                if (!accepted)
+                {
+                    return;
+                }
+
+                Preferences.Default.Set(disclosureKey, true);
+            }
+
             RouteStartTime = DateTimeOffset.Now;
             RouteEndTime = DateTimeOffset.Now;
             EnableStopTrackEventRoute = true;
