@@ -77,9 +77,17 @@ jobs:
           echo "Firewall rule added. Waiting 10 seconds for propagation..."
           sleep 10
 
-      - name: Get connection string from Key Vault
+      - name: Get admin connection string from Key Vault
         id: get-connection-string
         run: |
+          # Use the admin connection string for schema migrations.
+          # Falls back to TMDBServerConnectionString if the admin secret doesn't exist yet
+          # (before least-privilege setup has been run).
+          CONNECTION_STRING=$(az keyvault secret show \
+            --vault-name ${{ env.KEY_VAULT_NAME }} \
+            --name TMDBAdminConnectionString \
+            --query value \
+            -o tsv 2>/dev/null) || \
           CONNECTION_STRING=$(az keyvault secret show \
             --vault-name ${{ env.KEY_VAULT_NAME }} \
             --name TMDBServerConnectionString \
