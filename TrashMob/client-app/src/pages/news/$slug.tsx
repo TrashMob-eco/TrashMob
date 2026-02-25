@@ -42,9 +42,7 @@ function RelatedPostCard({ post }: { post: NewsPostItem }) {
                     )}
                 </div>
                 <CardContent className='p-4'>
-                    <h4 className='font-semibold leading-tight line-clamp-2 group-hover:text-primary'>
-                        {post.title}
-                    </h4>
+                    <h4 className='font-semibold leading-tight line-clamp-2 group-hover:text-primary'>{post.title}</h4>
                     <p className='mt-1 text-sm text-muted-foreground line-clamp-2'>{post.excerpt}</p>
                 </CardContent>
             </Card>
