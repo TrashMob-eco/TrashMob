@@ -250,26 +250,29 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     /// </summary>
     public async Task OnTabSelected(int tabIndex)
     {
-        switch (tabIndex)
+        await ExecuteAsync(async () =>
         {
-            case 1 when !partnersLoaded:
-                partnersLoaded = true;
-                await LoadPartners();
-                break;
-            case 3 when !litterLoaded:
-                litterLoaded = true;
-                await LoadLitterReports();
-                break;
-            case 4 when !photosLoaded:
-                photosLoaded = true;
-                await LoadPhotos();
-                break;
-            case 5 when !routesLoaded:
-                routesLoaded = true;
-                var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(EventViewModel.Id);
-                LoadRouteViewModels(routes);
-                break;
-        }
+            switch (tabIndex)
+            {
+                case 1 when !partnersLoaded:
+                    partnersLoaded = true;
+                    await LoadPartners();
+                    break;
+                case 3 when !litterLoaded:
+                    litterLoaded = true;
+                    await LoadLitterReports();
+                    break;
+                case 4 when !photosLoaded:
+                    photosLoaded = true;
+                    await LoadPhotos();
+                    break;
+                case 5 when !routesLoaded:
+                    routesLoaded = true;
+                    var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(EventViewModel.Id);
+                    LoadRouteViewModels(routes);
+                    break;
+            }
+        }, "Failed to load tab data. Please try again.");
     }
     
     [RelayCommand]
