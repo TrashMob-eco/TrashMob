@@ -18,23 +18,6 @@ public class GeolocatorImplementation : IGeolocator
         var permission = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
         if (permission != PermissionStatus.Granted)
         {
-            // Show prominent disclosure before requesting location permission (Google Play policy)
-            var accepted = await MainThread.InvokeOnMainThreadAsync(async () =>
-            {
-                return await App.Current!.Windows[0].Page!.DisplayAlert(
-                    "Location Permission Required",
-                    "TrashMob needs access to your location to record your cleanup route on a map. " +
-                    "Your location will be tracked while the route recording is active and a notification is shown. " +
-                    "You can stop recording at any time.",
-                    "Continue",
-                    "Cancel");
-            });
-
-            if (!accepted)
-            {
-                return;
-            }
-
             permission = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
             if (permission != PermissionStatus.Granted)
             {
