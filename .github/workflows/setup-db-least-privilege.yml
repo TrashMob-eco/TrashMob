@@ -31,7 +31,7 @@ concurrency:
 jobs:
   setup:
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment == 'pr' && 'production' || 'development' }}
+    environment: ${{ github.event.inputs.environment == 'pr' && 'production' || 'test' }}
     permissions:
       id-token: write
       contents: read
