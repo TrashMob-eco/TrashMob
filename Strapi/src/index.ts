@@ -16,8 +16,8 @@ export default {
    */
   async bootstrap({ strapi }) {
     // Set up public read permissions for content types.
-    // This runs on every startup to ensure permissions are always configured,
-    // especially important when using ephemeral SQLite storage.
+    // Idempotent — only creates permissions that don't already exist.
+    // Ensures permissions survive database migrations or fresh deployments.
     const publicRole = await strapi
       .query("plugin::users-permissions.role")
       .findOne({ where: { type: "public" } });
