@@ -11,7 +11,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getNewsPostShareableContent, getNewsPostShareMessage } from '@/lib/sharing-messages';
-import { GetNewsPostBySlug, GetNewsPosts, NewsPostData } from '@/services/cms';
+import { GetNewsPostBySlug, GetNewsPosts, type NewsPostItem } from '@/services/cms';
 import { Services } from '@/config/services.config';
 
 function formatDate(dateStr: string): string {
@@ -22,18 +22,17 @@ function formatDate(dateStr: string): string {
     });
 }
 
-function RelatedPostCard({ post }: { post: { id: number; attributes: NewsPostData } }) {
-    const { attributes } = post;
-    const coverUrl = attributes.coverImage?.data?.attributes?.url;
+function RelatedPostCard({ post }: { post: NewsPostItem }) {
+    const coverUrl = post.coverImage?.url;
 
     return (
-        <Link to={`/news/${attributes.slug}`} className='group'>
+        <Link to={`/news/${post.slug}`} className='group'>
             <Card className='h-full overflow-hidden transition-shadow hover:shadow-lg'>
                 <div className='aspect-video overflow-hidden bg-muted'>
                     {coverUrl ? (
                         <img
                             src={coverUrl}
-                            alt={attributes.coverImage?.data?.attributes?.alternativeText || attributes.title}
+                            alt={post.coverImage?.alternativeText || post.title}
                             className='h-full w-full object-cover transition-transform group-hover:scale-105'
                         />
                     ) : (
@@ -44,9 +43,9 @@ function RelatedPostCard({ post }: { post: { id: number; attributes: NewsPostDat
                 </div>
                 <CardContent className='p-4'>
                     <h4 className='font-semibold leading-tight line-clamp-2 group-hover:text-primary'>
-                        {attributes.title}
+                        {post.title}
                     </h4>
-                    <p className='mt-1 text-sm text-muted-foreground line-clamp-2'>{attributes.excerpt}</p>
+                    <p className='mt-1 text-sm text-muted-foreground line-clamp-2'>{post.excerpt}</p>
                 </CardContent>
             </Card>
         </Link>
@@ -67,7 +66,7 @@ export const NewsPostDetailPage = () => {
         enabled: !!slug,
     });
 
-    const categorySlug = post?.category?.data?.attributes?.slug;
+    const categorySlug = post?.category?.slug;
 
     // Fetch related posts (same category, exclude current)
     const { data: relatedResponse } = useQuery({
@@ -77,10 +76,10 @@ export const NewsPostDetailPage = () => {
         enabled: !!categorySlug,
     });
 
-    const relatedPosts = (relatedResponse?.data ?? []).filter((p) => p.attributes.slug !== slug).slice(0, 3);
+    const relatedPosts = (relatedResponse?.data ?? []).filter((p) => p.slug !== slug).slice(0, 3);
 
-    const coverUrl = post?.coverImage?.data?.attributes?.url;
-    const categoryName = post?.category?.data?.attributes?.name;
+    const coverUrl = post?.coverImage?.url;
+    const categoryName = post?.category?.name;
 
     // Loading state
     if (isLoading) {
@@ -165,7 +164,7 @@ export const NewsPostDetailPage = () => {
                         <div className='mb-6 overflow-hidden rounded-lg'>
                             <img
                                 src={coverUrl}
-                                alt={post.coverImage?.data?.attributes?.alternativeText || post.title}
+                                alt={post.coverImage?.alternativeText || post.title}
                                 className='w-full object-cover'
                             />
                         </div>

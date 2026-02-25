@@ -162,7 +162,7 @@ export function getNewsPostShareableContent(post: NewsPostData, slug: string): S
         title: post.title,
         description: post.excerpt,
         url: `${window.location.origin}/news/${slug}`,
-        imageUrl: post.coverImage?.data?.attributes?.url,
+        imageUrl: post.coverImage?.url,
     };
 }
 

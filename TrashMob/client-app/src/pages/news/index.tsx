@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { GetNewsCategories, GetNewsPosts, NewsPostData } from '@/services/cms';
+import { GetNewsCategories, GetNewsPosts, type NewsPostItem } from '@/services/cms';
 import { Services } from '@/config/services.config';
 
 const PAGE_SIZE = 9;
@@ -23,20 +23,19 @@ function formatDate(dateStr: string): string {
     });
 }
 
-function NewsCard({ post }: { post: { id: number; attributes: NewsPostData } }) {
-    const { attributes } = post;
-    const coverUrl = attributes.coverImage?.data?.attributes?.url;
-    const categoryName = attributes.category?.data?.attributes?.name;
+function NewsCard({ post }: { post: NewsPostItem }) {
+    const coverUrl = post.coverImage?.url;
+    const categoryName = post.category?.name;
 
     return (
-        <Link to={`/news/${attributes.slug}`} className='group'>
+        <Link to={`/news/${post.slug}`} className='group'>
             <Card className='h-full overflow-hidden transition-shadow hover:shadow-lg'>
                 {/* Cover image */}
                 <div className='aspect-video overflow-hidden bg-muted'>
                     {coverUrl ? (
                         <img
                             src={coverUrl}
-                            alt={attributes.coverImage?.data?.attributes?.alternativeText || attributes.title}
+                            alt={post.coverImage?.alternativeText || post.title}
                             className='h-full w-full object-cover transition-transform group-hover:scale-105'
                         />
                     ) : (
@@ -56,26 +55,26 @@ function NewsCard({ post }: { post: { id: number; attributes: NewsPostData } }) 
 
                     {/* Title */}
                     <h3 className='mb-2 text-lg font-semibold leading-tight line-clamp-2 group-hover:text-primary'>
-                        {attributes.title}
+                        {post.title}
                     </h3>
 
                     {/* Excerpt */}
-                    <p className='mb-3 text-sm text-muted-foreground line-clamp-3'>{attributes.excerpt}</p>
+                    <p className='mb-3 text-sm text-muted-foreground line-clamp-3'>{post.excerpt}</p>
 
                     {/* Meta row */}
                     <div className='flex flex-wrap items-center gap-3 text-xs text-muted-foreground'>
                         <span className='flex items-center gap-1'>
                             <User className='h-3 w-3' />
-                            {attributes.author}
+                            {post.author}
                         </span>
                         <span className='flex items-center gap-1'>
                             <Calendar className='h-3 w-3' />
-                            {formatDate(attributes.publishedAt)}
+                            {formatDate(post.publishedAt)}
                         </span>
-                        {attributes.estimatedReadTime ? (
+                        {post.estimatedReadTime ? (
                             <span className='flex items-center gap-1'>
                                 <Clock className='h-3 w-3' />
-                                {attributes.estimatedReadTime} min read
+                                {post.estimatedReadTime} min read
                             </span>
                         ) : null}
                     </div>
