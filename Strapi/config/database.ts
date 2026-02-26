@@ -4,9 +4,9 @@ export default ({ env }) => {
   const connections = {
     sqlite: {
       connection: {
-        // Deployed: DATABASE_FILENAME=/app/data/strapi.db (persistent Azure Files mount)
-        // Local dev: defaults to /app/.tmp/data.db (ephemeral)
-        // maxReplicas=1 in Bicep avoids SQLite locking issues with SMB
+        // Deployed: docker-entrypoint.sh sets DATABASE_FILENAME=/app/.tmp/strapi.db (local ephemeral)
+        // and handles persistence by copying to/from Azure Files mount at /app/data/
+        // Local dev: defaults to /app/.tmp/data.db
         filename: env('DATABASE_FILENAME', '/app/.tmp/data.db'),
       },
       useNullAsDefault: true,
