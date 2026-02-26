@@ -71,43 +71,6 @@ jobs:
           docker push $IMAGE_TAG
           docker push $IMAGE_TAG_LATEST
 
-      - name: Deploy Strapi Database
-        run: |
-          az deployment group create \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --template-file Deploy/sqlDatabaseStrapi.bicep \
-            --parameters \
-              environment=pr \
-              region=${{ env.REGION }}
-
-      - name: Install SQL Server tools
-        run: |
-          curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-          curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
-          sudo apt-get update
-          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
-          echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
-
-      - name: Create Strapi SQL User
-        run: |
-          export PATH="$PATH:/opt/mssql-tools18/bin"
-
-          # Get admin credentials from the main app connection string (format: Server=...;User ID=dbadmin;Password=<pw>;...)
-          SQL_SERVER="sql-tm-pr-${{ env.REGION }}"
-          CONN_STR=$(az keyvault secret show --name TMDBServerConnectionString --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
-          SQL_ADMIN=$(echo "$CONN_STR" | grep -oP '(?<=User ID=)[^;]+')
-          SQL_ADMIN_PASSWORD=$(echo "$CONN_STR" | grep -oP '(?<=Password=)[^;]+')
-          STRAPI_PASSWORD=$(az keyvault secret show --name strapi-db-password --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
-
-          # Create user if not exists (idempotent)
-          sqlcmd -S "${SQL_SERVER}.database.windows.net" -d "db-strapi-pr-${{ env.REGION }}" \
-            -U "$SQL_ADMIN" -P "$SQL_ADMIN_PASSWORD" -C \
-            -Q "IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'strapi-pr')
-                BEGIN
-                  CREATE USER [strapi-pr] WITH PASSWORD = '$STRAPI_PASSWORD';
-                  ALTER ROLE db_owner ADD MEMBER [strapi-pr];
-                END"
-
       - name: Get Strapi secrets from Key Vault
         id: get-secrets
         run: |
