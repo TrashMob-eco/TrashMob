@@ -38,13 +38,17 @@ COPY --from=build /app/tsconfig.json ./tsconfig.json
 # SQLite uses local ephemeral storage (Azure Files SMB has locking issues)
 RUN mkdir -p /app/public/uploads /app/.tmp
 
+# Copy entrypoint script that handles DB persistence via Azure Files
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+
 # Create non-root user for security
 RUN addgroup -g 1001 -S strapi && \
     adduser -S strapi -u 1001 -G strapi && \
-    chown -R strapi:strapi /app
+    chown -R strapi:strapi /app && \
+    chmod +x /app/docker-entrypoint.sh
 
 USER strapi
 
 EXPOSE 1337
 
-CMD ["npm", "run", "start"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
