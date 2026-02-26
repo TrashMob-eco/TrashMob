@@ -9,6 +9,7 @@ namespace TrashMob.Shared.Managers.Events
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Models.Poco;
     using TrashMob.Shared.Poco;
 
     /// <summary>

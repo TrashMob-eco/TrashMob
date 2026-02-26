@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobile.Controls.LogImpactPopup">
+
+    <Border Padding="24"
+            BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+            StrokeShape="RoundRectangle 16"
+            Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+            StrokeThickness="1"
+            WidthRequest="320">
+        <VerticalStackLayout Spacing="16">
+
+            <Label Text="Log Your Impact"
+                   FontFamily="LexendSemibold"
+                   FontSize="18"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+
+            <Label Text="How much did you collect during this event?"
+                   FontSize="Micro"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+            <!-- Bags -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Bags Collected" FontSize="Small" FontFamily="LexendSemibold" />
+                <Entry x:Name="BagsEntry"
+                       Placeholder="0"
+                       Keyboard="Numeric" />
+            </VerticalStackLayout>
+
+            <!-- Weight -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Weight Collected" FontSize="Small" FontFamily="LexendSemibold" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <Entry x:Name="WeightEntry"
+                           Placeholder="0"
+                           Keyboard="Numeric" />
+                    <Picker x:Name="WeightUnitPicker"
+                            Grid.Column="1"
+                            WidthRequest="80">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>lbs</x:String>
+                                <x:String>kg</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                </Grid>
+            </VerticalStackLayout>
+
+            <!-- Duration -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Time Spent (minutes)" FontSize="Small" FontFamily="LexendSemibold" />
+                <Entry x:Name="DurationEntry"
+                       Placeholder="0"
+                       Keyboard="Numeric" />
+            </VerticalStackLayout>
+
+            <!-- Notes -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Notes (optional)" FontSize="Small" FontFamily="LexendSemibold" />
+                <Editor x:Name="NotesEditor"
+                        Placeholder="Any notes about your contribution..."
+                        HeightRequest="60"
+                        MaxLength="500" />
+            </VerticalStackLayout>
+
+            <Button Text="Submit"
+                    Style="{StaticResource PrimaryLargeButton}"
+                    Clicked="OnSubmitClicked" />
+
+            <Button Text="Cancel"
+                    Style="{StaticResource SecondaryLargeButton}"
+                    Clicked="OnCancelClicked" />
+
+        </VerticalStackLayout>
+    </Border>
+</ContentView>

@@ -15,13 +15,13 @@ public class GeolocatorImplementation : IGeolocator
 
     public async Task StartListening(IProgress<Microsoft.Maui.Devices.Sensors.Location> positionChangedProgress, CancellationToken cancellationToken)
     {
-        var permission = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
+        var permission = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
         if (permission != PermissionStatus.Granted)
         {
-            permission = await Permissions.RequestAsync<Permissions.LocationAlways>();
+            permission = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
             if (permission != PermissionStatus.Granted)
             {
-                await Toast.Make("No permission").Show(CancellationToken.None);
+                await Toast.Make("Location permission is required to record routes.").Show(CancellationToken.None);
                 return;
             }
         }

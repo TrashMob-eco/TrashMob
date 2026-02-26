@@ -1,4 +1,4 @@
-namespace TrashMob.Shared.Poco
+namespace TrashMob.Models.Poco
 {
     using System.Collections.Generic;
 
@@ -51,7 +51,7 @@ namespace TrashMob.Shared.Poco
         /// <summary>
         /// Gets or sets the event name.
         /// </summary>
-        public string EventName { get; set; }
+        public string EventName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the event date.
@@ -76,6 +76,6 @@ namespace TrashMob.Shared.Poco
         /// <summary>
         /// Gets or sets the approval status.
         /// </summary>
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 }

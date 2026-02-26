@@ -22,8 +22,8 @@
 | Project | Description | Status |
 |---------|-------------|--------|
 | [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Azure B2C → Entra External ID migration | In Progress (Phases 0-5a Complete, Production Live; Phase 6 Partial, Phase 7 Remaining) |
-| [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Stabilize MAUI apps, error handling | In Progress (Phases 1-4 Substantial) |
-| [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | CI/CD modernization, Docker | Ready for Dev Review |
+| [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Stabilize MAUI apps, error handling | In Progress (Phases 1-2, 6 Complete; Phases 3-5 Substantial) |
+| [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | CI/CD modernization, Docker | In Progress (Phases 1-3 Complete; Phase 4 Partial) |
 
 #### High Priority (Core Features)
 
@@ -38,7 +38,7 @@
 | [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) | Scale email invitations | ✅ Complete |
 | [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors (combined with Project 1) | Planning (combined with Project 1) |
 | [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Pagination, error handling, auto-generated clients | Not Started |
-| [Project 38 - Mobile Feature Parity](./Projects/Project_38_Mobile_Feature_Parity.md) | Teams, leaderboards, photos for mobile volunteers | In Progress (Phases 1-4, 6-7 Complete) |
+| [Project 38 - Mobile Feature Parity](./Projects/Project_38_Mobile_Feature_Parity.md) | Teams, leaderboards, photos for mobile volunteers | ✅ Complete |
 | [Project 44 - Area Map Editor](./Projects/Project_44_Area_Map_Editor.md) | Interactive map editor, AI area suggestions, bulk import/export, AI generation | ✅ Complete |
 
 #### Medium Priority (Enhancements)
@@ -156,8 +156,8 @@
 | Status | Count | Projects |
 |--------|-------|----------|
 | ✅ **Complete** | 28 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37, 39, 40, 42, 44, 47, 49, 50 |
-| **In Progress** | 12 | Projects 1 (Phases 0-5a Complete, Production Live; Phase 6 Partial, Phase 7 Remaining), 4 (Phases 1-4 Substantial), 6 (Phases 1, 2.5, 3 Substantial), 8 (Phases 1-4, 6 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete), 41 (Phases 1-4 Complete), 45 (Phases 1-4 Complete), 48 (Phase 1 Complete) |
-| **Ready for Review** | 2 | Projects 2, 5 |
+| **In Progress** | 13 | Projects 1 (Phases 0-5a Complete, Production Live; Phase 6 Partial, Phase 7 Remaining), 4 (Phases 1-2, 6 Complete; Phases 3-5 Substantial), 5 (Phases 1-3 Complete; Phase 4 Partial), 6 (Phases 1, 2.5, 3 Substantial), 8 (Phases 1-4, 6 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete; Phase 5 In Progress), 41 (Phases 1-4 Complete), 45 (Phases 1-4 Complete), 48 (Phase 1 Complete) |
+| **Ready for Review** | 1 | Project 2 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
 | **Not Started** | 6 | Projects 12, 24, 31, 36, 43, 46 |
 | **Deprioritized** | 1 | Project 33 |
@@ -235,6 +235,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** February 22, 2026
+**Last Updated:** February 23, 2026
 **Maintained By:** Product & Engineering Team
 **Next Review:** End of Q1 2026
