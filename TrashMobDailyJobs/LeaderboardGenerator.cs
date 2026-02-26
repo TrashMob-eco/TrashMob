@@ -1,6 +1,7 @@
 namespace TrashMobDailyJobs
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Configuration;
@@ -74,29 +75,34 @@ namespace TrashMobDailyJobs
 
             logger.LogInformation("Computing {Type} leaderboard for {TimeRange}...", leaderboardType, timeRange);
 
-            using var cmd = new SqlCommand(sql, conn);
-            using var reader = await cmd.ExecuteReaderAsync();
+            // Buffer results first to avoid open DataReader conflict when inserting
+            var results = new List<(Guid UserId, string UserName, string? Region, string? City, decimal Score, int Rank)>();
 
-            var entries = 0;
+            using (var cmd = new SqlCommand(sql, conn))
+            using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    results.Add((
+                        reader.GetGuid(0),
+                        reader.GetString(1),
+                        reader.IsDBNull(2) ? null : reader.GetString(2),
+                        reader.IsDBNull(3) ? null : reader.GetString(3),
+                        reader.GetDecimal(4),
+                        (int)reader.GetInt64(5)));
+                }
+            }
+
             var computedDate = DateTimeOffset.UtcNow;
 
-            while (await reader.ReadAsync())
+            foreach (var (userId, userName, region, city, score, rank) in results)
             {
-                var userId = reader.GetGuid(0);
-                var userName = reader.GetString(1);
-                var region = reader.IsDBNull(2) ? null : reader.GetString(2);
-                var city = reader.IsDBNull(3) ? null : reader.GetString(3);
-                var score = reader.GetDecimal(4);
-                var rank = (int)reader.GetInt64(5);
-
                 // Insert Global entry
                 await InsertLeaderboardEntry(conn, "User", userId, userName, leaderboardType, timeRange, "Global", null, score, rank, computedDate);
 
                 // Insert Region entry if available
                 if (!string.IsNullOrEmpty(region))
                 {
-                    // Note: Regional/City ranks would need separate computation for accurate ranking within that scope
-                    // For MVP, we use global rank - can enhance later
                     await InsertLeaderboardEntry(conn, "User", userId, userName, leaderboardType, timeRange, "Region", region, score, rank, computedDate);
                 }
 
@@ -105,11 +111,9 @@ namespace TrashMobDailyJobs
                 {
                     await InsertLeaderboardEntry(conn, "User", userId, userName, leaderboardType, timeRange, "City", city, score, rank, computedDate);
                 }
-
-                entries++;
             }
 
-            logger.LogInformation("Computed {Count} entries for {Type} {TimeRange} leaderboard.", entries, leaderboardType, timeRange);
+            logger.LogInformation("Computed {Count} entries for {Type} {TimeRange} leaderboard.", results.Count, leaderboardType, timeRange);
         }
 
         private static string GetLeaderboardQuery(string leaderboardType, string dateFilter)
@@ -186,21 +190,28 @@ ORDER BY Rank";
 
             logger.LogInformation("Computing team {Type} leaderboard for {TimeRange}...", leaderboardType, timeRange);
 
-            using var cmd = new SqlCommand(sql, conn);
-            using var reader = await cmd.ExecuteReaderAsync();
+            // Buffer results first to avoid open DataReader conflict when inserting
+            var results = new List<(Guid TeamId, string TeamName, string? Region, string? City, decimal Score, int Rank)>();
 
-            var entries = 0;
+            using (var cmd = new SqlCommand(sql, conn))
+            using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    results.Add((
+                        reader.GetGuid(0),
+                        reader.GetString(1),
+                        reader.IsDBNull(2) ? null : reader.GetString(2),
+                        reader.IsDBNull(3) ? null : reader.GetString(3),
+                        reader.GetDecimal(4),
+                        (int)reader.GetInt64(5)));
+                }
+            }
+
             var computedDate = DateTimeOffset.UtcNow;
 
-            while (await reader.ReadAsync())
+            foreach (var (teamId, teamName, region, city, score, rank) in results)
             {
-                var teamId = reader.GetGuid(0);
-                var teamName = reader.GetString(1);
-                var region = reader.IsDBNull(2) ? null : reader.GetString(2);
-                var city = reader.IsDBNull(3) ? null : reader.GetString(3);
-                var score = reader.GetDecimal(4);
-                var rank = (int)reader.GetInt64(5);
-
                 // Insert Global entry
                 await InsertLeaderboardEntry(conn, "Team", teamId, teamName, leaderboardType, timeRange, "Global", null, score, rank, computedDate);
 
@@ -215,11 +226,9 @@ ORDER BY Rank";
                 {
                     await InsertLeaderboardEntry(conn, "Team", teamId, teamName, leaderboardType, timeRange, "City", city, score, rank, computedDate);
                 }
-
-                entries++;
             }
 
-            logger.LogInformation("Computed {Count} entries for team {Type} {TimeRange} leaderboard.", entries, leaderboardType, timeRange);
+            logger.LogInformation("Computed {Count} entries for team {Type} {TimeRange} leaderboard.", results.Count, leaderboardType, timeRange);
         }
 
         private static string GetTeamLeaderboardQuery(string leaderboardType, string dateFilter)
