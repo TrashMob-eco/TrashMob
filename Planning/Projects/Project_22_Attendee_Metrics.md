@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 1-3 Complete) |
+| **Status** | ✅ Complete |
 | **Priority** | Medium |
 | **Risk** | Medium |
 | **Size** | Medium |
@@ -53,10 +53,10 @@ Let attendees enter personal stats and give leads tools to reconcile without dou
 - ✅ Event leaderboards
 
 ### Phase 4 - Integration
-- ⬜ Route association (Project 15)
-- ⬜ Photo association (Project 18)
-- ⬜ Gamification integration (Project 20)
-- ⬜ Team roll-ups (Project 9)
+- ✅ Gamification integration (Project 20) — AchievementProcessor and LeaderboardGenerator use EventAttendeeMetrics
+- ✅ Team roll-ups (Project 9) — Team leaderboards aggregate member EventAttendeeMetrics
+- ⏸️ Route association (Project 15) — Deferred until routes are routinely used
+- ❌ Photo association (Project 18) — Dropped; photos already linked to user via UploadedByUserId
 
 ---
 
@@ -573,7 +573,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 2, 2026
+**Last Updated:** February 24, 2026
 **Owner:** Product Lead + Engineering
-**Status:** In Progress (Phase 1-3 Complete)
-**Next Review:** Phase 4 integration (depends on Projects 9, 15, 18, 20)
+**Status:** ✅ Complete (Phases 1-4; route association deferred)
+**Next Review:** Closed

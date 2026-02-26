@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { Instagram, Youtube, Facebook, Twitter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/Logo';
 
@@ -77,53 +78,37 @@ export const SiteFooter = () => {
                                         target='_blank'
                                         rel='noreferrer noopener'
                                         className={socialClassName}
+                                        aria-label='Instagram'
                                     >
-                                        <i className='mt-0! fa-brands fa-instagram text-center text-black' />
+                                        <Instagram className='h-5 w-5 text-black' />
                                     </a>
                                     <a
                                         href='https://www.youtube.com/channel/UC2LgFmXFCA8kdkxd4IJ51BA'
                                         target='_blank'
                                         rel='noreferrer noopener'
                                         className={socialClassName}
+                                        aria-label='YouTube'
                                     >
-                                        <i className='mt-0! fa-brands fa-youtube text-center text-black' />
+                                        <Youtube className='h-5 w-5 text-black' />
                                     </a>
                                     <a
                                         href='https://www.facebook.com/trashmob.eco/'
                                         target='_blank'
                                         rel='noreferrer noopener'
                                         className={socialClassName}
+                                        aria-label='Facebook'
                                     >
-                                        <i className='mt-0! fab fa-facebook-f text-center text-black' />
+                                        <Facebook className='h-5 w-5 text-black' />
                                     </a>
                                     <a
                                         href='https://twitter.com/TrashMobEco'
                                         target='_blank'
                                         rel='noreferrer noopener'
                                         className={socialClassName}
+                                        aria-label='Twitter'
                                     >
-                                        <i className='mt-0! fab fa-twitter text-center text-black' />
+                                        <Twitter className='h-5 w-5 text-black' />
                                     </a>
-                                    {/* <a
-                                        href='https://profiles.eco/trashmob?ref=tm'
-                                        target='_blank'
-                                        rel='noreferrer noopener'
-                                        className={socialClassName}
-                                    >
-                                        <img
-                                            className='eco-trustmark'
-                                            alt='.eco profile for trashmob.eco'
-                                            src='https://trust.profiles.eco/trashmob/eco-button.svg?color=%23000000'
-                                        />
-                                    </a> 
-                                    <a
-                                        href='https://www.linkedin.com/company/76188984'
-                                        target='_blank'
-                                        rel='noreferrer noopener'
-                                        className={socialClassName}
-                                    >
-                                        <i className='mt-0! fa-brands fa-linkedin' />
-                                    </a> */}
                                 </div>
                             </div>
                         </div>
