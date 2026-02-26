@@ -147,12 +147,11 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           env: [
             {
               name: 'DATABASE_CLIENT'
-              value: 'sqlite'  // Strapi v5 dropped MSSQL support; SQLite on persistent Azure Files
+              value: 'sqlite'  // Strapi v5 dropped MSSQL support
             }
-            {
-              name: 'DATABASE_FILENAME'
-              value: '/app/data/strapi.db'  // Persistent storage via Azure Files mount
-            }
+            // DATABASE_FILENAME is set by docker-entrypoint.sh to local ephemeral storage
+            // The entrypoint copies DB from Azure Files (/app/data) to local (/app/.tmp) on startup
+            // and syncs back periodically, avoiding SMB file locking issues with SQLite
             {
               name: 'ADMIN_JWT_SECRET'
               secretRef: 'admin-jwt-secret'
