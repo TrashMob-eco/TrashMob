@@ -31,6 +31,7 @@ env:
   REGION: westus2
   CUSTOM_DOMAIN_NAME: www.trashmob.eco
   MANAGED_CERTIFICATE_NAME: trashmob-eco-cert
+  STRAPI_CONTAINER_APP_NAME: ca-strapi-tm-pr-westus2
 
 jobs:
   build-and-deploy:
@@ -76,6 +77,29 @@ jobs:
           docker push $IMAGE_TAG
           docker push $IMAGE_TAG_LATEST
 
+      - name: Get Strapi FQDN
+        id: get-strapi
+        run: |
+          # Check if Strapi container app exists
+          STRAPI_EXISTS=$(az containerapp show \
+            --name ${{ env.STRAPI_CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query name \
+            -o tsv 2>/dev/null || echo "")
+
+          if [ -n "$STRAPI_EXISTS" ]; then
+            STRAPI_FQDN=$(az containerapp show \
+              --name ${{ env.STRAPI_CONTAINER_APP_NAME }} \
+              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --query properties.configuration.ingress.fqdn \
+              -o tsv)
+            echo "Strapi FQDN: $STRAPI_FQDN"
+            echo "strapi_url=https://$STRAPI_FQDN" >> $GITHUB_OUTPUT
+          else
+            echo "Strapi container app not found. CMS will be disabled."
+            echo "strapi_url=" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy to Azure Container Apps
         run: |
           SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
@@ -97,7 +121,8 @@ jobs:
               minReplicas=2 \
               maxReplicas=10 \
               customDomainName=${{ env.CUSTOM_DOMAIN_NAME }} \
-              managedCertificateName=${{ env.MANAGED_CERTIFICATE_NAME }}
+              managedCertificateName=${{ env.MANAGED_CERTIFICATE_NAME }} \
+              strapiBaseUrl="${{ steps.get-strapi.outputs.strapi_url }}"
 
       # Note: Azure AD Entra External ID configuration is set via environment variables in containerApp.bicep
 
