@@ -37,6 +37,17 @@ namespace TrashMob.Controllers
         private readonly string strapiBaseUrl = configuration["StrapiBaseUrl"] ?? string.Empty;
 
         /// <summary>
+        /// Rewrites relative Strapi media URLs (e.g. "/uploads/...") to absolute URLs
+        /// so the frontend can load images directly from the Strapi host.
+        /// </summary>
+        private string RewriteMediaUrls(string json)
+        {
+            // Strapi returns media URLs as relative paths like "/uploads/filename.png".
+            // In the JSON they appear as "url":"/uploads/..." — prefix with the Strapi base URL.
+            return json.Replace("\"url\":\"/uploads/", $"\"url\":\"{strapiBaseUrl}/uploads/");
+        }
+
+        /// <summary>
         /// Gets hero section content from CMS. Public endpoint.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
@@ -62,7 +73,7 @@ namespace TrashMob.Controllers
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             TrackEvent(nameof(GetHeroSection));
-            return Content(content, "application/json");
+            return Content(RewriteMediaUrls(content), "application/json");
         }
 
         /// <summary>
@@ -91,7 +102,7 @@ namespace TrashMob.Controllers
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             TrackEvent(nameof(GetWhatIsTrashmob));
-            return Content(content, "application/json");
+            return Content(RewriteMediaUrls(content), "application/json");
         }
 
         /// <summary>
@@ -120,7 +131,7 @@ namespace TrashMob.Controllers
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             TrackEvent(nameof(GetGettingStarted));
-            return Content(content, "application/json");
+            return Content(RewriteMediaUrls(content), "application/json");
         }
 
         /// <summary>
@@ -165,7 +176,7 @@ namespace TrashMob.Controllers
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             TrackEvent(nameof(GetNewsPosts));
-            return Content(content, "application/json");
+            return Content(RewriteMediaUrls(content), "application/json");
         }
 
         /// <summary>
@@ -197,7 +208,7 @@ namespace TrashMob.Controllers
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             TrackEvent(nameof(GetNewsPostBySlug));
-            return Content(content, "application/json");
+            return Content(RewriteMediaUrls(content), "application/json");
         }
 
         /// <summary>
