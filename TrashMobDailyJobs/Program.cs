@@ -29,6 +29,7 @@ namespace TrashMobDailyJobs
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
             // Run each processor independently so one failure doesn't block the others
+            await RunProcessorAsync<HistoricalMetricsBackfill>(scope, logger);  // One-time backfill, remove after successful run
             await RunProcessorAsync<StatGenerator>(scope, logger);
             await RunProcessorAsync<LeaderboardGenerator>(scope, logger);
             await RunProcessorAsync<AchievementProcessor>(scope, logger);
@@ -97,6 +98,7 @@ namespace TrashMobDailyJobs
                 });
             });
 
+            services.AddScoped<HistoricalMetricsBackfill>();  // One-time backfill, remove after successful run
             services.AddScoped<StatGenerator>();
             services.AddScoped<LeaderboardGenerator>();
             services.AddScoped<AchievementProcessor>();
