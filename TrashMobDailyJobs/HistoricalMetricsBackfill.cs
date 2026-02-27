@@ -25,7 +25,7 @@ namespace TrashMobDailyJobs
             // First, check how many events need backfilling
             var countSql = @"
                 SELECT COUNT(DISTINCT es.EventId)
-                FROM dbo.EventSummary es
+                FROM dbo.EventSummaries es
                 INNER JOIN dbo.Events e ON es.EventId = e.Id
                 WHERE e.EventStatusId != 3
                   AND (es.NumberOfBags > 0 OR es.PickedWeight > 0 OR es.DurationInMinutes > 0)
@@ -88,7 +88,7 @@ namespace TrashMobDailyJobs
                         GETUTCDATE()
                     FROM dbo.EventAttendees ea
                     INNER JOIN dbo.Events e ON ea.EventId = e.Id
-                    INNER JOIN dbo.EventSummary es ON e.Id = es.EventId
+                    INNER JOIN dbo.EventSummaries es ON e.Id = es.EventId
                     CROSS APPLY (
                         SELECT COUNT(*) AS AttendeeCount
                         FROM dbo.EventAttendees ea2
