@@ -61,7 +61,17 @@ export function AgeGateDialog({ open, onOpenChange, onConfirm }: AgeGateDialogPr
                 ) : (
                     <>
                         <div className='py-2'>
-                            <DatePicker value={dob as Date} onChange={(value) => setDob(value)} />
+                            <DatePicker
+                                value={dob as Date}
+                                onChange={(value) => setDob(value)}
+                                placeholder='Select your date of birth'
+                                calendarProps={{
+                                    captionLayout: 'dropdown-buttons',
+                                    fromYear: 1920,
+                                    toYear: new Date().getFullYear(),
+                                    defaultMonth: new Date(2000, 0),
+                                }}
+                            />
                         </div>
                         <DialogFooter>
                             <Button variant='outline' onClick={() => handleOpenChange(false)}>
