@@ -110,8 +110,8 @@ export const SiteAdminAppeals = () => {
                 </CardHeader>
                 <CardContent>
                     <p className='text-sm text-muted-foreground'>
-                        Select contacts by tag, compose your appeal, and send to all selected contacts. Each email
-                        will be personalized with the contact&apos;s name and logged as a contact note.
+                        Select contacts by tag, compose your appeal, and send to all selected contacts. Each email will
+                        be personalized with the contact&apos;s name and logged as a contact note.
                     </p>
                 </CardContent>
             </Card>
@@ -161,9 +161,7 @@ export const SiteAdminAppeals = () => {
                                 Contacts {emailableContacts.length > 0 ? `(${emailableContacts.length})` : ''}
                             </CardTitle>
                             {emailableContacts.length > 0 ? (
-                                <Badge variant='outline'>
-                                    {selectedContactIds.size} selected
-                                </Badge>
+                                <Badge variant='outline'>{selectedContactIds.size} selected</Badge>
                             ) : null}
                         </CardHeader>
                         <CardContent>

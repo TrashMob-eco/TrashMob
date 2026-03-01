@@ -51,9 +51,7 @@ export const ReceiptDialog = ({
                         <div className='font-medium'>${donation.amount.toLocaleString()}</div>
                         <div className='text-muted-foreground'>Date</div>
                         <div className='font-medium'>
-                            {donation.donationDate
-                                ? new Date(donation.donationDate).toLocaleDateString()
-                                : '—'}
+                            {donation.donationDate ? new Date(donation.donationDate).toLocaleDateString() : '—'}
                         </div>
                         <div className='text-muted-foreground'>Type</div>
                         <div className='font-medium'>{getDonationTypeLabel(donation.donationType)}</div>
