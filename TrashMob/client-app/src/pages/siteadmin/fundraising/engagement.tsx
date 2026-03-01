@@ -33,9 +33,7 @@ export const SiteAdminEngagement = () => {
             <Tabs defaultValue={defaultTab}>
                 <TabsList>
                     <TabsTrigger value='all'>All Contacts ({(allScores || []).length})</TabsTrigger>
-                    <TabsTrigger value='pipeline'>
-                        Volunteer Pipeline ({(volunteerPipeline || []).length})
-                    </TabsTrigger>
+                    <TabsTrigger value='pipeline'>Volunteer Pipeline ({(volunteerPipeline || []).length})</TabsTrigger>
                     <TabsTrigger value='lybunt'>LYBUNT ({(lybuntContacts || []).length})</TabsTrigger>
                 </TabsList>
 

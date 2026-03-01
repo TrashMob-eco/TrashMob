@@ -104,9 +104,7 @@ export const SiteAdminFundraisingDashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <div className='text-2xl font-bold'>{dashboard?.retentionRate?.toFixed(1) ?? '0'}%</div>
-                        <p className='text-xs text-muted-foreground'>
-                            {dashboard?.lapsedDonors ?? 0} lapsed donors
-                        </p>
+                        <p className='text-xs text-muted-foreground'>{dashboard?.lapsedDonors ?? 0} lapsed donors</p>
                     </CardContent>
                 </Card>
             </div>
@@ -146,9 +144,7 @@ export const SiteAdminFundraisingDashboard = () => {
                                     <span className='font-medium'>{stage.stage}</span>
                                     <span className='text-muted-foreground'>{stage.count}</span>
                                 </div>
-                                <Progress
-                                    value={maxLifecycleCount > 0 ? (stage.count / maxLifecycleCount) * 100 : 0}
-                                />
+                                <Progress value={maxLifecycleCount > 0 ? (stage.count / maxLifecycleCount) * 100 : 0} />
                             </div>
                         ))}
                         {(dashboard?.lifecycleBreakdown?.length ?? 0) === 0 ? (

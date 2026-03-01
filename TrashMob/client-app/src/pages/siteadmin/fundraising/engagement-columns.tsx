@@ -21,10 +21,7 @@ export const engagementColumns: ColumnDef<ContactEngagementScoreData>[] = [
         accessorKey: 'contactName',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
         cell: ({ row }) => (
-            <Link
-                to={`/siteadmin/contacts/${row.original.contactId}`}
-                className='font-medium hover:underline'
-            >
+            <Link to={`/siteadmin/contacts/${row.original.contactId}`} className='font-medium hover:underline'>
                 {row.original.contactName || '—'}
             </Link>
         ),
