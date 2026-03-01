@@ -457,6 +457,9 @@ const SiteAdminGrantDetail = lazy(() =>
 const SiteAdminGrantEdit = lazy(() =>
     import('./pages/siteadmin/grants/$grantId.edit').then((m) => ({ default: m.SiteAdminGrantEdit })),
 );
+const SiteAdminGrantDiscovery = lazy(() =>
+    import('./pages/siteadmin/grants/discovery').then((m) => ({ default: m.SiteAdminGrantDiscovery })),
+);
 
 const queryClient = new QueryClient();
 
@@ -736,6 +739,7 @@ const AppContent: FC = () => {
                                 <Route path='grants/create' element={<SiteAdminGrantCreate />} />
                                 <Route path='grants/:grantId' element={<SiteAdminGrantDetail />} />
                                 <Route path='grants/:grantId/edit' element={<SiteAdminGrantEdit />} />
+                                <Route path='grants/discovery' element={<SiteAdminGrantDiscovery />} />
                             </Route>
                         </Route>
                         <Route>

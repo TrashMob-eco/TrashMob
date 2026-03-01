@@ -25,6 +25,7 @@ import {
     HandCoins,
     Megaphone,
     Landmark,
+    Sparkles,
 } from 'lucide-react';
 import { SidebarNav, NavGroup } from '@/components/ui/sidebar-nav';
 
@@ -57,6 +58,7 @@ const navGroups: NavGroup[] = [
             { name: 'Pledges', href: `${pathPrefix}/pledges`, icon: HandCoins },
             { name: 'Appeals', href: `${pathPrefix}/appeals`, icon: Megaphone },
             { name: 'Grants', href: `${pathPrefix}/grants`, icon: Landmark },
+            { name: 'Grant Discovery', href: `${pathPrefix}/grants/discovery`, icon: Sparkles },
         ],
     },
     {
