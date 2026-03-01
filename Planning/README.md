@@ -69,7 +69,7 @@
 | [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md) | Sponsor-funded professional cleanup tracking | In Progress (Phases 1-4 Complete) |
 | [Project 42 - Partner Document Management](./Projects/Project_42_Partner_Document_Management.md) | File upload & storage for partner documents | ✅ Complete |
 | [Project 47 - Team-Visible Private Events](./Projects/Project_47_Team_Private_Events.md) | Team-scoped event visibility for member-only events | ✅ Complete |
-| [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md) | Route-level metrics, litter density heatmap, route time editing | In Progress (Phase 1 Complete) |
+| [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md) | Route-level metrics, litter density heatmap, route time editing | Complete (Phases 1-3); Phase 2b & 4 Deferred |
 | [Project 49 - Privacy & Compliance Review](./Projects/Project_49_Privacy_Compliance_Review.md) | Deletion audit, data export, GDPR compliance, cookie consent | In Progress (Phases 1-4 Complete, Phase 5 Partial) |
 
 #### High Priority (Marketing & Growth)
@@ -79,7 +79,7 @@
 | [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | 2026 release marketing, pricing, enrollment | Not Started |
 | [Project 40 - AI Community Sales Agent](./Projects/Project_40_AI_Community_Sales_Agent.md) | AI-powered community discovery, outreach, and onboarding | ✅ Complete |
 | [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md) | "For Communities" landing page, home page CTAs, enrollment funnel | In Progress (Phases 1-4 Complete) |
-| [Project 46 - Product Support](./Projects/Project_46_Product_Support.md) | Define product support role, channels, onboarding, and knowledge base | Not Started |
+| [Project 46 - Product Support](./Projects/Project_46_Product_Support.md) | Define product support role, channels, onboarding, and knowledge base | In Progress (Phases 1-3 Complete) |
 | [Project 50 - News & Blog](./Projects/Project_50_News_Blog.md) | Blog-style news page powered by Strapi CMS with pagination and categories | ✅ Complete |
 | [Project 51 - Contact Management](./Projects/Project_51_Contact_Management.md) | Donor tracking, grant management, contact CRM for nonprofit fundraising (Site Admin only) | ✅ Complete |
 
@@ -159,11 +159,11 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 30 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 50, 51 |
-| **In Progress** | 12 | Projects 1, 4, 5, 6, 8, 15, 25, 30, 41, 45, 48, 49 |
+| ✅ **Complete** | 31 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51 |
+| **In Progress** | 12 | Projects 1, 4, 5, 6, 8, 15, 25, 30, 41, 45, 46, 49 |
 | **Ready for Review** | 1 | Project 2 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
-| **Not Started** | 7 | Projects 12, 24, 31, 36, 43, 46, 52 |
+| **Not Started** | 6 | Projects 12, 24, 31, 36, 43, 52 |
 | **Deprioritized** | 1 | Project 33 |
 
 **Total:** 52 project specifications documented
@@ -186,7 +186,7 @@
 | [Project 30 - Azure Billing Alerts](./Projects/Project_30_Azure_Billing_Alerts.md) | Operational monitoring and alert tuning |
 | [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md) | Phase 5: Reporting & analytics (community-level volunteer vs. sponsored breakdown, cost-per-mile, company comparison, compliance reports) |
 | [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md) | Deferred: Community testimonials (waiting on onboarded communities), AI Sales Agent integration |
-| [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md) | Phase 3: Route end-time editing (trim by slider); Phase 4: Smart trim suggestions (speed anomaly detection) |
+| [Project 46 - Product Support](./Projects/Project_46_Product_Support.md) | Phase 4: Support KPIs, feedback loop, quarterly review (activate when support role is staffed) |
 | [Project 49 - Privacy & Compliance](./Projects/Project_49_Privacy_Compliance_Review.md) | Phase 5: Cookie consent & tracking audit — update Privacy Policy, document third-party services (Clarity, App Insights) |
 
 ### Ready for Design Review
@@ -204,15 +204,15 @@
 | [Project 31 - Feature Flags](./Projects/Project_31_Feature_Flags.md) | Feature flag infrastructure for safe deployments and gradual rollouts |
 | [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | Community tier pricing, feature comparison, branding guidelines, digital assets |
 | [Project 43 - Sign Management](./Projects/Project_43_Sign_Management.md) | Track physical Adopt-A-Location signs (status, coordinates, text, lifecycle) |
-| [Project 46 - Product Support](./Projects/Project_46_Product_Support.md) | Support role definition, channels/workflows, knowledge base, onboarding guide |
 | [Project 52 - Volunteer Rewards](./Projects/Project_52_Volunteer_Rewards.md) | Partner reward sourcing, criteria, distribution, fraud prevention (future) |
 
 ### Complete with Deferred Items
 
 | Project | Deferred Items |
 |---------|---------------|
-| [Project 51 - Contact Management](./Projects/Project_51_Contact_Management.md) | Deadline calendar, budget tracking per grant, periodic grant scan, impact-to-giving report |
 | [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Route association (waiting for routes to be routinely used) |
+| [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md) | Phase 2b: Per-segment density; Phase 4: Smart trim suggestions (speed anomaly detection) |
+| [Project 51 - Contact Management](./Projects/Project_51_Contact_Management.md) | Deadline calendar, budget tracking per grant, periodic grant scan, impact-to-giving report |
 
 ---
 
