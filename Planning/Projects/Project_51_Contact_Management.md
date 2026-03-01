@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phases 1–5 complete) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
@@ -44,53 +44,53 @@ A lightweight Contact Management System (CMS/CRM) built into the Site Admin area
 
 ## Scope
 
-### Phase 1 — Contact & Donor Data Model
+### Phase 1 — Contact & Donor Data Model ✅ (PR #2945)
 
-- ❌ Create `Contact` entity — represents any person or organization the nonprofit interacts with (donors, prospects, foundation officers, corporate leads)
-- ❌ Create `Donation` entity — tracks individual gifts linked to a Contact (and optionally to a registered User)
-- ❌ Create `ContactNote` entity — timestamped interaction log (calls, meetings, emails, observations)
-- ❌ Create `ContactTag` entity — flexible tagging for segmentation (e.g., "Major Donor", "Corporate Lead", "Foundation")
-- ❌ Link Contact ↔ User (optional) — a Contact may or may not correspond to a registered TrashMob user
-- ❌ Link Contact ↔ Partner (optional) — a Contact may be associated with an existing Partner organization
-- ❌ Database migrations with proper indexes and audit fields
+- ✅ Create `Contact` entity — represents any person or organization the nonprofit interacts with (donors, prospects, foundation officers, corporate leads)
+- ✅ Create `Donation` entity — tracks individual gifts linked to a Contact (and optionally to a registered User)
+- ✅ Create `ContactNote` entity — timestamped interaction log (calls, meetings, emails, observations)
+- ✅ Create `ContactTag` entity — flexible tagging for segmentation (e.g., "Major Donor", "Corporate Lead", "Foundation")
+- ✅ Link Contact ↔ User (optional) — a Contact may or may not correspond to a registered TrashMob user
+- ✅ Link Contact ↔ Partner (optional) — a Contact may be associated with an existing Partner organization
+- ✅ Database migrations with proper indexes and audit fields
 
-### Phase 2 — Contact Management UI (Admin)
+### Phase 2 — Contact Management UI (Admin) ✅ (PR #2946)
 
-- ❌ Contact list page with search, filter by tag, and sort by last interaction
-- ❌ Contact detail page showing profile, donation history, notes timeline, tags, and linked User/Partner
-- ❌ Add/edit contact form (name, email, phone, organization, address, type, source)
-- ❌ Contact notes: add timestamped notes with category (Call, Meeting, Email, Note)
-- ❌ Tag management: create, assign, remove tags on contacts
-- ❌ Duplicate detection: warn when creating a contact with matching name or email
+- ✅ Contact list page with search, filter by tag, and sort by last interaction
+- ✅ Contact detail page showing profile, donation history, notes timeline, tags, and linked User/Partner
+- ✅ Add/edit contact form (name, email, phone, organization, address, type, source)
+- ✅ Contact notes: add timestamped notes with category (Call, Meeting, Email, Note)
+- ✅ Tag management: create, assign, remove tags on contacts
+- ✅ Duplicate detection: warn when creating a contact with matching name or email
 
-### Phase 3 — Donation Tracking
+### Phase 3 — Donation Tracking ✅ (PR #2948)
 
-- ❌ Record donations: amount, date, type (Cash, Check, Online, In-Kind, Matching Gift), campaign, notes
-- ❌ Recurring donation tracking: link related gifts, track frequency, flag missed payments
-- ❌ Pledge management: record multi-payment pledges with schedules and fulfillment status
-- ❌ In-kind donation tracking: description, estimated fair market value, donor
-- ❌ Donation list with filtering by date range, amount, type, donor, campaign
-- ❌ Donation summary on Contact detail page (lifetime total, this year, last gift date, giving trend)
+- ✅ Record donations: amount, date, type (Cash, Check, Online, In-Kind, Matching Gift), campaign, notes
+- ✅ Recurring donation tracking: link related gifts, track frequency, flag missed payments
+- ✅ Pledge management: record multi-payment pledges with schedules and fulfillment status
+- ✅ In-kind donation tracking: description, estimated fair market value, donor
+- ✅ Donation list with filtering by date range, amount, type, donor, campaign
+- ✅ Donation summary on Contact detail page (lifetime total, this year, last gift date, giving trend)
 
-### Phase 4 — Thank You & Appeal Communications
+### Phase 4 — Thank You & Appeal Communications ✅ (PR #2949)
 
-- ❌ Thank-you email templates (first-time donor, repeat donor, major gift, in-kind)
-- ❌ Send thank-you from Contact detail page, auto-logged as a ContactNote
-- ❌ Fundraising appeal email templates with merge fields (name, last gift amount, impact stats)
-- ❌ Bulk appeal: select contacts by tag/segment, send personalized appeal emails
-- ❌ Tax receipt generation: IRS-compliant donation acknowledgment with organization details
-- ❌ Communication history: track all outbound emails with open/delivery status
-- ❌ Document attachment library: admin-managed library of PDF/DOCX files (annual reports, impact summaries, sponsorship decks) that can be attached to outbound emails
+- ✅ Thank-you email templates (first-time donor, repeat donor, major gift, in-kind)
+- ✅ Send thank-you from Contact detail page, auto-logged as a ContactNote
+- ✅ Fundraising appeal email templates with merge fields (name, last gift amount, impact stats)
+- ✅ Bulk appeal: select contacts by tag/segment, send personalized appeal emails
+- ✅ Tax receipt generation: IRS-compliant donation acknowledgment with organization details
+- ✅ Communication history: track all outbound emails with open/delivery status
+- ✅ Document attachment library: admin-managed library of PDF/DOCX files (annual reports, impact summaries, sponsorship decks) that can be attached to outbound emails
 
-### Phase 5 — Grant Management
+### Phase 5 — Grant Management ✅ (PR #2954)
 
-- ❌ Create `Grant` entity — represents a grant opportunity (funder, program, amount range, deadlines, status)
-- ❌ Create `GrantTask` entity — checklist items for each grant (application steps, reporting deliverables)
-- ❌ Grant lifecycle tracking: Prospect → LOI Submitted → Application Submitted → Awarded / Declined → Reporting → Renewal
-- ❌ Grant list page with status pipeline view (kanban-style or table with status filters)
-- ❌ Grant detail page: funder info, amounts, deadlines, documents, task checklist, notes
+- ✅ Create `Grant` entity — represents a grant opportunity (funder, program, amount range, deadlines, status)
+- ✅ Create `GrantTask` entity — checklist items for each grant (application steps, reporting deliverables)
+- ✅ Grant lifecycle tracking: Prospect → LOI Submitted → Application Submitted → Awarded / Declined → Reporting → Renewal
+- ✅ Grant list page with status pipeline view (table with status filters)
+- ✅ Grant detail page: funder info, amounts, deadlines, task checklist, notes
 - ❌ Deadline calendar: upcoming grant deadlines with automated email reminders
-- ❌ Link grants to Contacts (funder program officers) for relationship tracking
+- ✅ Link grants to Contacts (funder program officers) for relationship tracking
 - ❌ Budget tracking per grant: awarded amount, expenditures, remaining balance
 
 ### Phase 6 — AI Grant Source Discovery
@@ -388,49 +388,49 @@ None — all CRM features are web admin only.
 
 ## Implementation Phases
 
-### Phase 1: Contact & Donor Data Model (Foundation)
-1. Create `Contact`, `Donation`, `Pledge`, `ContactNote`, `ContactTag`, `ContactContactTag`, `Grant`, `GrantTask` entities in `TrashMob.Models/`
-2. Add EF Core configurations in `MobDbContext` (indexes, relationships, enums)
-3. Create database migration
-4. Create repository interfaces and implementations
-5. Create manager interfaces and implementations
-6. Register in `ServiceBuilder.cs`
-7. Add unit tests for managers
+### Phase 1: Contact & Donor Data Model (Foundation) ✅
+1. ✅ Create `Contact`, `Donation`, `Pledge`, `ContactNote`, `ContactTag`, `ContactContactTag`, `Grant`, `GrantTask` entities in `TrashMob.Models/`
+2. ✅ Add EF Core configurations in `MobDbContext` (indexes, relationships, enums)
+3. ✅ Create database migration
+4. ✅ Create repository interfaces and implementations
+5. ✅ Create manager interfaces and implementations
+6. ✅ Register in `ServiceBuilder.cs`
+7. ✅ Add unit tests for managers
 
-### Phase 2: Contact Management UI
-1. Create `ContactsController` with CRUD endpoints (SiteAdmin only)
-2. Create `ContactTagsController`
-3. Add TypeScript types and React Query services
-4. Build Contact list page with search, tag filters, pagination
-5. Build Contact detail page with profile, notes, tags
-6. Build Add/Edit Contact form with duplicate detection
-7. Build note entry and timeline display
+### Phase 2: Contact Management UI ✅
+1. ✅ Create `ContactsController` with CRUD endpoints (SiteAdmin only)
+2. ✅ Create `ContactTagsController`
+3. ✅ Add TypeScript types and React Query services
+4. ✅ Build Contact list page with search, tag filters, pagination
+5. ✅ Build Contact detail page with profile, notes, tags
+6. ✅ Build Add/Edit Contact form with duplicate detection
+7. ✅ Build note entry and timeline display
 
-### Phase 3: Donation Tracking
-1. Create `DonationsController` and `PledgesController`
-2. Add donation TypeScript types and services
-3. Build Donation list page with filters and totals
-4. Build Record Donation form (linked to Contact)
-5. Add donation summary section to Contact detail page
-6. Build Pledge management (create, track, link payments)
-7. Add recurring donation tracking
+### Phase 3: Donation Tracking ✅
+1. ✅ Create `DonationsController` and `PledgesController`
+2. ✅ Add donation TypeScript types and services
+3. ✅ Build Donation list page with filters and totals
+4. ✅ Build Record Donation form (linked to Contact)
+5. ✅ Add donation summary section to Contact detail page
+6. ✅ Build Pledge management (create, track, link payments)
+7. ✅ Add recurring donation tracking
 
-### Phase 4: Communications
-1. Create thank-you and appeal email templates in `EmailCopy/`
-2. Add send-receipt and send-thankyou endpoints
-3. Build email composition UI on Contact detail page
-4. Implement bulk appeal: select contacts by tag, send personalized emails
-5. Add communication history to Contact notes timeline
-6. Tax receipt PDF generation
+### Phase 4: Communications ✅
+1. ✅ Create thank-you and appeal email templates in `EmailCopy/`
+2. ✅ Add send-receipt and send-thankyou endpoints
+3. ✅ Build email composition UI on Contact detail page
+4. ✅ Implement bulk appeal: select contacts by tag, send personalized emails
+5. ✅ Add communication history to Contact notes timeline
+6. ✅ Tax receipt PDF generation
 
-### Phase 5: Grant Management
-1. Create `GrantsController` with full CRUD
-2. Add grant TypeScript types and services
-3. Build Grant pipeline page (table with status filters)
-4. Build Grant detail page with task checklist
-5. Build deadline calendar with email reminders
-6. Link grants to funder Contacts
-7. Add budget tracking (awarded vs. spent)
+### Phase 5: Grant Management ✅
+1. ✅ Create `GrantsController` with full CRUD
+2. ✅ Add grant TypeScript types and services
+3. ✅ Build Grant pipeline page (table with status filters)
+4. ✅ Build Grant detail page with task checklist
+5. ❌ Build deadline calendar with email reminders (deferred)
+6. ✅ Link grants to funder Contacts
+7. ❌ Add budget tracking — awarded vs. spent (deferred)
 
 ### Phase 6: AI Grant Discovery
 1. Design prompt engineering for grant opportunity search
@@ -513,5 +513,5 @@ The following features were identified as valuable for nonprofit CRMs but are be
 
 **Last Updated:** February 28, 2026
 **Owner:** Product & Engineering Team
-**Status:** Not Started
-**Next Review:** When prioritized for development
+**Status:** In Progress — Phases 1–5 complete (PRs #2945, #2946, #2948, #2949, #2954). Phases 6–8 not started.
+**Next Review:** When Phase 6 (AI Grant Discovery) is prioritized
