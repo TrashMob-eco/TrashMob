@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Complete |
+| **Status** | In Progress (Phase 5 remaining) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Medium |
@@ -36,9 +36,13 @@ The existing "Delete My Data" feature performs a mix of hard deletes and anonymi
 
 ### Secondary Goals (Nice-to-Have)
 - Add a data retention policy configuration for communities (how long to keep anonymized records)
-- Implement cookie consent banner for EU users
 - Add privacy settings page where users can control data visibility preferences
 - Create an admin data audit log showing anonymization/deletion events
+
+### Phase 5 Goals (Cookie Consent — Promoted from Secondary)
+- Remove unused third-party tracking scripts (Facebook SDK confirmed unused)
+- Implement cookie consent banner for all users (GDPR/CCPA)
+- Update Privacy Policy to accurately reflect actual tracking and cookie usage
 
 ---
 
@@ -124,11 +128,49 @@ Allow users to export all personal data in machine-readable JSON format per GDPR
 
 > **Implementation:** `DATA_PROCESSING_INVENTORY.md`, `DEVELOPER_DATA_HANDLING_GUIDE.md`, Privacy Policy page rewritten to v1.0, Delete My Data page enhanced with collapsible data explanation.
 
+### Phase 5 — Cookie Consent & Third-Party Tracking Audit
+
+Audit of `index.html` (Feb 2026) revealed significantly more third-party tracking than documented. Cookie consent banner is required for GDPR compliance.
+
+#### Third-Party Scripts in index.html
+
+| Script | Purpose | Sets Cookies/Tracks | Status |
+|--------|---------|-------------------|--------|
+| **Microsoft Clarity** | Session recording & heatmaps | Yes — tracking cookies | Active, needs consent |
+| **Facebook SDK** (`connect.facebook.net`, appId `149684225125954`, `autoLogAppEvents=1`) | Social plugins | Yes — extensive tracking | **UNUSED — remove entirely** |
+| **Application Insights** (`js.monitor.azure.com`) | Telemetry & error tracking | Yes — session tracking | Active, arguably "legitimate interest" but safest to include in consent |
+| **Twitter Widgets** (`platform.twitter.com/widgets.js`) | Social embedding | Yes — tracking cookies | Needs usage audit |
+| **Google APIs** (`apis.google.com/js/platform.js`) | Sign-in / general | Potentially | Needs usage audit |
+| **MyShop/Spreadshop** (`myspreadshop.com`) | Merchandise store embed | Potentially | Only on store page |
+
+#### Facebook SDK Finding
+
+The Facebook SDK is loaded with `autoLogAppEvents=1` (aggressive auto-logging of page views and user actions) but is **completely unused**:
+- No `FB.*` API calls anywhere in the codebase
+- No Facebook login/auth integration
+- No XFBML social plugins rendered
+- The only Facebook references are: a footer link to the TrashMob Facebook page (plain hyperlink), a `getFacebookUrl()` in `ShareUrl.tsx` that is never called, and standard Open Graph meta tags (used by all platforms, not Facebook-specific)
+- **Action: Remove Facebook SDK from index.html immediately** — it adds tracking with zero functionality
+
+#### Privacy Policy Inaccuracies
+
+The current Privacy Policy (v1.0, Feb 23 2026) states:
+- *"TrashMob uses minimal cookies, limited to authentication session management"* — **inaccurate**, Clarity and App Insights set tracking cookies
+- *"We do not use third-party advertising cookies, cross-site tracking pixels, or behavioral analytics"* — **inaccurate**, Clarity IS behavioral analytics, Facebook SDK has `autoLogAppEvents`
+- Third-party services list omits: Clarity, Facebook SDK, Twitter Platform, Application Insights, MyShop/Spreadshop
+
+#### Tasks
+
+- [ ] Remove Facebook SDK from `index.html` (unused, adds tracking for zero benefit)
+- [ ] Audit Twitter Widgets and Google APIs usage — remove if unused
+- [ ] Implement cookie consent banner that blocks Clarity, App Insights, and any remaining social scripts until user accepts
+- [ ] Update Privacy Policy to accurately list all third-party services and their cookie/tracking behavior
+- [ ] Update `DATA_PROCESSING_INVENTORY.md` with Clarity, App Insights, and any remaining third-party tracking
+
 ---
 
 ## Out of Scope
 
-- Cookie consent banner implementation (deferred — minimal cookie usage currently)
 - CCPA-specific compliance (California) — address if user base grows there
 - Data Processing Agreements (DPAs) with third parties (Azure, SendGrid) — handled at the organizational level
 - Automated data breach notification system
@@ -328,7 +370,7 @@ _To be created on project start._
 
 ---
 
-**Last Updated:** February 22, 2026
+**Last Updated:** February 28, 2026
 **Owner:** @JoeBeernink
-**Status:** Not Started
-**Next Review:** On project kickoff
+**Status:** Phases 1-4 Complete; Phase 5 (Cookie Consent & Tracking Audit) Not Started
+**Next Review:** On Phase 5 kickoff

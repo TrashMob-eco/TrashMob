@@ -8,11 +8,13 @@ import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
+import { CookieConsent } from './components/CookieConsent/CookieConsent';
 import { FeedbackWidget } from './components/FeedbackWidget/FeedbackWidget';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { DefaultPageHead } from './components/SEO/PageHead';
 
 import { initializeMsalClient } from './store/AuthStore';
+import { initAnalytics } from './lib/analytics';
 import { Shop } from './components/Shop';
 
 import 'react-phone-input-2/lib/style.css';
@@ -726,6 +728,7 @@ export const App: FC = () => {
 
     // Initialize MSAL client after config is loaded from backend
     useEffect(() => {
+        initAnalytics();
         initializeMsalClient()
             .then((client) => {
                 setMsalClient(client);
@@ -755,6 +758,7 @@ export const App: FC = () => {
                     </ErrorBoundary>
                 </MsalProvider>
                 <Toaster />
+                <CookieConsent />
                 <FeedbackWidget />
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
