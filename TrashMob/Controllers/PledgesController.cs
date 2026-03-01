@@ -11,7 +11,7 @@ namespace TrashMob.Controllers
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared;
-    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Managers.Contacts;
 
     /// <summary>
     /// Controller for pledge management (admin only).
@@ -19,7 +19,7 @@ namespace TrashMob.Controllers
     [Route("api/pledges")]
     [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
     [RequiredScope(Constants.TrashMobWriteScope)]
-    public class PledgesController(IKeyedManager<Pledge> pledgeManager)
+    public class PledgesController(IPledgeManager pledgeManager)
         : SecureController
     {
         /// <summary>
@@ -52,6 +52,19 @@ namespace TrashMob.Controllers
             }
 
             return Ok(pledge);
+        }
+
+        /// <summary>
+        /// Gets all pledges for a specific contact.
+        /// </summary>
+        /// <param name="contactId">The contact ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("bycontact/{contactId}")]
+        [ProducesResponseType(typeof(IEnumerable<Pledge>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetByContactId(Guid contactId, CancellationToken cancellationToken)
+        {
+            var pledges = await pledgeManager.GetByContactIdAsync(contactId, cancellationToken);
+            return Ok(pledges);
         }
 
         /// <summary>

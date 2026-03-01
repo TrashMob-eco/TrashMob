@@ -160,7 +160,7 @@
             // Contact Management
             services.AddScoped<IContactManager, ContactManager>();
             services.AddScoped<IDonationManager, DonationManager>();
-            services.AddScoped<IKeyedManager<Pledge>, KeyedManager<Pledge>>();
+            services.AddScoped<IPledgeManager, PledgeManager>();
             services.AddScoped<IContactNoteManager, ContactNoteManager>();
             services.AddScoped<IKeyedManager<ContactTag>, KeyedManager<ContactTag>>();
             services.AddScoped<IBaseManager<ContactContactTag>, ContactContactTagManager>();

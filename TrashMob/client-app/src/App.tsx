@@ -424,6 +424,24 @@ const SiteAdminContactDetail = lazy(() =>
 const SiteAdminContactTags = lazy(() =>
     import('./pages/siteadmin/contact-tags/page').then((m) => ({ default: m.SiteAdminContactTags })),
 );
+const SiteAdminDonations = lazy(() =>
+    import('./pages/siteadmin/donations/page').then((m) => ({ default: m.SiteAdminDonations })),
+);
+const SiteAdminDonationCreate = lazy(() =>
+    import('./pages/siteadmin/donations/create').then((m) => ({ default: m.SiteAdminDonationCreate })),
+);
+const SiteAdminDonationEdit = lazy(() =>
+    import('./pages/siteadmin/donations/$donationId.edit').then((m) => ({ default: m.SiteAdminDonationEdit })),
+);
+const SiteAdminPledges = lazy(() =>
+    import('./pages/siteadmin/pledges/page').then((m) => ({ default: m.SiteAdminPledges })),
+);
+const SiteAdminPledgeCreate = lazy(() =>
+    import('./pages/siteadmin/pledges/create').then((m) => ({ default: m.SiteAdminPledgeCreate })),
+);
+const SiteAdminPledgeEdit = lazy(() =>
+    import('./pages/siteadmin/pledges/$pledgeId.edit').then((m) => ({ default: m.SiteAdminPledgeEdit })),
+);
 
 const queryClient = new QueryClient();
 
@@ -692,6 +710,12 @@ const AppContent: FC = () => {
                                 <Route path='contacts/:contactId' element={<SiteAdminContactDetail />} />
                                 <Route path='contacts/:contactId/edit' element={<SiteAdminContactEdit />} />
                                 <Route path='contact-tags' element={<SiteAdminContactTags />} />
+                                <Route path='donations' element={<SiteAdminDonations />} />
+                                <Route path='donations/create' element={<SiteAdminDonationCreate />} />
+                                <Route path='donations/:donationId/edit' element={<SiteAdminDonationEdit />} />
+                                <Route path='pledges' element={<SiteAdminPledges />} />
+                                <Route path='pledges/create' element={<SiteAdminPledgeCreate />} />
+                                <Route path='pledges/:pledgeId/edit' element={<SiteAdminPledgeEdit />} />
                             </Route>
                         </Route>
                         <Route>
