@@ -6,7 +6,7 @@
 | **Priority** | Low |
 | **Risk** | High |
 | **Size** | Large |
-| **Dependencies** | Project 20 (Gamification), Project 51 (Contact Management) |
+| **Dependencies** | Project 20 (Gamification — not started), Project 51 (Contact Management — Phases 1–5 complete) |
 
 ---
 
@@ -149,8 +149,8 @@ This is a **future project** — not prioritized for immediate development. It s
 ## Dependencies
 
 ### Blockers
-- **Project 20 (Gamification)** — Reward criteria should integrate with existing achievement and streak tracking
-- **Project 51 (Contact Management)** — Partner sourcing tools can leverage the contact management infrastructure
+- **Project 20 (Gamification)** — Reward criteria should integrate with existing achievement and streak tracking. **Status: Not started.**
+- **Project 51 (Contact Management)** — Partner sourcing tools can leverage the contact management infrastructure. **Status: Phases 1–5 complete** (Contact, Donation, Pledge, ContactTag, ContactNote, Grant, GrantTask entities all implemented with full backend + frontend). The `ContactId` FK on `RewardPartner` can now reference the existing `Contact` entity. Phases 6–8 (AI Grant Discovery, Engagement Scoring, Reporting Dashboards) are not yet started but are not blockers for this project.
 
 ### Enables
 - **Future: Corporate partnership expansion** — Reward program demonstrates concrete partner ROI
@@ -192,7 +192,7 @@ This is a **future project** — not prioritized for immediate development. It s
 | `Website` | string (500) | No | |
 | `Description` | string (1000) | No | About the partner |
 | `PartnerId` | Guid? (FK) | No | Link to existing Partner entity if applicable |
-| `ContactId` | Guid? (FK) | No | Link to Contact (Project 51) if applicable |
+| `ContactId` | Guid? (FK) | No | Link to Contact (Project 51) — entity exists, ready to use |
 | `AgreementStartDate` | DateTimeOffset? | No | When partnership began |
 | `AgreementEndDate` | DateTimeOffset? | No | When partnership expires |
 | `IsActive` | bool | Yes | Currently contributing rewards |
@@ -406,5 +406,5 @@ Research on volunteer motivation suggests:
 
 **Last Updated:** February 28, 2026
 **Owner:** Product & Engineering Team
-**Status:** Not Started — Future project for consideration as platform grows
+**Status:** Not Started — Future project for consideration as platform grows. Key dependency Project 51 (Contact Management) is now substantially complete (Phases 1–5 merged).
 **Next Review:** When volunteer base and partner network reach sufficient scale

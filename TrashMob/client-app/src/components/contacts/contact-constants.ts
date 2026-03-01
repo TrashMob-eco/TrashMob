@@ -97,3 +97,41 @@ export const PledgeStatusBadge = ({ status }: { status: number }) => {
             return createElement(Badge, { variant: 'outline' }, label);
     }
 };
+
+export const GRANT_STATUSES = [
+    { value: 1, label: 'Prospect' },
+    { value: 2, label: 'LOI Submitted' },
+    { value: 3, label: 'Application Submitted' },
+    { value: 4, label: 'Awarded' },
+    { value: 5, label: 'Declined' },
+    { value: 6, label: 'Reporting' },
+    { value: 7, label: 'Renewal' },
+    { value: 8, label: 'Closed' },
+] as const;
+
+export function getGrantStatusLabel(status: number): string {
+    return GRANT_STATUSES.find((s) => s.value === status)?.label ?? 'Unknown';
+}
+
+export const GrantStatusBadge = ({ status }: { status: number }) => {
+    const label = getGrantStatusLabel(status);
+    switch (status) {
+        case 1:
+            return createElement(Badge, { variant: 'outline' }, label);
+        case 2:
+        case 3:
+            return createElement(Badge, { variant: 'secondary' }, label);
+        case 4:
+            return createElement(Badge, { variant: 'success' }, label);
+        case 5:
+            return createElement(Badge, { variant: 'destructive' }, label);
+        case 6:
+            return createElement(Badge, null, label);
+        case 7:
+            return createElement(Badge, { variant: 'secondary' }, label);
+        case 8:
+            return createElement(Badge, { variant: 'outline' }, label);
+        default:
+            return createElement(Badge, { variant: 'outline' }, label);
+    }
+};
