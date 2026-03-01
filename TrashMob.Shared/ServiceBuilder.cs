@@ -7,6 +7,7 @@
     using TrashMob.Shared.Managers.IFTTT;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers.LitterReport;
+    using TrashMob.Shared.Managers.Contacts;
     using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Managers.Teams;
     using TrashMob.Shared.Managers.Communities;
@@ -156,6 +157,19 @@
             services.AddScoped<ISentimentAnalysisService, SentimentAnalysisService>();
             services.AddScoped<IProspectConversionManager, ProspectConversionManager>();
 
+            // Contact Management
+            services.AddScoped<IContactManager, ContactManager>();
+            services.AddScoped<IDonationManager, DonationManager>();
+            services.AddScoped<IPledgeManager, PledgeManager>();
+            services.AddScoped<IContactNoteManager, ContactNoteManager>();
+            services.AddScoped<IKeyedManager<ContactTag>, KeyedManager<ContactTag>>();
+            services.AddScoped<IBaseManager<ContactContactTag>, ContactContactTagManager>();
+            services.AddScoped<IGrantManager, GrantManager>();
+            services.AddScoped<IGrantTaskManager, GrantTaskManager>();
+            services.AddScoped<IGrantDiscoveryService, GrantDiscoveryService>();
+            services.AddScoped<IDonationEmailManager, DonationEmailManager>();
+            services.AddScoped<IFundraisingAnalyticsManager, FundraisingAnalyticsManager>();
+
             // Newsletter
             services.AddScoped<INewsletterManager, NewsletterManager>();
             services.AddScoped<IUserNewsletterPreferenceManager, UserNewsletterPreferenceManager>();
@@ -265,6 +279,16 @@
             services.AddScoped<IKeyedRepository<CommunityProspect>, KeyedRepository<CommunityProspect>>();
             services.AddScoped<IKeyedRepository<ProspectActivity>, KeyedRepository<ProspectActivity>>();
             services.AddScoped<IKeyedRepository<ProspectOutreachEmail>, KeyedRepository<ProspectOutreachEmail>>();
+
+            // Contact Management repositories
+            services.AddScoped<IKeyedRepository<Contact>, KeyedRepository<Contact>>();
+            services.AddScoped<IKeyedRepository<Donation>, KeyedRepository<Donation>>();
+            services.AddScoped<IKeyedRepository<Pledge>, KeyedRepository<Pledge>>();
+            services.AddScoped<IKeyedRepository<ContactNote>, KeyedRepository<ContactNote>>();
+            services.AddScoped<IKeyedRepository<ContactTag>, KeyedRepository<ContactTag>>();
+            services.AddScoped<IBaseRepository<ContactContactTag>, BaseRepository<ContactContactTag>>();
+            services.AddScoped<IKeyedRepository<Grant>, KeyedRepository<Grant>>();
+            services.AddScoped<IKeyedRepository<GrantTask>, KeyedRepository<GrantTask>>();
 
             // Newsletter repositories
             services.AddScoped<IKeyedRepository<Newsletter>, KeyedRepository<Newsletter>>();

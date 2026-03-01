@@ -401,4 +401,190 @@ namespace TrashMob.Models
         /// </summary>
         Certificate = 5,
     }
+
+    /// <summary>
+    /// Represents the type of contact in the CRM system.
+    /// </summary>
+    public enum ContactTypeEnum
+    {
+        /// <summary>
+        /// An individual person (donor, prospect, volunteer, etc.).
+        /// </summary>
+        Individual = 1,
+
+        /// <summary>
+        /// An organization (company, nonprofit, agency, etc.).
+        /// </summary>
+        Organization = 2,
+
+        /// <summary>
+        /// A foundation or grant-making organization.
+        /// </summary>
+        Foundation = 3,
+    }
+
+    /// <summary>
+    /// Represents the type of donation received.
+    /// </summary>
+    public enum DonationTypeEnum
+    {
+        /// <summary>
+        /// Cash donation.
+        /// </summary>
+        Cash = 1,
+
+        /// <summary>
+        /// Payment by check.
+        /// </summary>
+        Check = 2,
+
+        /// <summary>
+        /// Online payment (credit card, digital wallet, etc.).
+        /// </summary>
+        Online = 3,
+
+        /// <summary>
+        /// In-kind donation of goods or services.
+        /// </summary>
+        InKind = 4,
+
+        /// <summary>
+        /// Employer matching gift.
+        /// </summary>
+        MatchingGift = 5,
+    }
+
+    /// <summary>
+    /// Represents the frequency of a recurring donation or pledge.
+    /// </summary>
+    public enum DonationFrequencyEnum
+    {
+        /// <summary>
+        /// A single one-time gift.
+        /// </summary>
+        OneTime = 1,
+
+        /// <summary>
+        /// Monthly recurring donation.
+        /// </summary>
+        Monthly = 2,
+
+        /// <summary>
+        /// Quarterly recurring donation.
+        /// </summary>
+        Quarterly = 3,
+
+        /// <summary>
+        /// Annual recurring donation.
+        /// </summary>
+        Annually = 4,
+    }
+
+    /// <summary>
+    /// Represents the status of a pledge.
+    /// </summary>
+    public enum PledgeStatusEnum
+    {
+        /// <summary>
+        /// Pledge is actively being fulfilled.
+        /// </summary>
+        Active = 1,
+
+        /// <summary>
+        /// Pledge has been fully fulfilled.
+        /// </summary>
+        Fulfilled = 2,
+
+        /// <summary>
+        /// Pledge payments have lapsed.
+        /// </summary>
+        Lapsed = 3,
+
+        /// <summary>
+        /// Pledge has been cancelled.
+        /// </summary>
+        Cancelled = 4,
+    }
+
+    /// <summary>
+    /// Represents the type of a contact interaction note.
+    /// </summary>
+    public enum ContactNoteTypeEnum
+    {
+        /// <summary>
+        /// Phone call interaction.
+        /// </summary>
+        Call = 1,
+
+        /// <summary>
+        /// In-person or virtual meeting.
+        /// </summary>
+        Meeting = 2,
+
+        /// <summary>
+        /// Email correspondence.
+        /// </summary>
+        Email = 3,
+
+        /// <summary>
+        /// General observation or note.
+        /// </summary>
+        Note = 4,
+
+        /// <summary>
+        /// Thank-you communication.
+        /// </summary>
+        ThankYou = 5,
+
+        /// <summary>
+        /// Fundraising appeal.
+        /// </summary>
+        Appeal = 6,
+    }
+
+    /// <summary>
+    /// Represents the status of a grant in the pipeline.
+    /// </summary>
+    public enum GrantStatusEnum
+    {
+        /// <summary>
+        /// Grant opportunity identified but not yet pursued.
+        /// </summary>
+        Prospect = 1,
+
+        /// <summary>
+        /// Letter of inquiry has been submitted.
+        /// </summary>
+        LOISubmitted = 2,
+
+        /// <summary>
+        /// Full application has been submitted.
+        /// </summary>
+        ApplicationSubmitted = 3,
+
+        /// <summary>
+        /// Grant has been awarded.
+        /// </summary>
+        Awarded = 4,
+
+        /// <summary>
+        /// Grant application was declined.
+        /// </summary>
+        Declined = 5,
+
+        /// <summary>
+        /// Grant is in the reporting phase.
+        /// </summary>
+        Reporting = 6,
+
+        /// <summary>
+        /// Grant is up for renewal.
+        /// </summary>
+        Renewal = 7,
+
+        /// <summary>
+        /// Grant has been closed.
+        /// </summary>
+        Closed = 8,
+    }
 }

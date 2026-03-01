@@ -57,5 +57,31 @@
         /// Gets or sets the group identifier for email categorization or unsubscribe handling.
         /// </summary>
         public int GroupId { get; set; }
+
+        /// <summary>
+        /// Gets the list of file attachments for this email.
+        /// </summary>
+        public List<EmailAttachment> Attachments { get; } = new();
+    }
+
+    /// <summary>
+    /// Represents a file attachment for an email.
+    /// </summary>
+    public class EmailAttachment
+    {
+        /// <summary>
+        /// Gets or sets the filename displayed to the recipient.
+        /// </summary>
+        public string Filename { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Base64-encoded file content.
+        /// </summary>
+        public string Base64Content { get; set; }
+
+        /// <summary>
+        /// Gets or sets the MIME type (e.g., "application/pdf").
+        /// </summary>
+        public string MimeType { get; set; }
     }
 }

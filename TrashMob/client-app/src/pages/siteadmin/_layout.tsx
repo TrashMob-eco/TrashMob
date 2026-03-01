@@ -19,12 +19,26 @@ import {
     Target,
     Upload,
     BarChart3,
+    Contact,
+    Tag,
+    DollarSign,
+    HandCoins,
+    Megaphone,
+    BookOpen,
+    Landmark,
+    LayoutDashboard,
+    Sparkles,
+    TrendingUp,
 } from 'lucide-react';
 import { SidebarNav, NavGroup } from '@/components/ui/sidebar-nav';
 
 const pathPrefix = '/siteadmin';
 
 const navGroups: NavGroup[] = [
+    {
+        title: 'Help',
+        items: [{ name: 'Admin Guide', href: `${pathPrefix}/guide`, icon: BookOpen }],
+    },
     {
         title: 'Data Management',
         items: [
@@ -40,6 +54,20 @@ const navGroups: NavGroup[] = [
             { name: 'Discovery', href: `${pathPrefix}/prospects/discovery`, icon: Search },
             { name: 'Import CSV', href: `${pathPrefix}/prospects/import`, icon: Upload },
             { name: 'Pipeline Analytics', href: `${pathPrefix}/prospects/analytics`, icon: BarChart3 },
+        ],
+    },
+    {
+        title: 'Fundraising',
+        items: [
+            { name: 'Contacts', href: `${pathPrefix}/contacts`, icon: Contact },
+            { name: 'Contact Tags', href: `${pathPrefix}/contact-tags`, icon: Tag },
+            { name: 'Donations', href: `${pathPrefix}/donations`, icon: DollarSign },
+            { name: 'Pledges', href: `${pathPrefix}/pledges`, icon: HandCoins },
+            { name: 'Appeals', href: `${pathPrefix}/appeals`, icon: Megaphone },
+            { name: 'Grants', href: `${pathPrefix}/grants`, icon: Landmark },
+            { name: 'Grant Discovery', href: `${pathPrefix}/grants/discovery`, icon: Sparkles },
+            { name: 'Dashboard', href: `${pathPrefix}/fundraising/dashboard`, icon: LayoutDashboard },
+            { name: 'Engagement', href: `${pathPrefix}/fundraising/engagement`, icon: TrendingUp },
         ],
     },
     {

@@ -315,6 +315,7 @@ const PartnerAdminInvite = lazy(() =>
 
 /** SiteAdmin - Lazy loaded (admin-only pages) */
 const SiteAdminLayout = lazy(() => import('./pages/siteadmin/_layout').then((m) => ({ default: m.SiteAdminLayout })));
+const SiteAdminGuide = lazy(() => import('./pages/siteadmin/guide/page').then((m) => ({ default: m.SiteAdminGuide })));
 const SiteAdminUsers = lazy(() => import('./pages/siteadmin/users/page').then((m) => ({ default: m.SiteAdminUsers })));
 const SiteAdminUserDetail = lazy(() =>
     import('./pages/siteadmin/users/$userId').then((m) => ({ default: m.SiteAdminUserDetail })),
@@ -408,6 +409,65 @@ const SiteAdminProspectAnalytics = lazy(() =>
 );
 const SiteAdminDocuments = lazy(() =>
     import('./pages/siteadmin/documents/page').then((m) => ({ default: m.SiteAdminDocuments })),
+);
+const SiteAdminContacts = lazy(() =>
+    import('./pages/siteadmin/contacts/page').then((m) => ({ default: m.SiteAdminContacts })),
+);
+const SiteAdminContactCreate = lazy(() =>
+    import('./pages/siteadmin/contacts/create').then((m) => ({ default: m.SiteAdminContactCreate })),
+);
+const SiteAdminContactEdit = lazy(() =>
+    import('./pages/siteadmin/contacts/$contactId.edit').then((m) => ({ default: m.SiteAdminContactEdit })),
+);
+const SiteAdminContactDetail = lazy(() =>
+    import('./pages/siteadmin/contacts/$contactId').then((m) => ({ default: m.SiteAdminContactDetail })),
+);
+const SiteAdminContactTags = lazy(() =>
+    import('./pages/siteadmin/contact-tags/page').then((m) => ({ default: m.SiteAdminContactTags })),
+);
+const SiteAdminDonations = lazy(() =>
+    import('./pages/siteadmin/donations/page').then((m) => ({ default: m.SiteAdminDonations })),
+);
+const SiteAdminDonationCreate = lazy(() =>
+    import('./pages/siteadmin/donations/create').then((m) => ({ default: m.SiteAdminDonationCreate })),
+);
+const SiteAdminDonationEdit = lazy(() =>
+    import('./pages/siteadmin/donations/$donationId.edit').then((m) => ({ default: m.SiteAdminDonationEdit })),
+);
+const SiteAdminPledges = lazy(() =>
+    import('./pages/siteadmin/pledges/page').then((m) => ({ default: m.SiteAdminPledges })),
+);
+const SiteAdminPledgeCreate = lazy(() =>
+    import('./pages/siteadmin/pledges/create').then((m) => ({ default: m.SiteAdminPledgeCreate })),
+);
+const SiteAdminPledgeEdit = lazy(() =>
+    import('./pages/siteadmin/pledges/$pledgeId.edit').then((m) => ({ default: m.SiteAdminPledgeEdit })),
+);
+const SiteAdminAppeals = lazy(() =>
+    import('./pages/siteadmin/appeals/page').then((m) => ({ default: m.SiteAdminAppeals })),
+);
+const SiteAdminGrants = lazy(() =>
+    import('./pages/siteadmin/grants/page').then((m) => ({ default: m.SiteAdminGrants })),
+);
+const SiteAdminGrantCreate = lazy(() =>
+    import('./pages/siteadmin/grants/create').then((m) => ({ default: m.SiteAdminGrantCreate })),
+);
+const SiteAdminGrantDetail = lazy(() =>
+    import('./pages/siteadmin/grants/$grantId').then((m) => ({ default: m.SiteAdminGrantDetail })),
+);
+const SiteAdminGrantEdit = lazy(() =>
+    import('./pages/siteadmin/grants/$grantId.edit').then((m) => ({ default: m.SiteAdminGrantEdit })),
+);
+const SiteAdminGrantDiscovery = lazy(() =>
+    import('./pages/siteadmin/grants/discovery').then((m) => ({ default: m.SiteAdminGrantDiscovery })),
+);
+const SiteAdminFundraisingDashboard = lazy(() =>
+    import('./pages/siteadmin/fundraising/dashboard').then((m) => ({
+        default: m.SiteAdminFundraisingDashboard,
+    })),
+);
+const SiteAdminEngagement = lazy(() =>
+    import('./pages/siteadmin/fundraising/engagement').then((m) => ({ default: m.SiteAdminEngagement })),
 );
 
 const queryClient = new QueryClient();
@@ -635,6 +695,7 @@ const AppContent: FC = () => {
                                     </Suspense>
                                 }
                             >
+                                <Route path='guide' element={<SiteAdminGuide />} />
                                 <Route path='users' element={<SiteAdminUsers />} />
                                 <Route path='users/:userId' element={<SiteAdminUserDetail />} />
                                 <Route path='events' element={<SiteAdminEvents />} />
@@ -672,6 +733,25 @@ const AppContent: FC = () => {
                                 <Route path='prospects/analytics' element={<SiteAdminProspectAnalytics />} />
                                 <Route path='prospects/:prospectId' element={<SiteAdminProspectDetail />} />
                                 <Route path='prospects/:prospectId/edit' element={<SiteAdminProspectEdit />} />
+                                <Route path='contacts' element={<SiteAdminContacts />} />
+                                <Route path='contacts/create' element={<SiteAdminContactCreate />} />
+                                <Route path='contacts/:contactId' element={<SiteAdminContactDetail />} />
+                                <Route path='contacts/:contactId/edit' element={<SiteAdminContactEdit />} />
+                                <Route path='contact-tags' element={<SiteAdminContactTags />} />
+                                <Route path='donations' element={<SiteAdminDonations />} />
+                                <Route path='donations/create' element={<SiteAdminDonationCreate />} />
+                                <Route path='donations/:donationId/edit' element={<SiteAdminDonationEdit />} />
+                                <Route path='pledges' element={<SiteAdminPledges />} />
+                                <Route path='pledges/create' element={<SiteAdminPledgeCreate />} />
+                                <Route path='pledges/:pledgeId/edit' element={<SiteAdminPledgeEdit />} />
+                                <Route path='appeals' element={<SiteAdminAppeals />} />
+                                <Route path='grants' element={<SiteAdminGrants />} />
+                                <Route path='grants/create' element={<SiteAdminGrantCreate />} />
+                                <Route path='grants/:grantId' element={<SiteAdminGrantDetail />} />
+                                <Route path='grants/:grantId/edit' element={<SiteAdminGrantEdit />} />
+                                <Route path='grants/discovery' element={<SiteAdminGrantDiscovery />} />
+                                <Route path='fundraising/dashboard' element={<SiteAdminFundraisingDashboard />} />
+                                <Route path='fundraising/engagement' element={<SiteAdminEngagement />} />
                             </Route>
                         </Route>
                         <Route>

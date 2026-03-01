@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { EventVisibilityBadge } from '@/components/ui/badge';
 import { useGetEventType } from '../../../hooks/useGetEventType';
@@ -5,14 +6,16 @@ import { RegisterBtn } from '../../Customization/RegisterBtn';
 import EventData from '../../Models/EventData';
 import UserData from '../../Models/UserData';
 import { isCompletedEvent } from '@/lib/event-helpers';
+import { AgeGateDialog } from '@/components/AgeGate/AgeGateDialog';
+import { getApiConfig, getMsalClientInstance } from '@/store/AuthStore';
 
 type EventDetailInfoWindowContentProps = {
     event: EventData & {
         isAttending?: boolean;
     };
     hideTitle?: boolean;
-    isUserLoaded: boolean;
-    currentUser: UserData;
+    isUserLoaded?: boolean;
+    currentUser?: UserData;
 };
 
 export const EventDetailInfoWindowHeader = (props: EventData) => (
@@ -37,6 +40,7 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
     } = event;
 
     const { data: eventType } = useGetEventType(eventTypeId);
+    const [showAgeGate, setShowAgeGate] = useState(false);
 
     const date = new Date(eventDate).toLocaleDateString([], {
         month: 'long',
@@ -48,6 +52,14 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
     });
 
     const eventDetailUrl = isCompletedEvent(event) ? `/eventsummary/${id}` : `/eventdetails/${id}`;
+
+    function handleAgeGateConfirm() {
+        setShowAgeGate(false);
+        const apiConfig = getApiConfig();
+        getMsalClientInstance().loginRedirect({
+            scopes: apiConfig.scopes,
+        });
+    }
 
     return (
         <div style={{ width: 500, overflowX: 'auto' }}>
@@ -70,13 +82,24 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
                 <Button variant='outline' className='mr-0' asChild>
                     <a href={eventDetailUrl}>View Details</a>
                 </Button>
-                <RegisterBtn
-                    eventId={id}
-                    isAttending={isAttending ? 'Yes' : 'No'}
-                    isEventCompleted={new Date(eventDate) < new Date()}
-                    currentUser={currentUser}
-                    isUserLoaded={isUserLoaded}
-                />
+                {currentUser && isUserLoaded ? (
+                    <RegisterBtn
+                        eventId={id}
+                        isAttending={isAttending ? 'Yes' : 'No'}
+                        isEventCompleted={new Date(eventDate) < new Date()}
+                        currentUser={currentUser}
+                        isUserLoaded={isUserLoaded}
+                    />
+                ) : !isCompletedEvent(event) ? (
+                    <>
+                        <Button onClick={() => setShowAgeGate(true)}>Sign In to Attend</Button>
+                        <AgeGateDialog
+                            open={showAgeGate}
+                            onOpenChange={setShowAgeGate}
+                            onConfirm={handleAgeGateConfirm}
+                        />
+                    </>
+                ) : null}
             </div>
         </div>
     );
