@@ -7,13 +7,13 @@
     using TrashMob.Shared.Managers.IFTTT;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers.LitterReport;
+    using TrashMob.Shared.Managers.Contacts;
     using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Managers.Teams;
     using TrashMob.Shared.Managers.Communities;
     using TrashMob.Shared.Managers.Adoptions;
     using TrashMob.Shared.Managers.Areas;
     using TrashMob.Shared.Managers.Gamification;
-    using TrashMob.Shared.Managers.Contacts;
     using TrashMob.Shared.Managers.Prospects;
     using TrashMob.Shared.Managers.SponsoredAdoptions;
     using TrashMob.Shared.Persistence;
@@ -166,6 +166,7 @@
             services.AddScoped<IBaseManager<ContactContactTag>, ContactContactTagManager>();
             services.AddScoped<IGrantManager, GrantManager>();
             services.AddScoped<IGrantTaskManager, GrantTaskManager>();
+            services.AddScoped<IGrantDiscoveryService, GrantDiscoveryService>();
             services.AddScoped<IDonationEmailManager, DonationEmailManager>();
 
             // Newsletter

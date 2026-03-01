@@ -9,9 +9,11 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Contacts;
+    using TrashMob.Shared.Managers.Interfaces;
 
     /// <summary>
     /// Controller for grant management (admin only).
@@ -19,7 +21,9 @@ namespace TrashMob.Controllers
     [Route("api/grants")]
     [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
     [RequiredScope(Constants.TrashMobWriteScope)]
-    public class GrantsController(IGrantManager grantManager)
+    public class GrantsController(
+        IGrantManager grantManager,
+        IGrantDiscoveryService grantDiscoveryService)
         : SecureController
     {
         /// <summary>
@@ -90,6 +94,19 @@ namespace TrashMob.Controllers
         {
             var result = await grantManager.UpdateAsync(grant, UserId, cancellationToken);
             TrackEvent("UpdateGrant");
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Discovers new grant opportunities using AI.
+        /// </summary>
+        /// <param name="request">The discovery request with optional prompt or focus areas.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("discover")]
+        [ProducesResponseType(typeof(GrantDiscoveryResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Discover(GrantDiscoveryRequest request, CancellationToken cancellationToken)
+        {
+            var result = await grantDiscoveryService.DiscoverGrantsAsync(request, cancellationToken);
             return Ok(result);
         }
 

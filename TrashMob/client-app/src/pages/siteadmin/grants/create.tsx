@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -41,6 +41,7 @@ export const SiteAdminGrantCreate = () => {
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     const createGrant = useMutation({
         mutationKey: CreateGrant().key,
@@ -55,20 +56,20 @@ export const SiteAdminGrantCreate = () => {
     const form = useForm<FormInputs>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            funderName: '',
-            programName: '',
-            description: '',
+            funderName: searchParams.get('funderName') || '',
+            programName: searchParams.get('programName') || '',
+            description: searchParams.get('description') || '',
             status: '1',
-            amountMin: null,
-            amountMax: null,
+            amountMin: searchParams.get('amountMin') ? Number(searchParams.get('amountMin')) : null,
+            amountMax: searchParams.get('amountMax') ? Number(searchParams.get('amountMax')) : null,
             amountAwarded: null,
-            submissionDeadline: '',
+            submissionDeadline: searchParams.get('submissionDeadline') || '',
             awardDate: '',
             reportingDeadline: '',
             renewalDate: '',
             funderContactId: '',
-            grantUrl: '',
-            notes: '',
+            grantUrl: searchParams.get('grantUrl') || '',
+            notes: searchParams.get('notes') || '',
         },
     });
 

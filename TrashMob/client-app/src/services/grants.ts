@@ -63,6 +63,42 @@ export const DeleteGrant = () => ({
         }),
 });
 
+// --- Grant Discovery ---
+
+export interface DiscoveredGrantData {
+    funderName: string | null;
+    programName: string | null;
+    description: string | null;
+    amountMin: number | null;
+    amountMax: number | null;
+    deadline: string | null;
+    url: string | null;
+    eligibilityNotes: string | null;
+    rationale: string | null;
+}
+
+export interface GrantDiscoveryResultData {
+    grants: DiscoveredGrantData[];
+    tokensUsed: number;
+    message: string | null;
+}
+
+export type DiscoverGrants_Body = {
+    prompt?: string;
+    focusAreas?: string;
+    maxResults: number;
+};
+export type DiscoverGrants_Response = GrantDiscoveryResultData;
+export const DiscoverGrants = () => ({
+    key: ['/grants', 'discover'],
+    service: async (body: DiscoverGrants_Body) =>
+        ApiService('protected').fetchData<DiscoverGrants_Response, DiscoverGrants_Body>({
+            url: '/grants/discover',
+            method: 'post',
+            data: body,
+        }),
+});
+
 // --- Grant Tasks ---
 
 export type GetGrantTasks_Params = { grantId: string };
