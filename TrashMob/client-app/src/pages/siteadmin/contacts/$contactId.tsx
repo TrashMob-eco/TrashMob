@@ -452,9 +452,7 @@ export const SiteAdminContactDetail = () => {
                                                                                 variant='ghost'
                                                                                 size='icon'
                                                                                 disabled={d.thankYouSent}
-                                                                                onClick={() =>
-                                                                                    setThankYouDonation(d)
-                                                                                }
+                                                                                onClick={() => setThankYouDonation(d)}
                                                                             >
                                                                                 <Heart
                                                                                     className={`h-4 w-4 ${d.thankYouSent ? 'text-green-500' : ''}`}
@@ -473,9 +471,7 @@ export const SiteAdminContactDetail = () => {
                                                                                 variant='ghost'
                                                                                 size='icon'
                                                                                 disabled={d.receiptSent}
-                                                                                onClick={() =>
-                                                                                    setReceiptDonation(d)
-                                                                                }
+                                                                                onClick={() => setReceiptDonation(d)}
                                                                             >
                                                                                 <FileText
                                                                                     className={`h-4 w-4 ${d.receiptSent ? 'text-green-500' : ''}`}
@@ -491,9 +487,7 @@ export const SiteAdminContactDetail = () => {
                                                                 </>
                                                             ) : null}
                                                             <Button variant='ghost' size='icon' asChild>
-                                                                <Link
-                                                                    to={`/siteadmin/donations/${d.id}/edit`}
-                                                                >
+                                                                <Link to={`/siteadmin/donations/${d.id}/edit`}>
                                                                     <Edit className='h-4 w-4' />
                                                                 </Link>
                                                             </Button>
@@ -597,9 +591,7 @@ export const SiteAdminContactDetail = () => {
                 contactName={name}
                 contactEmail={contact.email || ''}
                 isPending={sendThankYou.isPending}
-                onConfirm={() =>
-                    thankYouDonation && sendThankYou.mutate({ donationId: thankYouDonation.id })
-                }
+                onConfirm={() => thankYouDonation && sendThankYou.mutate({ donationId: thankYouDonation.id })}
             />
 
             <ReceiptDialog
@@ -609,9 +601,7 @@ export const SiteAdminContactDetail = () => {
                 contactName={name}
                 contactEmail={contact.email || ''}
                 isPending={sendReceipt.isPending}
-                onConfirm={() =>
-                    receiptDonation && sendReceipt.mutate({ donationId: receiptDonation.id })
-                }
+                onConfirm={() => receiptDonation && sendReceipt.mutate({ donationId: receiptDonation.id })}
             />
 
             <AppealDialog
