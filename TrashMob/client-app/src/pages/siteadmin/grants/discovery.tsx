@@ -104,9 +104,7 @@ export const SiteAdminGrantDiscovery = () => {
 
     function handleDiscover() {
         const body: DiscoverGrants_Body =
-            queryTab === 'custom'
-                ? { prompt, maxResults }
-                : { focusAreas: selectedAreas.join(', '), maxResults };
+            queryTab === 'custom' ? { prompt, maxResults } : { focusAreas: selectedAreas.join(', '), maxResults };
         discover.mutate(body);
     }
 
@@ -143,10 +141,7 @@ export const SiteAdminGrantDiscovery = () => {
                                 <Label>Focus Areas</Label>
                                 <div className='grid grid-cols-2 md:grid-cols-3 gap-3 mt-2'>
                                     {FOCUS_AREAS.map((area) => (
-                                        <label
-                                            key={area}
-                                            className='flex items-center gap-2 text-sm cursor-pointer'
-                                        >
+                                        <label key={area} className='flex items-center gap-2 text-sm cursor-pointer'>
                                             <Checkbox
                                                 checked={selectedAreas.includes(area)}
                                                 onCheckedChange={() => toggleArea(area)}
@@ -196,8 +191,8 @@ export const SiteAdminGrantDiscovery = () => {
                     {discoveryResult && discoveryResult.grants.length > 0 ? (
                         <div className='space-y-2'>
                             <p className='text-sm text-muted-foreground'>
-                                Found {discoveryResult.grants.length} grant opportunities (
-                                {discoveryResult.tokensUsed} tokens used)
+                                Found {discoveryResult.grants.length} grant opportunities ({discoveryResult.tokensUsed}{' '}
+                                tokens used)
                             </p>
                             <DataTable columns={discoveredColumns} data={discoveryResult.grants} />
                         </div>
