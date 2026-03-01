@@ -35,6 +35,19 @@ public class UserRestService(IHttpClientFactory httpClientFactory) : RestService
         }
     }
 
+    public async Task<User?> GetUserByObjectIdAsync(string objectId,
+        CancellationToken cancellationToken = default)
+    {
+        var requestUri = Controller + "/getbyobjectid/" + objectId;
+
+        using var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken);
+
+        if (!response.IsSuccessStatusCode) return null;
+
+        var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+        return JsonConvert.DeserializeObject<User>(responseString);
+    }
+
     public async Task<User> AddUserAsync(User user, CancellationToken cancellationToken = default)
     {
         var content = JsonContent.Create(user, typeof(User), null, SerializerOptions);

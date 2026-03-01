@@ -365,17 +365,25 @@ public class AuthService : IAuthService
         accessToken = result.AccessToken;
         expiresOn = result.ExpiresOn;
 
-        var emailClaim = result.ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email");
         var context = GetUserContext(result);
 
         // Set user context first so AuthHandler can use the token for the API call below
         UserState.UserContext = context;
 
-        if (emailClaim != null)
+        // Try email lookup first (CIAM id_tokens may lack email claim)
+        if (!string.IsNullOrWhiteSpace(context.EmailAddress))
         {
-            userEmail = emailClaim.Value;
+            userEmail = context.EmailAddress;
             var user = await userManager.GetUserByEmailAsync(context.EmailAddress);
+            App.CurrentUser = user;
+            return;
+        }
 
+        // Fall back to ObjectId lookup (CIAM tokens always include oid)
+        var oidClaim = result.ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == "oid");
+        if (oidClaim != null)
+        {
+            var user = await userManager.GetUserByObjectIdAsync(oidClaim.Value);
             App.CurrentUser = user;
         }
     }
