@@ -81,6 +81,18 @@ info@trashmob.eco | trashmob.eco
 
 #CommunityCleanup #AdoptAStreet #CivicTech #NonProfit #LitterCleanup #Sustainability
 
+### Reddit (r/DeTrashed)
+
+We just launched the biggest update to TrashMob.eco — a free platform for organizing community litter cleanups.
+
+New in 2026: adopt-a-location with interactive maps, volunteer teams with leaderboards, per-volunteer impact tracking (bags, weight, hours), digital waivers, and a mobile app.
+
+If you're part of a group that does regular cleanups, or you organize them for a city/county/nonprofit, it's built for you. We're a 501(c)(3) nonprofit and it's free for volunteers.
+
+Been lurking here for a while and this community is a big part of why we built it. Happy to answer any questions.
+
+trashmob.eco
+
 ### Bluesky
 
 Big launch day: TrashMob.eco 2026 is live.
