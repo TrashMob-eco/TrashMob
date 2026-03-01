@@ -62,6 +62,16 @@ See [CLAUDE.md](./CLAUDE.md) for full build commands, local URLs, and developmen
 | [TrashMob.prd](./TrashMob/TrashMob.prd) | Web API product requirements |
 | [TrashMobMobile.prd](./TrashMobMobile/TrashMobMobile.prd) | Mobile app product requirements |
 
+### Support & Operations
+
+| Document | Description |
+|----------|-------------|
+| [Troubleshooting Guide](./Support/TROUBLESHOOTING.md) | Common issues and solutions by feature area |
+| [Community Admin Onboarding](./Support/COMMUNITY_ADMIN_ONBOARDING.md) | Step-by-step setup guide for new community partners |
+| [Event Day Playbook](./Support/EVENT_DAY_PLAYBOOK.md) | What to do when things break during a live event |
+| [Support Channels & Triage](./Support/SUPPORT_CHANNELS_AND_TRIAGE.md) | Support channels, SLA targets, triage workflow |
+| [Product Support Role](./Support/PRODUCT_SUPPORT_ROLE.md) | Role definition and responsibilities |
+
 ### Technical Reference
 
 | Document | Description |
@@ -95,7 +105,8 @@ TrashMob/
 ├── TrashMobMobile/        # .NET MAUI mobile app
 ├── TrashMobDailyJobs/     # Background jobs (daily)
 ├── TrashMobHourlyJobs/    # Background jobs (hourly)
-└── Deploy/                # Bicep templates, deployment scripts
+├── Deploy/                # Bicep templates, deployment scripts
+└── Support/               # Product support docs, troubleshooting, playbooks
 ```
 
 ---

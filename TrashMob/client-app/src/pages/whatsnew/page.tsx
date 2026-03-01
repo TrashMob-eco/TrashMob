@@ -15,10 +15,8 @@ import {
     Camera,
     Mail,
     FileText,
-    Wrench,
     Shield,
     Route,
-    Smartphone,
     Newspaper,
     BarChart3,
     ImagePlus,
@@ -28,6 +26,9 @@ import {
     BookOpen,
     Megaphone,
     Handshake,
+    ShieldCheck,
+    Bell,
+    Gift,
 } from 'lucide-react';
 
 interface FeatureCardProps {
@@ -134,9 +135,9 @@ const completedFeatures = [
     },
     {
         icon: <Route className='h-5 w-5' />,
-        title: 'Route Tracing & Heat Maps',
+        title: 'Route Tracing & Litter Density',
         description:
-            'Track the routes you walk during cleanups and see them on the map. View heat maps showing where volunteers covered ground, track area coverage, and manage route privacy settings.',
+            'Track your cleanup routes on the map with GPS. View litter density heat maps color-coded from green to red, trim route times to exclude driving, and see per-route stats like distance, duration, and bags collected.',
     },
     {
         icon: <Newspaper className='h-5 w-5' />,
@@ -178,49 +179,53 @@ const completedFeatures = [
         link: '/news',
         linkText: 'Read News',
     },
-];
-
-const upcomingFeatures = [
     {
         icon: <Shield className='h-5 w-5' />,
         title: 'Enhanced Waivers',
         description:
-            'Community-specific waivers, improved minor coverage, and streamlined signing process. Better protection for volunteers and partners.',
-        status: 'In Progress',
+            'Communities can create their own custom waivers with versioning, effective dates, and PDF audit trails. Supports paper waiver uploads, minor signing, and per-community compliance dashboards.',
     },
     {
         icon: <BarChart3 className='h-5 w-5' />,
         title: 'Attendee Metrics',
         description:
-            'Track individual volunteer contributions per event. See who collected the most, stayed the longest, and made the biggest impact.',
+            'Track individual volunteer contributions per event — bags collected, weight, and time spent. Event leads can review, approve, and adjust submissions for accurate impact reporting.',
+    },
+    {
+        icon: <Handshake className='h-5 w-5' />,
+        title: 'Sponsored Adoptions',
+        description:
+            'Partners can sponsor professional cleanup crews for adopted locations. Track sponsor-funded cleanups alongside volunteer efforts with dedicated company management.',
+    },
+];
+
+const upcomingFeatures = [
+    {
+        icon: <ShieldCheck className='h-5 w-5' />,
+        title: 'Parental Consent',
+        description:
+            'Enhanced protections for minor volunteers (13-17) including guardian consent workflows, age-appropriate feature restrictions, and COPPA-compliant data handling.',
         status: 'In Progress',
     },
     {
-        icon: <Wrench className='h-5 w-5' />,
-        title: 'Modern Authentication',
+        icon: <Bell className='h-5 w-5' />,
+        title: 'In-App Messaging',
         description:
-            'Migrating to Microsoft Entra External ID for improved security, SSO support, and better partner integrations. Core migration is live — finishing SSO and partner features.',
-        status: 'In Progress',
+            'Push notifications and an in-app message center for event leads to communicate with attendees. Manage notification preferences to stay informed without the noise.',
+        status: 'Planned',
     },
     {
-        icon: <Smartphone className='h-5 w-5' />,
-        title: 'Mobile Improvements',
+        icon: <Gift className='h-5 w-5' />,
+        title: 'Volunteer Rewards',
         description:
-            'Stability improvements, better error handling, and new features coming to the iOS and Android apps including teams, leaderboards, and photo support.',
-        status: 'In Progress',
+            'Earn rewards from local partner businesses for your cleanup contributions. Partners can offer discounts, freebies, or special perks to active volunteers.',
+        status: 'Planned',
     },
     {
         icon: <Megaphone className='h-5 w-5' />,
         title: 'Community Showcase',
         description:
             'A dedicated landing page for cities and organizations to learn about TrashMob communities, see success stories, and start the enrollment process.',
-        status: 'In Progress',
-    },
-    {
-        icon: <Handshake className='h-5 w-5' />,
-        title: 'Sponsored Adoptions',
-        description:
-            'Partners can sponsor professional cleanup crews for adopted locations. Track sponsor-funded cleanups alongside volunteer efforts.',
         status: 'In Progress',
     },
 ];
