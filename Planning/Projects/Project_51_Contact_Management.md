@@ -462,24 +462,24 @@ None — all CRM features are web admin only.
 ## Open Questions
 
 1. **Should we support multiple currencies?**
-   **Decision:** TBD
-   **Status:** TrashMob currently operates in the US only. USD-only for now; add currency field if international expansion happens.
+   **Decision:** Resolved — USD only.
+   **Status:** TrashMob operates in the US only. Keep the model simple with USD. Add a currency field later if international expansion happens.
 
 2. **Should donation data sync with an external accounting system?**
-   **Decision:** TBD
-   **Status:** Out of scope for initial build. Could add CSV export as a bridge to QuickBooks/accounting software.
+   **Decision:** Resolved — CSV export only.
+   **Status:** Add CSV export for donations so data can be imported into QuickBooks or other accounting software manually. No direct API integration needed.
 
 3. **Which AI provider for grant discovery?**
-   **Decision:** TBD
-   **Status:** Could use Azure OpenAI (existing Azure infrastructure) or Anthropic API. Evaluate cost, accuracy, and grant database API availability.
+   **Decision:** Resolved — Anthropic Claude API.
+   **Status:** Use Claude API for grant research and eligibility assessment. Strong reasoning capabilities for evaluating grant fit. Adds a new vendor but worth it for quality of analysis.
 
 4. **Should we integrate with Double the Donation for matching gift verification?**
-   **Decision:** TBD
-   **Status:** Evaluate after Phase 3 based on volume of matching gift donations received.
+   **Decision:** Resolved — Defer.
+   **Status:** Evaluate after Phase 3 based on actual volume of matching gift donations received. Not worth the integration cost until there's meaningful volume.
 
 5. **Email template system — SendGrid dynamic templates or custom HTML?**
-   **Decision:** TBD
-   **Status:** TrashMob already uses SendGrid for event emails. Evaluate whether existing `EmailManager` pattern is sufficient or if dynamic templates would be better for appeal customization.
+   **Decision:** Resolved — Existing EmailManager pattern.
+   **Status:** Use the same HTML template approach already used for event emails. Consistent with existing patterns, no new SendGrid template setup needed.
 
 ---
 
