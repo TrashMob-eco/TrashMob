@@ -168,6 +168,7 @@
             services.AddScoped<IGrantTaskManager, GrantTaskManager>();
             services.AddScoped<IGrantDiscoveryService, GrantDiscoveryService>();
             services.AddScoped<IDonationEmailManager, DonationEmailManager>();
+            services.AddScoped<IFundraisingAnalyticsManager, FundraisingAnalyticsManager>();
 
             // Newsletter
             services.AddScoped<INewsletterManager, NewsletterManager>();

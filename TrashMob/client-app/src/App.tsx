@@ -461,6 +461,14 @@ const SiteAdminGrantEdit = lazy(() =>
 const SiteAdminGrantDiscovery = lazy(() =>
     import('./pages/siteadmin/grants/discovery').then((m) => ({ default: m.SiteAdminGrantDiscovery })),
 );
+const SiteAdminFundraisingDashboard = lazy(() =>
+    import('./pages/siteadmin/fundraising/dashboard').then((m) => ({
+        default: m.SiteAdminFundraisingDashboard,
+    })),
+);
+const SiteAdminEngagement = lazy(() =>
+    import('./pages/siteadmin/fundraising/engagement').then((m) => ({ default: m.SiteAdminEngagement })),
+);
 
 const queryClient = new QueryClient();
 
@@ -742,6 +750,11 @@ const AppContent: FC = () => {
                                 <Route path='grants/:grantId' element={<SiteAdminGrantDetail />} />
                                 <Route path='grants/:grantId/edit' element={<SiteAdminGrantEdit />} />
                                 <Route path='grants/discovery' element={<SiteAdminGrantDiscovery />} />
+                                <Route
+                                    path='fundraising/dashboard'
+                                    element={<SiteAdminFundraisingDashboard />}
+                                />
+                                <Route path='fundraising/engagement' element={<SiteAdminEngagement />} />
                             </Route>
                         </Route>
                         <Route>

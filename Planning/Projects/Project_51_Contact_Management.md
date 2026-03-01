@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1–5 complete) |
+| **Status** | In Progress (Phases 1–6 complete) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
@@ -93,13 +93,13 @@ A lightweight Contact Management System (CMS/CRM) built into the Site Admin area
 - ✅ Link grants to Contacts (funder program officers) for relationship tracking
 - ❌ Budget tracking per grant: awarded amount, expenditures, remaining balance
 
-### Phase 6 — AI Grant Source Discovery
+### Phase 6 — AI Grant Source Discovery ✅ (PR #2957)
 
-- ❌ Search interface: describe funding needs and TrashMob's mission, get AI-suggested grant opportunities
-- ❌ Grant database search: query public grant databases and foundation directories
-- ❌ Eligibility assessment: AI evaluates fit between TrashMob's profile and each opportunity
-- ❌ Save discovered opportunities directly as Grant records with pre-populated details
-- ❌ Periodic scan: scheduled job to check for new opportunities matching saved search criteria
+- ✅ Search interface: describe funding needs and TrashMob's mission, get AI-suggested grant opportunities
+- ✅ GrantDiscoveryService: Claude API integration for grant research (mirrors ClaudeDiscoveryService pattern)
+- ✅ Discovery UI with "Custom Query" and "By Focus Area" tabs
+- ✅ Save discovered opportunities directly as Grant records via "Add to Pipeline" pre-fill
+- ❌ Periodic scan: scheduled job to check for new opportunities matching saved search criteria (deferred)
 
 ### Phase 7 — Engagement Scoring & Pipeline
 
@@ -432,13 +432,13 @@ None — all CRM features are web admin only.
 6. ✅ Link grants to funder Contacts
 7. ❌ Add budget tracking — awarded vs. spent (deferred)
 
-### Phase 6: AI Grant Discovery
-1. Design prompt engineering for grant opportunity search
-2. Implement grant database/web search integration
-3. Build discovery UI with search parameters and results
-4. Add eligibility assessment scoring
-5. Save-to-Grant workflow
-6. Scheduled periodic scan for new opportunities
+### Phase 6: AI Grant Discovery ✅
+1. ✅ Design prompt engineering for grant opportunity search
+2. ✅ Implement GrantDiscoveryService with Claude API integration
+3. ✅ Build discovery UI with Custom Query and Focus Area tabs
+4. ✅ Add discovery endpoint to GrantsController
+5. ✅ Save-to-Grant workflow via "Add to Pipeline" with query param pre-fill
+6. ❌ Scheduled periodic scan for new opportunities (deferred)
 
 ### Phase 7: Engagement Scoring & Pipeline
 1. Design engagement score algorithm (weighted factors)
@@ -513,5 +513,5 @@ The following features were identified as valuable for nonprofit CRMs but are be
 
 **Last Updated:** February 28, 2026
 **Owner:** Product & Engineering Team
-**Status:** In Progress — Phases 1–5 complete (PRs #2945, #2946, #2948, #2949, #2954). Phases 6–8 not started.
-**Next Review:** When Phase 6 (AI Grant Discovery) is prioritized
+**Status:** In Progress — Phases 1–6 complete (PRs #2945, #2946, #2948, #2949, #2954, #2957). Phases 7–8 not started.
+**Next Review:** When Phase 7 (Engagement Scoring & Pipeline) is prioritized
