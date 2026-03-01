@@ -24,12 +24,17 @@ import {
     DollarSign,
     HandCoins,
     Megaphone,
+    BookOpen,
 } from 'lucide-react';
 import { SidebarNav, NavGroup } from '@/components/ui/sidebar-nav';
 
 const pathPrefix = '/siteadmin';
 
 const navGroups: NavGroup[] = [
+    {
+        title: 'Help',
+        items: [{ name: 'Admin Guide', href: `${pathPrefix}/guide`, icon: BookOpen }],
+    },
     {
         title: 'Data Management',
         items: [
