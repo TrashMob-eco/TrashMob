@@ -21,6 +21,8 @@ import {
     BarChart3,
     Contact,
     Tag,
+    DollarSign,
+    HandCoins,
 } from 'lucide-react';
 import { SidebarNav, NavGroup } from '@/components/ui/sidebar-nav';
 
@@ -49,6 +51,8 @@ const navGroups: NavGroup[] = [
         items: [
             { name: 'Contacts', href: `${pathPrefix}/contacts`, icon: Contact },
             { name: 'Contact Tags', href: `${pathPrefix}/contact-tags`, icon: Tag },
+            { name: 'Donations', href: `${pathPrefix}/donations`, icon: DollarSign },
+            { name: 'Pledges', href: `${pathPrefix}/pledges`, icon: HandCoins },
         ],
     },
     {

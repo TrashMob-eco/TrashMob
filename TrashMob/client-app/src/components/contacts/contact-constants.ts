@@ -32,8 +32,30 @@ export function getNoteTypeLabel(type: number): string {
     return NOTE_TYPES.find((t) => t.value === type)?.label ?? 'Unknown';
 }
 
+export const RECURRING_FREQUENCIES = [
+    { value: 1, label: 'One-Time' },
+    { value: 2, label: 'Monthly' },
+    { value: 3, label: 'Quarterly' },
+    { value: 4, label: 'Annually' },
+] as const;
+
+export const PLEDGE_STATUSES = [
+    { value: 1, label: 'Active' },
+    { value: 2, label: 'Fulfilled' },
+    { value: 3, label: 'Lapsed' },
+    { value: 4, label: 'Cancelled' },
+] as const;
+
 export function getDonationTypeLabel(type: number): string {
     return DONATION_TYPES.find((t) => t.value === type)?.label ?? 'Unknown';
+}
+
+export function getRecurringFrequencyLabel(frequency: number): string {
+    return RECURRING_FREQUENCIES.find((f) => f.value === frequency)?.label ?? 'Unknown';
+}
+
+export function getPledgeStatusLabel(status: number): string {
+    return PLEDGE_STATUSES.find((s) => s.value === status)?.label ?? 'Unknown';
 }
 
 export const ContactTypeBadge = ({ type }: { type: number }) => {
@@ -53,4 +75,25 @@ export const ContactTypeBadge = ({ type }: { type: number }) => {
 export const NoteTypeBadge = ({ type }: { type: number }) => {
     const label = getNoteTypeLabel(type);
     return createElement(Badge, { variant: 'secondary' }, label);
+};
+
+export const DonationTypeBadge = ({ type }: { type: number }) => {
+    const label = getDonationTypeLabel(type);
+    return createElement(Badge, { variant: 'outline' }, label);
+};
+
+export const PledgeStatusBadge = ({ status }: { status: number }) => {
+    const label = getPledgeStatusLabel(status);
+    switch (status) {
+        case 1:
+            return createElement(Badge, { variant: 'success' }, label);
+        case 2:
+            return createElement(Badge, null, label);
+        case 3:
+            return createElement(Badge, { variant: 'destructive' }, label);
+        case 4:
+            return createElement(Badge, { variant: 'secondary' }, label);
+        default:
+            return createElement(Badge, { variant: 'outline' }, label);
+    }
 };

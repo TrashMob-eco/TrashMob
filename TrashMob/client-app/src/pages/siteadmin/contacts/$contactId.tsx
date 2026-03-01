@@ -1,22 +1,31 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Edit, Loader2, Plus, SquareX, Trash2 } from 'lucide-react';
+import { Edit, Loader2, Plus, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { ContactTypeBadge, NoteTypeBadge, getDonationTypeLabel } from '@/components/contacts/contact-constants';
+import {
+    ContactTypeBadge,
+    NoteTypeBadge,
+    PledgeStatusBadge,
+    getDonationTypeLabel,
+    getRecurringFrequencyLabel,
+} from '@/components/contacts/contact-constants';
 import ContactNoteData from '@/components/Models/ContactNoteData';
 import {
     DeleteContactNote,
+    DeleteDonation,
+    DeletePledge,
     GetContactById,
     GetContactNotes,
     GetContactTagIds,
     GetContactTags,
     GetDonationsByContact,
+    GetPledgesByContact,
     UpdateContactTags,
 } from '@/services/contacts';
 import { NoteDialog } from './note-dialog';
@@ -62,6 +71,13 @@ export const SiteAdminContactDetail = () => {
         enabled: !!contactId,
     });
 
+    const { data: pledges } = useQuery({
+        queryKey: GetPledgesByContact({ contactId }).key,
+        queryFn: GetPledgesByContact({ contactId }).service,
+        select: (res) => res.data,
+        enabled: !!contactId,
+    });
+
     const updateTags = useMutation({
         mutationKey: UpdateContactTags({ contactId }).key,
         mutationFn: UpdateContactTags({ contactId }).service,
@@ -80,6 +96,30 @@ export const SiteAdminContactDetail = () => {
         },
     });
 
+    const deleteDonation = useMutation({
+        mutationKey: DeleteDonation().key,
+        mutationFn: DeleteDonation().service,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['/donations', 'bycontact', contactId],
+                refetchType: 'all',
+            });
+            toast({ variant: 'default', title: 'Donation deleted' });
+        },
+    });
+
+    const deletePledge = useMutation({
+        mutationKey: DeletePledge().key,
+        mutationFn: DeletePledge().service,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['/pledges', 'bycontact', contactId],
+                refetchType: 'all',
+            });
+            toast({ variant: 'default', title: 'Pledge deleted' });
+        },
+    });
+
     const toggleTag = (tagId: string) => {
         const current = assignedTagIds || [];
         const updated = current.includes(tagId) ? current.filter((id) => id !== tagId) : [...current, tagId];
@@ -89,6 +129,16 @@ export const SiteAdminContactDetail = () => {
     const handleDeleteNote = (noteId: string) => {
         if (!window.confirm('Delete this note?')) return;
         deleteNote.mutate({ id: noteId });
+    };
+
+    const handleDeleteDonation = (donationId: string) => {
+        if (!window.confirm('Delete this donation?')) return;
+        deleteDonation.mutate({ id: donationId });
+    };
+
+    const handleDeletePledge = (pledgeId: string) => {
+        if (!window.confirm('Delete this pledge?')) return;
+        deletePledge.mutate({ id: pledgeId });
     };
 
     const openEditNote = (note: ContactNoteData) => {
@@ -141,6 +191,7 @@ export const SiteAdminContactDetail = () => {
                     <TabsTrigger value='overview'>Overview</TabsTrigger>
                     <TabsTrigger value='notes'>Notes ({(notes || []).length})</TabsTrigger>
                     <TabsTrigger value='donations'>Donations ({(donations || []).length})</TabsTrigger>
+                    <TabsTrigger value='pledges'>Pledges ({(pledges || []).length})</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value='overview' className='space-y-6'>
@@ -221,7 +272,9 @@ export const SiteAdminContactDetail = () => {
                                 <div className='grid grid-cols-2 gap-4'>
                                     <div>
                                         <p className='text-sm text-muted-foreground'>Total Donations</p>
-                                        <p className='text-2xl font-semibold'>${totalDonations.toLocaleString()}</p>
+                                        <p className='text-2xl font-semibold'>
+                                            ${totalDonations.toLocaleString()}
+                                        </p>
                                     </div>
                                     <div>
                                         <p className='text-sm text-muted-foreground'>Number of Donations</p>
@@ -288,8 +341,13 @@ export const SiteAdminContactDetail = () => {
 
                 <TabsContent value='donations'>
                     <Card>
-                        <CardHeader>
+                        <CardHeader className='flex flex-row items-center justify-between'>
                             <CardTitle className='text-lg'>Donations</CardTitle>
+                            <Button asChild size='sm'>
+                                <Link to={`/siteadmin/donations/create?contactId=${contactId}`}>
+                                    <Plus /> Add Donation
+                                </Link>
+                            </Button>
                         </CardHeader>
                         <CardContent>
                             {(donations || []).length === 0 ? (
@@ -304,6 +362,7 @@ export const SiteAdminContactDetail = () => {
                                             <TableHead className='text-right'>Amount</TableHead>
                                             <TableHead>Receipt</TableHead>
                                             <TableHead>Thank You</TableHead>
+                                            <TableHead className='text-right'>Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -332,6 +391,94 @@ export const SiteAdminContactDetail = () => {
                                                     ) : (
                                                         <Badge variant='secondary'>No</Badge>
                                                     )}
+                                                </TableCell>
+                                                <TableCell className='text-right'>
+                                                    <div className='flex justify-end gap-1'>
+                                                        <Button variant='ghost' size='icon' asChild>
+                                                            <Link to={`/siteadmin/donations/${d.id}/edit`}>
+                                                                <Edit className='h-4 w-4' />
+                                                            </Link>
+                                                        </Button>
+                                                        <Button
+                                                            variant='ghost'
+                                                            size='icon'
+                                                            onClick={() => handleDeleteDonation(d.id)}
+                                                        >
+                                                            <Trash2 className='h-4 w-4 text-destructive' />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value='pledges'>
+                    <Card>
+                        <CardHeader className='flex flex-row items-center justify-between'>
+                            <CardTitle className='text-lg'>Pledges</CardTitle>
+                            <Button asChild size='sm'>
+                                <Link to={`/siteadmin/pledges/create?contactId=${contactId}`}>
+                                    <Plus /> Add Pledge
+                                </Link>
+                            </Button>
+                        </CardHeader>
+                        <CardContent>
+                            {(pledges || []).length === 0 ? (
+                                <p className='text-sm text-muted-foreground'>No pledges recorded yet.</p>
+                            ) : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Total Amount</TableHead>
+                                            <TableHead>Start Date</TableHead>
+                                            <TableHead>End Date</TableHead>
+                                            <TableHead>Frequency</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead className='text-right'>Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {(pledges || []).map((p) => (
+                                            <TableRow key={p.id}>
+                                                <TableCell className='font-medium'>
+                                                    ${p.totalAmount.toLocaleString()}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {p.startDate
+                                                        ? new Date(p.startDate).toLocaleDateString()
+                                                        : '—'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {p.endDate
+                                                        ? new Date(p.endDate).toLocaleDateString()
+                                                        : '—'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {getRecurringFrequencyLabel(p.frequency)}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <PledgeStatusBadge status={p.status} />
+                                                </TableCell>
+                                                <TableCell className='text-right'>
+                                                    <div className='flex justify-end gap-1'>
+                                                        <Button variant='ghost' size='icon' asChild>
+                                                            <Link to={`/siteadmin/pledges/${p.id}/edit`}>
+                                                                <Edit className='h-4 w-4' />
+                                                            </Link>
+                                                        </Button>
+                                                        <Button
+                                                            variant='ghost'
+                                                            size='icon'
+                                                            onClick={() => handleDeletePledge(p.id)}
+                                                        >
+                                                            <Trash2 className='h-4 w-4 text-destructive' />
+                                                        </Button>
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
                                         ))}

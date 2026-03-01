@@ -3,6 +3,7 @@ import ContactData from '../components/Models/ContactData';
 import ContactNoteData from '../components/Models/ContactNoteData';
 import ContactTagData from '../components/Models/ContactTagData';
 import DonationData from '../components/Models/DonationData';
+import PledgeData from '../components/Models/PledgeData';
 
 // --- Contacts ---
 
@@ -187,7 +188,28 @@ export const DeleteContactTag = () => ({
         }),
 });
 
-// --- Donations (read-only for Phase 2) ---
+// --- Donations ---
+
+export type GetDonations_Response = DonationData[];
+export const GetDonations = () => ({
+    key: ['/donations'],
+    service: async () =>
+        ApiService('protected').fetchData<GetDonations_Response>({
+            url: '/donations',
+            method: 'get',
+        }),
+});
+
+export type GetDonationById_Params = { id: string };
+export type GetDonationById_Response = DonationData;
+export const GetDonationById = (params: GetDonationById_Params) => ({
+    key: ['/donations', params.id],
+    service: async () =>
+        ApiService('protected').fetchData<GetDonationById_Response>({
+            url: `/donations/${params.id}`,
+            method: 'get',
+        }),
+});
 
 export type GetDonationsByContact_Params = { contactId: string };
 export type GetDonationsByContact_Response = DonationData[];
@@ -197,5 +219,107 @@ export const GetDonationsByContact = (params: GetDonationsByContact_Params) => (
         ApiService('protected').fetchData<GetDonationsByContact_Response>({
             url: `/donations/bycontact/${params.contactId}`,
             method: 'get',
+        }),
+});
+
+export type CreateDonation_Body = DonationData;
+export type CreateDonation_Response = DonationData;
+export const CreateDonation = () => ({
+    key: ['/donations', 'create'],
+    service: async (body: CreateDonation_Body) =>
+        ApiService('protected').fetchData<CreateDonation_Response, CreateDonation_Body>({
+            url: '/donations',
+            method: 'post',
+            data: body,
+        }),
+});
+
+export type UpdateDonation_Body = DonationData;
+export type UpdateDonation_Response = DonationData;
+export const UpdateDonation = () => ({
+    key: ['/donations', 'update'],
+    service: async (body: UpdateDonation_Body) =>
+        ApiService('protected').fetchData<UpdateDonation_Response, UpdateDonation_Body>({
+            url: '/donations',
+            method: 'put',
+            data: body,
+        }),
+});
+
+export type DeleteDonation_Params = { id: string };
+export const DeleteDonation = () => ({
+    key: ['/donations', 'delete'],
+    service: async (params: DeleteDonation_Params) =>
+        ApiService('protected').fetchData<unknown>({
+            url: `/donations/${params.id}`,
+            method: 'delete',
+        }),
+});
+
+// --- Pledges ---
+
+export type GetPledges_Response = PledgeData[];
+export const GetPledges = () => ({
+    key: ['/pledges'],
+    service: async () =>
+        ApiService('protected').fetchData<GetPledges_Response>({
+            url: '/pledges',
+            method: 'get',
+        }),
+});
+
+export type GetPledgeById_Params = { id: string };
+export type GetPledgeById_Response = PledgeData;
+export const GetPledgeById = (params: GetPledgeById_Params) => ({
+    key: ['/pledges', params.id],
+    service: async () =>
+        ApiService('protected').fetchData<GetPledgeById_Response>({
+            url: `/pledges/${params.id}`,
+            method: 'get',
+        }),
+});
+
+export type GetPledgesByContact_Params = { contactId: string };
+export type GetPledgesByContact_Response = PledgeData[];
+export const GetPledgesByContact = (params: GetPledgesByContact_Params) => ({
+    key: ['/pledges', 'bycontact', params.contactId],
+    service: async () =>
+        ApiService('protected').fetchData<GetPledgesByContact_Response>({
+            url: `/pledges/bycontact/${params.contactId}`,
+            method: 'get',
+        }),
+});
+
+export type CreatePledge_Body = PledgeData;
+export type CreatePledge_Response = PledgeData;
+export const CreatePledge = () => ({
+    key: ['/pledges', 'create'],
+    service: async (body: CreatePledge_Body) =>
+        ApiService('protected').fetchData<CreatePledge_Response, CreatePledge_Body>({
+            url: '/pledges',
+            method: 'post',
+            data: body,
+        }),
+});
+
+export type UpdatePledge_Body = PledgeData;
+export type UpdatePledge_Response = PledgeData;
+export const UpdatePledge = () => ({
+    key: ['/pledges', 'update'],
+    service: async (body: UpdatePledge_Body) =>
+        ApiService('protected').fetchData<UpdatePledge_Response, UpdatePledge_Body>({
+            url: '/pledges',
+            method: 'put',
+            data: body,
+        }),
+});
+
+export type DeletePledge_Params = { id: string };
+export const DeletePledge = () => ({
+    key: ['/pledges', 'delete'],
+    service: async (params: DeletePledge_Params) =>
+        ApiService('protected').fetchData<unknown>({
+            url: `/pledges/${params.id}`,
+            method: 'delete',
         }),
 });
