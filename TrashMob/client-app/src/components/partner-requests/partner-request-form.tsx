@@ -15,7 +15,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import PhoneInput from 'react-phone-input-2';
 
-import { MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
+import { MapMouseEvent } from '@vis.gl/react-google-maps';
 import { useMutation } from '@tanstack/react-query';
 import * as ToolTips from '@/store/ToolTips';
 import PartnerRequestData from '@/components/Models/PartnerRequestData';
@@ -176,17 +176,10 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
         { enabled: false },
     );
 
-    const map = useMap();
-
-    const handleSelectSearchLocation = React.useCallback(
-        async (location: SearchLocationOption) => {
-            const { lat, lon } = location.position;
-            form.setValue('location', { lat, lng: lon });
-
-            // side effect: Move Map Center
-            if (map) map.panTo({ lat, lng: lon });
-        },
-        [map],
+    const handleSelectSearchLocation = React.useCallback(async (location: SearchLocationOption) => {
+        const { lat, lon } = location.position;
+        form.setValue('location', { lat, lng: lon });
+    }, []
     );
 
     const handleClickMap = React.useCallback((e: MapMouseEvent) => {
@@ -466,7 +459,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                                             <FormControl>
                                                 <div className='relative w-full'>
                                                     <GoogleMap
-                                                        defaultCenter={userPreferredLocation ?? undefined}
+                                                        defaultCenter={field.value ?? userPreferredLocation ?? undefined}
                                                         onClick={handleClickMap}
                                                     >
                                                         <Marker

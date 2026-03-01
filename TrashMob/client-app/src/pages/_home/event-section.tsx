@@ -6,7 +6,6 @@ import { EventsMap } from '@/components/events/event-map';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useMap } from '@vis.gl/react-google-maps';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { GetFilteredEvents, GetFilteredEvents_Params } from '@/services/events';
@@ -52,7 +51,6 @@ const useGetFilteredEvents = (params: GetFilteredEvents_Params) => {
 
 export const EventSection = (props: EventSectionProps) => {
     const { isUserLoaded, currentUser } = useLogin();
-    const map = useMap();
     const defaultMapCenter = useGetDefaultMapCenter();
 
     const [azureSubscriptionKey, setAzureSubscriptionKey] = useState<string>('');
@@ -176,14 +174,9 @@ export const EventSection = (props: EventSectionProps) => {
     /**
      * Events
      */
-    const handleSelectSearchLocation = useCallback(
-        async (location: SearchLocationOption) => {
-            setSelectedLocation(location);
-            const { lat, lon: lng } = location.position;
-            if (map) map.panTo({ lat, lng });
-        },
-        [map],
-    );
+    const handleSelectSearchLocation = useCallback(async (location: SearchLocationOption) => {
+        setSelectedLocation(location);
+    }, []);
 
     return (
         <section id='events' className='bg-[#FCFBF8]'>
