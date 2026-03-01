@@ -52,11 +52,11 @@ export const SiteAdminGuide = () => {
                         />
                     </div>
                 </div>
-                {searchQuery && (
+                {searchQuery ? (
                     <p className='text-sm text-muted-foreground'>
                         {totalMatches} {totalMatches === 1 ? 'result' : 'results'} found
                     </p>
-                )}
+                ) : null}
             </CardHeader>
             <CardContent>
                 {filteredData.length > 0 ? (
@@ -65,26 +65,20 @@ export const SiteAdminGuide = () => {
                             {filteredData.map((section) => (
                                 <TabsTrigger key={section.id} value={section.id}>
                                     {section.title}
-                                    {searchQuery && (
+                                    {searchQuery ? (
                                         <Badge variant='secondary' className='ml-1.5'>
                                             {section.entries.length}
                                         </Badge>
-                                    )}
+                                    ) : null}
                                 </TabsTrigger>
                             ))}
                         </TabsList>
                         {filteredData.map((section) => (
                             <TabsContent key={section.id} value={section.id}>
                                 <div className='space-y-2'>
-                                    <p className='mb-4 text-sm text-muted-foreground'>
-                                        {section.description}
-                                    </p>
+                                    <p className='mb-4 text-sm text-muted-foreground'>{section.description}</p>
                                     {section.entries.map((entry, i) => (
-                                        <GuideEntryCollapsible
-                                            key={i}
-                                            entry={entry}
-                                            defaultOpen={!!searchQuery}
-                                        />
+                                        <GuideEntryCollapsible key={i} entry={entry} defaultOpen={!!searchQuery} />
                                     ))}
                                 </div>
                             </TabsContent>
