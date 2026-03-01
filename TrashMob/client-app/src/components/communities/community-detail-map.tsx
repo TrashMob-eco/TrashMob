@@ -1,10 +1,11 @@
-import { useMemo, useRef, useState } from 'react';
-import { AdvancedMarker, InfoWindow, MapProps } from '@vis.gl/react-google-maps';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { AdvancedMarker, InfoWindow, MapProps, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { useQueries } from '@tanstack/react-query';
 import { GoogleMapWithKey as GoogleMap } from '../Map/GoogleMap';
 import { EventDetailInfoWindowHeader, EventDetailInfoWindowContent } from '../Map/EventInfoWindowContent';
 import { CommunityBoundsOverlay } from '../Map/CommunityBoundsOverlay';
 import { RoutePolylines } from '../Map/RoutePolylines';
+import { DensityLegend } from '../Map/DensityLegend';
 import EventData from '../Models/EventData';
 import TeamData from '../Models/TeamData';
 import LitterReportData from '../Models/LitterReportData';
@@ -44,6 +45,37 @@ const getLitterReportColor = (statusId: number): string => {
         default:
             return litterReportColors.new;
     }
+};
+
+type RouteViewMode = 'routes' | 'density' | 'heatmap';
+
+const CommunityHeatmapOverlay = ({ routes, mapId }: { routes: DisplayAnonymizedRoute[]; mapId: string }) => {
+    const map = useMap(mapId);
+    const visualization = useMapsLibrary('visualization');
+
+    useEffect(() => {
+        if (!map || !visualization || routes.length === 0) return;
+
+        const points: google.maps.LatLng[] = [];
+        routes.forEach((route) => {
+            route.locations.forEach((loc) => {
+                points.push(new google.maps.LatLng(loc.latitude, loc.longitude));
+            });
+        });
+
+        const heatmap = new google.maps.visualization.HeatmapLayer({
+            data: points,
+            map,
+            radius: 20,
+            opacity: 0.7,
+        });
+
+        return () => {
+            heatmap.setMap(null);
+        };
+    }, [map, visualization, routes]);
+
+    return null;
 };
 
 const MAX_ROUTE_EVENTS = 25;
@@ -90,6 +122,7 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
     const [showTeams, setShowTeams] = useState(true);
     const [showLitterReports, setShowLitterReports] = useState(true);
     const [showRoutes, setShowRoutes] = useState(false);
+    const [routeViewMode, setRouteViewMode] = useState<RouteViewMode>('routes');
 
     const eventMarkersRef = useRef<Record<string, google.maps.marker.AdvancedMarkerElement>>({});
     const teamMarkersRef = useRef<Record<string, google.maps.marker.AdvancedMarkerElement>>({});
@@ -225,12 +258,30 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                                 Routes
                                 {routesLoading ? ' (loading...)' : allRoutes.length > 0 ? ` (${allRoutes.length})` : ''}
                             </Label>
+                            {showRoutes && allRoutes.length > 0 ? (
+                                <div className='flex gap-0.5 ml-1 rounded-md bg-muted p-0.5'>
+                                    {(['routes', 'density', 'heatmap'] as const).map((mode) => (
+                                        <button
+                                            key={mode}
+                                            type='button'
+                                            onClick={() => setRouteViewMode(mode)}
+                                            className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${
+                                                routeViewMode === mode
+                                                    ? 'bg-primary text-primary-foreground'
+                                                    : 'text-muted-foreground hover:text-foreground'
+                                            }`}
+                                        >
+                                            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : null}
                         </div>
                     ) : null}
                 </div>
             </CardHeader>
             <CardContent ref={ref}>
-                <div className='h-[400px] rounded-lg overflow-hidden'>
+                <div className='relative h-[400px] rounded-lg overflow-hidden'>
                     <GoogleMap
                         id={mapId}
                         gestureHandling={gestureHandling || 'cooperative'}
@@ -250,9 +301,17 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                         {/* Community Boundary */}
                         {boundaryGeoJson ? <CommunityBoundsOverlay mapId={mapId} geoJson={boundaryGeoJson} /> : null}
 
-                        {/* Route Polylines */}
+                        {/* Route Visualization */}
                         {showRoutes && allRoutes.length > 0 ? (
-                            <RoutePolylines mapId={mapId} routes={allRoutes} />
+                            routeViewMode === 'heatmap' ? (
+                                <CommunityHeatmapOverlay mapId={mapId} routes={allRoutes} />
+                            ) : (
+                                <RoutePolylines
+                                    mapId={mapId}
+                                    routes={allRoutes}
+                                    colorMode={routeViewMode === 'density' ? 'density' : 'index'}
+                                />
+                            )
                         ) : null}
 
                         {/* Event Markers */}
@@ -364,6 +423,7 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                             </InfoWindow>
                         ) : null}
                     </GoogleMap>
+                    {showRoutes && routeViewMode === 'density' && allRoutes.length > 0 ? <DensityLegend /> : null}
                 </div>
             </CardContent>
         </Card>
