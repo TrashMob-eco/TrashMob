@@ -750,10 +750,7 @@ const AppContent: FC = () => {
                                 <Route path='grants/:grantId' element={<SiteAdminGrantDetail />} />
                                 <Route path='grants/:grantId/edit' element={<SiteAdminGrantEdit />} />
                                 <Route path='grants/discovery' element={<SiteAdminGrantDiscovery />} />
-                                <Route
-                                    path='fundraising/dashboard'
-                                    element={<SiteAdminFundraisingDashboard />}
-                                />
+                                <Route path='fundraising/dashboard' element={<SiteAdminFundraisingDashboard />} />
                                 <Route path='fundraising/engagement' element={<SiteAdminEngagement />} />
                             </Route>
                         </Route>
