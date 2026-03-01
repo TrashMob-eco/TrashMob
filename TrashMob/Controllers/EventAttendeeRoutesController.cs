@@ -136,6 +136,14 @@ namespace TrashMob.Controllers
         {
             var eventAttendeeRoute = displayEventAttendeeRoute.ToEventAttendeeRoute();
 
+            // When client explicitly opts out of default privacy trim, set trim values to 0
+            // so the manager's ApplyDefaultTrim won't override them with the 100m default.
+            if (displayEventAttendeeRoute.SkipDefaultTrim)
+            {
+                eventAttendeeRoute.TrimStartMeters = -1;
+                eventAttendeeRoute.TrimEndMeters = -1;
+            }
+
             var result = await eventAttendeeRouteManager.AddAsync(eventAttendeeRoute, UserId, cancellationToken);
             TrackEvent(nameof(AddEventAttendeeRoute));
             return CreatedAtAction(nameof(GetEventAttendeeRoute), new { id = result.Id }, result);
