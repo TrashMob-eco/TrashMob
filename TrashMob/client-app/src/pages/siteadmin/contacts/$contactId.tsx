@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Edit, Loader2, Plus, Trash2 } from 'lucide-react';
+import { Edit, FileText, Heart, Loader2, Megaphone, Plus, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import {
     ContactTypeBadge,
@@ -16,6 +17,7 @@ import {
     getRecurringFrequencyLabel,
 } from '@/components/contacts/contact-constants';
 import ContactNoteData from '@/components/Models/ContactNoteData';
+import DonationData from '@/components/Models/DonationData';
 import {
     DeleteContactNote,
     DeleteDonation,
@@ -26,8 +28,13 @@ import {
     GetContactTags,
     GetDonationsByContact,
     GetPledgesByContact,
+    SendDonationReceipt,
+    SendDonationThankYou,
     UpdateContactTags,
 } from '@/services/contacts';
+import { ThankYouDialog } from '@/components/contacts/thank-you-dialog';
+import { ReceiptDialog } from '@/components/contacts/receipt-dialog';
+import { AppealDialog } from '@/components/contacts/appeal-dialog';
 import { NoteDialog } from './note-dialog';
 
 export const SiteAdminContactDetail = () => {
@@ -36,6 +43,9 @@ export const SiteAdminContactDetail = () => {
     const queryClient = useQueryClient();
     const [noteDialogOpen, setNoteDialogOpen] = useState(false);
     const [editingNote, setEditingNote] = useState<ContactNoteData | null>(null);
+    const [thankYouDonation, setThankYouDonation] = useState<DonationData | null>(null);
+    const [receiptDonation, setReceiptDonation] = useState<DonationData | null>(null);
+    const [appealDialogOpen, setAppealDialogOpen] = useState(false);
 
     const { data: contact } = useQuery({
         queryKey: GetContactById({ id: contactId }).key,
@@ -120,6 +130,40 @@ export const SiteAdminContactDetail = () => {
         },
     });
 
+    const sendThankYou = useMutation({
+        mutationKey: SendDonationThankYou().key,
+        mutationFn: SendDonationThankYou().service,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['/donations', 'bycontact', contactId],
+                refetchType: 'all',
+            });
+            queryClient.invalidateQueries({ queryKey: ['/contactnotes', contactId], refetchType: 'all' });
+            toast({ variant: 'primary', title: 'Thank you email sent' });
+            setThankYouDonation(null);
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to send thank you email' });
+        },
+    });
+
+    const sendReceipt = useMutation({
+        mutationKey: SendDonationReceipt().key,
+        mutationFn: SendDonationReceipt().service,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['/donations', 'bycontact', contactId],
+                refetchType: 'all',
+            });
+            queryClient.invalidateQueries({ queryKey: ['/contactnotes', contactId], refetchType: 'all' });
+            toast({ variant: 'primary', title: 'Tax receipt email sent' });
+            setReceiptDonation(null);
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to send receipt email' });
+        },
+    });
+
     const toggleTag = (tagId: string) => {
         const current = assignedTagIds || [];
         const updated = current.includes(tagId) ? current.filter((id) => id !== tagId) : [...current, tagId];
@@ -178,11 +222,18 @@ export const SiteAdminContactDetail = () => {
                             )}
                         </div>
                     </div>
-                    <Button asChild>
-                        <Link to={`/siteadmin/contacts/${contactId}/edit`}>
-                            <Edit /> Edit
-                        </Link>
-                    </Button>
+                    <div className='flex gap-2'>
+                        {contact.email ? (
+                            <Button variant='outline' onClick={() => setAppealDialogOpen(true)}>
+                                <Megaphone /> Send Appeal
+                            </Button>
+                        ) : null}
+                        <Button asChild>
+                            <Link to={`/siteadmin/contacts/${contactId}/edit`}>
+                                <Edit /> Edit
+                            </Link>
+                        </Button>
+                    </div>
                 </CardHeader>
             </Card>
 
@@ -391,20 +442,64 @@ export const SiteAdminContactDetail = () => {
                                                     )}
                                                 </TableCell>
                                                 <TableCell className='text-right'>
-                                                    <div className='flex justify-end gap-1'>
-                                                        <Button variant='ghost' size='icon' asChild>
-                                                            <Link to={`/siteadmin/donations/${d.id}/edit`}>
-                                                                <Edit className='h-4 w-4' />
-                                                            </Link>
-                                                        </Button>
-                                                        <Button
-                                                            variant='ghost'
-                                                            size='icon'
-                                                            onClick={() => handleDeleteDonation(d.id)}
-                                                        >
-                                                            <Trash2 className='h-4 w-4 text-destructive' />
-                                                        </Button>
-                                                    </div>
+                                                    <TooltipProvider>
+                                                        <div className='flex justify-end gap-1'>
+                                                            {contact.email ? (
+                                                                <>
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <Button
+                                                                                variant='ghost'
+                                                                                size='icon'
+                                                                                disabled={d.thankYouSent}
+                                                                                onClick={() => setThankYouDonation(d)}
+                                                                            >
+                                                                                <Heart
+                                                                                    className={`h-4 w-4 ${d.thankYouSent ? 'text-green-500' : ''}`}
+                                                                                />
+                                                                            </Button>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent>
+                                                                            {d.thankYouSent
+                                                                                ? 'Thank you already sent'
+                                                                                : 'Send thank you'}
+                                                                        </TooltipContent>
+                                                                    </Tooltip>
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <Button
+                                                                                variant='ghost'
+                                                                                size='icon'
+                                                                                disabled={d.receiptSent}
+                                                                                onClick={() => setReceiptDonation(d)}
+                                                                            >
+                                                                                <FileText
+                                                                                    className={`h-4 w-4 ${d.receiptSent ? 'text-green-500' : ''}`}
+                                                                                />
+                                                                            </Button>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent>
+                                                                            {d.receiptSent
+                                                                                ? 'Receipt already sent'
+                                                                                : 'Send tax receipt'}
+                                                                        </TooltipContent>
+                                                                    </Tooltip>
+                                                                </>
+                                                            ) : null}
+                                                            <Button variant='ghost' size='icon' asChild>
+                                                                <Link to={`/siteadmin/donations/${d.id}/edit`}>
+                                                                    <Edit className='h-4 w-4' />
+                                                                </Link>
+                                                            </Button>
+                                                            <Button
+                                                                variant='ghost'
+                                                                size='icon'
+                                                                onClick={() => handleDeleteDonation(d.id)}
+                                                            >
+                                                                <Trash2 className='h-4 w-4 text-destructive' />
+                                                            </Button>
+                                                        </div>
+                                                    </TooltipProvider>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -487,6 +582,34 @@ export const SiteAdminContactDetail = () => {
                 onOpenChange={setNoteDialogOpen}
                 contactId={contactId}
                 editingNote={editingNote}
+            />
+
+            <ThankYouDialog
+                open={!!thankYouDonation}
+                onOpenChange={(open) => !open && setThankYouDonation(null)}
+                donation={thankYouDonation}
+                contactName={name}
+                contactEmail={contact.email || ''}
+                isPending={sendThankYou.isPending}
+                onConfirm={() => thankYouDonation && sendThankYou.mutate({ donationId: thankYouDonation.id })}
+            />
+
+            <ReceiptDialog
+                open={!!receiptDonation}
+                onOpenChange={(open) => !open && setReceiptDonation(null)}
+                donation={receiptDonation}
+                contactName={name}
+                contactEmail={contact.email || ''}
+                isPending={sendReceipt.isPending}
+                onConfirm={() => receiptDonation && sendReceipt.mutate({ donationId: receiptDonation.id })}
+            />
+
+            <AppealDialog
+                open={appealDialogOpen}
+                onOpenChange={setAppealDialogOpen}
+                contactId={contactId}
+                contactName={name}
+                contactEmail={contact.email || ''}
             />
         </div>
     );

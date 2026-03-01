@@ -442,6 +442,9 @@ const SiteAdminPledgeCreate = lazy(() =>
 const SiteAdminPledgeEdit = lazy(() =>
     import('./pages/siteadmin/pledges/$pledgeId.edit').then((m) => ({ default: m.SiteAdminPledgeEdit })),
 );
+const SiteAdminAppeals = lazy(() =>
+    import('./pages/siteadmin/appeals/page').then((m) => ({ default: m.SiteAdminAppeals })),
+);
 
 const queryClient = new QueryClient();
 
@@ -716,6 +719,7 @@ const AppContent: FC = () => {
                                 <Route path='pledges' element={<SiteAdminPledges />} />
                                 <Route path='pledges/create' element={<SiteAdminPledgeCreate />} />
                                 <Route path='pledges/:pledgeId/edit' element={<SiteAdminPledgeEdit />} />
+                                <Route path='appeals' element={<SiteAdminAppeals />} />
                             </Route>
                         </Route>
                         <Route>

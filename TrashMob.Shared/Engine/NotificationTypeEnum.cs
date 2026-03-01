@@ -234,5 +234,20 @@
         /// Notification sent to team members about upcoming team events soon (within 24 hours).
         /// </summary>
         UpcomingTeamEventsSoon = 46,
+
+        /// <summary>
+        /// Thank-you email sent to a donor after receiving a donation.
+        /// </summary>
+        DonationThankYou = 47,
+
+        /// <summary>
+        /// Tax receipt email sent to a donor with IRS-compliant acknowledgment.
+        /// </summary>
+        DonationReceipt = 48,
+
+        /// <summary>
+        /// Fundraising appeal email sent to contacts soliciting donations.
+        /// </summary>
+        FundraisingAppeal = 49,
     }
 }
