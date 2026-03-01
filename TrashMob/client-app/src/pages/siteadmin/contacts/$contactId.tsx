@@ -11,6 +11,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useToast } from '@/hooks/use-toast';
 import {
     ContactTypeBadge,
+    DonorLifecycleBadge,
+    EngagementScoreBadge,
     NoteTypeBadge,
     PledgeStatusBadge,
     getDonationTypeLabel,
@@ -31,6 +33,7 @@ import {
     SendDonationReceipt,
     SendDonationThankYou,
     UpdateContactTags,
+    GetContactEngagementScore,
 } from '@/services/contacts';
 import { ThankYouDialog } from '@/components/contacts/thank-you-dialog';
 import { ReceiptDialog } from '@/components/contacts/receipt-dialog';
@@ -84,6 +87,13 @@ export const SiteAdminContactDetail = () => {
     const { data: pledges } = useQuery({
         queryKey: GetPledgesByContact({ contactId }).key,
         queryFn: GetPledgesByContact({ contactId }).service,
+        select: (res) => res.data,
+        enabled: !!contactId,
+    });
+
+    const { data: engagementScore } = useQuery({
+        queryKey: GetContactEngagementScore({ contactId }).key,
+        queryFn: GetContactEngagementScore({ contactId }).service,
         select: (res) => res.data,
         enabled: !!contactId,
     });
@@ -313,6 +323,45 @@ export const SiteAdminContactDetail = () => {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {engagementScore ? (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className='text-lg'>Engagement Score</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className='flex items-center gap-4 mb-4'>
+                                    <div className='text-3xl font-bold'>{engagementScore.engagementScore}</div>
+                                    <EngagementScoreBadge score={engagementScore.engagementScore} />
+                                    <DonorLifecycleBadge stage={engagementScore.donorLifecycleStage} />
+                                    {engagementScore.isLybunt ? <Badge variant='destructive'>LYBUNT</Badge> : null}
+                                </div>
+                                <div className='grid grid-cols-3 gap-4 text-sm'>
+                                    <div>
+                                        <p className='text-muted-foreground'>Donation</p>
+                                        <p className='font-semibold'>
+                                            {engagementScore.donationScoreComponent}/
+                                            {engagementScore.hasUserId ? '40' : '57'}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className='text-muted-foreground'>Volunteer</p>
+                                        <p className='font-semibold'>
+                                            {engagementScore.volunteerScoreComponent}/
+                                            {engagementScore.hasUserId ? '40' : '0'}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className='text-muted-foreground'>Interaction</p>
+                                        <p className='font-semibold'>
+                                            {engagementScore.interactionScoreComponent}/
+                                            {engagementScore.hasUserId ? '20' : '43'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ) : null}
 
                     {totalDonations > 0 ? (
                         <Card>

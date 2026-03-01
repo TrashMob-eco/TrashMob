@@ -135,3 +135,21 @@ export const GrantStatusBadge = ({ status }: { status: number }) => {
             return createElement(Badge, { variant: 'outline' }, label);
     }
 };
+
+export const DONOR_LIFECYCLE_STAGES = [
+    { value: 'Prospect', label: 'Prospect', variant: 'outline' as const },
+    { value: 'First-Time Donor', label: 'First-Time Donor', variant: 'secondary' as const },
+    { value: 'Repeat Donor', label: 'Repeat Donor', variant: 'default' as const },
+    { value: 'Major Donor', label: 'Major Donor', variant: 'success' as const },
+    { value: 'Lapsed', label: 'Lapsed', variant: 'destructive' as const },
+] as const;
+
+export const DonorLifecycleBadge = ({ stage }: { stage: string }) => {
+    const found = DONOR_LIFECYCLE_STAGES.find((s) => s.value === stage);
+    return createElement(Badge, { variant: found?.variant ?? 'outline' }, found?.label ?? stage);
+};
+
+export const EngagementScoreBadge = ({ score }: { score: number }) => {
+    const variant = score >= 70 ? 'success' : score >= 40 ? 'secondary' : 'destructive';
+    return createElement(Badge, { variant }, `${score}`);
+};

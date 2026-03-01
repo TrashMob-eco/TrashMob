@@ -370,3 +370,143 @@ export const DeletePledge = () => ({
             method: 'delete',
         }),
 });
+
+// --- Fundraising Analytics ---
+
+export interface ContactEngagementScoreData {
+    contactId: string;
+    contactName: string;
+    email: string;
+    contactType: number;
+    engagementScore: number;
+    donorLifecycleStage: string;
+    totalDonations: number;
+    donationCount: number;
+    lastDonationDate: string | null;
+    eventsAttended: number;
+    totalVolunteerMinutes: number;
+    noteCount: number;
+    lastInteractionDate: string | null;
+    isLybunt: boolean;
+    hasUserId: boolean;
+    donationScoreComponent: number;
+    volunteerScoreComponent: number;
+    interactionScoreComponent: number;
+}
+
+export interface DonorLifecycleStatData {
+    stage: string;
+    count: number;
+}
+
+export interface MonthlyGivingStatData {
+    month: string;
+    amount: number;
+    donationCount: number;
+}
+
+export interface CampaignStatData {
+    campaign: string;
+    totalRaised: number;
+    donorCount: number;
+    donationCount: number;
+}
+
+export interface GrantPipelineStatData {
+    status: number;
+    label: string;
+    count: number;
+    totalAmount: number;
+}
+
+export interface FundraisingDashboardData {
+    totalRaisedYtd: number;
+    totalRaisedLastYear: number;
+    donorCountYtd: number;
+    averageGiftSizeYtd: number;
+    donationCountYtd: number;
+    retentionRate: number;
+    newDonorsYtd: number;
+    repeatDonorsYtd: number;
+    lapsedDonors: number;
+    lifecycleBreakdown: DonorLifecycleStatData[];
+    monthlyGiving: MonthlyGivingStatData[];
+    campaignBreakdown: CampaignStatData[];
+    totalGrantsAwarded: number;
+    totalGrantsPending: number;
+    activeGrantCount: number;
+    upcomingDeadlineCount: number;
+    grantPipeline: GrantPipelineStatData[];
+    lybuntCount: number;
+}
+
+export type GetEngagementScores_Response = ContactEngagementScoreData[];
+export const GetEngagementScores = () => ({
+    key: ['/fundraising-analytics', 'engagement-scores'],
+    service: async () =>
+        ApiService('protected').fetchData<GetEngagementScores_Response>({
+            url: '/fundraising-analytics/engagement-scores',
+            method: 'get',
+        }),
+});
+
+export type GetContactEngagementScore_Params = { contactId: string };
+export type GetContactEngagementScore_Response = ContactEngagementScoreData;
+export const GetContactEngagementScore = (params: GetContactEngagementScore_Params) => ({
+    key: ['/fundraising-analytics', 'engagement-scores', params.contactId],
+    service: async () =>
+        ApiService('protected').fetchData<GetContactEngagementScore_Response>({
+            url: `/fundraising-analytics/engagement-scores/${params.contactId}`,
+            method: 'get',
+        }),
+});
+
+export type GetFundraisingDashboard_Response = FundraisingDashboardData;
+export const GetFundraisingDashboard = () => ({
+    key: ['/fundraising-analytics', 'dashboard'],
+    service: async () =>
+        ApiService('protected').fetchData<GetFundraisingDashboard_Response>({
+            url: '/fundraising-analytics/dashboard',
+            method: 'get',
+        }),
+});
+
+export type GetVolunteerPipeline_Response = ContactEngagementScoreData[];
+export const GetVolunteerPipeline = () => ({
+    key: ['/fundraising-analytics', 'volunteer-pipeline'],
+    service: async () =>
+        ApiService('protected').fetchData<GetVolunteerPipeline_Response>({
+            url: '/fundraising-analytics/volunteer-pipeline',
+            method: 'get',
+        }),
+});
+
+export type GetLybuntContacts_Response = ContactEngagementScoreData[];
+export const GetLybuntContacts = () => ({
+    key: ['/fundraising-analytics', 'lybunt'],
+    service: async () =>
+        ApiService('protected').fetchData<GetLybuntContacts_Response>({
+            url: '/fundraising-analytics/lybunt',
+            method: 'get',
+        }),
+});
+
+export const ExportDonorReport = () => ({
+    key: ['/fundraising-analytics', 'export', 'donors'],
+    service: async () =>
+        ApiService('protected').fetchData<Blob>({
+            url: '/fundraising-analytics/export/donors',
+            method: 'get',
+            responseType: 'blob',
+        }),
+});
+
+export const ExportFundraisingSummary = () => ({
+    key: ['/fundraising-analytics', 'export', 'summary'],
+    service: async () =>
+        ApiService('protected').fetchData<Blob>({
+            url: '/fundraising-analytics/export/summary',
+            method: 'get',
+            responseType: 'blob',
+        }),
+});
