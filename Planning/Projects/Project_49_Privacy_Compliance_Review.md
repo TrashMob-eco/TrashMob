@@ -136,11 +136,11 @@ Audit of `index.html` (Feb 2026) revealed significantly more third-party trackin
 
 | Script | Purpose | Sets Cookies/Tracks | Status |
 |--------|---------|-------------------|--------|
-| **Microsoft Clarity** | Session recording & heatmaps | Yes — tracking cookies | Active, needs consent |
-| **Facebook SDK** (`connect.facebook.net`, appId `149684225125954`, `autoLogAppEvents=1`) | Social plugins | Yes — extensive tracking | **UNUSED — remove entirely** |
-| **Application Insights** (`js.monitor.azure.com`) | Telemetry & error tracking | Yes — session tracking | Active, arguably "legitimate interest" but safest to include in consent |
-| **Twitter Widgets** (`platform.twitter.com/widgets.js`) | Social embedding | Yes — tracking cookies | Needs usage audit |
-| **Google APIs** (`apis.google.com/js/platform.js`) | Sign-in / general | Potentially | Needs usage audit |
+| **Microsoft Clarity** | Session recording & heatmaps | Yes — tracking cookies | Gated behind consent (PR #2939) |
+| **Facebook SDK** (`connect.facebook.net`, appId `149684225125954`, `autoLogAppEvents=1`) | Social plugins | Yes — extensive tracking | **Removed** (PR #2939) |
+| **Application Insights** (`js.monitor.azure.com`) | Telemetry & error tracking | Yes — session tracking | Gated behind consent (PR #2939) |
+| **Twitter Widgets** (`platform.twitter.com/widgets.js`) | Social embedding | Yes — tracking cookies | **Removed** — unused (PR #2939) |
+| **Google APIs** (`apis.google.com/js/platform.js`) | Sign-in / general | Potentially | **Removed** — unused (PR #2939) |
 | **MyShop/Spreadshop** (`myspreadshop.com`) | Merchandise store embed | Potentially | Only on store page |
 
 #### Facebook SDK Finding
@@ -161,9 +161,9 @@ The current Privacy Policy (v1.0, Feb 23 2026) states:
 
 #### Tasks
 
-- [ ] Remove Facebook SDK from `index.html` (unused, adds tracking for zero benefit)
-- [ ] Audit Twitter Widgets and Google APIs usage — remove if unused
-- [ ] Implement cookie consent banner that blocks Clarity, App Insights, and any remaining social scripts until user accepts
+- [x] Remove Facebook SDK from `index.html` (unused, adds tracking for zero benefit) — PR #2939
+- [x] Audit Twitter Widgets and Google APIs usage — removed, both unused — PR #2939
+- [x] Implement cookie consent banner that blocks Clarity, App Insights, and any remaining social scripts until user accepts — PR #2939, #2940
 - [ ] Update Privacy Policy to accurately list all third-party services and their cookie/tracking behavior
 - [ ] Update `DATA_PROCESSING_INVENTORY.md` with Clarity, App Insights, and any remaining third-party tracking
 
