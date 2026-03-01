@@ -36,7 +36,10 @@ public partial class ImpactViewModel(
 
     private async Task RefreshPersonalStats()
     {
-        var stats = await statsRestService.GetUserStatsAsync(userManager.CurrentUser.Id);
+        var currentUser = userManager.CurrentUser;
+        if (currentUser == null) return;
+
+        var stats = await statsRestService.GetUserStatsAsync(currentUser.Id);
 
         PersonalStats = new StatisticsViewModel
         {
@@ -79,7 +82,10 @@ public partial class ImpactViewModel(
 
     private async Task RefreshEventContributions()
     {
-        var impact = await eventAttendeeMetricsRestService.GetUserImpactAsync(userManager.CurrentUser.Id);
+        var currentUser = userManager.CurrentUser;
+        if (currentUser == null) return;
+
+        var impact = await eventAttendeeMetricsRestService.GetUserImpactAsync(currentUser.Id);
 
         EventContributions.Clear();
 

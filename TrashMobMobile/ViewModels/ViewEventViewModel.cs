@@ -150,6 +150,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private string totalBagsDisplay = "0";
 
     [ObservableProperty]
+    private bool hasDensityData;
+
+    [ObservableProperty]
     private bool showLogImpactButton;
 
     [ObservableProperty]
@@ -1048,6 +1051,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
         var totalBags = EventAttendeeRoutes.Sum(r => r.BagsCollected ?? 0);
         TotalBagsDisplay = totalBags.ToString();
+
+        HasDensityData = EventAttendeeRoutes.Any(r => r.DensityGramsPerMeter is not null and > 0);
     }
 
     private async Task LoadMyMetrics()
