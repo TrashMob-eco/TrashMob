@@ -381,7 +381,7 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                         {showingEvent ? (
                             <InfoWindow
                                 anchor={eventMarkersRef.current[showingEventId]}
-                                headerContent={<EventDetailInfoWindowHeader name={showingEvent.name} />}
+                                headerContent={<EventDetailInfoWindowHeader {...showingEvent} />}
                                 onClose={closeInfoWindow}
                             >
                                 <EventDetailInfoWindowContent
@@ -389,7 +389,6 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                                         ...showingEvent,
                                         eventDate: moment(showingEvent.eventDate).toDate(),
                                     }}
-                                    isAttending={false}
                                 />
                             </InfoWindow>
                         ) : null}
