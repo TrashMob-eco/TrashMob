@@ -159,14 +159,60 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 28 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37, 39, 40, 42, 44, 47, 50, 51 |
-| **In Progress** | 14 | Projects 1 (Phases 0-5a Complete, Production Live; Phase 6 Partial, Phase 7 Remaining), 4 (Phases 1-2, 6 Complete; Phases 3-5 Substantial), 5 (Phases 1-3 Complete; Phase 4 Partial), 6 (Phases 1, 2.5, 3 Substantial), 8 (Phases 1-4, 6 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete; Phase 5 In Progress), 41 (Phases 1-4 Complete), 45 (Phases 1-4 Complete), 48 (Phase 1 Complete), 49 (Phases 1-4 Complete, Phase 5 Partial) |
+| ✅ **Complete** | 30 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 50, 51 |
+| **In Progress** | 12 | Projects 1, 4, 5, 6, 8, 15, 25, 30, 41, 45, 48, 49 |
 | **Ready for Review** | 1 | Project 2 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
 | **Not Started** | 7 | Projects 12, 24, 31, 36, 43, 46, 52 |
 | **Deprioritized** | 1 | Project 33 |
 
 **Total:** 52 project specifications documented
+
+---
+
+## Remaining Work
+
+### In Progress — Remaining Tasks
+
+| Project | What's Left |
+|---------|-------------|
+| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Phase 7: Minor protections (communication restrictions, profile visibility, adult presence enforcement, parent notifications, Privo docs) |
+| [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Phases 3-5: Manual test matrix on physical devices, regression testing, load testing, accessibility audit (TalkBack/VoiceOver), supported device docs |
+| [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | Phase 4: Deployment health dashboards; Phase 5: Cost optimization & auto-scaling; Phase 6: Security scanning (OWASP ZAP, CodeQL, Trivy) |
+| [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Phase 3: Security audit — review remaining API endpoints for authorization, input validation, rate limiting |
+| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Phase 5: Minor protections (blocked on Project 23 — guardian consent, minor action scope, 7-day consent timeout) |
+| [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Mobile app route recording/upload device testing on iOS and Android |
+| [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | Phase 2: Core web flow E2E tests (event CRUD, litter reports, partner management); Phase 3: Mobile test foundation; Phase 4: Remaining tests & perf baseline |
+| [Project 30 - Azure Billing Alerts](./Projects/Project_30_Azure_Billing_Alerts.md) | Operational monitoring and alert tuning |
+| [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md) | Phase 5: Reporting & analytics (community-level volunteer vs. sponsored breakdown, cost-per-mile, company comparison, compliance reports) |
+| [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md) | Deferred: Community testimonials (waiting on onboarded communities), AI Sales Agent integration |
+| [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md) | Phase 3: Route end-time editing (trim by slider); Phase 4: Smart trim suggestions (speed anomaly detection) |
+| [Project 49 - Privacy & Compliance](./Projects/Project_49_Privacy_Compliance_Review.md) | Phase 5: Cookie consent & tracking audit — update Privacy Policy, document third-party services (Clarity, App Insights) |
+
+### Ready for Design Review
+
+| Project | What's Left |
+|---------|-------------|
+| [Project 2 - Home Page Improvements](./Projects/Project_02_Home_Page.md) | All phases pending design review (dynamic content, map enhancements, sponsorship, quick actions) |
+
+### Not Started
+
+| Project | Description |
+|---------|-------------|
+| [Project 12 - In-App Messaging](./Projects/Project_12_In_App_Messaging.md) | Push notifications, in-app message center, notification preferences |
+| [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Versioned API endpoints, deprecation, auto-generated clients |
+| [Project 31 - Feature Flags](./Projects/Project_31_Feature_Flags.md) | Feature flag infrastructure for safe deployments and gradual rollouts |
+| [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | Community tier pricing, feature comparison, branding guidelines, digital assets |
+| [Project 43 - Sign Management](./Projects/Project_43_Sign_Management.md) | Track physical Adopt-A-Location signs (status, coordinates, text, lifecycle) |
+| [Project 46 - Product Support](./Projects/Project_46_Product_Support.md) | Support role definition, channels/workflows, knowledge base, onboarding guide |
+| [Project 52 - Volunteer Rewards](./Projects/Project_52_Volunteer_Rewards.md) | Partner reward sourcing, criteria, distribution, fraud prevention (future) |
+
+### Complete with Deferred Items
+
+| Project | Deferred Items |
+|---------|---------------|
+| [Project 51 - Contact Management](./Projects/Project_51_Contact_Management.md) | Deadline calendar, budget tracking per grant, periodic grant scan, impact-to-giving report |
+| [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Route association (waiting for routes to be routinely used) |
 
 ---
 
