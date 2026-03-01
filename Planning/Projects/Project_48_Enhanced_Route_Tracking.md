@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 1 Complete) |
+| **Status** | Complete (Phases 1-3); Phase 2b & 4 Deferred |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
@@ -109,7 +109,7 @@ Units: grams per meter (g/m) or bags per kilometer (bags/km).
 
 These thresholds will be configurable via `appsettings.json` and adjustable per community (different areas have different baselines).
 
-#### Per-Segment Coloring (Phase 2b — stretch goal)
+#### Per-Segment Coloring (Phase 2b — stretch goal, DEFERRED)
 
 If `RoutePoints` have timestamps and the user logs pickups at intervals, divide the route into segments between pickup timestamps and color each segment based on its local density. This requires:
 
@@ -120,15 +120,17 @@ If `RoutePoints` have timestamps and the user logs pickups at intervals, divide 
 
 #### Implementation
 
-- [ ] Add `LitterDensityGramsPerMeter` computed property to `DisplayEventAttendeeRoute` and `DisplayAnonymizedRoute`
-- [ ] Add `DensityColor` computed property using the color scale above
-- [ ] Update `DisplayEventRouteStats` to include `AverageDensity` and `MaxDensity`
-- [ ] **Mobile:** Render route polylines using density color instead of random/fixed color
-- [ ] **Mobile:** Add density legend overlay on map (toggle-able)
-- [ ] **Web:** Update Google Maps polyline rendering to use density color
-- [ ] **Web:** Add density legend to route map view
-- [ ] **Web:** Add density column to route list table with color indicator
-- [ ] **API:** Add `GET /api/events/{eventId}/routes/density` returning per-route density data
+- [x] Add `LitterDensityGramsPerMeter` computed property to `DisplayEventAttendeeRoute` and `DisplayAnonymizedRoute` — `EventAttendeeRoutesExtensions.cs`, `DisplayEventAttendeeRoute.cs`, `DisplayAnonymizedRoute.cs`
+- [x] Add `DensityColor` computed property using the color scale above — `EventAttendeeRouteManager.GetDensityColor()`
+- [x] Update `DisplayEventRouteStats` to include `AverageDensity` and `MaxDensity` — `DisplayEventRouteStats.cs`
+- [x] **Mobile:** Render route polylines using density color instead of random/fixed color — `TabRoutes.xaml.cs`
+- [x] **Mobile:** Add density legend overlay on map — `TabRoutes.xaml` (visible when routes have density data)
+- [x] **Web:** Update Google Maps polyline rendering to use density color — `RoutePolylines.tsx` with `colorMode='density'`
+- [x] **Web:** Add density legend to route map view — `DensityLegend.tsx`, integrated in `EventRoutesMap.tsx`
+- [x] **Web:** Add density column to route list table with color indicator — `MyRoutesCard.tsx` table view
+- [x] **Web:** Density/heatmap view modes on event route map — `EventRoutesMap.tsx` (Routes/Density/Heatmap toggle)
+- [x] **Web:** Density/heatmap view modes on community detail map — `community-detail-map.tsx`
+- [x] **API:** Density data served via existing `GET /api/events/{eventId}/routes` and `/routes/stats` endpoints (dedicated density endpoint unnecessary)
 
 ### Phase 3 — Route End-Time Editing (Trim by Time)
 
@@ -145,9 +147,10 @@ If `RoutePoints` have timestamps and the user logs pickups at intervals, divide 
 
 #### Backend
 
-- [ ] Add `OriginalEndTime` (DateTimeOffset?) to `EventAttendeeRoute` — preserves the original end time before any edits
-- [ ] Add `OriginalTotalDistanceMeters` (int?) to `EventAttendeeRoute` — preserves original distance
-- [ ] Add `PUT /api/routes/{routeId}/trim-time` endpoint accepting `{ newEndTime: DateTimeOffset }`
+- [x] Add `OriginalEndTime` (DateTimeOffset?) to `EventAttendeeRoute` — migration `20260223141602_AddRouteTimeTrimming`
+- [x] Add `OriginalTotalDistanceMeters` (int?) to `EventAttendeeRoute`
+- [x] Add `OriginalDurationMinutes` (int?) to `EventAttendeeRoute`
+- [x] Add `PUT /api/routes/{routeId}/trim-time` endpoint — `RouteMetadataController`, `EventAttendeeRouteManager.TrimRouteTimeAsync()`
   - Validates: `newEndTime` must be between `StartTime` and original `EndTime`
   - Filters `RoutePoints` to only those with `Timestamp <= newEndTime`
   - Recalculates `UserPath` LineString from remaining points
@@ -155,29 +158,28 @@ If `RoutePoints` have timestamps and the user logs pickups at intervals, divide 
   - Recalculates `DurationMinutes` as `(newEndTime - StartTime).TotalMinutes`
   - Stores `OriginalEndTime` and `OriginalTotalDistanceMeters` if not already set
   - Does NOT delete RoutePoints — they are retained for potential undo
-- [ ] Add `PUT /api/routes/{routeId}/restore-time` endpoint to undo time trim (restores from RoutePoints)
-- [ ] Add `IsTimeTrimmed` boolean to `EventAttendeeRoute` for UI indicators
+  - Re-applies privacy trim after time trim
+- [x] Add `PUT /api/routes/{routeId}/restore-time` endpoint — `EventAttendeeRouteManager.RestoreRouteTimeAsync()`
+- [x] Add `IsTimeTrimmed` boolean to `EventAttendeeRoute` for UI indicators
 
 #### Mobile App
 
-- [ ] Add "Edit Route" button on route detail screen (only for own routes)
-- [ ] Route editor screen with:
-  - Map showing the full route (trimmed portion in dashed gray, kept portion in solid color)
+- [x] Add "Trim Route Time" button on route card (only for own routes) — `TabRoutes.xaml`
+- [x] `TrimRoutePopup` with:
   - Timeline slider (minute-level ticks) from StartTime to EndTime
   - Draggable end handle
-  - Real-time distance recalculation as user drags
-  - "Removed: X.X km, Y min" indicator showing what will be trimmed
-  - "Save" and "Cancel" buttons
+  - Live preview of trimmed duration and new end time
+  - "Save Trim" and "Cancel" buttons
   - "Restore Original" button if route was previously trimmed
-- [ ] Confirmation dialog: "This will remove {distance} from your route. Continue?"
+- [x] Integration in `ViewEventViewModel.TrimRouteTimeCommand`
 
 #### Web App
 
-- [ ] Add "Edit Route" option in route detail view (owner only)
-- [ ] Route editor with Google Maps showing trim preview
-- [ ] Timeline slider component with minute granularity
+- [x] `RouteTimeTrimDialog` component with timeline slider and live preview
+- [x] Trim button in My Routes table (`MyRoutesCard.tsx`)
+- [x] React Query mutations for `TrimRouteTime` and `RestoreRouteTime`
 
-### Phase 4 — Smart Trim Suggestions (Nice-to-Have)
+### Phase 4 — Smart Trim Suggestions (Nice-to-Have, DEFERRED)
 
 **Goal:** Automatically detect "driving away" segments and suggest a trim point.
 
@@ -406,7 +408,7 @@ _To be created on project start._
 
 ---
 
-**Last Updated:** February 22, 2026
+**Last Updated:** March 1, 2026
 **Owner:** @JoeBeernink
-**Status:** In Progress (Phase 1 Complete)
-**Next Review:** Phase 2 kickoff
+**Status:** Complete (Phases 1-3); Phase 2b & 4 Deferred
+**Next Review:** Phase 2b/4 if prioritized
