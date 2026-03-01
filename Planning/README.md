@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (51 Total)
+### 2026 Projects (52 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -92,6 +92,7 @@
 | [Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md) | Event impact photos | ✅ Complete |
 | [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md) | Vendor-neutral observability | ✅ Complete |
 | [Project 43 - Sign Management](./Projects/Project_43_Sign_Management.md) | Track adoption sign lifecycle, location, and text | Not Started |
+| [Project 52 - Volunteer Rewards](./Projects/Project_52_Volunteer_Rewards.md) | Partner-contributed rewards for volunteer engagement (future) | Not Started |
 
 ---
 
@@ -150,6 +151,7 @@
 - [Project 46 - Product Support](./Projects/Project_46_Product_Support.md)
 - [Project 50 - News & Blog](./Projects/Project_50_News_Blog.md)
 - [Project 51 - Contact Management](./Projects/Project_51_Contact_Management.md)
+- [Project 52 - Volunteer Rewards](./Projects/Project_52_Volunteer_Rewards.md)
 
 ---
 
@@ -161,10 +163,10 @@
 | **In Progress** | 14 | Projects 1 (Phases 0-5a Complete, Production Live; Phase 6 Partial, Phase 7 Remaining), 4 (Phases 1-2, 6 Complete; Phases 3-5 Substantial), 5 (Phases 1-3 Complete; Phase 4 Partial), 6 (Phases 1, 2.5, 3 Substantial), 8 (Phases 1-4, 6 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete; Phase 5 In Progress), 41 (Phases 1-4 Complete), 45 (Phases 1-4 Complete), 48 (Phase 1 Complete), 49 (Phases 1-4 Complete, Phase 5 Partial) |
 | **Ready for Review** | 1 | Project 2 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
-| **Not Started** | 7 | Projects 12, 24, 31, 36, 43, 46, 51 |
+| **Not Started** | 8 | Projects 12, 24, 31, 36, 43, 46, 51, 52 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 51 project specifications documented
+**Total:** 52 project specifications documented
 
 ---
 
