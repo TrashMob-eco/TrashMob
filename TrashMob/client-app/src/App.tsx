@@ -409,6 +409,21 @@ const SiteAdminProspectAnalytics = lazy(() =>
 const SiteAdminDocuments = lazy(() =>
     import('./pages/siteadmin/documents/page').then((m) => ({ default: m.SiteAdminDocuments })),
 );
+const SiteAdminContacts = lazy(() =>
+    import('./pages/siteadmin/contacts/page').then((m) => ({ default: m.SiteAdminContacts })),
+);
+const SiteAdminContactCreate = lazy(() =>
+    import('./pages/siteadmin/contacts/create').then((m) => ({ default: m.SiteAdminContactCreate })),
+);
+const SiteAdminContactEdit = lazy(() =>
+    import('./pages/siteadmin/contacts/$contactId.edit').then((m) => ({ default: m.SiteAdminContactEdit })),
+);
+const SiteAdminContactDetail = lazy(() =>
+    import('./pages/siteadmin/contacts/$contactId').then((m) => ({ default: m.SiteAdminContactDetail })),
+);
+const SiteAdminContactTags = lazy(() =>
+    import('./pages/siteadmin/contact-tags/page').then((m) => ({ default: m.SiteAdminContactTags })),
+);
 
 const queryClient = new QueryClient();
 
@@ -672,6 +687,11 @@ const AppContent: FC = () => {
                                 <Route path='prospects/analytics' element={<SiteAdminProspectAnalytics />} />
                                 <Route path='prospects/:prospectId' element={<SiteAdminProspectDetail />} />
                                 <Route path='prospects/:prospectId/edit' element={<SiteAdminProspectEdit />} />
+                                <Route path='contacts' element={<SiteAdminContacts />} />
+                                <Route path='contacts/create' element={<SiteAdminContactCreate />} />
+                                <Route path='contacts/:contactId' element={<SiteAdminContactDetail />} />
+                                <Route path='contacts/:contactId/edit' element={<SiteAdminContactEdit />} />
+                                <Route path='contact-tags' element={<SiteAdminContactTags />} />
                             </Route>
                         </Route>
                         <Route>
