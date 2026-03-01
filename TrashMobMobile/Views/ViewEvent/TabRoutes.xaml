@@ -58,11 +58,58 @@
             </VerticalStackLayout>
         </Grid>
 
-        <!-- Route map -->
-        <controls:CustomMap x:Name="routeMap" HeightRequest="200"
-                            HandlerProperties.DisconnectPolicy="Manual"
-                            Grid.Row="2" IsVisible="{Binding AreRoutesFound}"
-                            Margin="10,4" />
+        <!-- Route map with density legend overlay -->
+        <Grid Grid.Row="2" IsVisible="{Binding AreRoutesFound}" Margin="10,4">
+            <controls:CustomMap x:Name="routeMap" HeightRequest="200"
+                                HandlerProperties.DisconnectPolicy="Manual" />
+            <!-- Density legend -->
+            <Border VerticalOptions="End" HorizontalOptions="Start"
+                    Margin="8" Padding="8,6"
+                    StrokeShape="RoundRectangle 6"
+                    BackgroundColor="{AppThemeBinding Light=#E6FFFFFF, Dark=#E6212121}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                    StrokeThickness="0.5"
+                    IsVisible="{Binding HasDensityData}">
+                <VerticalStackLayout Spacing="3">
+                    <Label Text="Litter Density" FontFamily="LexendSemibold" FontSize="Micro" />
+                    <HorizontalStackLayout Spacing="3">
+                        <Ellipse WidthRequest="8" HeightRequest="8" Fill="#9E9E9E" VerticalOptions="Center" />
+                        <Label Text="No data" FontSize="10"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="3">
+                        <Ellipse WidthRequest="8" HeightRequest="8" Fill="#4CAF50" VerticalOptions="Center" />
+                        <Label Text="&lt; 5 g/m" FontSize="10"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="3">
+                        <Ellipse WidthRequest="8" HeightRequest="8" Fill="#8BC34A" VerticalOptions="Center" />
+                        <Label Text="5-15 g/m" FontSize="10"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="3">
+                        <Ellipse WidthRequest="8" HeightRequest="8" Fill="#FFC107" VerticalOptions="Center" />
+                        <Label Text="15-30 g/m" FontSize="10"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="3">
+                        <Ellipse WidthRequest="8" HeightRequest="8" Fill="#FF9800" VerticalOptions="Center" />
+                        <Label Text="30-60 g/m" FontSize="10"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="3">
+                        <Ellipse WidthRequest="8" HeightRequest="8" Fill="#FF5722" VerticalOptions="Center" />
+                        <Label Text="60-120 g/m" FontSize="10"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="3">
+                        <Ellipse WidthRequest="8" HeightRequest="8" Fill="#F44336" VerticalOptions="Center" />
+                        <Label Text="120+ g/m" FontSize="10"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
 
         <!-- Empty state -->
         <VerticalStackLayout Grid.Row="3"
