@@ -315,6 +315,7 @@ const PartnerAdminInvite = lazy(() =>
 
 /** SiteAdmin - Lazy loaded (admin-only pages) */
 const SiteAdminLayout = lazy(() => import('./pages/siteadmin/_layout').then((m) => ({ default: m.SiteAdminLayout })));
+const SiteAdminGuide = lazy(() => import('./pages/siteadmin/guide/page').then((m) => ({ default: m.SiteAdminGuide })));
 const SiteAdminUsers = lazy(() => import('./pages/siteadmin/users/page').then((m) => ({ default: m.SiteAdminUsers })));
 const SiteAdminUserDetail = lazy(() =>
     import('./pages/siteadmin/users/$userId').then((m) => ({ default: m.SiteAdminUserDetail })),
@@ -683,6 +684,7 @@ const AppContent: FC = () => {
                                     </Suspense>
                                 }
                             >
+                                <Route path='guide' element={<SiteAdminGuide />} />
                                 <Route path='users' element={<SiteAdminUsers />} />
                                 <Route path='users/:userId' element={<SiteAdminUserDetail />} />
                                 <Route path='events' element={<SiteAdminEvents />} />
