@@ -164,6 +164,22 @@
 
         public virtual DbSet<ProspectOutreachEmail> ProspectOutreachEmails { get; set; }
 
+        public virtual DbSet<Contact> Contacts { get; set; }
+
+        public virtual DbSet<Donation> Donations { get; set; }
+
+        public virtual DbSet<Pledge> Pledges { get; set; }
+
+        public virtual DbSet<ContactNote> ContactNotes { get; set; }
+
+        public virtual DbSet<ContactTag> ContactTags { get; set; }
+
+        public virtual DbSet<ContactContactTag> ContactContactTags { get; set; }
+
+        public virtual DbSet<Grant> Grants { get; set; }
+
+        public virtual DbSet<GrantTask> GrantTasks { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -3432,6 +3448,281 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProspectOutreachEmails_User_LastUpdatedBy");
+            });
+
+            // ===== Contact Management System (Project 51) =====
+
+            modelBuilder.Entity<Contact>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.FirstName)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.LastName)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.Email).HasMaxLength(256);
+                entity.Property(e => e.Phone).HasMaxLength(20);
+                entity.Property(e => e.OrganizationName).HasMaxLength(256);
+                entity.Property(e => e.Title).HasMaxLength(100);
+                entity.Property(e => e.Address).HasMaxLength(500);
+                entity.Property(e => e.City).HasMaxLength(100);
+                entity.Property(e => e.Region).HasMaxLength(100);
+                entity.Property(e => e.PostalCode).HasMaxLength(20);
+                entity.Property(e => e.Country).HasMaxLength(100);
+                entity.Property(e => e.ContactType).IsRequired();
+                entity.Property(e => e.Source).HasMaxLength(100);
+                entity.Property(e => e.Notes).HasMaxLength(2000);
+                entity.Property(e => e.IsActive).HasDefaultValue(true);
+
+                entity.HasOne(d => d.User)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_Contacts_User");
+
+                entity.HasOne(d => d.Partner)
+                    .WithMany()
+                    .HasForeignKey(d => d.PartnerId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_Contacts_Partner");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Contacts_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Contacts_User_LastUpdatedBy");
+
+                entity.HasIndex(e => e.Email).HasDatabaseName("IX_Contacts_Email");
+                entity.HasIndex(e => new { e.LastName, e.FirstName }).HasDatabaseName("IX_Contacts_LastName_FirstName");
+                entity.HasIndex(e => e.ContactType).HasDatabaseName("IX_Contacts_ContactType");
+                entity.HasIndex(e => e.UserId).HasDatabaseName("IX_Contacts_UserId");
+                entity.HasIndex(e => e.PartnerId).HasDatabaseName("IX_Contacts_PartnerId");
+            });
+
+            modelBuilder.Entity<Donation>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Amount).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.DonationDate).IsRequired();
+                entity.Property(e => e.DonationType).IsRequired();
+                entity.Property(e => e.Campaign).HasMaxLength(200);
+                entity.Property(e => e.InKindDescription).HasMaxLength(500);
+                entity.Property(e => e.MatchingGiftEmployer).HasMaxLength(200);
+                entity.Property(e => e.Notes).HasMaxLength(2000);
+                entity.Property(e => e.ReceiptSent).HasDefaultValue(false);
+                entity.Property(e => e.ThankYouSent).HasDefaultValue(false);
+
+                entity.HasOne(d => d.Contact)
+                    .WithMany(p => p.Donations)
+                    .HasForeignKey(d => d.ContactId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_Donations_Contact");
+
+                entity.HasOne(d => d.Pledge)
+                    .WithMany(p => p.Donations)
+                    .HasForeignKey(d => d.PledgeId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_Donations_Pledge");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Donations_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Donations_User_LastUpdatedBy");
+
+                entity.HasIndex(e => e.ContactId).HasDatabaseName("IX_Donations_ContactId");
+                entity.HasIndex(e => e.DonationDate).HasDatabaseName("IX_Donations_DonationDate");
+                entity.HasIndex(e => e.DonationType).HasDatabaseName("IX_Donations_DonationType");
+                entity.HasIndex(e => e.PledgeId).HasDatabaseName("IX_Donations_PledgeId");
+            });
+
+            modelBuilder.Entity<Pledge>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.StartDate).IsRequired();
+                entity.Property(e => e.Frequency).IsRequired();
+                entity.Property(e => e.Status).IsRequired();
+                entity.Property(e => e.Notes).HasMaxLength(2000);
+
+                entity.HasOne(d => d.Contact)
+                    .WithMany(p => p.Pledges)
+                    .HasForeignKey(d => d.ContactId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_Pledges_Contact");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Pledges_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Pledges_User_LastUpdatedBy");
+
+                entity.HasIndex(e => e.ContactId).HasDatabaseName("IX_Pledges_ContactId");
+                entity.HasIndex(e => e.Status).HasDatabaseName("IX_Pledges_Status");
+            });
+
+            modelBuilder.Entity<ContactNote>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.NoteType).IsRequired();
+                entity.Property(e => e.Subject).HasMaxLength(200);
+                entity.Property(e => e.Body).IsRequired().HasMaxLength(4000);
+
+                entity.HasOne(d => d.Contact)
+                    .WithMany(p => p.ContactNotes)
+                    .HasForeignKey(d => d.ContactId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ContactNotes_Contact");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ContactNotes_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ContactNotes_User_LastUpdatedBy");
+
+                entity.HasIndex(e => e.ContactId).HasDatabaseName("IX_ContactNotes_ContactId");
+            });
+
+            modelBuilder.Entity<ContactTag>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Color).HasMaxLength(7);
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ContactTags_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ContactTags_User_LastUpdatedBy");
+
+                entity.HasIndex(e => e.Name).IsUnique().HasDatabaseName("IX_ContactTags_Name");
+            });
+
+            modelBuilder.Entity<ContactContactTag>(entity =>
+            {
+                entity.HasKey(e => new { e.ContactId, e.ContactTagId });
+
+                entity.HasOne(d => d.Contact)
+                    .WithMany(p => p.ContactContactTags)
+                    .HasForeignKey(d => d.ContactId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ContactContactTags_Contact");
+
+                entity.HasOne(d => d.ContactTag)
+                    .WithMany(p => p.ContactContactTags)
+                    .HasForeignKey(d => d.ContactTagId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ContactContactTags_ContactTag");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ContactContactTags_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ContactContactTags_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<Grant>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.FunderName).IsRequired().HasMaxLength(256);
+                entity.Property(e => e.ProgramName).HasMaxLength(256);
+                entity.Property(e => e.Description).HasMaxLength(2000);
+                entity.Property(e => e.AmountMin).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.AmountMax).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.AmountAwarded).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Status).IsRequired();
+                entity.Property(e => e.GrantUrl).HasMaxLength(500);
+                entity.Property(e => e.Notes).HasMaxLength(4000);
+
+                entity.HasOne(d => d.FunderContact)
+                    .WithMany(p => p.GrantsAsFunderContact)
+                    .HasForeignKey(d => d.FunderContactId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_Grants_Contact");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Grants_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Grants_User_LastUpdatedBy");
+
+                entity.HasIndex(e => e.Status).HasDatabaseName("IX_Grants_Status");
+                entity.HasIndex(e => e.SubmissionDeadline).HasDatabaseName("IX_Grants_SubmissionDeadline");
+                entity.HasIndex(e => e.FunderContactId).HasDatabaseName("IX_Grants_FunderContactId");
+            });
+
+            modelBuilder.Entity<GrantTask>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Title).IsRequired().HasMaxLength(256);
+                entity.Property(e => e.Notes).HasMaxLength(1000);
+                entity.Property(e => e.SortOrder).HasDefaultValue(0);
+
+                entity.HasOne(d => d.Grant)
+                    .WithMany(p => p.GrantTasks)
+                    .HasForeignKey(d => d.GrantId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_GrantTasks_Grant");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GrantTasks_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GrantTasks_User_LastUpdatedBy");
+
+                entity.HasIndex(e => e.GrantId).HasDatabaseName("IX_GrantTasks_GrantId");
             });
         }
     }
