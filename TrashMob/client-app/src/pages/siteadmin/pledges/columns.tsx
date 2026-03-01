@@ -32,10 +32,7 @@ export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<PledgeRow>[
         accessorKey: 'contactName',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Contact' />,
         cell: ({ row }) => (
-            <Link
-                to={`/siteadmin/contacts/${row.original.contactId}`}
-                className='font-medium hover:underline'
-            >
+            <Link to={`/siteadmin/contacts/${row.original.contactId}`} className='font-medium hover:underline'>
                 {row.original.contactName || '—'}
             </Link>
         ),
@@ -43,21 +40,17 @@ export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<PledgeRow>[
     {
         accessorKey: 'totalAmount',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Total Amount' />,
-        cell: ({ row }) => (
-            <div className='font-medium'>${row.original.totalAmount.toLocaleString()}</div>
-        ),
+        cell: ({ row }) => <div className='font-medium'>${row.original.totalAmount.toLocaleString()}</div>,
     },
     {
         accessorKey: 'startDate',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Start Date' />,
-        cell: ({ row }) =>
-            row.original.startDate ? new Date(row.original.startDate).toLocaleDateString() : '—',
+        cell: ({ row }) => (row.original.startDate ? new Date(row.original.startDate).toLocaleDateString() : '—'),
     },
     {
         accessorKey: 'endDate',
         header: 'End Date',
-        cell: ({ row }) =>
-            row.original.endDate ? new Date(row.original.endDate).toLocaleDateString() : '—',
+        cell: ({ row }) => (row.original.endDate ? new Date(row.original.endDate).toLocaleDateString() : '—'),
     },
     {
         accessorKey: 'frequency',

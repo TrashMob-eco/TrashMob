@@ -272,9 +272,7 @@ export const SiteAdminContactDetail = () => {
                                 <div className='grid grid-cols-2 gap-4'>
                                     <div>
                                         <p className='text-sm text-muted-foreground'>Total Donations</p>
-                                        <p className='text-2xl font-semibold'>
-                                            ${totalDonations.toLocaleString()}
-                                        </p>
+                                        <p className='text-2xl font-semibold'>${totalDonations.toLocaleString()}</p>
                                     </div>
                                     <div>
                                         <p className='text-sm text-muted-foreground'>Number of Donations</p>
@@ -449,18 +447,12 @@ export const SiteAdminContactDetail = () => {
                                                     ${p.totalAmount.toLocaleString()}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {p.startDate
-                                                        ? new Date(p.startDate).toLocaleDateString()
-                                                        : '—'}
+                                                    {p.startDate ? new Date(p.startDate).toLocaleDateString() : '—'}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {p.endDate
-                                                        ? new Date(p.endDate).toLocaleDateString()
-                                                        : '—'}
+                                                    {p.endDate ? new Date(p.endDate).toLocaleDateString() : '—'}
                                                 </TableCell>
-                                                <TableCell>
-                                                    {getRecurringFrequencyLabel(p.frequency)}
-                                                </TableCell>
+                                                <TableCell>{getRecurringFrequencyLabel(p.frequency)}</TableCell>
                                                 <TableCell>
                                                     <PledgeStatusBadge status={p.status} />
                                                 </TableCell>

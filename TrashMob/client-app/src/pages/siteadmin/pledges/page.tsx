@@ -74,9 +74,7 @@ export const SiteAdminPledges = () => {
                 <CardHeader className='flex flex-row items-center justify-between'>
                     <div>
                         <CardTitle>Pledges</CardTitle>
-                        <p className='text-sm text-muted-foreground mt-1'>
-                            {(pledges || []).length} total pledges
-                        </p>
+                        <p className='text-sm text-muted-foreground mt-1'>{(pledges || []).length} total pledges</p>
                     </div>
                     <Button asChild>
                         <Link to='/siteadmin/pledges/create'>

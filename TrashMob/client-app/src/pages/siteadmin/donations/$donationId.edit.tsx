@@ -331,9 +331,7 @@ export const SiteAdminDonationEdit = () => {
                                                 {(pledges || []).map((p) => (
                                                     <SelectItem key={p.id} value={p.id}>
                                                         ${p.totalAmount.toLocaleString()} (
-                                                        {p.startDate
-                                                            ? new Date(p.startDate).toLocaleDateString()
-                                                            : '—'}
+                                                        {p.startDate ? new Date(p.startDate).toLocaleDateString() : '—'}
                                                         )
                                                     </SelectItem>
                                                 ))}

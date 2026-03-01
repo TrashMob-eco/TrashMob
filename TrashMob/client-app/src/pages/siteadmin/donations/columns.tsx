@@ -33,17 +33,13 @@ export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<DonationRow
     {
         accessorKey: 'donationDate',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Date' />,
-        cell: ({ row }) =>
-            row.original.donationDate ? new Date(row.original.donationDate).toLocaleDateString() : '—',
+        cell: ({ row }) => (row.original.donationDate ? new Date(row.original.donationDate).toLocaleDateString() : '—'),
     },
     {
         accessorKey: 'contactName',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Contact' />,
         cell: ({ row }) => (
-            <Link
-                to={`/siteadmin/contacts/${row.original.contactId}`}
-                className='font-medium hover:underline'
-            >
+            <Link to={`/siteadmin/contacts/${row.original.contactId}`} className='font-medium hover:underline'>
                 {row.original.contactName || '—'}
             </Link>
         ),
@@ -61,29 +57,19 @@ export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<DonationRow
     {
         accessorKey: 'amount',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Amount' />,
-        cell: ({ row }) => (
-            <div className='text-right font-medium'>${row.original.amount.toLocaleString()}</div>
-        ),
+        cell: ({ row }) => <div className='text-right font-medium'>${row.original.amount.toLocaleString()}</div>,
     },
     {
         accessorKey: 'receiptSent',
         header: 'Receipt',
         cell: ({ row }) =>
-            row.original.receiptSent ? (
-                <Badge variant='success'>Sent</Badge>
-            ) : (
-                <Badge variant='secondary'>No</Badge>
-            ),
+            row.original.receiptSent ? <Badge variant='success'>Sent</Badge> : <Badge variant='secondary'>No</Badge>,
     },
     {
         accessorKey: 'thankYouSent',
         header: 'Thank You',
         cell: ({ row }) =>
-            row.original.thankYouSent ? (
-                <Badge variant='success'>Sent</Badge>
-            ) : (
-                <Badge variant='secondary'>No</Badge>
-            ),
+            row.original.thankYouSent ? <Badge variant='success'>Sent</Badge> : <Badge variant='secondary'>No</Badge>,
     },
     {
         id: 'actions',

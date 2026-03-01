@@ -712,10 +712,7 @@ const AppContent: FC = () => {
                                 <Route path='contact-tags' element={<SiteAdminContactTags />} />
                                 <Route path='donations' element={<SiteAdminDonations />} />
                                 <Route path='donations/create' element={<SiteAdminDonationCreate />} />
-                                <Route
-                                    path='donations/:donationId/edit'
-                                    element={<SiteAdminDonationEdit />}
-                                />
+                                <Route path='donations/:donationId/edit' element={<SiteAdminDonationEdit />} />
                                 <Route path='pledges' element={<SiteAdminPledges />} />
                                 <Route path='pledges/create' element={<SiteAdminPledgeCreate />} />
                                 <Route path='pledges/:pledgeId/edit' element={<SiteAdminPledgeEdit />} />

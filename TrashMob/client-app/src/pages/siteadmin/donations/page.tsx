@@ -66,8 +66,7 @@ export const SiteAdminDonations = () => {
         [donations, contactMap],
     );
 
-    const filterByType = (type: number | null) =>
-        type === null ? rows : rows.filter((r) => r.donationType === type);
+    const filterByType = (type: number | null) => (type === null ? rows : rows.filter((r) => r.donationType === type));
 
     return (
         <Tabs defaultValue='all'>
@@ -75,9 +74,7 @@ export const SiteAdminDonations = () => {
                 <CardHeader className='flex flex-row items-center justify-between'>
                     <div>
                         <CardTitle>Donations</CardTitle>
-                        <p className='text-sm text-muted-foreground mt-1'>
-                            {(donations || []).length} total donations
-                        </p>
+                        <p className='text-sm text-muted-foreground mt-1'>{(donations || []).length} total donations</p>
                     </div>
                     <Button asChild>
                         <Link to='/siteadmin/donations/create'>
