@@ -95,11 +95,7 @@ export const AppealDialog = ({ open, onOpenChange, contactId, contactName, conta
                                 <FormItem>
                                     <FormLabel>Message</FormLabel>
                                     <FormControl>
-                                        <Textarea
-                                            {...field}
-                                            placeholder='Write your appeal message...'
-                                            rows={8}
-                                        />
+                                        <Textarea {...field} placeholder='Write your appeal message...' rows={8} />
                                     </FormControl>
                                     <p className='text-xs text-muted-foreground mt-1'>
                                         The recipient&apos;s name will be automatically inserted in the greeting.
