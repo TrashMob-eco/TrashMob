@@ -114,9 +114,7 @@ export const SiteAdminGrantDetail = () => {
         }
     };
 
-    const funderContact = grant?.funderContactId
-        ? (contacts || []).find((c) => c.id === grant.funderContactId)
-        : null;
+    const funderContact = grant?.funderContactId ? (contacts || []).find((c) => c.id === grant.funderContactId) : null;
 
     const funderContactName = funderContact
         ? [funderContact.firstName, funderContact.lastName].filter(Boolean).join(' ')
@@ -270,11 +268,7 @@ export const SiteAdminGrantDetail = () => {
                                         <TableCell className='max-w-[200px] truncate'>{t.notes || '—'}</TableCell>
                                         <TableCell className='text-right'>
                                             <div className='flex justify-end gap-1'>
-                                                <Button
-                                                    variant='ghost'
-                                                    size='icon'
-                                                    onClick={() => handleEditTask(t)}
-                                                >
+                                                <Button variant='ghost' size='icon' onClick={() => handleEditTask(t)}>
                                                     <Edit className='h-4 w-4' />
                                                 </Button>
                                                 <Button
