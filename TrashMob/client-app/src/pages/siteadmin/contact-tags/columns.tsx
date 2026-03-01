@@ -2,7 +2,12 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Edit, Ellipsis, SquareX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DataTableColumnHeader } from '@/components/ui/data-table';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import ContactTagData from '@/components/Models/ContactTagData';
 
 interface GetColumnsProps {

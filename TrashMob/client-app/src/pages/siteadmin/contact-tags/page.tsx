@@ -12,12 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import ContactTagData from '@/components/Models/ContactTagData';
-import {
-    CreateContactTag,
-    DeleteContactTag,
-    GetContactTags,
-    UpdateContactTag,
-} from '@/services/contacts';
+import { CreateContactTag, DeleteContactTag, GetContactTags, UpdateContactTag } from '@/services/contacts';
 import { getColumns } from './columns';
 
 const tagSchema = z.object({
@@ -129,7 +124,13 @@ export const SiteAdminContactTags = () => {
                     </Button>
                 </CardHeader>
                 <CardContent>
-                    <DataTable columns={columns} data={tags || []} enableSearch searchPlaceholder='Search tags...' searchColumns={['name']} />
+                    <DataTable
+                        columns={columns}
+                        data={tags || []}
+                        enableSearch
+                        searchPlaceholder='Search tags...'
+                        searchColumns={['name']}
+                    />
                 </CardContent>
             </Card>
 

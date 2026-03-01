@@ -76,30 +76,27 @@ export const SiteAdminContactCreate = () => {
         },
     });
 
-    const checkDuplicate = useCallback(
-        async (email: string) => {
-            if (!email) {
-                setDuplicateWarning(null);
-                return;
-            }
-            try {
-                const res = await ApiService('protected').fetchData<ContactData[]>({
-                    url: `/contacts?search=${encodeURIComponent(email)}`,
-                    method: 'get',
-                });
-                const matches = res.data?.filter((c) => c.email?.toLowerCase() === email.toLowerCase()) || [];
-                if (matches.length > 0) {
-                    const names = matches.map((c) => `${c.firstName} ${c.lastName}`).join(', ');
-                    setDuplicateWarning(`Possible duplicate: ${names}`);
-                } else {
-                    setDuplicateWarning(null);
-                }
-            } catch {
+    const checkDuplicate = useCallback(async (email: string) => {
+        if (!email) {
+            setDuplicateWarning(null);
+            return;
+        }
+        try {
+            const res = await ApiService('protected').fetchData<ContactData[]>({
+                url: `/contacts?search=${encodeURIComponent(email)}`,
+                method: 'get',
+            });
+            const matches = res.data?.filter((c) => c.email?.toLowerCase() === email.toLowerCase()) || [];
+            if (matches.length > 0) {
+                const names = matches.map((c) => `${c.firstName} ${c.lastName}`).join(', ');
+                setDuplicateWarning(`Possible duplicate: ${names}`);
+            } else {
                 setDuplicateWarning(null);
             }
-        },
-        [],
-    );
+        } catch {
+            setDuplicateWarning(null);
+        }
+    }, []);
 
     const onSubmit: SubmitHandler<FormInputs> = useCallback(
         (values) => {

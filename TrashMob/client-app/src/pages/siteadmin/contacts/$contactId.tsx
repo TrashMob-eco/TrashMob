@@ -8,11 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import {
-    ContactTypeBadge,
-    NoteTypeBadge,
-    getDonationTypeLabel,
-} from '@/components/contacts/contact-constants';
+import { ContactTypeBadge, NoteTypeBadge, getDonationTypeLabel } from '@/components/contacts/contact-constants';
 import ContactNoteData from '@/components/Models/ContactNoteData';
 import {
     DeleteContactNote,
