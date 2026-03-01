@@ -80,6 +80,7 @@ A lightweight Contact Management System (CMS/CRM) built into the Site Admin area
 - ❌ Bulk appeal: select contacts by tag/segment, send personalized appeal emails
 - ❌ Tax receipt generation: IRS-compliant donation acknowledgment with organization details
 - ❌ Communication history: track all outbound emails with open/delivery status
+- ❌ Document attachment library: admin-managed library of PDF/DOCX files (annual reports, impact summaries, sponsorship decks) that can be attached to outbound emails
 
 ### Phase 5 — Grant Management
 
