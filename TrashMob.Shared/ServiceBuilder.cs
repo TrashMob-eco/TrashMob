@@ -166,6 +166,7 @@
             services.AddScoped<IBaseManager<ContactContactTag>, ContactContactTagManager>();
             services.AddScoped<IGrantManager, GrantManager>();
             services.AddScoped<IGrantTaskManager, GrantTaskManager>();
+            services.AddScoped<IDonationEmailManager, DonationEmailManager>();
 
             // Newsletter
             services.AddScoped<INewsletterManager, NewsletterManager>();

@@ -75,6 +75,11 @@ namespace TrashMob.Shared.Managers
                     MailHelper.CreateSingleTemplateEmailToMultipleRecipients(from, tos, email.TemplateId,
                         email.DynamicTemplateData);
 
+                foreach (var attachment in email.Attachments)
+                {
+                    message.AddAttachment(attachment.Filename, attachment.Base64Content, attachment.MimeType);
+                }
+
                 message.Asm = new ASM
                 {
                     GroupId = email.GroupId,

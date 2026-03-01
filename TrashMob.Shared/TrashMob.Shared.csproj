@@ -101,6 +101,9 @@
     <EmbeddedResource Include="Engine\EmailCopy\CommunityWelcome.html" />
     <EmbeddedResource Include="Engine\EmailCopy\UpcomingTeamEventsThisWeek.html" />
     <EmbeddedResource Include="Engine\EmailCopy\UpcomingTeamEventsSoon.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\DonationThankYou.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\DonationReceipt.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\FundraisingAppeal.html" />
   </ItemGroup>
 
   <ItemGroup>

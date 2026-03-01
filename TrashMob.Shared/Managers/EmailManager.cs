@@ -69,6 +69,24 @@ namespace TrashMob.Shared.Managers
         }
 
         /// <inheritdoc />
+        public async Task SendTemplatedEmailAsync(string subject, string templateId, int groupId,
+            object dynamicTemplateData, List<EmailAddress> recipients, List<EmailAttachment> attachments, CancellationToken cancellationToken = default)
+        {
+            var email = new Email
+            {
+                Subject = subject,
+                DynamicTemplateData = dynamicTemplateData,
+                TemplateId = templateId,
+                GroupId = groupId,
+            };
+
+            email.Addresses.AddRange(recipients);
+            email.Attachments.AddRange(attachments);
+
+            await emailSender.SendTemplatedEmailAsync(email, cancellationToken);
+        }
+
+        /// <inheritdoc />
         public Task<IEnumerable<EmailTemplate>> GetEmailTemplatesAsync(CancellationToken cancellationToken)
         {
             List<EmailTemplate> emailTemplates = [];

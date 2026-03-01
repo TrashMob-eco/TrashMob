@@ -19,7 +19,9 @@ namespace TrashMob.Controllers
     [Route("api/donations")]
     [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
     [RequiredScope(Constants.TrashMobWriteScope)]
-    public class DonationsController(IDonationManager donationManager)
+    public class DonationsController(
+        IDonationManager donationManager,
+        IDonationEmailManager donationEmailManager)
         : SecureController
     {
         /// <summary>
@@ -106,6 +108,50 @@ namespace TrashMob.Controllers
         {
             await donationManager.DeleteAsync(id, cancellationToken);
             TrackEvent("DeleteDonation");
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Sends a thank-you email for a donation.
+        /// </summary>
+        /// <param name="id">The donation ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("{id}/send-thankyou")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SendThankYou(Guid id, CancellationToken cancellationToken)
+        {
+            var donation = await donationManager.GetAsync(id, cancellationToken);
+
+            if (donation is null)
+            {
+                return NotFound();
+            }
+
+            await donationEmailManager.SendThankYouAsync(id, UserId, cancellationToken);
+            TrackEvent("SendDonationThankYou");
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Sends a tax receipt email with PDF attachment for a donation.
+        /// </summary>
+        /// <param name="id">The donation ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("{id}/send-receipt")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SendReceipt(Guid id, CancellationToken cancellationToken)
+        {
+            var donation = await donationManager.GetAsync(id, cancellationToken);
+
+            if (donation is null)
+            {
+                return NotFound();
+            }
+
+            await donationEmailManager.SendReceiptAsync(id, UserId, cancellationToken);
+            TrackEvent("SendDonationReceipt");
             return NoContent();
         }
     }

@@ -256,6 +256,53 @@ export const DeleteDonation = () => ({
         }),
 });
 
+// --- Donation Emails ---
+
+export type SendDonationThankYou_Params = { donationId: string };
+export const SendDonationThankYou = () => ({
+    key: ['/donations', 'send-thankyou'],
+    service: async (params: SendDonationThankYou_Params) =>
+        ApiService('protected').fetchData<unknown>({
+            url: `/donations/${params.donationId}/send-thankyou`,
+            method: 'post',
+        }),
+});
+
+export type SendDonationReceipt_Params = { donationId: string };
+export const SendDonationReceipt = () => ({
+    key: ['/donations', 'send-receipt'],
+    service: async (params: SendDonationReceipt_Params) =>
+        ApiService('protected').fetchData<unknown>({
+            url: `/donations/${params.donationId}/send-receipt`,
+            method: 'post',
+        }),
+});
+
+// --- Fundraising Appeals ---
+
+export type SendAppeal_Body = { contactId: string; subject: string; body: string };
+export const SendAppeal = () => ({
+    key: ['/fundraising-appeals', 'send'],
+    service: async (body: SendAppeal_Body) =>
+        ApiService('protected').fetchData<unknown, SendAppeal_Body>({
+            url: '/fundraising-appeals/send',
+            method: 'post',
+            data: body,
+        }),
+});
+
+export type BulkAppealResult = { sentCount: number; failedCount: number; skippedCount: number };
+export type SendBulkAppeal_Body = { contactIds: string[]; subject: string; body: string };
+export const SendBulkAppeal = () => ({
+    key: ['/fundraising-appeals', 'send-bulk'],
+    service: async (body: SendBulkAppeal_Body) =>
+        ApiService('protected').fetchData<BulkAppealResult, SendBulkAppeal_Body>({
+            url: '/fundraising-appeals/send-bulk',
+            method: 'post',
+            data: body,
+        }),
+});
+
 // --- Pledges ---
 
 export type GetPledges_Response = PledgeData[];
