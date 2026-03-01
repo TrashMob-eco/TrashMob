@@ -102,11 +102,7 @@ jobs:
       version: ${{ github.event.inputs.version }}
       android_key_name: "key"
       define_constants: "USEPROD"
-    secrets:
-      android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
-      android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      appsettings: ${{ secrets.MOBILE_APPSETTINGS }}
-      android_google_apikey: ${{ secrets.ANDROID_GOOGLE_APIKEY }}
+    secrets: inherit
 
   calliOSBuild:
     name: Call iOS build workflow
