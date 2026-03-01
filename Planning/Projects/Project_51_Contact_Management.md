@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1–6 complete) |
+| **Status** | ✅ Complete (all 8 phases) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
@@ -101,22 +101,23 @@ A lightweight Contact Management System (CMS/CRM) built into the Site Admin area
 - ✅ Save discovered opportunities directly as Grant records via "Add to Pipeline" pre-fill
 - ❌ Periodic scan: scheduled job to check for new opportunities matching saved search criteria (deferred)
 
-### Phase 7 — Engagement Scoring & Pipeline
+### Phase 7 — Engagement Scoring & Pipeline ✅ (PR #2959)
 
-- ❌ Engagement score algorithm combining: event attendance frequency, volunteer hours, donation history, recency of activity, email engagement
-- ❌ Score displayed on Contact detail and Contact list (sortable)
-- ❌ Volunteer-to-donor pipeline: identify top-engaged volunteers who haven't donated, suggest cultivation steps
-- ❌ Donor lifecycle stages: Prospect → First-Time Donor → Repeat Donor → Major Donor → Lapsed (auto-calculated)
-- ❌ Lapsed donor alerts: flag donors who gave last year but not this year (LYBUNT report)
+- ✅ Engagement score algorithm (0–100) combining: donation history (recency, frequency, amount), volunteer activity (events attended, hours), interaction frequency (notes)
+- ✅ Score displayed on Contact detail page with breakdown and on engagement page (sortable)
+- ✅ Score redistribution when contact has no linked volunteer account
+- ✅ Volunteer-to-donor pipeline: identify top-engaged volunteers who haven't donated
+- ✅ Donor lifecycle stages: Prospect → First-Time Donor → Repeat Donor → Major Donor → Lapsed (auto-calculated)
+- ✅ Lapsed donor alerts: LYBUNT (Last Year But Unfortunately Not This Year) detection and report
 
-### Phase 8 — Reporting & Dashboards
+### Phase 8 — Reporting & Dashboards ✅ (PR #2959)
 
-- ❌ Fundraising dashboard: total raised (YTD, by campaign, by month), average gift size, donor count
-- ❌ Donor retention report: retention rate year-over-year, new vs. repeat donors
-- ❌ Grant pipeline report: grants by status, total awarded, pending applications, upcoming deadlines
-- ❌ Impact-to-giving report: connect TrashMob event data (bags, weight, volunteers) to donor/grant records for stewardship reporting
-- ❌ Export reports to CSV/PDF for board presentations and grant applications
-- ❌ Campaign performance: track fundraising campaigns with goal progress
+- ✅ Fundraising dashboard: total raised (YTD, by campaign, by month), average gift size, donor count
+- ✅ Donor retention report: retention rate year-over-year, new vs. repeat donors
+- ✅ Grant pipeline report: grants by status, total awarded, pending applications, upcoming deadlines
+- ❌ Impact-to-giving report: connect TrashMob event data (bags, weight, volunteers) to donor/grant records for stewardship reporting (deferred)
+- ✅ Export reports to CSV for board presentations and grant applications (donor report + fundraising summary)
+- ✅ Campaign performance: track fundraising campaigns with goal progress
 
 ---
 
@@ -440,21 +441,21 @@ None — all CRM features are web admin only.
 5. ✅ Save-to-Grant workflow via "Add to Pipeline" with query param pre-fill
 6. ❌ Scheduled periodic scan for new opportunities (deferred)
 
-### Phase 7: Engagement Scoring & Pipeline
-1. Design engagement score algorithm (weighted factors)
-2. Implement score calculation (batch job or on-demand)
-3. Add score to Contact list and detail pages
-4. Build volunteer-to-donor pipeline view
-5. Implement donor lifecycle stage auto-calculation
-6. Build LYBUNT/SYBUNT reports
+### Phase 7: Engagement Scoring & Pipeline ✅
+1. ✅ Design engagement score algorithm (weighted: donation 0–40, volunteer 0–40, interaction 0–20)
+2. ✅ Implement on-demand score computation (FundraisingAnalyticsManager, no DB columns)
+3. ✅ Add score to Contact detail page (with breakdown) and engagement page (sortable)
+4. ✅ Build volunteer-to-donor pipeline view (tabbed on engagement page)
+5. ✅ Implement donor lifecycle stage auto-calculation
+6. ✅ Build LYBUNT report (tabbed on engagement page)
 
-### Phase 8: Reporting & Dashboards
-1. Build fundraising dashboard with KPI cards and charts
-2. Build donor retention report
-3. Build grant pipeline report
-4. Build impact-to-giving report (connect event data to donors)
-5. Add CSV/PDF export for all reports
-6. Build campaign performance tracking
+### Phase 8: Reporting & Dashboards ✅
+1. ✅ Build fundraising dashboard with KPI stat cards (YTD totals, retention, average gift)
+2. ✅ Build donor retention metrics (year-over-year, new vs. repeat)
+3. ✅ Build grant pipeline report (by status, awarded, pending, upcoming deadlines)
+4. ❌ Build impact-to-giving report (connect event data to donors) — deferred
+5. ✅ Add CSV export for donor report and fundraising summary
+6. ✅ Build campaign performance tracking (breakdown by campaign)
 
 **Note:** Phases are sequential but not time-bound. Each phase delivers standalone value. Volunteers pick up work based on priority and availability.
 
@@ -511,7 +512,7 @@ The following features were identified as valuable for nonprofit CRMs but are be
 
 ---
 
-**Last Updated:** February 28, 2026
+**Last Updated:** March 1, 2026
 **Owner:** Product & Engineering Team
-**Status:** In Progress — Phases 1–6 complete (PRs #2945, #2946, #2948, #2949, #2954, #2957). Phases 7–8 not started.
-**Next Review:** When Phase 7 (Engagement Scoring & Pipeline) is prioritized
+**Status:** ✅ Complete — All 8 phases delivered (PRs #2945, #2946, #2948, #2949, #2954, #2957, #2959).
+**Deferred Items:** Deadline calendar (Phase 5), budget tracking per grant (Phase 5), periodic grant scan (Phase 6), impact-to-giving report (Phase 8)
