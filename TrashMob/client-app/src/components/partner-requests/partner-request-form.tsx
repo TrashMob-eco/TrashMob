@@ -179,8 +179,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
     const handleSelectSearchLocation = React.useCallback(async (location: SearchLocationOption) => {
         const { lat, lon } = location.position;
         form.setValue('location', { lat, lng: lon });
-    }, []
-    );
+    }, []);
 
     const handleClickMap = React.useCallback((e: MapMouseEvent) => {
         if (e.detail.latLng) {
@@ -459,7 +458,9 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                                             <FormControl>
                                                 <div className='relative w-full'>
                                                     <GoogleMap
-                                                        defaultCenter={field.value ?? userPreferredLocation ?? undefined}
+                                                        defaultCenter={
+                                                            field.value ?? userPreferredLocation ?? undefined
+                                                        }
                                                         onClick={handleClickMap}
                                                     >
                                                         <Marker
