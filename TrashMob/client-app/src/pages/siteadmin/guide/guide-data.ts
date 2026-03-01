@@ -222,6 +222,20 @@ export const adminGuideData: GuideSection[] = [
 **When to use:** Planning and executing fundraising campaigns, year-end giving drives, or grant-related outreach.`,
                 keywords: ['campaigns', 'asks', 'fundraising drives'],
             },
+            {
+                title: 'Grants',
+                adminPath: '/siteadmin/grants',
+                content: `Track grant applications and awards.
+
+**Common tasks:**
+- **Record a grant** — enter the grantor, amount, application date, status, and notes
+- **Track grant status** — monitor applications through stages (Applied, Under Review, Awarded, Declined)
+- **Manage awarded grants** — track reporting requirements and deadlines
+- **View grant history** — see all past and current grant activity
+
+**When to use:** When applying for grants, tracking grant deadlines, or preparing financial reports for the board.`,
+                keywords: ['grants', 'funding', 'foundations', 'applications', 'awards'],
+            },
         ],
     },
     {
