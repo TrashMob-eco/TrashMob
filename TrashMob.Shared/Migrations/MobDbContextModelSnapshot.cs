@@ -1280,6 +1280,9 @@ namespace TrashMob.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasDefaultValue("EventOnly");
 
+                    b.Property<Guid?>("SessionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset>("StartTime")
                         .HasColumnType("datetimeoffset");
 
@@ -1315,6 +1318,10 @@ namespace TrashMob.Migrations
                     b.HasIndex("EventId");
 
                     b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("SessionId")
+                        .HasDatabaseName("IX_EventAttendeeRoutes_SessionId")
+                        .HasFilter("[SessionId] IS NOT NULL");
 
                     b.HasIndex("UserId");
 

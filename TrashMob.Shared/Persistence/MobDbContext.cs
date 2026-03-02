@@ -517,6 +517,13 @@
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventAttendeeRoutes_WeightUnits");
 
+                entity.Property(e => e.SessionId)
+                    .IsRequired(false);
+
+                entity.HasIndex(e => e.SessionId)
+                    .HasDatabaseName("IX_EventAttendeeRoutes_SessionId")
+                    .HasFilter("[SessionId] IS NOT NULL");
+
                 entity.HasMany(e => e.RoutePoints)
                     .WithOne(rp => rp.Route)
                     .HasForeignKey(rp => rp.RouteId)

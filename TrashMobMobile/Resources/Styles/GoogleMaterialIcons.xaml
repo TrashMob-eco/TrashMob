@@ -1256,7 +1256,7 @@
     <!-- <x:String x:Key="IconSwim">&#xf04e3;</x:String> -->
     <!-- <x:String x:Key="IconSwitch">&#xf04e4;</x:String> -->
     <!-- <x:String x:Key="IconSword">&#xf04e5;</x:String> -->
-    <!-- <x:String x:Key="IconSync">&#xf04e6;</x:String> -->
+    <x:String x:Key="IconSync">&#xf04e6;</x:String>
     <!-- <x:String x:Key="IconSyncAlert">&#xf04e7;</x:String> -->
     <!-- <x:String x:Key="IconSyncOff">&#xf04e8;</x:String> -->
     <!-- <x:String x:Key="IconTab">&#xf04e9;</x:String> -->

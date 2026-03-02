@@ -30,6 +30,11 @@ public partial class MorePage : ContentPage
         await Shell.Current.GoToAsync(nameof(ContactUsPage));
     }
 
+    private async void OnSyncStatusClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(SyncStatusPage));
+    }
+
     private async void OnLogoutClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(LogoutPage));

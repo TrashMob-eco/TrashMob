@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:Class="TrashMobMobile.Pages.SyncStatusPage"
+             x:DataType="viewModels:SyncStatusViewModel"
+             Title="Sync Status"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}">
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Padding="16" Spacing="16">
+
+                <!-- Summary Card -->
+                <Frame BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundLight}, Dark={StaticResource CardBackgroundDark}}"
+                       CornerRadius="12" Padding="16" HasShadow="False"
+                       BorderColor="Transparent">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Offline Queue"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
+                        <Label Text="{Binding PendingSummary}"
+                               FontSize="14"
+                               TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" />
+
+                        <Button Text="Retry All"
+                                Command="{Binding RetryAllCommand}"
+                                IsVisible="{Binding HasPendingItems}"
+                                BackgroundColor="{StaticResource Primary}"
+                                TextColor="White"
+                                CornerRadius="8"
+                                Margin="0,8,0,0" />
+
+                        <ActivityIndicator IsRunning="{Binding IsSyncing}"
+                                           IsVisible="{Binding IsSyncing}"
+                                           Color="{StaticResource Primary}"
+                                           HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Empty State -->
+                <VerticalStackLayout IsVisible="{Binding HasNoPendingItems}"
+                                     HorizontalOptions="Center"
+                                     Spacing="8"
+                                     Padding="0,32,0,0">
+                    <Label Text="All caught up!"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
+                    <Label Text="All your data has been synced to the server."
+                           FontSize="14"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" />
+                </VerticalStackLayout>
+
+                <!-- Pending Items List -->
+                <CollectionView ItemsSource="{Binding PendingItems}"
+                                IsVisible="{Binding HasPendingItems}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:SyncItemViewModel">
+                            <Frame BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundLight}, Dark={StaticResource CardBackgroundDark}}"
+                                   CornerRadius="8" Padding="12" HasShadow="False"
+                                   BorderColor="Transparent"
+                                   Margin="0,0,0,8">
+                                <VerticalStackLayout Spacing="4">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                        <Label Text="{Binding TypeLabel}"
+                                               FontSize="11"
+                                               FontAttributes="Bold"
+                                               TextColor="White"
+                                               BackgroundColor="{StaticResource Primary}"
+                                               Padding="6,2"
+                                               VerticalOptions="Center" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Description}"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                    <Label Text="{Binding StatusDisplay}"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" />
+                                    <Label Text="{Binding LastError}"
+                                           FontSize="11"
+                                           TextColor="Red"
+                                           IsVisible="{Binding HasError}"
+                                           LineBreakMode="TailTruncation"
+                                           MaxLines="2" />
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

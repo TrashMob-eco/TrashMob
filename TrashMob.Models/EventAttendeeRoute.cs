@@ -128,6 +128,16 @@ namespace TrashMob.Models
 
         #endregion
 
+        #region Deduplication
+
+        /// <summary>
+        /// Gets or sets the client-generated session ID used for idempotent uploads.
+        /// When a route upload is retried after a failure, this prevents duplicate routes.
+        /// </summary>
+        public Guid? SessionId { get; set; }
+
+        #endregion
+
         #region Decay
 
         /// <summary>

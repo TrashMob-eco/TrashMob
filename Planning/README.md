@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (52 Total)
+### 2026 Projects (53 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -71,6 +71,7 @@
 | [Project 47 - Team-Visible Private Events](./Projects/Project_47_Team_Private_Events.md) | Team-scoped event visibility for member-only events | ✅ Complete |
 | [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md) | Route-level metrics, litter density heatmap, route time editing | In Progress (Phase 1 Complete) |
 | [Project 49 - Privacy & Compliance Review](./Projects/Project_49_Privacy_Compliance_Review.md) | Deletion audit, data export, GDPR compliance, cookie consent | In Progress (Phases 1-4 Complete, Phase 5 Partial) |
+| [Project 53 - Mobile Offline Persistence](./Projects/Project_53_Mobile_Offline_Persistence.md) | Client-side persistence for routes, metrics, and photos with background sync | Not Started |
 
 #### High Priority (Marketing & Growth)
 
@@ -123,6 +124,7 @@
 - [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) ✅
 - [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md)
 - [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md)
+- [Project 53 - Mobile Offline Persistence](./Projects/Project_53_Mobile_Offline_Persistence.md)
 
 ### Platform Quality
 - [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md)
@@ -163,10 +165,10 @@
 | **In Progress** | 12 | Projects 1, 4, 5, 6, 8, 15, 25, 30, 41, 45, 48, 49 |
 | **Ready for Review** | 1 | Project 2 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
-| **Not Started** | 7 | Projects 12, 24, 31, 36, 43, 46, 52 |
+| **Not Started** | 8 | Projects 12, 24, 31, 36, 43, 46, 52, 53 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 52 project specifications documented
+**Total:** 53 project specifications documented
 
 ---
 
@@ -206,6 +208,7 @@
 | [Project 43 - Sign Management](./Projects/Project_43_Sign_Management.md) | Track physical Adopt-A-Location signs (status, coordinates, text, lifecycle) |
 | [Project 46 - Product Support](./Projects/Project_46_Product_Support.md) | Support role definition, channels/workflows, knowledge base, onboarding guide |
 | [Project 52 - Volunteer Rewards](./Projects/Project_52_Volunteer_Rewards.md) | Partner reward sourcing, criteria, distribution, fraud prevention (future) |
+| [Project 53 - Mobile Offline Persistence](./Projects/Project_53_Mobile_Offline_Persistence.md) | SQLite local storage for routes/metrics/photos, background sync, crash recovery |
 
 ### Complete with Deferred Items
 

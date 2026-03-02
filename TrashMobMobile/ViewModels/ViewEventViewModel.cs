@@ -12,6 +12,7 @@ using TrashMob.Models.Poco;
 using TrashMobMobile.Controls;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
+using TrashMobMobile.Services.Offline;
 
 public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IEventTypeRestService eventTypeRestService,
@@ -25,7 +26,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     ILitterReportManager litterReportManager,
     IEventPhotoManager eventPhotoManager,
     IRouteTrackingSessionManager routeTrackingSessionManager,
-    IEventAttendeeMetricsRestService eventAttendeeMetricsRestService) : BaseViewModel(notificationService)
+    IEventAttendeeMetricsRestService eventAttendeeMetricsRestService,
+    RoutePointWriter routePointWriter,
+    SyncQueue syncQueue) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
@@ -237,6 +240,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 EnableStopTrackEventRoute = true;
                 IsRecordingRoute = true;
             }
+
+            // Check for crashed/interrupted route sessions for this event
+            await CheckForInterruptedSessionsAsync(eventId);
 
             WhatToExpect =
                 "What to Expect:\n\u2022 Cleanup supplies provided\n\u2022 Meet fellow community members\n\u2022 Contribute to a cleaner environment";
@@ -480,17 +486,23 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             EnableStopTrackEventRoute = true;
             EnableStartTrackEventRoute = false;
             IsRecordingRoute = true;
-            routeTrackingSessionManager.TryStartSession(mobEvent.Id, mobEvent.Name);
+
+            // Create SQLite session for crash-safe persistence
+            var session = await syncQueue.CreateRouteSessionAsync(
+                mobEvent.Id, userManager.CurrentUser.Id, RouteStartTime, skipDefaultTrim);
+            routeTrackingSessionManager.TryStartSession(mobEvent.Id, mobEvent.Name, session.SessionId);
+            routePointWriter.StartSession(session.SessionId);
         }
 
         if (DeviceInfo.DeviceType == DeviceType.Virtual)
         {
             // On emulators, wait for Stop to be pressed, then simulate
             var tcs = new TaskCompletionSource();
-            cancellationToken.Register(() =>
+            cancellationToken.Register(async () =>
             {
                 IsRecordingRoute = false;
                 RouteEndTime = DateTimeOffset.Now;
+                await routePointWriter.StopAndFlushAsync();
                 routeTrackingSessionManager.EndSession();
                 tcs.TrySetResult();
             });
@@ -507,8 +519,20 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         {
             IsRecordingRoute = false;
             RouteEndTime = DateTimeOffset.Now;
+
+            // Flush remaining GPS points to SQLite
+            await routePointWriter.StopAndFlushAsync();
+
+            // Mark session ready for upload
+            var sessionId = routeTrackingSessionManager.ActiveSessionId;
             routeTrackingSessionManager.EndSession();
-            await SaveRoute();
+
+            if (sessionId != null)
+            {
+                await syncQueue.MarkSessionPendingUploadAsync(sessionId, RouteEndTime);
+            }
+
+            await SaveRoute(sessionId);
             Locations.Clear();
             EnableStopTrackEventRoute = false;
             EnableStartTrackEventRoute = true;
@@ -518,21 +542,29 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         {
             location.Timestamp = DateTimeOffset.Now;
             Locations.Add(location);
+
+            // Persist to SQLite for crash recovery
+            routePointWriter.AddPoint(location.Latitude, location.Longitude, location.Altitude, location.Timestamp);
         });
 
         await Geolocator.Default.StartListening(progress, cancellationToken);
     }
 
-    private async Task SaveRoute()
+    private async Task SaveRoute(string? sessionId)
     {
-        await ExecuteAsync(async () =>
+        // If there are no locations, discard the empty session
+        if (Locations.Count == 0)
         {
-            // If there are no locations, then there is nothing to save.
-            if (Locations.Count == 0)
+            if (sessionId != null)
             {
-                return;
+                await syncQueue.DiscardSessionAsync(sessionId);
             }
 
+            return;
+        }
+
+        try
+        {
             // If there is only one location, then add a second location to make a line.
             if (Locations.Count == 1)
             {
@@ -547,8 +579,30 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 StartTime = RouteStartTime,
                 EndTime = RouteEndTime,
                 SkipDefaultTrim = skipDefaultTrim,
+                SessionId = sessionId != null ? Guid.Parse(sessionId) : null,
             });
-        }, "An error occurred while saving your route.");
+
+            // Upload succeeded — clean up SQLite data
+            if (sessionId != null)
+            {
+                await syncQueue.MarkSessionUploadedAsync(sessionId);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Upload failed — data is safe in SQLite, will retry via SyncService
+            if (sessionId != null)
+            {
+                await syncQueue.MarkSessionFailedAsync(sessionId, ex.Message);
+                _ = NotificationService.Notify(
+                    "Route saved locally and will upload when connection improves.");
+            }
+            else
+            {
+                _ = NotificationService.Notify(
+                    "An error occurred while saving your route.");
+            }
+        }
     }
 
     private List<SortableLocation> GetSortableLocations()
@@ -568,6 +622,59 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         }
 
         return sortableLocations;
+    }
+
+    /// <summary>
+    /// Checks for route sessions that were interrupted (app crash/kill during recording).
+    /// Offers the user to upload the partial route or discard it.
+    /// </summary>
+    private async Task CheckForInterruptedSessionsAsync(Guid eventId)
+    {
+        try
+        {
+            var interruptedSessions = await syncQueue.GetInterruptedSessionsAsync();
+            var eventSession = interruptedSessions
+                .FirstOrDefault(s => s.EventId == eventId.ToString());
+
+            if (eventSession == null)
+            {
+                return;
+            }
+
+            var points = await syncQueue.GetRoutePointsAsync(eventSession.SessionId);
+            if (points.Count == 0)
+            {
+                await syncQueue.DiscardSessionAsync(eventSession.SessionId);
+                return;
+            }
+
+            var recover = await Shell.Current.CurrentPage.DisplayAlert(
+                "Route Recovery",
+                $"A route recording with {points.Count} GPS points was interrupted. " +
+                "Would you like to upload the partial route?",
+                "Upload",
+                "Discard");
+
+            if (recover)
+            {
+                // Mark as pending upload with the last point's timestamp as end time
+                var lastTimestamp = DateTimeOffset.TryParse(points.Last().Timestamp, out var ts)
+                    ? ts
+                    : DateTimeOffset.UtcNow;
+                await syncQueue.MarkSessionPendingUploadAsync(eventSession.SessionId, lastTimestamp);
+
+                // Attempt immediate upload via SyncService
+                _ = NotificationService.Notify("Uploading recovered route...");
+            }
+            else
+            {
+                await syncQueue.DiscardSessionAsync(eventSession.SessionId);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Crash recovery check failed: {ex.Message}");
+        }
     }
 
     [RelayCommand]
@@ -747,7 +854,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 return;
             }
 
-            // Copy to cache and compress before upload
+            // Copy to cache and compress
             var cachedPath = Path.Combine(FileSystem.CacheDirectory, result.FileName);
 
             using (var sourceStream = await result.OpenReadAsync())
@@ -774,12 +881,30 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 _ => EventPhotoType.During,
             };
 
-            await eventPhotoManager.UploadPhotoAsync(
-                EventViewModel.Id, cachedPath, eventPhotoType, string.Empty);
+            // Move from CacheDirectory to AppDataDirectory so OS won't delete before upload
+            var pendingDir = Path.Combine(FileSystem.AppDataDirectory, "pending_photos");
+            Directory.CreateDirectory(pendingDir);
+            var persistedPath = Path.Combine(pendingDir, $"{Guid.NewGuid()}.jpg");
+            File.Move(cachedPath, persistedPath);
 
-            await LoadPhotos();
+            // Save to SQLite first so data survives upload failure
+            var pending = await syncQueue.EnqueuePhotoAsync(
+                EventViewModel.Id, userManager.CurrentUser.Id,
+                persistedPath, (int)eventPhotoType);
 
-            await NotificationService.Notify("Photo uploaded successfully.");
+            try
+            {
+                await eventPhotoManager.UploadPhotoAsync(
+                    EventViewModel.Id, persistedPath, eventPhotoType, string.Empty);
+                await syncQueue.MarkPhotoUploadedAsync(pending.Id);
+                await LoadPhotos();
+                await NotificationService.Notify("Photo uploaded successfully.");
+            }
+            catch (Exception)
+            {
+                await syncQueue.MarkPhotoFailedAsync(pending.Id, "Upload failed, will retry.");
+                await NotificationService.Notify("Photo saved offline. It will upload when connectivity returns.");
+            }
         }, "An error occurred while uploading the photo. Please try again.");
     }
 
@@ -1143,10 +1268,25 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 Notes = impactResult.Notes,
             };
 
-            await eventAttendeeMetricsRestService.SubmitMyMetricsAsync(mobEvent.Id, metrics);
-            await LoadMyMetrics();
+            // Save to SQLite first so data survives upload failure
+            var pending = await syncQueue.EnqueueMetricsAsync(
+                mobEvent.Id, userManager.CurrentUser.Id,
+                impactResult.BagsCollected, impactResult.PickedWeight,
+                impactResult.PickedWeightUnitId, impactResult.DurationMinutes,
+                impactResult.Notes);
 
-            await NotificationService.Notify("Your impact has been logged!");
+            try
+            {
+                await eventAttendeeMetricsRestService.SubmitMyMetricsAsync(mobEvent.Id, metrics);
+                await syncQueue.MarkMetricsUploadedAsync(pending.Id);
+                await LoadMyMetrics();
+                await NotificationService.Notify("Your impact has been logged!");
+            }
+            catch (Exception)
+            {
+                await syncQueue.MarkMetricsFailedAsync(pending.Id, "Upload failed, will retry.");
+                await NotificationService.Notify("Impact saved offline. It will upload when connectivity returns.");
+            }
         }, "An error occurred while logging your impact. Please try again.");
     }
 

@@ -45,6 +45,7 @@
                 WeightCollected = displayEventAttendeeRoute.WeightCollected,
                 Notes = displayEventAttendeeRoute.Notes,
                 ExpiresDate = displayEventAttendeeRoute.ExpiresDate,
+                SessionId = displayEventAttendeeRoute.SessionId,
             };
         }
     }
