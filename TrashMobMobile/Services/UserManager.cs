@@ -28,6 +28,12 @@
             return userRestService.GetUserByEmailAsync(email, cancellationToken);
         }
 
+        public Task<User?> GetUserByObjectIdAsync(string objectId,
+            CancellationToken cancellationToken = default)
+        {
+            return userRestService.GetUserByObjectIdAsync(objectId, cancellationToken);
+        }
+
         public Task<User> AddUserAsync(User user, CancellationToken cancellationToken = default)
         {
             return userRestService.AddUserAsync(user, cancellationToken);
