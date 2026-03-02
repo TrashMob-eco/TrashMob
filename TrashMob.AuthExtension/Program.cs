@@ -12,7 +12,7 @@ var allowedAppId = builder.Configuration["AuthExtension:AllowedAppId"]
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = $"https://login.microsoftonline.com/{tenantId}/v2.0";
+        options.Authority = $"https://{tenantId}.ciamlogin.com/{tenantId}/v2.0";
         options.Audience = clientId;
         options.TokenValidationParameters.ValidIssuers =
         [
