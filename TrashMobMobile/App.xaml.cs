@@ -2,15 +2,19 @@
 
 using TrashMob.Models;
 using TrashMobMobile.Services;
+using TrashMobMobile.Services.Offline;
 
 public partial class App : Application
 {
     private readonly ILoggingService loggingService;
 
-    public App(ILoggingService loggingService)
+    public App(ILoggingService loggingService, SyncService syncService)
     {
         this.loggingService = loggingService;
         InitializeComponent();
+
+        // Start background sync for offline route/photo/metrics uploads
+        syncService.Start();
 
         AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
         {

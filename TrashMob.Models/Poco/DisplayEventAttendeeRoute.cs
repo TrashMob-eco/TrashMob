@@ -122,6 +122,11 @@
         public string DensityColor { get; set; } = "#9E9E9E";
 
         /// <summary>
+        /// Gets or sets the client-generated session ID for idempotent uploads.
+        /// </summary>
+        public Guid? SessionId { get; set; }
+
+        /// <summary>
         /// Gets or sets the list of location points that make up the route, sorted by order.
         /// </summary>
         public List<SortableLocation> Locations { get; set; } = [];

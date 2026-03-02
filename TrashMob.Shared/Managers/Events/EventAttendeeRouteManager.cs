@@ -36,6 +36,17 @@ namespace TrashMob.Shared.Managers.Events
         public override async Task<EventAttendeeRoute> AddAsync(EventAttendeeRoute instance, Guid userId,
             CancellationToken cancellationToken = default)
         {
+            // Idempotent upload: if a route with this SessionId already exists, return the existing one
+            if (instance.SessionId.HasValue)
+            {
+                var existing = await Repository.Get()
+                    .FirstOrDefaultAsync(r => r.SessionId == instance.SessionId, cancellationToken);
+                if (existing != null)
+                {
+                    return existing;
+                }
+            }
+
             CalculateRouteMetrics(instance);
             ApplyDefaultTrim(instance);
 
@@ -46,6 +57,17 @@ namespace TrashMob.Shared.Managers.Events
         public override async Task<EventAttendeeRoute> AddAsync(EventAttendeeRoute instance,
             CancellationToken cancellationToken = default)
         {
+            // Idempotent upload: if a route with this SessionId already exists, return the existing one
+            if (instance.SessionId.HasValue)
+            {
+                var existing = await Repository.Get()
+                    .FirstOrDefaultAsync(r => r.SessionId == instance.SessionId, cancellationToken);
+                if (existing != null)
+                {
+                    return existing;
+                }
+            }
+
             CalculateRouteMetrics(instance);
             ApplyDefaultTrim(instance);
 

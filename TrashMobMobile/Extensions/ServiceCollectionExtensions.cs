@@ -6,6 +6,7 @@
     using TrashMobMobile.Authentication;
     using TrashMobMobile.Config;
     using TrashMobMobile.Services;
+    using TrashMobMobile.Services.Offline;
 
     public static class ServiceCollectionExtensions
     {
@@ -57,6 +58,12 @@
             services.AddSingleton<IWaiverManager, WaiverManager>();
             services.AddSingleton<IWaiverRestService, WaiverRestService>();
             services.AddSingleton<IRouteTrackingSessionManager, RouteTrackingSessionManager>();
+
+            // Offline persistence services
+            services.AddSingleton<OfflineDatabase>();
+            services.AddSingleton<RoutePointWriter>();
+            services.AddSingleton<SyncQueue>();
+            services.AddSingleton<SyncService>();
 
             return services;
         }

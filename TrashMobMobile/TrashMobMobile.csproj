@@ -103,6 +103,8 @@
 		<PackageReference Include="Polly" Version="8.6.5" />
 		<PackageReference Include="Sentry.Maui" Version="6.0.0" />
 		<PackageReference Include="Sharpnado.Tabs.Maui" Version="4.0.1" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -351,29 +353,19 @@
        The key is fetched from Azure Key Vault (dev environment) during local builds.
        CI uses GitHub secrets to replace the placeholder instead.
        Override: set GOOGLE_MAPS_API_KEY env var to skip the Key Vault lookup. -->
-  <Target Name="InjectGoogleMapsKey" AfterTargets="_ManifestMerger" BeforeTargets="_CreateBaseApk"
-          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+  <Target Name="InjectGoogleMapsKey" AfterTargets="_ManifestMerger" BeforeTargets="_CreateBaseApk" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <!-- If GOOGLE_MAPS_API_KEY is already set (env var or MSBuild property), use it directly -->
     <!-- Otherwise, fetch from Azure Key Vault (requires 'az login') -->
-    <Exec Command="az keyvault secret show --vault-name kv-tm-dev-westus2 --name Android-Google-ApiKey-Dev --query value -o tsv"
-          ConsoleToMsBuild="true"
-          Condition="'$(GOOGLE_MAPS_API_KEY)' == ''"
-          ContinueOnError="true"
-          StandardOutputImportance="low">
+    <Exec Command="az keyvault secret show --vault-name kv-tm-dev-westus2 --name Android-Google-ApiKey-Dev --query value -o tsv" ConsoleToMsBuild="true" Condition="'$(GOOGLE_MAPS_API_KEY)' == ''" ContinueOnError="true" StandardOutputImportance="low">
       <Output TaskParameter="ConsoleOutput" PropertyName="GOOGLE_MAPS_API_KEY" />
     </Exec>
-    <XmlPoke Condition="'$(GOOGLE_MAPS_API_KEY)' != ''"
-             XmlInputPath="$(IntermediateOutputPath)android\AndroidManifest.xml"
-             Namespaces="&lt;Namespace Prefix='android' Uri='http://schemas.android.com/apk/res/android' /&gt;"
-             Query="/manifest/application/meta-data[@android:name='com.google.android.geo.API_KEY']/@android:value"
-             Value="$(GOOGLE_MAPS_API_KEY)" />
+    <XmlPoke Condition="'$(GOOGLE_MAPS_API_KEY)' != ''" XmlInputPath="$(IntermediateOutputPath)android\AndroidManifest.xml" Namespaces="&lt;Namespace Prefix='android' Uri='http://schemas.android.com/apk/res/android' /&gt;" Query="/manifest/application/meta-data[@android:name='com.google.android.geo.API_KEY']/@android:value" Value="$(GOOGLE_MAPS_API_KEY)" />
     <Message Condition="'$(GOOGLE_MAPS_API_KEY)' != ''" Text="Google Maps API key injected successfully" Importance="high" />
     <Warning Condition="'$(GOOGLE_MAPS_API_KEY)' == ''" Text="Google Maps API key not found. Maps will not work. Set GOOGLE_MAPS_API_KEY env var or run 'az login' with Key Vault access." />
   </Target>
 
   <!-- Allow keychain entitlements on iOS simulator without a provisioning profile -->
-  <Target Name="SkipProvisioningForSimulator" BeforeTargets="_DetectSigningIdentity"
-          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+  <Target Name="SkipProvisioningForSimulator" BeforeTargets="_DetectSigningIdentity" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
     <PropertyGroup Condition="$(RuntimeIdentifier.Contains('simulator'))">
       <CodesignRequireProvisioningProfile>false</CodesignRequireProvisioningProfile>
     </PropertyGroup>

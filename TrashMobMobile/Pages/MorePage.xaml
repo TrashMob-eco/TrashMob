@@ -28,6 +28,11 @@
                     ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEmail}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
             <Button Style="{StaticResource SecondaryLargeButton}"
                     ContentLayout="Left, 12"
+                    Clicked="OnSyncStatusClicked"
+                    Text="Sync Status"
+                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconSync}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+            <Button Style="{StaticResource SecondaryLargeButton}"
+                    ContentLayout="Left, 12"
                     Clicked="OnLogoutClicked"
                     Text="Sign out"
                     ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconLogout}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
