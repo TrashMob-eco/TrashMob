@@ -6,22 +6,36 @@ using TrashMob.Models.Poco;
 
 /// <summary>
 /// Background sync service that retries failed uploads for routes, metrics, and photos
-/// when connectivity returns. Monitors network state and processes the offline queue.
+/// when connectivity returns. Monitors network state, processes the offline queue,
+/// and manages storage cleanup.
 /// </summary>
 public class SyncService(
     SyncQueue syncQueue,
+    OfflineDatabase offlineDatabase,
     IEventAttendeeRouteRestService eventAttendeeRouteRestService,
     IEventAttendeeMetricsRestService eventAttendeeMetricsRestService,
     IEventPhotoRestService eventPhotoRestService,
     INotificationService notificationService)
 {
     private static readonly TimeSpan SyncInterval = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan CleanupMaxAge = TimeSpan.FromDays(7);
+
+    /// <summary>
+    /// Maximum pending photo storage in bytes (500 MB).
+    /// </summary>
+    private const long MaxPendingPhotoStorageBytes = 500L * 1024 * 1024;
+
+    /// <summary>
+    /// Maximum route points stored offline (~50 hours at 1 point/2 seconds).
+    /// </summary>
+    private const int MaxRoutePoints = 100_000;
 
     private CancellationTokenSource? syncCts;
     private bool isRunning;
 
     /// <summary>
     /// Starts the sync service. Should be called once on app launch.
+    /// Runs startup cleanup and begins periodic sync.
     /// </summary>
     public void Start()
     {
@@ -35,6 +49,9 @@ public class SyncService(
 
         // Monitor connectivity changes
         Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
+
+        // Run startup tasks (cleanup + initial queue size telemetry)
+        _ = StartupAsync();
 
         // Start periodic sync
         _ = PeriodicSyncAsync(syncCts.Token);
@@ -75,6 +92,60 @@ public class SyncService(
     public async Task<int> GetPendingCountAsync()
     {
         return await syncQueue.GetTotalPendingCountAsync();
+    }
+
+    /// <summary>
+    /// Checks if pending photo storage exceeds the cap.
+    /// Returns true if the cap is exceeded, meaning no more photos should be queued.
+    /// </summary>
+    public bool IsPhotoStorageFull()
+    {
+        var pendingDir = Path.Combine(FileSystem.AppDataDirectory, "pending_photos");
+        if (!Directory.Exists(pendingDir))
+        {
+            return false;
+        }
+
+        var totalSize = new DirectoryInfo(pendingDir)
+            .EnumerateFiles()
+            .Sum(f => f.Length);
+
+        return totalSize >= MaxPendingPhotoStorageBytes;
+    }
+
+    /// <summary>
+    /// Checks if route point storage exceeds the cap.
+    /// Returns true if the cap is exceeded.
+    /// </summary>
+    public async Task<bool> IsRouteStorageFullAsync()
+    {
+        var db = await offlineDatabase.GetConnectionAsync();
+        var count = await db.Table<PendingRoutePoint>().CountAsync();
+        return count >= MaxRoutePoints;
+    }
+
+    private async Task StartupAsync()
+    {
+        try
+        {
+            // Clean up uploaded records older than 7 days
+            await offlineDatabase.CleanupAsync(CleanupMaxAge);
+
+            // Log queue size at app launch for sync health monitoring
+            var pendingCount = await syncQueue.GetTotalPendingCountAsync();
+            if (pendingCount > 0)
+            {
+                SentrySdk.AddBreadcrumb(
+                    $"Offline queue has {pendingCount} pending items at app launch",
+                    "sync",
+                    level: BreadcrumbLevel.Info);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"SyncService: Startup cleanup failed: {ex.Message}");
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private void OnConnectivityChanged(object? sender, ConnectivityChangedEventArgs e)
@@ -158,7 +229,10 @@ public class SyncService(
                 await syncQueue.MarkSessionUploadedAsync(session.SessionId);
                 syncedCount++;
 
-                Debug.WriteLine($"SyncService: Route session {session.SessionId} uploaded successfully");
+                SentrySdk.AddBreadcrumb(
+                    $"Route synced: session={session.SessionId}, points={points.Count}, retries={session.RetryCount}",
+                    "sync",
+                    level: BreadcrumbLevel.Info);
             }
             catch (Exception ex)
             {
@@ -195,7 +269,10 @@ public class SyncService(
                 await syncQueue.MarkMetricsUploadedAsync(item.Id);
                 syncedCount++;
 
-                Debug.WriteLine($"SyncService: Metrics {item.Id} for event {item.EventId} uploaded successfully");
+                SentrySdk.AddBreadcrumb(
+                    $"Metrics synced: id={item.Id}, event={item.EventId}, retries={item.RetryCount}",
+                    "sync",
+                    level: BreadcrumbLevel.Info);
             }
             catch (Exception ex)
             {
@@ -230,7 +307,10 @@ public class SyncService(
                 await syncQueue.MarkPhotoUploadedAsync(item.Id);
                 syncedCount++;
 
-                Debug.WriteLine($"SyncService: Photo {item.Id} for event {item.EventId} uploaded successfully");
+                SentrySdk.AddBreadcrumb(
+                    $"Photo synced: id={item.Id}, event={item.EventId}, retries={item.RetryCount}",
+                    "sync",
+                    level: BreadcrumbLevel.Info);
             }
             catch (Exception ex)
             {

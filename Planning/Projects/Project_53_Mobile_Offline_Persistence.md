@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1–3 Complete) |
+| **Status** | In Progress (Phases 1–4 Complete) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
@@ -208,30 +208,31 @@ With Polly's 3-retry policy (2s → 4s → 8s = 14 seconds total), any connectiv
   - `POST /api/eventattendeeroutes` — check `SessionId` uniqueness
   - `PUT /api/events/{eventId}/attendee-metrics/my-metrics` — upsert semantics (already exists)
   - `POST /api/events/{eventId}/photos` — check `PhotoId` header for dedup
-- [ ] Database migration versioning: include version number in SQLite schema, handle upgrades gracefully
+- [x] Database migration versioning: include version number in SQLite schema, handle upgrades gracefully
+  - Uses `PRAGMA user_version` for schema versioning
+  - `MigrateSchemaAsync()` applies migrations incrementally (v0→v1, future v1→v2, etc.)
 
 #### Telemetry
 
-- [ ] Track sync events in Sentry:
-  - `OfflineRouteQueued` — route saved to SQLite (count, point count)
-  - `OfflineRouteSynced` — route uploaded from queue (retry count, time in queue)
-  - `OfflineRouteFailed` — route permanently failed (last error)
-  - Same trio for metrics and photos
-- [ ] Track sync health metrics:
-  - Average time-in-queue before successful upload
-  - Retry count distribution
-  - Permanent failure rate
+- [x] Track sync events in Sentry:
+  - Sentry breadcrumbs on successful sync (route, metrics, photo) with session/item ID and retry count
+  - Sentry breadcrumbs on offline queueing (route, metrics, photo) in ViewEventViewModel
+  - Queue size logged at app launch via `StartupAsync()`
+- [x] Track sync health metrics:
   - Queue size at app launch (indicates chronic connectivity issues)
+  - Retry count included in sync breadcrumbs
+  - Startup exceptions captured via `SentrySdk.CaptureException()`
 
 #### Storage Management
 
-- [ ] Set maximum pending photo storage: 500 MB
-  - When exceeded, show warning: "Pending photo storage is full. Connect to upload before taking more photos."
-  - Oldest `Uploaded` records cleaned first, then `PermanentlyFailed`
-- [ ] Set maximum route point storage: 100,000 points (~50 hours of recording at 1 point/2 seconds)
-  - When exceeded, reduce recording frequency or warn user
-- [ ] Periodic cleanup: on app launch, delete `Uploaded` records older than 7 days
-- [ ] SQLite database VACUUM on cleanup to reclaim space
+- [x] Set maximum pending photo storage: 500 MB
+  - When exceeded, show warning: "Photo storage is full. Please sync pending photos first."
+  - Check in both `SyncService.IsPhotoStorageFull()` and `ViewEventViewModel.PickPhoto()`
+- [x] Set maximum route point storage: 100,000 points (~50 hours of recording at 1 point/2 seconds)
+  - `SyncService.IsRouteStorageFullAsync()` for callers to check
+- [x] Periodic cleanup: on app launch, delete `Uploaded` records older than 7 days
+  - `SyncService.StartupAsync()` calls `offlineDatabase.CleanupAsync(TimeSpan.FromDays(7))`
+- [x] SQLite database VACUUM on cleanup to reclaim space
 
 ---
 

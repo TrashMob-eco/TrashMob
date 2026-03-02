@@ -597,6 +597,10 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             if (sessionId != null)
             {
                 await syncQueue.MarkSessionFailedAsync(sessionId, ex.Message);
+                SentrySdk.AddBreadcrumb(
+                    $"Route queued offline: event={mobEvent.Id}, session={sessionId}",
+                    "sync",
+                    level: BreadcrumbLevel.Info);
                 _ = NotificationService.Notify(
                     "Route saved locally and will upload when connection improves.");
             }
@@ -884,9 +888,24 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 _ => EventPhotoType.During,
             };
 
-            // Move from CacheDirectory to AppDataDirectory so OS won't delete before upload
+            // Check storage cap before queueing
             var pendingDir = Path.Combine(FileSystem.AppDataDirectory, "pending_photos");
             Directory.CreateDirectory(pendingDir);
+
+            var totalSize = new DirectoryInfo(pendingDir).EnumerateFiles().Sum(f => f.Length);
+            if (totalSize >= 500L * 1024 * 1024)
+            {
+                // Clean up the cached copy since we won't persist it
+                if (File.Exists(cachedPath))
+                {
+                    File.Delete(cachedPath);
+                }
+
+                await NotificationService.Notify("Photo storage is full. Please sync pending photos first.");
+                return;
+            }
+
+            // Move from CacheDirectory to AppDataDirectory so OS won't delete before upload
             var persistedPath = Path.Combine(pendingDir, $"{Guid.NewGuid()}.jpg");
             File.Move(cachedPath, persistedPath);
 
@@ -906,6 +925,10 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             catch (Exception)
             {
                 await syncQueue.MarkPhotoFailedAsync(pending.Id, "Upload failed, will retry.");
+                SentrySdk.AddBreadcrumb(
+                    $"Photo queued offline: event={EventViewModel.Id}, id={pending.Id}",
+                    "sync",
+                    level: BreadcrumbLevel.Info);
                 await NotificationService.Notify("Photo saved offline. It will upload when connectivity returns.");
             }
         }, "An error occurred while uploading the photo. Please try again.");
@@ -1290,6 +1313,10 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             catch (Exception)
             {
                 await syncQueue.MarkMetricsFailedAsync(pending.Id, "Upload failed, will retry.");
+                SentrySdk.AddBreadcrumb(
+                    $"Metrics queued offline: event={mobEvent.Id}, id={pending.Id}",
+                    "sync",
+                    level: BreadcrumbLevel.Info);
                 await NotificationService.Notify("Impact saved offline. It will upload when connectivity returns.");
             }
         }, "An error occurred while logging your impact. Please try again.");

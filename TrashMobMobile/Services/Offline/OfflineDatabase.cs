@@ -1,15 +1,22 @@
 namespace TrashMobMobile.Services.Offline;
 
+using System.Diagnostics;
 using SQLite;
 
 /// <summary>
 /// Manages the local SQLite database for offline persistence of routes, metrics, and photos.
 /// Uses WAL journal mode for crash-safe writes during GPS recording.
+/// Schema versioning via PRAGMA user_version enables safe table migrations on app updates.
 /// </summary>
 public class OfflineDatabase
 {
     private const string DatabaseFileName = "trashmob_offline.db";
-    private const int SchemaVersion = 1;
+
+    /// <summary>
+    /// Current schema version. Increment when adding new tables or columns.
+    /// v1: PendingRouteSession, PendingRoutePoint, PendingMetrics, PendingPhoto
+    /// </summary>
+    private const int CurrentSchemaVersion = 1;
 
     private SQLiteAsyncConnection? connection;
     private readonly SemaphoreSlim initLock = new(1, 1);
@@ -37,11 +44,8 @@ public class OfflineDatabase
             // Enable WAL mode for crash safety and concurrent read/write
             await connection.ExecuteAsync("PRAGMA journal_mode=WAL");
 
-            // Create tables
-            await connection.CreateTableAsync<PendingRouteSession>();
-            await connection.CreateTableAsync<PendingRoutePoint>();
-            await connection.CreateTableAsync<PendingMetrics>();
-            await connection.CreateTableAsync<PendingPhoto>();
+            // Check and apply schema migrations
+            await MigrateSchemaAsync(connection);
 
             isInitialized = true;
             return connection;
@@ -49,6 +53,33 @@ public class OfflineDatabase
         finally
         {
             initLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// Checks the stored schema version and applies any needed migrations.
+    /// Uses PRAGMA user_version which is an integer stored in the database file header.
+    /// </summary>
+    private static async Task MigrateSchemaAsync(SQLiteAsyncConnection db)
+    {
+        var storedVersion = await db.ExecuteScalarAsync<int>("PRAGMA user_version");
+
+        if (storedVersion < 1)
+        {
+            // v1: Initial tables
+            await db.CreateTableAsync<PendingRouteSession>();
+            await db.CreateTableAsync<PendingRoutePoint>();
+            await db.CreateTableAsync<PendingMetrics>();
+            await db.CreateTableAsync<PendingPhoto>();
+        }
+
+        // Future migrations:
+        // if (storedVersion < 2) { /* add new columns/tables for v2 */ }
+
+        if (storedVersion != CurrentSchemaVersion)
+        {
+            await db.ExecuteAsync($"PRAGMA user_version = {CurrentSchemaVersion}");
+            Debug.WriteLine($"OfflineDatabase: Migrated schema from v{storedVersion} to v{CurrentSchemaVersion}");
         }
     }
 
