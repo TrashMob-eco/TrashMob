@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1–4 Complete) |
+| **Status** | Complete (Phases 1–4); Deferred: platform background sync, server-side dedup |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
