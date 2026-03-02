@@ -96,6 +96,11 @@ jobs:
           echo "::add-mask::$CONNECTION_STRING"
           echo "connection_string=$CONNECTION_STRING" >> $GITHUB_OUTPUT
 
+      - name: Restore and build
+        run: |
+          dotnet restore TrashMob.sln
+          dotnet build TrashMob/TrashMob.csproj --no-restore
+
       - name: List pending migrations
         run: |
           echo "Checking for pending migrations..."
@@ -103,7 +108,7 @@ jobs:
             --project TrashMob.Shared/TrashMob.Shared.csproj \
             --startup-project TrashMob/TrashMob.csproj \
             --connection "${{ steps.get-connection-string.outputs.connection_string }}" \
-            --no-build=false \
+            --no-build \
             2>&1 | tee /tmp/migrations-list.txt
 
           # Count pending (not yet applied) migrations
@@ -120,6 +125,7 @@ jobs:
             --project TrashMob.Shared/TrashMob.Shared.csproj \
             --startup-project TrashMob/TrashMob.csproj \
             --connection "${{ steps.get-connection-string.outputs.connection_string }}" \
+            --no-build \
             --verbose
           echo "Migrations applied successfully."
 

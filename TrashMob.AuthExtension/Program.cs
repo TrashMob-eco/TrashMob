@@ -12,9 +12,22 @@ var allowedAppId = builder.Configuration["AuthExtension:AllowedAppId"]
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = $"https://login.microsoftonline.com/{tenantId}/v2.0";
+        options.Authority = $"https://{tenantId}.ciamlogin.com/{tenantId}/v2.0";
         options.Audience = clientId;
-        options.TokenValidationParameters.ValidateIssuer = true;
+        options.TokenValidationParameters.ValidIssuers =
+        [
+            $"https://login.microsoftonline.com/{tenantId}/v2.0",
+            $"https://{tenantId}.ciamlogin.com/{tenantId}/v2.0"
+        ];
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                logger.LogWarning("JWT authentication failed: {Error}", context.Exception.Message);
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddAuthorizationBuilder()

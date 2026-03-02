@@ -328,6 +328,59 @@ TrashMob requests the following customizations on Privo's consent collection pag
 - **Impact on Privo:** None — Privo integration occurs after IdP authentication
 - **CIAM Note:** CIAM id_tokens do not include an `email` claim. The backend resolves emails via Microsoft Graph API (`User.Read.All` application permission). The auth handler uses a 4-step user resolution: email lookup → ObjectId lookup → Graph API email resolution → auto-create.
 
+### Current Age Gate: Custom Authentication Extension
+
+TrashMob currently uses an Entra External ID **Custom Authentication Extension** (`OnAttributeCollectionSubmit`) to enforce an under-13 age gate during sign-up. This is the integration point that Privo would replace/extend.
+
+**Architecture:**
+- **Container App:** `ca-authext-tm-pr-westus2` (Azure Container Apps, production)
+- **Source code:** `TrashMob.AuthExtension/` — minimal ASP.NET Core API
+- **Endpoint:** `POST /api/authext/attributecollectionsubmit`
+- **Behavior:** Parses `dateOfBirth` from the sign-up attributes, calculates age, and returns `continueWithDefaultBehavior` (13+) or `showBlockPage` (under 13)
+- **Bicep template:** `Deploy/containerAppAuthExtension.bicep`
+- **GitHub Actions:** `.github/workflows/release_ca-authext-tm-pr-westus2.yml`
+
+**Entra Configuration (CIAM tenant `b5fc8717-29eb-496e-8e09-cf90d344ce9f`):**
+
+The custom extension requires precise Entra configuration. The following was validated during a production incident investigation (March 2026):
+
+| Component | Value | Notes |
+|-----------|-------|-------|
+| **Custom Extension ID** | `71e35239-0b1e-4a19-9f13-4a3c77417306` | Registered under Identity > Custom Extensions |
+| **Extension Type** | `onAttributeCollectionSubmitCustomExtension` | Fires during sign-up attribute collection |
+| **App Registration** | `TrashMob Eco Prod Auth` (`e11e65ba-e457-4a95-8a54-c96582ebb837`) | The app registration the extension authenticates as |
+| **Application ID URI** | `api://ca-authext-tm-pr-westus2.greenground-fd8fc385.westus2.azurecontainerapps.io/e11e65ba-...` | Must match `authenticationConfiguration.resourceId` on the custom extension |
+| **accessTokenAcceptedVersion** | `2` | Required for custom auth extensions |
+| **App Role** | `CustomAuthenticationExtension.Receive.Payload` (value: `customauthenticationextension.api.endpoint`) | Must be defined on the app registration |
+| **Role Assignment** | Azure AD Auth Extensions SP (`99045fe1-7639-4a75-9d4a-577b6ca3810f`) → app role on `e11e65ba` SP | Required for Entra to acquire a token to call the endpoint |
+| **AllowedAppId** | `99045fe1-7639-4a75-9d4a-577b6ca3810f` | First-party Microsoft SP; validated via `azp` claim in JWT |
+
+**Container App Environment Variables:**
+
+| Variable | Value | Source |
+|----------|-------|--------|
+| `AuthExtension__TenantId` | CIAM tenant ID (`b5fc8717-...`) | GitHub secret `ENTRA_TENANT_ID` |
+| `AuthExtension__ClientId` | App registration client ID (`e11e65ba-...`) | GitHub secret `AUTH_EXTENSION_CLIENT_ID` |
+| `AuthExtension__AllowedAppId` | `99045fe1-7639-4a75-9d4a-577b6ca3810f` | Hardcoded in Bicep and `Program.cs` |
+
+**OIDC Authority — CIAM vs Standard Endpoint:**
+
+CIAM tenants have **two** OIDC discovery endpoints with **different signing keys**:
+- `https://login.microsoftonline.com/{tenantId}/v2.0` — standard Azure AD endpoint; has a subset of signing keys
+- `https://{tenantId}.ciamlogin.com/{tenantId}/v2.0` — CIAM-specific endpoint; has the **complete** set of signing keys
+
+The JWT `Authority` in `Program.cs` **must** use the `ciamlogin.com` endpoint. Entra signs tokens for custom auth extensions with keys that may only exist in the CIAM OIDC discovery document (e.g., kid `z6-fLv223PW4n6R3gxvdvXigZXk` in the prod tenant). Using `login.microsoftonline.com` as the Authority causes `IDX10503` signature validation failures because the app fetches keys from the wrong JWKS endpoint.
+
+The `ValidIssuers` array should accept tokens from **both** issuers since the actual `iss` claim in the token can use either format.
+
+**Troubleshooting Notes (March 2026 Incident):**
+- **AADSTS1003021** (`CustomExtensionPermissionNotGrantedToServicePrincipal`): The `CustomAuthenticationExtension.Receive.Payload` permission was not granted on the correct app registration. The custom extension's `authenticationConfiguration.resourceId` determines which app registration is used — verify this matches the app that has the permission granted.
+- **AADSTS1100001** (non-retryable error from custom extension API): Multiple causes found:
+  1. The app registration was missing the required app role definition (`customauthenticationextension.api.endpoint`), and the Azure AD Auth Extensions SP (`99045fe1`) had no role assignment. Both must be configured: (1) define the app role on the app registration, (2) assign that role to the `99045fe1` service principal.
+  2. The JWT `Authority` was set to `login.microsoftonline.com` which does not expose all CIAM signing keys. Tokens signed with CIAM-only keys failed signature validation (`IDX10503`), returning 401 to Entra, which surfaced as AADSTS1100001 to the user. Fix: use `{tenantId}.ciamlogin.com` as the Authority.
+- **Container App receives no requests:** If Entra cannot acquire a token (due to missing app role or role assignment), it fails internally and never makes the HTTP call to the endpoint. Container App logs will show zero requests even though the extension is configured.
+- **Container App returns 401 but no logs visible:** The default `appsettings.json` sets `Microsoft.AspNetCore` log level to `Warning`, which suppresses request-level logs. Add env vars `Logging__LogLevel__Microsoft.AspNetCore=Information` and `Logging__LogLevel__Microsoft.AspNetCore.Authentication=Debug` to see JWT validation details. The `OnAuthenticationFailed` event in `Program.cs` also logs the specific error.
+
 ---
 
 ## 9. Timeline & Milestones
@@ -366,6 +419,8 @@ Please provide Figma access to the Privo team members for UI/UX review.
 |---------|------|--------|---------|
 | 1.0 | January 31, 2026 | TrashMob Engineering | Initial draft |
 | 1.1 | February 22, 2026 | TrashMob Engineering | Updated auth provider to Entra External ID (CIAM migration complete) |
+| 1.2 | March 2, 2026 | TrashMob Engineering | Added custom authentication extension architecture, Entra configuration details, and troubleshooting notes from production incident |
+| 1.3 | March 2, 2026 | TrashMob Engineering | Documented CIAM vs standard OIDC endpoint signing key differences, IDX10503 root cause, and logging troubleshooting tips |
 
 ---
 
