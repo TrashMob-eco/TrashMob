@@ -61,6 +61,12 @@
         public int TrimEndMeters { get; set; }
 
         /// <summary>
+        /// Gets or sets whether to skip applying the default 100m privacy trim on upload.
+        /// When true, start/end trimming values from the client are used as-is (including 0 for no trim).
+        /// </summary>
+        public bool SkipDefaultTrim { get; set; }
+
+        /// <summary>
         /// Gets or sets bags collected along this route.
         /// </summary>
         public int? BagsCollected { get; set; }

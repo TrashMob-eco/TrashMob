@@ -419,12 +419,21 @@ namespace TrashMob.Shared.Managers.Events
 
         private static void ApplyDefaultTrim(EventAttendeeRoute route)
         {
-            if (route.TrimStartMeters == 0)
+            // Negative values indicate the client explicitly opted out of default trim
+            if (route.TrimStartMeters < 0)
+            {
+                route.TrimStartMeters = 0;
+            }
+            else if (route.TrimStartMeters == 0)
             {
                 route.TrimStartMeters = 100;
             }
 
-            if (route.TrimEndMeters == 0)
+            if (route.TrimEndMeters < 0)
+            {
+                route.TrimEndMeters = 0;
+            }
+            else if (route.TrimEndMeters == 0)
             {
                 route.TrimEndMeters = 100;
             }

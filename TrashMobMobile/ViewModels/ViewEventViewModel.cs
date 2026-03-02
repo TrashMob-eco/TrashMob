@@ -131,6 +131,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private bool isRecordingRoute;
 
+    private bool skipDefaultTrim;
+
     [ObservableProperty]
     private bool areRoutesFound;
 
@@ -466,6 +468,16 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 Preferences.Default.Set(disclosureKey, true);
             }
 
+            // Ask user whether to hide start/end location for privacy
+            var hideStartEnd = await Shell.Current.CurrentPage.DisplayAlert(
+                "Privacy Option",
+                "Would you like to hide the first and last 100 meters of your route? " +
+                "This helps protect your home location if you're starting from home.",
+                "Yes, hide",
+                "No, keep full route");
+
+            skipDefaultTrim = !hideStartEnd;
+
             RouteStartTime = DateTimeOffset.Now;
             RouteEndTime = DateTimeOffset.Now;
             EnableStopTrackEventRoute = true;
@@ -537,6 +549,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 Locations = GetSortableLocations(),
                 StartTime = RouteStartTime,
                 EndTime = RouteEndTime,
+                SkipDefaultTrim = skipDefaultTrim,
             });
         }, "An error occurred while saving your route.");
     }
