@@ -363,10 +363,23 @@ The custom extension requires precise Entra configuration. The following was val
 | `AuthExtension__ClientId` | App registration client ID (`e11e65ba-...`) | GitHub secret `AUTH_EXTENSION_CLIENT_ID` |
 | `AuthExtension__AllowedAppId` | `99045fe1-7639-4a75-9d4a-577b6ca3810f` | Hardcoded in Bicep and `Program.cs` |
 
+**OIDC Authority — CIAM vs Standard Endpoint:**
+
+CIAM tenants have **two** OIDC discovery endpoints with **different signing keys**:
+- `https://login.microsoftonline.com/{tenantId}/v2.0` — standard Azure AD endpoint; has a subset of signing keys
+- `https://{tenantId}.ciamlogin.com/{tenantId}/v2.0` — CIAM-specific endpoint; has the **complete** set of signing keys
+
+The JWT `Authority` in `Program.cs` **must** use the `ciamlogin.com` endpoint. Entra signs tokens for custom auth extensions with keys that may only exist in the CIAM OIDC discovery document (e.g., kid `z6-fLv223PW4n6R3gxvdvXigZXk` in the prod tenant). Using `login.microsoftonline.com` as the Authority causes `IDX10503` signature validation failures because the app fetches keys from the wrong JWKS endpoint.
+
+The `ValidIssuers` array should accept tokens from **both** issuers since the actual `iss` claim in the token can use either format.
+
 **Troubleshooting Notes (March 2026 Incident):**
 - **AADSTS1003021** (`CustomExtensionPermissionNotGrantedToServicePrincipal`): The `CustomAuthenticationExtension.Receive.Payload` permission was not granted on the correct app registration. The custom extension's `authenticationConfiguration.resourceId` determines which app registration is used — verify this matches the app that has the permission granted.
-- **AADSTS1100001** (non-retryable error from custom extension API): The app registration was missing the required app role definition (`customauthenticationextension.api.endpoint`), and the Azure AD Auth Extensions SP (`99045fe1`) had no role assignment. Both must be configured: (1) define the app role on the app registration, (2) assign that role to the `99045fe1` service principal.
+- **AADSTS1100001** (non-retryable error from custom extension API): Multiple causes found:
+  1. The app registration was missing the required app role definition (`customauthenticationextension.api.endpoint`), and the Azure AD Auth Extensions SP (`99045fe1`) had no role assignment. Both must be configured: (1) define the app role on the app registration, (2) assign that role to the `99045fe1` service principal.
+  2. The JWT `Authority` was set to `login.microsoftonline.com` which does not expose all CIAM signing keys. Tokens signed with CIAM-only keys failed signature validation (`IDX10503`), returning 401 to Entra, which surfaced as AADSTS1100001 to the user. Fix: use `{tenantId}.ciamlogin.com` as the Authority.
 - **Container App receives no requests:** If Entra cannot acquire a token (due to missing app role or role assignment), it fails internally and never makes the HTTP call to the endpoint. Container App logs will show zero requests even though the extension is configured.
+- **Container App returns 401 but no logs visible:** The default `appsettings.json` sets `Microsoft.AspNetCore` log level to `Warning`, which suppresses request-level logs. Add env vars `Logging__LogLevel__Microsoft.AspNetCore=Information` and `Logging__LogLevel__Microsoft.AspNetCore.Authentication=Debug` to see JWT validation details. The `OnAuthenticationFailed` event in `Program.cs` also logs the specific error.
 
 ---
 
@@ -407,6 +420,7 @@ Please provide Figma access to the Privo team members for UI/UX review.
 | 1.0 | January 31, 2026 | TrashMob Engineering | Initial draft |
 | 1.1 | February 22, 2026 | TrashMob Engineering | Updated auth provider to Entra External ID (CIAM migration complete) |
 | 1.2 | March 2, 2026 | TrashMob Engineering | Added custom authentication extension architecture, Entra configuration details, and troubleshooting notes from production incident |
+| 1.3 | March 2, 2026 | TrashMob Engineering | Documented CIAM vs standard OIDC endpoint signing key differences, IDX10503 root cause, and logging troubleshooting tips |
 
 ---
 
