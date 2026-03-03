@@ -197,6 +197,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
 
+    public ObservableCollection<EventAttendeeMetrics> PendingMetricsList { get; set; } = [];
+
     public ObservableCollection<EventAttendeeViewModel> EventAttendees { get; set; } = [];
 
     public ObservableCollection<DisplayEventAttendeeRoute> EventAttendeeRoutes { get; set; } = [];
@@ -1257,8 +1259,14 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
         if (isLead)
         {
-            var publicMetrics = await eventAttendeeMetricsRestService.GetPublicMetricsAsync(mobEvent.Id);
-            PendingMetricsCount = publicMetrics.Contributors.Count(c => c.Status == "Pending");
+            var pendingMetrics = await eventAttendeeMetricsRestService.GetPendingMetricsAsync(mobEvent.Id);
+            PendingMetricsList.Clear();
+            foreach (var m in pendingMetrics)
+            {
+                PendingMetricsList.Add(m);
+            }
+
+            PendingMetricsCount = PendingMetricsList.Count;
             ShowLeadMetricsActions = PendingMetricsCount > 0;
         }
     }
@@ -1348,10 +1356,41 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         await ExecuteAsync(async () =>
         {
             var count = await eventAttendeeMetricsRestService.ApproveAllPendingAsync(mobEvent.Id);
+            PendingMetricsList.Clear();
             ShowLeadMetricsActions = false;
             PendingMetricsCount = 0;
 
             await NotificationService.Notify($"{count} metric submission(s) approved.");
         }, "An error occurred while approving metrics. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task ReviewMetrics(EventAttendeeMetrics metrics)
+    {
+        var popup = new Controls.ReviewMetricsPopup(metrics);
+        var result = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        var value = result?.Result;
+
+        if (string.IsNullOrEmpty(value))
+        {
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            if (value == Controls.ReviewMetricsPopup.ApprovedResult)
+            {
+                await eventAttendeeMetricsRestService.ApproveMetricsAsync(mobEvent.Id, metrics.Id);
+                await NotificationService.Notify("Submission approved.");
+            }
+            else if (value.StartsWith(Controls.ReviewMetricsPopup.RejectedPrefix))
+            {
+                var reason = value[Controls.ReviewMetricsPopup.RejectedPrefix.Length..];
+                await eventAttendeeMetricsRestService.RejectMetricsAsync(mobEvent.Id, metrics.Id, reason);
+                await NotificationService.Notify("Submission rejected.");
+            }
+
+            await LoadMyMetrics();
+        }, "An error occurred while reviewing the submission. Please try again.");
     }
 }
