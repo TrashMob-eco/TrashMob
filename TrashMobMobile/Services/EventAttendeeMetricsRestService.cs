@@ -48,6 +48,16 @@ namespace TrashMobMobile.Services
             return JsonConvert.DeserializeObject<EventMetricsPublicSummary>(content) ?? new EventMetricsPublicSummary();
         }
 
+        public async Task<List<EventAttendeeMetrics>> GetPendingMetricsAsync(Guid eventId, CancellationToken cancellationToken = default)
+        {
+            var requestUri = eventId + "/attendee-metrics/pending";
+
+            using var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonConvert.DeserializeObject<List<EventAttendeeMetrics>>(content) ?? [];
+        }
+
         public async Task<int> ApproveAllPendingAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
             var requestUri = eventId + "/attendee-metrics/approve-all";
@@ -56,6 +66,27 @@ namespace TrashMobMobile.Services
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             return JsonConvert.DeserializeObject<int>(content);
+        }
+
+        public async Task<EventAttendeeMetrics> ApproveMetricsAsync(Guid eventId, Guid metricsId, CancellationToken cancellationToken = default)
+        {
+            var requestUri = eventId + "/attendee-metrics/" + metricsId + "/approve";
+
+            using var response = await AuthorizedHttpClient.PostAsync(requestUri, null, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonConvert.DeserializeObject<EventAttendeeMetrics>(content)!;
+        }
+
+        public async Task<EventAttendeeMetrics> RejectMetricsAsync(Guid eventId, Guid metricsId, string reason, CancellationToken cancellationToken = default)
+        {
+            var requestUri = eventId + "/attendee-metrics/" + metricsId + "/reject";
+            var body = JsonContent.Create(new { RejectionReason = reason }, null, SerializerOptions);
+
+            using var response = await AuthorizedHttpClient.PostAsync(requestUri, body, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonConvert.DeserializeObject<EventAttendeeMetrics>(content)!;
         }
 
         public async Task<UserImpactStats> GetUserImpactAsync(Guid userId, CancellationToken cancellationToken = default)

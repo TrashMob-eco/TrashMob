@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:models="clr-namespace:TrashMob.Models;assembly=TrashMob.Models"
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              x:Class="TrashMobMobile.Views.ViewEvent.TabDetails">
     <ScrollView>
@@ -274,6 +275,50 @@
                     <Label Text="{Binding PendingMetricsCount, StringFormat='{0} submission(s) pending review'}"
                            FontSize="Micro"
                            TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                    <!-- Pending submissions list -->
+                    <CollectionView ItemsSource="{Binding PendingMetricsList}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:EventAttendeeMetrics">
+                                <Border Padding="12,8"
+                                        Margin="0,2"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}"
+                                        StrokeShape="RoundRectangle 8"
+                                        Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+                                        StrokeThickness="1">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ViewEventViewModel}}, Path=ReviewMetricsCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="12">
+                                        <Label Text="{Binding User.UserName}"
+                                               FontSize="Small"
+                                               VerticalOptions="Center"
+                                               LineBreakMode="TailTruncation" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding BagsCollected, StringFormat='{0} bags'}"
+                                               FontSize="Micro"
+                                               VerticalOptions="Center"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        <Label Grid.Column="2"
+                                               Text="{Binding DurationMinutes, StringFormat='{0} min'}"
+                                               FontSize="Micro"
+                                               VerticalOptions="Center"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        <Image Grid.Column="3" MaximumWidthRequest="16" MaximumHeightRequest="16" VerticalOptions="Center">
+                                            <Image.Source>
+                                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                                 Glyph="{StaticResource IconChevronRight}"
+                                                                 Size="16"
+                                                                 Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                            </Image.Source>
+                                        </Image>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
                     <Button Text="Approve All"
                             Command="{Binding ApproveAllMetricsCommand}"
                             Style="{StaticResource SecondarySmallButton}"

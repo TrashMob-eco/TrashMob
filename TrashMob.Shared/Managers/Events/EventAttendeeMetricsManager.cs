@@ -48,6 +48,9 @@ namespace TrashMob.Shared.Managers.Events
                 return ServiceResult<EventAttendeeMetrics>.Failure("You must be registered as an attendee for this event to submit metrics.");
             }
 
+            // Auto-approve if the submitter is an event lead (creator or co-lead)
+            var isLead = await eventAttendeeManager.IsEventLeadAsync(eventId, userId, cancellationToken);
+
             // Check for existing submission
             var existingMetrics = await GetMyMetricsAsync(eventId, userId, cancellationToken);
 
@@ -67,6 +70,13 @@ namespace TrashMob.Shared.Managers.Events
                 existingMetrics.LastUpdatedByUserId = userId;
                 existingMetrics.LastUpdatedDate = DateTimeOffset.UtcNow;
 
+                if (isLead)
+                {
+                    existingMetrics.Status = EventAttendeeMetricsStatus.Approved;
+                    existingMetrics.ReviewedByUserId = userId;
+                    existingMetrics.ReviewedDate = DateTimeOffset.UtcNow;
+                }
+
                 var updatedResult = await base.UpdateAsync(existingMetrics, userId, cancellationToken);
                 return ServiceResult<EventAttendeeMetrics>.Success(updatedResult);
             }
@@ -82,7 +92,9 @@ namespace TrashMob.Shared.Managers.Events
                 PickedWeightUnitId = metrics.PickedWeightUnitId,
                 DurationMinutes = metrics.DurationMinutes,
                 Notes = metrics.Notes,
-                Status = EventAttendeeMetricsStatus.Pending,
+                Status = isLead ? EventAttendeeMetricsStatus.Approved : EventAttendeeMetricsStatus.Pending,
+                ReviewedByUserId = isLead ? userId : null,
+                ReviewedDate = isLead ? DateTimeOffset.UtcNow : null,
                 CreatedByUserId = userId,
                 CreatedDate = DateTimeOffset.UtcNow,
                 LastUpdatedByUserId = userId,

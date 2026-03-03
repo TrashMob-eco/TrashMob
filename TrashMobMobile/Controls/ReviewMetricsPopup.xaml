@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobile.Controls.ReviewMetricsPopup">
+
+    <Border Padding="24"
+            BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+            StrokeShape="RoundRectangle 16"
+            Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+            StrokeThickness="1"
+            WidthRequest="320">
+        <VerticalStackLayout Spacing="16">
+
+            <Label Text="Review Submission"
+                   FontFamily="LexendSemibold"
+                   FontSize="18"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+
+            <Label x:Name="attendeeLabel"
+                   FontFamily="LexendSemibold"
+                   FontSize="14"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+
+            <!-- Stats -->
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                <VerticalStackLayout HorizontalOptions="Center">
+                    <Label x:Name="bagsLabel"
+                           FontFamily="LexendSemibold"
+                           FontSize="20"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                    <Label Text="Bags"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                    <Label x:Name="weightLabel"
+                           FontFamily="LexendSemibold"
+                           FontSize="20"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                    <Label Text="Weight"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                    <Label x:Name="durationLabel"
+                           FontFamily="LexendSemibold"
+                           FontSize="20"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                    <Label Text="Minutes"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- Notes -->
+            <VerticalStackLayout x:Name="notesSection" Spacing="4" IsVisible="False">
+                <Label Text="Notes"
+                       FontSize="Small"
+                       FontFamily="LexendSemibold"
+                       TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                <Label x:Name="notesLabel"
+                       FontSize="Small"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            </VerticalStackLayout>
+
+            <!-- Rejection reason (hidden by default) -->
+            <VerticalStackLayout x:Name="rejectionSection" Spacing="4" IsVisible="False">
+                <Label Text="Reason for Rejection"
+                       FontSize="Small"
+                       FontFamily="LexendSemibold"
+                       TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                <Editor x:Name="rejectionEditor"
+                        Placeholder="Why are you rejecting this submission?"
+                        HeightRequest="60"
+                        MaxLength="500" />
+            </VerticalStackLayout>
+
+            <Button Text="Approve"
+                    Style="{StaticResource PrimaryLargeButton}"
+                    Clicked="OnApproveClicked" />
+
+            <Button x:Name="rejectButton"
+                    Text="Reject"
+                    Style="{StaticResource SecondaryLargeButton}"
+                    Clicked="OnRejectClicked" />
+
+            <Button Text="Cancel"
+                    Style="{StaticResource SecondaryLargeButton}"
+                    Clicked="OnCancelClicked" />
+
+        </VerticalStackLayout>
+    </Border>
+</ContentView>
