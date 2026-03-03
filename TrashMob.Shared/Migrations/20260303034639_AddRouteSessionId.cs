@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,6 +11,10 @@ namespace TrashMob.Shared.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Donations_Pledge",
+                table: "Donations");
+
             migrationBuilder.AddColumn<Guid>(
                 name: "SessionId",
                 table: "EventAttendeeRoutes",
@@ -22,11 +26,22 @@ namespace TrashMob.Shared.Migrations
                 table: "EventAttendeeRoutes",
                 column: "SessionId",
                 filter: "[SessionId] IS NOT NULL");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Donations_Pledge",
+                table: "Donations",
+                column: "PledgeId",
+                principalTable: "Pledges",
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Donations_Pledge",
+                table: "Donations");
+
             migrationBuilder.DropIndex(
                 name: "IX_EventAttendeeRoutes_SessionId",
                 table: "EventAttendeeRoutes");
@@ -34,6 +49,14 @@ namespace TrashMob.Shared.Migrations
             migrationBuilder.DropColumn(
                 name: "SessionId",
                 table: "EventAttendeeRoutes");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Donations_Pledge",
+                table: "Donations",
+                column: "PledgeId",
+                principalTable: "Pledges",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.SetNull);
         }
     }
 }

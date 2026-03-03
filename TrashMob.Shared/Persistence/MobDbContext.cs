@@ -3538,7 +3538,7 @@
                 entity.HasOne(d => d.Pledge)
                     .WithMany(p => p.Donations)
                     .HasForeignKey(d => d.PledgeId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Donations_Pledge");
 
                 entity.HasOne(d => d.CreatedByUser)

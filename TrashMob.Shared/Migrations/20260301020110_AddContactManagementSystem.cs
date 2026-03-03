@@ -322,8 +322,7 @@ namespace TrashMob.Shared.Migrations
                         name: "FK_Donations_Pledge",
                         column: x => x.PledgeId,
                         principalTable: "Pledges",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Donations_User_CreatedBy",
                         column: x => x.CreatedByUserId,
