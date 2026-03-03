@@ -506,7 +506,16 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 IsRecordingRoute = false;
                 RouteEndTime = DateTimeOffset.Now;
                 await routePointWriter.StopAndFlushAsync();
+
+                var sessionId = routeTrackingSessionManager.ActiveSessionId;
                 routeTrackingSessionManager.EndSession();
+
+                // Discard the empty SQLite session since emulator uses server-side simulation
+                if (sessionId != null)
+                {
+                    await syncQueue.DiscardSessionAsync(sessionId);
+                }
+
                 tcs.TrySetResult();
             });
 

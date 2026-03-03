@@ -42,7 +42,9 @@ public class OfflineDatabase
             connection = new SQLiteAsyncConnection(databasePath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache);
 
             // Enable WAL mode for crash safety and concurrent read/write
-            await connection.ExecuteAsync("PRAGMA journal_mode=WAL");
+            // Use ExecuteScalarAsync because PRAGMA journal_mode returns a result row;
+            // ExecuteAsync maps to ExecuteNonQuery which throws on result-returning statements
+            await connection.ExecuteScalarAsync<string>("PRAGMA journal_mode=WAL");
 
             // Check and apply schema migrations
             await MigrateSchemaAsync(connection);
