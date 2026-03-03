@@ -19,7 +19,7 @@ namespace TrashMob.Shared.Managers.Contacts
     /// </summary>
     public class DonationEmailManager(
         IDonationManager donationManager,
-        IKeyedManager<Contact> contactManager,
+        IContactManager contactManager,
         IContactNoteManager contactNoteManager,
         IEmailManager emailManager,
         ILogger<DonationEmailManager> logger) : IDonationEmailManager
