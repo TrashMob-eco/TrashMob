@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLogin } from '@/hooks/useLogin';
 import { GetEventLeads, PromoteToLead, DemoteFromLead, GetEventAttendees } from '@/services/events';
 import { GetEventAttendeeWaiverStatus } from '@/services/user-waivers';
+import { GetEventDependents } from '@/services/dependents';
 import { PaperWaiverUploadDialog } from '@/components/Waivers';
 import UserData from '../Models/UserData';
 import EventData from '../Models/EventData';
@@ -51,6 +52,20 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
         queryFn: GetEventAttendeeWaiverStatus({ eventId: event.id }).service,
         select: (res) => res.data,
         enabled: !!event.id && isCurrentUserLead,
+    });
+
+    // Fetch dependents registered for this event (only if current user is lead)
+    const { data: eventDependents } = useQuery({
+        queryKey: GetEventDependents({ eventId: event.id }).key,
+        queryFn: GetEventDependents({ eventId: event.id }).service,
+        select: (res) => res.data,
+        enabled: !!event.id && isCurrentUserLead,
+    });
+
+    // Create a map of parentUserId -> dependent count for quick lookup
+    const dependentCountMap = new Map<string, number>();
+    (eventDependents || []).forEach((ed) => {
+        dependentCountMap.set(ed.parentUserId, (dependentCountMap.get(ed.parentUserId) || 0) + 1);
     });
 
     // Create a map of userId -> waiver status for quick lookup
@@ -129,6 +144,7 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
                             <TableHead>Country</TableHead>
                             <TableHead>Member Since</TableHead>
                             {isCurrentUserLead ? <TableHead>Waiver</TableHead> : null}
+                            {isCurrentUserLead ? <TableHead>Deps</TableHead> : null}
                             {isCurrentUserLead ? <TableHead className='w-[100px]'>Actions</TableHead> : null}
                         </TableRow>
                     </TableHeader>
@@ -182,6 +198,11 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
                                                     Pending
                                                 </Badge>
                                             )}
+                                        </TableCell>
+                                    ) : null}
+                                    {isCurrentUserLead ? (
+                                        <TableCell>
+                                            {dependentCountMap.get(user.id) || 0}
                                         </TableCell>
                                     ) : null}
                                     {isCurrentUserLead ? (
