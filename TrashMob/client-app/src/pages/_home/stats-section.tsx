@@ -118,7 +118,8 @@ export const StatsSection = () => {
     ];
 
     return (
-        <div className='container py-10' ref={viewportRef}>
+        <section className='bg-background' ref={viewportRef}>
+        <div className='container py-10'>
             <div className='flex flex-wrap gap-2 flex-row justify-center lg:justify-between'>
                 {statItems.map((item, i) => (
                     <div
@@ -134,5 +135,6 @@ export const StatsSection = () => {
                 ))}
             </div>
         </div>
+        </section>
     );
 };

@@ -8,7 +8,7 @@ import { WhatIsTrashmobSection } from './whatistrashmob-section';
 
 export const Home = () => {
     return (
-        <>
+        <div className='bg-card'>
             <HeroSection />
             <WhatIsTrashmobSection />
             <StatsSection />
@@ -16,6 +16,6 @@ export const Home = () => {
             <LatestNewsSection />
             <EventSection />
             <GettingStartSection />
-        </>
+        </div>
     );
 };
