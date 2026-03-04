@@ -40,6 +40,8 @@ namespace TrashMobMobile.ViewModels
         [ObservableProperty]
         private bool isFormValid;
 
+        public DateTime Today { get; } = DateTime.Today;
+
         public List<string> Relationships { get; } =
         [
             "Parent",
