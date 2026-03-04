@@ -157,11 +157,13 @@ export const ForCommunitiesPage: FC = () => {
     const { data: featuredCommunities } = useQuery({
         queryKey: GetFeaturedCommunities().key,
         queryFn: GetFeaturedCommunities().service,
+        select: (res) => res.data,
     });
 
     const { data: publicStats } = useQuery({
         queryKey: GetCommunityPublicStats().key,
         queryFn: GetCommunityPublicStats().service,
+        select: (res) => res.data,
     });
 
     const hasFeaturedCommunities = featuredCommunities && featuredCommunities.length > 0;

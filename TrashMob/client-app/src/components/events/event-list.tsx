@@ -13,7 +13,7 @@ import { RegisterBtn } from '@/components/Customization/RegisterBtn';
 import { useGetEventType } from '@/hooks/useGetEventType';
 
 export const EventPlaceAndLocation = (
-    event: Partial<Pick<EventData, 'eventDate' | 'streetAddress' | 'city' | 'region'>>,
+    event: Partial<Pick<EventData, 'eventDate' | 'streetAddress' | 'city' | 'region' | 'postalCode' | 'country'>>,
 ) => {
     return (
         <div className='grid grid-cols-[24px_1fr] gap-x-3 gap-y-2'>

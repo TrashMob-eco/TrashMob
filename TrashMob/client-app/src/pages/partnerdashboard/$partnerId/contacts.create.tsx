@@ -48,15 +48,16 @@ interface FormInputs {
 }
 
 const formSchema = z.object({
-    contactType: z.string(),
+    contactType: z.nativeEnum(PartnerContactType),
     locationId: z.string(),
     name: z.string({ required_error: 'Name cannot be blank.' }),
     email: z.string().email(),
-    phone: z.string().optional(),
+    phone: z.string(),
     notes: z
         .string({ required_error: 'Notes cannot be empty.' })
         .min(1, 'Notes cannot be empty.')
         .max(1000, 'Notes cannot be more than 1000 characters long'),
+    lastUpdatedDate: z.string(),
 });
 
 export const PartnerContactCreate = () => {
@@ -112,6 +113,11 @@ export const PartnerContactCreate = () => {
         defaultValues: {
             contactType: defaultContactType,
             locationId: '',
+            name: '',
+            email: '',
+            phone: '',
+            notes: '',
+            lastUpdatedDate: '',
         },
     });
 

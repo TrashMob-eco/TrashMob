@@ -1,4 +1,5 @@
 import { useQuery, useQueries } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 
 import { GetEventAttendees, GetEventById, GetEventLeads } from '@/services/events';
 import {
@@ -6,6 +7,7 @@ import {
     GetEventPartnerLocationServicesByLocationId,
     GetEventPartnerLocationServiceStatuses,
 } from '@/services/locations';
+import DisplayEventPartnerLocationServiceData from '@/components/Models/DisplayEventPartnerLocationServiceData';
 
 import { useGetEventTypes } from '@/hooks/useGetEventTypes';
 import { useGetPartnerServiceTypes } from '@/hooks/useGetPartnerServiceTypes';
@@ -47,7 +49,7 @@ export const useEditEventPageQueries = (eventId: string) => {
             queryKey: GetEventPartnerLocationServicesByLocationId({ locationId: item.partnerLocationId, eventId }).key,
             queryFn: GetEventPartnerLocationServicesByLocationId({ locationId: item.partnerLocationId, eventId })
                 .service,
-            select: (res) => res.data,
+            select: (res: AxiosResponse<DisplayEventPartnerLocationServiceData[]>) => res.data,
         })),
     });
 

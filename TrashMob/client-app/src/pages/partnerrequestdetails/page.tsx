@@ -35,7 +35,7 @@ export const PartnerRequestDetails: React.FC = () => {
         queryFn: GetPartnerRequestStatuses().service,
         select: (res) => {
             const statuses = res.data;
-            return getPartnerRequestStatus(statuses, data?.partnerRequestStatusId);
+            return getPartnerRequestStatus(statuses, data?.partnerRequestStatusId ?? 0);
         },
         enabled: !!data?.partnerRequestStatusId,
     });
@@ -46,7 +46,7 @@ export const PartnerRequestDetails: React.FC = () => {
         queryFn: GetPartnerTypes().service,
         select: (res) => {
             const types = res.data;
-            return getPartnerType(types, data?.partnerTypeId);
+            return getPartnerType(types, data?.partnerTypeId ?? 0);
         },
         enabled: !!data?.partnerTypeId,
     });

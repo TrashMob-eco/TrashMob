@@ -206,7 +206,7 @@ export const DrawingLayer = ({
         let path: google.maps.LatLngLiteral[];
 
         if (parsed.type === 'Polygon') {
-            path = polygonCoordsToPath(parsed.coordinates);
+            path = polygonCoordsToPath(parsed.coordinates as number[][][]);
             if (path.length < 3) {
                 initializedRef.current = true;
                 return;
@@ -214,7 +214,7 @@ export const DrawingLayer = ({
             shape = new google.maps.Polygon({ paths: path, map, ...SHAPE_STYLE, editable: false, draggable: false });
             type = 'polygon';
         } else {
-            path = lineStringCoordsToPath(parsed.coordinates);
+            path = lineStringCoordsToPath(parsed.coordinates as number[][]);
             if (path.length < 2) {
                 initializedRef.current = true;
                 return;
@@ -263,12 +263,12 @@ export const DrawingLayer = ({
         let path: google.maps.LatLngLiteral[];
 
         if (parsed.type === 'Polygon') {
-            path = polygonCoordsToPath(parsed.coordinates);
+            path = polygonCoordsToPath(parsed.coordinates as number[][][]);
             if (path.length < 3) return;
             shape = new google.maps.Polygon({ paths: path, map, ...SHAPE_STYLE, editable: false, draggable: false });
             type = 'polygon';
         } else {
-            path = lineStringCoordsToPath(parsed.coordinates);
+            path = lineStringCoordsToPath(parsed.coordinates as number[][]);
             if (path.length < 2) return;
             shape = new google.maps.Polyline({
                 path,

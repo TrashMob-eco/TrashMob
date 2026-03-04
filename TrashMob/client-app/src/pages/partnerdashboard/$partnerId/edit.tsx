@@ -36,17 +36,17 @@ const formSchema = z.object({
     name: z
         .string({ required_error: 'Name cannot be blank.' })
         .max(MAX_PARTNER_NAME_LENGTH, `Name must be less than ${MAX_PARTNER_NAME_LENGTH} characters`),
-    website: z.string().url({ message: 'Please enter valid website.' }).optional(),
+    website: z.string().url({ message: 'Please enter valid website.' }),
     partnerStatusId: z.number(),
     partnerTypeId: z.number(),
     publicNotes: z
         .string()
-        .max(MAX_PARTNER_NOTES_LENGTH, `Public notes must be less than ${MAX_PARTNER_NOTES_LENGTH} characters`)
-        .optional(),
+        .max(MAX_PARTNER_NOTES_LENGTH, `Public notes must be less than ${MAX_PARTNER_NOTES_LENGTH} characters`),
     privateNotes: z
         .string()
-        .max(MAX_PARTNER_NOTES_LENGTH, `Private notes must be less than ${MAX_PARTNER_NOTES_LENGTH} characters`)
-        .optional(),
+        .max(MAX_PARTNER_NOTES_LENGTH, `Private notes must be less than ${MAX_PARTNER_NOTES_LENGTH} characters`),
+    createdDate: z.string(),
+    lastUpdatedDate: z.string(),
 });
 
 const useGetPartnerStatuses = () =>

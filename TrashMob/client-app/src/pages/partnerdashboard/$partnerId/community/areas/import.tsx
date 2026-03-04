@@ -490,7 +490,7 @@ function UploadStep({
                         Browse Files
                     </Button>
                     <input
-                        ref={fileInputRef}
+                        ref={fileInputRef as React.RefObject<HTMLInputElement>}
                         type='file'
                         accept={ACCEPTED_EXTENSIONS}
                         className='hidden'

@@ -26,6 +26,7 @@ const useGetHomeStats = () =>
             totalWeightInPounds: 0,
             totalHours: 0,
             totalParticipants: 0,
+            totalLitterReportsSubmitted: 0,
         }),
         initialDataUpdatedAt: 0,
         staleTime: Services.CACHE.DISABLE,
@@ -47,6 +48,7 @@ export const StatsSection = () => {
     const { data: communityStats } = useQuery({
         queryKey: GetCommunityPublicStats().key,
         queryFn: GetCommunityPublicStats().service,
+        select: (res) => res.data,
         staleTime: Services.CACHE.DISABLE,
     });
 

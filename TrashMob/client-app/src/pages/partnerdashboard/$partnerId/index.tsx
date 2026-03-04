@@ -12,7 +12,7 @@ export const PartnerIndex = () => {
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
 
     const { data: locations, isLoading, error: locationsError } = useGetPartnerLocations({ partnerId });
-    const eventRequestsByLocation: UseQueryResult<DisplayPartnerLocationEventServiceData[], AxiosError>[] = useQueries({
+    const eventRequestsByLocation: UseQueryResult<DisplayPartnerLocationEventServiceData[]>[] = useQueries({
         queries: (locations || []).map((location, locIndex) => {
             return {
                 queryKey: GetPartnerLocationEventServicesByLocationId({ locationId: location.id }).key,
@@ -26,7 +26,7 @@ export const PartnerIndex = () => {
     const hasAuthError = eventRequestsByLocation.some(
         (query) => query.error && (query.error as AxiosError)?.response?.status === 403,
     );
-    const hasError = locationsError || eventRequestsByLocation.some((query) => query.isError);
+    const hasError = !!locationsError || eventRequestsByLocation.some((query) => query.isError);
 
     return (
         <SidebarLayout

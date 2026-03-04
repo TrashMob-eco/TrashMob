@@ -152,8 +152,8 @@ export const AreaMapEditor = ({
         if (!parsed) return;
         const path =
             parsed.type === 'Polygon'
-                ? polygonCoordsToPath(parsed.coordinates)
-                : lineStringCoordsToPath(parsed.coordinates);
+                ? polygonCoordsToPath(parsed.coordinates as number[][][])
+                : lineStringCoordsToPath(parsed.coordinates as number[][]);
         if (path.length === 0) return;
         window.dispatchEvent(new CustomEvent('areamap:fitbounds', { detail: { path } }));
     }, [value]);

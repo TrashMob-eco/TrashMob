@@ -41,7 +41,7 @@ const formSchema = z.object({
     name: z.string({ required_error: 'Name cannot be blank.' }),
     url: z.string().url().or(z.literal('')),
     documentTypeId: z.string(),
-    expirationDate: z.string().optional(),
+    expirationDate: z.string(),
 });
 
 export const PartnerDocumentEdit = () => {
