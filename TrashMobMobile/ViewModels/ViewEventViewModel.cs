@@ -469,13 +469,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             const string disclosureKey = "RouteTrackingDisclosureShown";
             if (!Preferences.Default.Get(disclosureKey, false))
             {
-                var accepted = await Shell.Current.CurrentPage.DisplayAlert(
-                    "Location Permission Required",
+                var disclosureMessage =
                     "TrashMob needs access to your location to record your cleanup route on a map. " +
                     "Your location will be tracked while the route recording is active and a notification is shown. " +
-                    "You can stop recording at any time.",
-                    "Continue",
-                    "Cancel");
+                    "You can stop recording at any time.";
+                var accepted = await Shell.Current.CurrentPage.DisplayAlertAsync(
+                    "Location Permission Required", disclosureMessage, "Continue", "Cancel");
 
                 if (!accepted)
                 {
@@ -486,12 +485,11 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             }
 
             // Ask user whether to hide start/end location for privacy
-            var hideStartEnd = await Shell.Current.CurrentPage.DisplayAlert(
-                "Privacy Option",
+            var privacyMessage =
                 "Would you like to hide the first and last 100 meters of your route? " +
-                "This helps protect your home location if you're starting from home.",
-                "Yes, hide",
-                "No, keep full route");
+                "This helps protect your home location if you're starting from home.";
+            var hideStartEnd = await Shell.Current.CurrentPage.DisplayAlertAsync(
+                "Privacy Option", privacyMessage, "Yes, hide", "No, keep full route");
 
             skipDefaultTrim = !hideStartEnd;
 
@@ -675,12 +673,11 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 return;
             }
 
-            var recover = await Shell.Current.CurrentPage.DisplayAlert(
-                "Route Recovery",
+            var recoveryMessage =
                 $"A route recording with {points.Count} GPS points was interrupted. " +
-                "Would you like to upload the partial route?",
-                "Upload",
-                "Discard");
+                "Would you like to upload the partial route?";
+            var recover = await Shell.Current.CurrentPage.DisplayAlertAsync(
+                "Route Recovery", recoveryMessage, "Upload", "Discard");
 
             if (recover)
             {

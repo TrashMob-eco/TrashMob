@@ -1,11 +1,13 @@
 namespace TrashMobMobile;
 
+using System.Runtime.Versioning;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 
 [Service(ForegroundServiceType = ForegroundService.TypeLocation, Exported = false)]
+[SupportedOSPlatform("android29.0")]
 public class LocationForegroundService : Service
 {
     private const int NotificationId = 9001;

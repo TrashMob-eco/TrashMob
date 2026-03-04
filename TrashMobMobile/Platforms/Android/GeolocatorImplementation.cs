@@ -29,7 +29,14 @@ public class GeolocatorImplementation : IGeolocator
         // Start foreground service so GPS continues when app is backgrounded
         var context = Android.App.Application.Context;
         var serviceIntent = new Intent(context, typeof(LocationForegroundService));
-        context.StartForegroundService(serviceIntent);
+        if (OperatingSystem.IsAndroidVersionAtLeast(26))
+        {
+            context.StartForegroundService(serviceIntent);
+        }
+        else
+        {
+            context.StartService(serviceIntent);
+        }
 
         locator = new GeolocationContinuousListener();
         var taskCompletionSource = new TaskCompletionSource();

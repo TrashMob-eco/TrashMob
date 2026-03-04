@@ -27,6 +27,13 @@
             }
         }
 
+        protected HttpClient CreateHttpClient(string basePath)
+        {
+            var client = httpClientFactory.CreateClient("ServerAPI");
+            client.BaseAddress = new Uri(string.Concat(TrashMobApiAddress, basePath));
+            return client;
+        }
+
         protected HttpClient AnonymousHttpClient
         {
             get
