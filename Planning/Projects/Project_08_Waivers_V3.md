@@ -309,9 +309,9 @@ The minor waiver must contain language beyond the standard adult waiver:
 - Select from existing dependents or add new inline
 - Sign waiver inline if needed (extend existing multi-waiver popup flow)
 
-- ☐ Add dependents management to mobile profile
-- ☐ Extend mobile event registration with dependent selection
-- ☐ Extend mobile waiver popup for minor waiver signing
+- ✅ Add dependents management to mobile profile — "My Dependents" button in MorePage navigating to existing MyDependentsPage
+- ✅ Extend mobile event registration with dependent selection — SelectDependentsPopup shown after registration in ViewEventViewModel
+- ☐ Extend mobile waiver popup for minor waiver signing — deferred pending legal approval of minor waiver text
 
 #### Phase 5e - Event Headcount & Safety
 

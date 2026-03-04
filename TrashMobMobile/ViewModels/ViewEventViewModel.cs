@@ -28,7 +28,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IRouteTrackingSessionManager routeTrackingSessionManager,
     IEventAttendeeMetricsRestService eventAttendeeMetricsRestService,
     RoutePointWriter routePointWriter,
-    SyncQueue syncQueue) : BaseViewModel(notificationService)
+    SyncQueue syncQueue,
+    IDependentRestService dependentRestService) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
@@ -725,6 +726,25 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             var registerPopup = new ConfirmPopup("Registered!", "You have been registered for this event. We'll see you there!", "OK");
             await Shell.Current.CurrentPage.ShowPopupAsync<string>(registerPopup);
+
+            // Offer to register dependents if user has any
+            var dependents = await dependentRestService.GetDependentsAsync(userManager.CurrentUser.Id);
+            if (dependents.Count > 0)
+            {
+                var dependentPopup = new SelectDependentsPopup(dependents);
+                var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<List<Guid>>(dependentPopup);
+                var selectedIds = popupResult?.Result;
+
+                if (selectedIds is { Count: > 0 })
+                {
+                    await dependentRestService.RegisterDependentsForEventAsync(
+                        EventViewModel.Id, selectedIds);
+
+                    var countPopup = new ConfirmPopup("Dependents Registered!",
+                        $"{selectedIds.Count} dependent(s) registered for this event.", "OK");
+                    await Shell.Current.CurrentPage.ShowPopupAsync<string>(countPopup);
+                }
+            }
         }, "An error occurred while registering you for this event. Please try again.");
     }
 

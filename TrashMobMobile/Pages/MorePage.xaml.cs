@@ -25,6 +25,11 @@ public partial class MorePage : ContentPage
         await Shell.Current.GoToAsync(nameof(WaiverPage));
     }
 
+    private async void OnMyDependentsClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(MyDependentsPage));
+    }
+
     private async void OnContactUsClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(ContactUsPage));
