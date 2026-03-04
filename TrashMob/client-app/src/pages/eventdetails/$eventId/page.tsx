@@ -233,7 +233,9 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                             </h2>
                             <p className='text-sm text-muted-foreground mb-4'>
                                 {(eventAttendees || []).length} Adult{(eventAttendees || []).length !== 1 ? 's' : ''}
-                                {dependentCount ? ` + ${dependentCount} Dependent${dependentCount !== 1 ? 's' : ''}` : ''}
+                                {dependentCount
+                                    ? ` + ${dependentCount} Dependent${dependentCount !== 1 ? 's' : ''}`
+                                    : ''}
                                 {maxNumberOfParticipants ? ` · Max Participants: ${maxNumberOfParticipants}` : ''}
                             </p>
                             <EventAttendeeTable users={eventAttendees || []} event={event} />
