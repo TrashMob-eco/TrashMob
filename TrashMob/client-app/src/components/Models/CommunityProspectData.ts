@@ -12,14 +12,15 @@ class CommunityProspectData {
     contactEmail: string = '';
     contactName: string = '';
     contactTitle: string = '';
+    contactPhone: string = '';
     pipelineStage: number = 0;
     fitScore: number = 0;
     notes: string = '';
     lastContactedDate: string | null = null;
     nextFollowUpDate: string | null = null;
     convertedPartnerId: string | null = null;
-    createdDate: string = '';
-    lastUpdatedDate: string = '';
+    createdDate: string | null = null;
+    lastUpdatedDate: string | null = null;
 }
 
 export default CommunityProspectData;

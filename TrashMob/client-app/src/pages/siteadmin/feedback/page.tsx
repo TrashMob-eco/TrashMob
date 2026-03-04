@@ -3,12 +3,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DataTable } from '@/components/ui/data-table';
+import { useToast } from '@/hooks/use-toast';
 import { GetAllFeedback, UpdateFeedback, DeleteFeedback } from '@/services/feedback';
 import { getColumns } from './columns';
 
 const statusFilters = ['All', 'New', 'In Review', 'In Progress', 'Resolved', 'Closed'] as const;
 
 export const SiteAdminFeedback = () => {
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const [statusFilter, setStatusFilter] = useState<string>('All');
 
@@ -29,6 +31,9 @@ export const SiteAdminFeedback = () => {
                 refetchType: 'all',
             });
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to update feedback status. Please try again.' });
+        },
     });
 
     const deleteFeedback = useMutation({
@@ -39,6 +44,9 @@ export const SiteAdminFeedback = () => {
                 queryKey: ['/feedback'],
                 refetchType: 'all',
             });
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to delete feedback. Please try again.' });
         },
     });
 

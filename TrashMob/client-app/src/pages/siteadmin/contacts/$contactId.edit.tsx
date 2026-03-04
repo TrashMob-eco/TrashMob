@@ -59,6 +59,9 @@ export const SiteAdminContactEdit = () => {
             queryClient.invalidateQueries({ queryKey: ['/contacts'], refetchType: 'all' });
             navigate(`/siteadmin/contacts/${contactId}`);
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to update contact. Please try again.' });
+        },
     });
 
     const form = useForm<FormInputs>({

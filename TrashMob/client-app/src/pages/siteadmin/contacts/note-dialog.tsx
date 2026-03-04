@@ -42,6 +42,9 @@ export const NoteDialog = ({ open, onOpenChange, contactId, editingNote }: NoteD
             toast({ variant: 'primary', title: 'Note added' });
             onOpenChange(false);
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to add note. Please try again.' });
+        },
     });
 
     const updateNote = useMutation({
@@ -51,6 +54,9 @@ export const NoteDialog = ({ open, onOpenChange, contactId, editingNote }: NoteD
             queryClient.invalidateQueries({ queryKey: ['/contactnotes', contactId], refetchType: 'all' });
             toast({ variant: 'primary', title: 'Note updated' });
             onOpenChange(false);
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to update note. Please try again.' });
         },
     });
 

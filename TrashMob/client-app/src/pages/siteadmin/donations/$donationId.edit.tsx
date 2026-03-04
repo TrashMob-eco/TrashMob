@@ -57,6 +57,9 @@ export const SiteAdminDonationEdit = () => {
             queryClient.invalidateQueries({ queryKey: ['/donations'], refetchType: 'all' });
             navigate('/siteadmin/donations');
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to update donation. Please try again.' });
+        },
     });
 
     const form = useForm<FormInputs>({

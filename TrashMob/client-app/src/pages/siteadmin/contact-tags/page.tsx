@@ -42,6 +42,9 @@ export const SiteAdminContactTags = () => {
             toast({ variant: 'primary', title: 'Tag created' });
             closeDialog();
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to create tag. Please try again.' });
+        },
     });
 
     const updateTag = useMutation({
@@ -52,6 +55,9 @@ export const SiteAdminContactTags = () => {
             toast({ variant: 'primary', title: 'Tag updated' });
             closeDialog();
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to update tag. Please try again.' });
+        },
     });
 
     const deleteTag = useMutation({
@@ -60,6 +66,9 @@ export const SiteAdminContactTags = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['/contacttags'], refetchType: 'all' });
             toast({ variant: 'default', title: 'Tag deleted' });
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to delete tag. Please try again.' });
         },
     });
 

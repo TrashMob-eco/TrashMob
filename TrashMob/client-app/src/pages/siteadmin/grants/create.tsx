@@ -51,6 +51,9 @@ export const SiteAdminGrantCreate = () => {
             queryClient.invalidateQueries({ queryKey: ['/grants'], refetchType: 'all' });
             navigate('/siteadmin/grants');
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to create grant. Please try again.' });
+        },
     });
 
     const form = useForm<FormInputs>({

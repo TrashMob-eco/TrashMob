@@ -105,6 +105,9 @@ export const SiteAdminContactDetail = () => {
             queryClient.invalidateQueries({ queryKey: ['/contacts', contactId, 'tags'], refetchType: 'all' });
             toast({ variant: 'primary', title: 'Tags updated' });
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to update tags. Please try again.' });
+        },
     });
 
     const deleteNote = useMutation({
@@ -113,6 +116,9 @@ export const SiteAdminContactDetail = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['/contactnotes', contactId], refetchType: 'all' });
             toast({ variant: 'default', title: 'Note deleted' });
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to delete note. Please try again.' });
         },
     });
 
@@ -126,6 +132,9 @@ export const SiteAdminContactDetail = () => {
             });
             toast({ variant: 'default', title: 'Donation deleted' });
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to delete donation. Please try again.' });
+        },
     });
 
     const deletePledge = useMutation({
@@ -137,6 +146,9 @@ export const SiteAdminContactDetail = () => {
                 refetchType: 'all',
             });
             toast({ variant: 'default', title: 'Pledge deleted' });
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to delete pledge. Please try again.' });
         },
     });
 

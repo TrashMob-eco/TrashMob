@@ -53,6 +53,9 @@ export const SiteAdminContactCreate = () => {
             queryClient.invalidateQueries({ queryKey: ['/contacts'], refetchType: 'all' });
             navigate('/siteadmin/contacts');
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to create contact. Please try again.' });
+        },
     });
 
     const form = useForm<FormInputs>({

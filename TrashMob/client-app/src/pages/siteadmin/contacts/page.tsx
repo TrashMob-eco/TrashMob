@@ -31,6 +31,9 @@ export const SiteAdminContacts = () => {
             queryClient.invalidateQueries({ queryKey: ['/contacts'], refetchType: 'all' });
             toast({ variant: 'default', title: 'Contact deleted' });
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to delete contact. Please try again.' });
+        },
     });
 
     const handleDelete = (id: string, name: string) => {
