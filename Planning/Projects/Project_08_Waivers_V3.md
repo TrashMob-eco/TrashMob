@@ -2,11 +2,11 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 1-4, 6 Complete; Phase 5 Blocked on Project 23) |
+| **Status** | In Progress (Phases 1-4, 6 Complete; Phase 5 Ready for Development) |
 | **Priority** | High |
 | **Risk** | Very High |
 | **Size** | Very Large |
-| **Dependencies** | Project 23 (Parental Consent) |
+| **Dependencies** | None (Project 23 only needed for self-registered minor accounts, not dependent waivers) |
 
 ---
 
@@ -156,11 +156,170 @@ Users must be able to download their signed waivers as PDF documents containing:
 - ✅ Event lead view of attendee waiver status
 - ✅ Day-of check-in waiver verification
 
-### Phase 5 - Minors Support
-- ☐ Guardian consent workflow
-- ☐ Minor actions based on parental consent scope (e.g., event creation, team leadership)
-- ☐ Minors require adult presence at events
-- ☐ Age verification integration (with Project 23)
+### Phase 5 - Dependent Minors & Guardian Waivers
+
+Covers the scenario where a registered adult brings children to events — children who may be under 13 (no account), 13-17 (may or may not have an account), relatives, scout group members, or one-time participants. The adult may bring different children to different events.
+
+**Design Principles:**
+- **Zero friction for users without kids** — the dependent system is opt-in; users who never bring children see no additional UI
+- **No accounts for children under 13** — sidesteps COPPA entirely; child data lives on the parent's profile
+- **Sign once per year, select per event** — annual waiver renewal per dependent, not per-event signing
+- **Covers non-parent guardians** — scout leaders, neighbors, grandparents can add dependents with "Authorized Supervisor" relationship
+
+**Legal Context:**
+- Parental waivers for minors are unenforceable in 17 US states (TX, IL, PA, WA, etc.) and unclear in 21 more
+- Organizations should still collect them: evidence of informed consent, emergency medical authorization, and claim deterrence
+- Minor waiver must include: assumption of risk, liability release, medical authorization, photo/media release, statement of guardian authority
+- Follow COPPA spirit even if legally exempt as a nonprofit: never collect data directly from children under 13
+
+#### Phase 5a - Data Model & API
+
+**New Entity: `Dependent`** — a minor linked to a registered adult's account
+
+| Field | Type | Required | Purpose |
+|-------|------|----------|---------|
+| Id | Guid | Yes | Primary key |
+| ParentUserId | Guid | Yes | FK to User (the responsible adult) |
+| FirstName | string(100) | Yes | Identification at event |
+| LastName | string(100) | Yes | Waiver legal requirement |
+| DateOfBirth | DateOnly | Yes | Age verification, tier enforcement |
+| Relationship | string(50) | Yes | parent, legal guardian, grandparent, authorized supervisor, other |
+| MedicalNotes | string(500) | No | Allergies, conditions, medications |
+| EmergencyContactPhone | string(20) | No | If different from parent's phone |
+| IsActive | bool | Yes | Soft-delete for dependents no longer brought |
+| CreatedDate | DateTimeOffset | Yes | Audit |
+| LastUpdatedDate | DateTimeOffset | Yes | Audit |
+
+**New Entity: `EventDependent`** — which dependents attend which events
+
+| Field | Type | Required | Purpose |
+|-------|------|----------|---------|
+| Id | Guid | Yes | Primary key |
+| EventId | Guid | Yes | FK to Event |
+| DependentId | Guid | Yes | FK to Dependent |
+| ParentUserId | Guid | Yes | FK to User (for easy querying) |
+| DependentWaiverId | Guid | Yes | FK to DependentWaiver (the waiver covering this dependent) |
+| CreatedDate | DateTimeOffset | Yes | When registered |
+
+**New Entity: `DependentWaiver`** — waiver signed by adult covering a specific dependent
+
+| Field | Type | Required | Purpose |
+|-------|------|----------|---------|
+| Id | Guid | Yes | Primary key |
+| DependentId | Guid | Yes | FK to Dependent |
+| WaiverVersionId | Guid | Yes | FK to WaiverVersion |
+| SignedByUserId | Guid | Yes | FK to User (the adult who signed) |
+| TypedLegalName | string | Yes | Adult's legal name |
+| WaiverTextSnapshot | string | Yes | Exact waiver text at signing |
+| AcceptedDate | DateTimeOffset | Yes | When signed |
+| ExpiryDate | DateTimeOffset | Yes | End of calendar year |
+| DocumentUrl | string | No | PDF in immutable blob storage |
+| IPAddress | string(50) | No | Audit trail |
+| UserAgent | string(500) | No | Audit trail |
+| CreatedDate | DateTimeOffset | Yes | Audit |
+
+**Age Tiers:**
+
+| Age | Account | Waiver Flow | At Event |
+|-----|---------|-------------|----------|
+| Under 13 | No account; Dependent on parent's profile | Parent signs DependentWaiver | Parent must be physically present |
+| 13-17 | Optional own account (future Project 23) OR Dependent on parent's profile | Parent signs DependentWaiver or UserWaiver with guardian fields | Authorized adult must be present |
+| 18+ | Full account | Signs own UserWaiver | Independent |
+
+**API Endpoints:**
+
+| Method | Endpoint | Auth | Purpose |
+|--------|----------|------|---------|
+| GET | /users/{userId}/dependents | ValidUser | List user's dependents |
+| POST | /users/{userId}/dependents | ValidUser | Add a dependent |
+| PUT | /users/{userId}/dependents/{dependentId} | ValidUser | Update dependent info |
+| DELETE | /users/{userId}/dependents/{dependentId} | ValidUser | Soft-delete dependent |
+| POST | /dependents/{dependentId}/waiver | ValidUser | Sign waiver for a dependent |
+| GET | /dependents/{dependentId}/waiver | ValidUser | Get current waiver status |
+| POST | /events/{eventId}/dependents | ValidUser | Register dependents for event |
+| GET | /events/{eventId}/dependents | EventLead | List dependents attending event |
+| GET | /events/{eventId}/dependent-count | ValidUser | Count of dependents registered |
+
+- ☐ Create Dependent model, repository, manager
+- ☐ Create EventDependent model, repository, manager
+- ☐ Create DependentWaiver model, repository, manager
+- ☐ Add migration for new tables with proper indexes and FKs
+- ☐ Create API controllers with authorization
+- ☐ Create minor-specific waiver text (add to WaiverVersion with a MinorWaiver flag or separate scope)
+
+#### Phase 5b - Minor Waiver Content
+
+The minor waiver must contain language beyond the standard adult waiver:
+
+1. **Statement of authority:** "I, [parent/guardian name], am the [relationship] of [minor's name], born [DOB]. I have legal authority to consent to [minor's name]'s participation."
+2. **Assumption of risk:** Specific to outdoor cleanup — sharp objects, uneven terrain, traffic, weather, contact with hazardous materials
+3. **Liability release and indemnification:** Standard waiver language naming the minor
+4. **Medical authorization:** "I authorize TrashMob.eco and event organizers to arrange emergency medical treatment for [minor's name] at my expense in the event of injury or illness."
+5. **Photo/media release:** Consent for the minor to appear in event photos and social media
+6. **Supervision acknowledgment:** "I understand that I am responsible for supervising [minor's name] during this activity" (for parent/guardian) or "I confirm I have been authorized by the parent/legal guardian of [minor's name] to supervise this child" (for authorized supervisors)
+7. **Activity acknowledgment:** "I understand that this activity involves outdoor litter cleanup which may include walking on uneven surfaces, handling litter and debris, exposure to weather conditions, and proximity to traffic"
+
+- ☐ Draft minor waiver text (requires legal review)
+- ☐ Draft "authorized supervisor" variant waiver text
+- ☐ Create WaiverVersion record with minor scope
+- ☐ PDF generation for dependent waivers (extend existing QuestPDF template)
+
+#### Phase 5c - Web UX
+
+**Profile > "My Dependents" Page:**
+- Accessible from user dashboard (not prominently featured — opt-in discovery)
+- List of dependents with name, age, relationship, waiver status badge (valid/expiring/expired/none)
+- "Add Dependent" button → inline form: first name, last name, DOB, relationship dropdown, medical notes, emergency phone
+- Edit/remove existing dependents
+- "Sign Waiver" button next to dependents without valid waivers → opens minor waiver signing dialog
+
+**Event Registration Flow (Modified):**
+1. User registers themselves (existing flow, unchanged)
+2. **New optional section appears after self-registration:** "Will you be bringing any dependents?"
+   - If user has no dependents on file → "Add a dependent" link (goes to profile dependents page or inline add)
+   - If user has dependents → checkboxes to select who is attending this event
+   - Each dependent shows waiver status badge
+   - Dependents with expired/missing waivers → inline "Sign Waiver" before completing
+   - "Add another dependent" link for new children
+3. Confirmation shows attendee + dependents registered
+
+**Event Lead View (Extended):**
+- Existing attendee waiver status list extended with "Dependents" column
+- Shows count of dependents per attendee
+- Expandable row to see dependent names, ages, waiver status
+- Export includes dependent data
+
+- ☐ Create "My Dependents" page component
+- ☐ Add dependents section to user dashboard
+- ☐ Modify event registration flow with optional dependent selection
+- ☐ Create minor waiver signing dialog (extend WaiverSigningDialog)
+- ☐ Extend event lead attendee view with dependent information
+- ☐ Extend compliance export with dependent waivers
+
+#### Phase 5d - Mobile UX
+
+**Profile > Dependents:**
+- "My Dependents" section in profile/settings
+- Add/edit/remove dependents
+- Sign minor waivers via existing mobile waiver signing popup pattern
+
+**Event Registration:**
+- After self-registration, optional "Bringing dependents?" prompt
+- Select from existing dependents or add new inline
+- Sign waiver inline if needed (extend existing multi-waiver popup flow)
+
+- ☐ Add dependents management to mobile profile
+- ☐ Extend mobile event registration with dependent selection
+- ☐ Extend mobile waiver popup for minor waiver signing
+
+#### Phase 5e - Event Headcount & Safety
+
+- ☐ Include dependent count in event attendee totals (for capacity planning)
+- ☐ Event lead can see total headcount: registered adults + dependents
+- ☐ Dependent age display for event leads (safety planning — knowing how many young children)
+- ☐ Admin compliance dashboard extended: dependent waiver counts, guardian relationship breakdown
+
+**Note:** Phase 5 no longer requires Project 23 (Privo.com) for the common case of adults bringing children. Project 23 remains relevant for the separate case of 13-17 year-olds who want their own user accounts with age verification and parental consent.
 
 ### Phase 6 - Admin & Viewing Tools ✅ Complete
 - ✅ Admin dashboard for waiver compliance (summary stats, filtering, pagination)
@@ -199,11 +358,11 @@ Users must be able to download their signed waivers as PDF documents containing:
 ## Dependencies
 
 ### Blockers
-- **Legal review:** Must approve approach before development
-- **Project 23 (Parental Consent):** Privo.com integration for minors
+- **Legal review:** Must approve minor waiver text before deployment
 
 ### Related (Non-Blocking)
-- **Project 1 (Auth):** Minors support with age verification
+- **Project 23 (Parental Consent):** Privo.com integration — only needed for 13-17 year-olds who want their own user accounts; not required for dependent waiver system
+- **Project 1 (Auth):** Minors support with age verification — same scope as Project 23
 
 ### Enables
 - **Project 10 (Community Pages):** Community-specific waivers
@@ -605,11 +764,13 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 - Block flow if non-compliant
 - Event lead dashboard
 
-### Phase 4: Minors Support (Depends on Project 1 & 23)
-- Guardian consent workflow with configurable action permissions
-- Age verification integration
-- Enforce parental consent scope (what actions minor is allowed to perform)
-- Adult presence validation at events
+### Phase 4: Dependent Minors & Guardian Waivers
+- Dependent profiles on adult accounts (no child accounts needed)
+- Guardian waiver signing for each dependent (annual)
+- Per-event dependent selection during registration
+- Event lead headcount and dependent waiver compliance
+- Web and mobile UX for dependent management
+- **Gate:** Legal review of minor waiver text
 
 ### Phase 5: Admin & Reporting
 - Compliance dashboard
@@ -694,6 +855,30 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
     **Decision:** Screen reader accessible (proper semantic HTML); plain text version available for download; large print / high contrast options; keyboard-navigable. Low priority.
     **Status:** ✅ Resolved
 
+14. ~~**How do we handle adults bringing unregistered children to events?**~~
+    **Decision:** "Dependent Profiles" model — adults manage a list of dependents on their account. Children under 13 never have their own accounts (sidesteps COPPA). Adult signs a minor waiver per dependent per year. At event registration, adult optionally selects which dependents are attending. Zero friction for users without children.
+    **Status:** ✅ Resolved
+
+15. ~~**What if an adult brings different children to different events?**~~
+    **Decision:** Dependents are stored on the adult's profile, not tied to any event. Adult can add new dependents at any time (including during event registration). Per-event, the adult just checks boxes for which dependents are coming. Waiver is per-dependent per-year, not per-event.
+    **Status:** ✅ Resolved
+
+16. ~~**What about scout leaders or non-parent guardians?**~~
+    **Decision:** Relationship field supports "Authorized Supervisor" in addition to parent/guardian. Waiver text includes: "I confirm I have been authorized by the parent/legal guardian of [name] to supervise this child and consent to emergency medical treatment on their behalf." This shifts some liability but is not a substitute for actual parental consent in states that reject parental waivers.
+    **Status:** ✅ Resolved
+
+17. ~~**Should we require parental presence for younger children?**~~
+    **Decision:** Following Friends of the Urban Forest model — under 14 requires the responsible adult to be physically present (1:1). 14-17 can attend with any authorized adult supervisor. This is policy, enforced by event leads at check-in, not by the software.
+    **Status:** ✅ Resolved
+
+18. **Should the minor waiver be a separate WaiverVersion or a flag on the existing waiver?**
+    **Decision:** TBD — could be a new WaiverVersion with `Scope = Minor`, or add a `IsMinorWaiver` flag. Separate version allows different text for minors vs adults.
+    **Status:** Open
+
+19. **Do we need to capture the child's own signature/assent for 13-17 year-olds?**
+    **Decision:** TBD — some organizations require both parent signature AND minor assent for teens. Legal review needed.
+    **Status:** Open
+
 ---
 
 ## GitHub Issues
@@ -716,9 +901,9 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 15, 2026
+**Last Updated:** March 3, 2026
 **Owner:** Product Lead + Legal Counsel
-**Status:** In Progress (Phases 1-4, 6 Complete; Phase 4 extended with pre-event-create checks, waiver bypass fixes, mobile multi-waiver flow; Phase 2 extended with hub/list redesign; Phase 5 Blocked on Project 23)
-**Next Review:** When Project 23 (Parental Consent) completes Phases 1-2 (Privo.com integration)
+**Status:** In Progress (Phases 1-4, 6 Complete; Phase 5 Ready for Development — no longer blocked on Project 23)
+**Next Review:** After legal review of minor waiver text
 
 **?? CRITICAL:** No development work begins until legal team provides written approval of approach.

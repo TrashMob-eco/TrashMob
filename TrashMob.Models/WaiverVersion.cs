@@ -54,5 +54,10 @@ namespace TrashMob.Models
         /// Gets or sets the collection of user acceptances of this waiver.
         /// </summary>
         public virtual ICollection<UserWaiver> UserWaivers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dependent waiver acceptances of this waiver.
+        /// </summary>
+        public virtual ICollection<DependentWaiver> DependentWaivers { get; set; }
     }
 }

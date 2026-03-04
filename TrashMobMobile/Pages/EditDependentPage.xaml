@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:EditDependentViewModel"
+             x:Class="TrashMobMobile.Pages.EditDependentPage"
+             Title="{Binding PageTitle}">
+
+    <ScrollView>
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="16">
+
+            <!-- First Name -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="First Name"
+                       FontFamily="LexendSemibold"
+                       FontSize="Small"
+                       TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                <Entry Text="{Binding FirstName}"
+                       Placeholder="First name"
+                       MaxLength="100" />
+            </VerticalStackLayout>
+
+            <!-- Last Name -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Last Name"
+                       FontFamily="LexendSemibold"
+                       FontSize="Small"
+                       TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                <Entry Text="{Binding LastName}"
+                       Placeholder="Last name"
+                       MaxLength="100" />
+            </VerticalStackLayout>
+
+            <!-- Date of Birth -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Date of Birth"
+                       FontFamily="LexendSemibold"
+                       FontSize="Small"
+                       TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                <DatePicker Date="{Binding DateOfBirth}"
+                            MinimumDate="01/01/2000"
+                            MaximumDate="{x:Static sys:DateTime.Today}"
+                            xmlns:sys="clr-namespace:System;assembly=netstandard" />
+            </VerticalStackLayout>
+
+            <!-- Relationship -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Relationship"
+                       FontFamily="LexendSemibold"
+                       FontSize="Small"
+                       TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                <Picker ItemsSource="{Binding Relationships}"
+                        SelectedItem="{Binding Relationship}" />
+            </VerticalStackLayout>
+
+            <!-- Medical Notes (optional) -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Medical Notes (optional)"
+                       FontFamily="LexendSemibold"
+                       FontSize="Small"
+                       TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                <Editor Text="{Binding MedicalNotes}"
+                        Placeholder="Allergies, conditions, medications"
+                        HeightRequest="80"
+                        MaxLength="500" />
+            </VerticalStackLayout>
+
+            <!-- Emergency Contact Phone (optional) -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Emergency Contact Phone (optional)"
+                       FontFamily="LexendSemibold"
+                       FontSize="Small"
+                       TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                <Entry Text="{Binding EmergencyContactPhone}"
+                       Placeholder="If different from your phone"
+                       Keyboard="Telephone"
+                       MaxLength="20" />
+            </VerticalStackLayout>
+
+            <!-- Buttons -->
+            <Button Text="Save"
+                    Style="{StaticResource PrimaryLargeButton}"
+                    Command="{Binding SaveCommand}" />
+
+            <Button Text="Cancel"
+                    Style="{StaticResource SecondaryLargeButton}"
+                    Command="{Binding CancelCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

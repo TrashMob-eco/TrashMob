@@ -34,6 +34,15 @@ namespace TrashMob.Models
             NewslettersCreated = new HashSet<Newsletter>();
             NewslettersUpdated = new HashSet<Newsletter>();
             Achievements = new HashSet<UserAchievement>();
+            Dependents = new HashSet<Dependent>();
+            DependentWaiversSigned = new HashSet<DependentWaiver>();
+            EventDependentsRegistered = new HashSet<EventDependent>();
+            DependentsCreated = new HashSet<Dependent>();
+            DependentsUpdated = new HashSet<Dependent>();
+            DependentWaiversCreated = new HashSet<DependentWaiver>();
+            DependentWaiversUpdated = new HashSet<DependentWaiver>();
+            EventDependentsCreated = new HashSet<EventDependent>();
+            EventDependentsUpdated = new HashSet<EventDependent>();
         }
 
         /// <summary>
@@ -700,6 +709,55 @@ namespace TrashMob.Models
         /// Gets or sets the collection of newsletters last updated by this user.
         /// </summary>
         public virtual ICollection<Newsletter> NewslettersUpdated { get; set; }
+
+        #endregion
+
+        #region Dependent Collections
+
+        /// <summary>
+        /// Gets or sets the collection of dependents managed by this user.
+        /// </summary>
+        public virtual ICollection<Dependent> Dependents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dependent waivers signed by this user.
+        /// </summary>
+        public virtual ICollection<DependentWaiver> DependentWaiversSigned { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of event dependent registrations by this user.
+        /// </summary>
+        public virtual ICollection<EventDependent> EventDependentsRegistered { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dependents created by this user.
+        /// </summary>
+        public virtual ICollection<Dependent> DependentsCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dependents last updated by this user.
+        /// </summary>
+        public virtual ICollection<Dependent> DependentsUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dependent waivers created by this user.
+        /// </summary>
+        public virtual ICollection<DependentWaiver> DependentWaiversCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dependent waivers last updated by this user.
+        /// </summary>
+        public virtual ICollection<DependentWaiver> DependentWaiversUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of event dependents created by this user.
+        /// </summary>
+        public virtual ICollection<EventDependent> EventDependentsCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of event dependents last updated by this user.
+        /// </summary>
+        public virtual ICollection<EventDependent> EventDependentsUpdated { get; set; }
 
         #endregion
     }

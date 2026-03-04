@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:models="clr-namespace:TrashMob.Models;assembly=TrashMob.Models"
+             x:DataType="viewModels:MyDependentsViewModel"
+             x:Class="TrashMobMobile.Pages.MyDependentsPage"
+             Title="My Dependents">
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+
+                <Label Text="Manage the children or minors you bring to cleanup events."
+                       FontSize="Small"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                       Margin="0,0,0,12" />
+
+                <Button Text="Add Dependent"
+                        Style="{StaticResource PrimaryLargeButton}"
+                        Command="{Binding AddDependentCommand}"
+                        Margin="0,0,0,16" />
+
+                <!-- Empty state -->
+                <VerticalStackLayout IsVisible="{Binding AreNoDependentsFound}" Spacing="8">
+                    <Label Text="No dependents on file"
+                           FontFamily="LexendSemibold"
+                           FontSize="16"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                    <Label Text="Add a dependent to bring children to cleanup events."
+                           FontSize="Small"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </VerticalStackLayout>
+
+                <!-- Dependents list -->
+                <CollectionView ItemsSource="{Binding Dependents}"
+                                SelectionMode="None"
+                                IsVisible="{Binding AreDependentsFound}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Dependent">
+                            <Border Padding="16"
+                                    Margin="0,0,0,8"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+                                    StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+                                    StrokeThickness="1">
+                                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto">
+
+                                    <Label Grid.Row="0" Grid.Column="0"
+                                           FontFamily="LexendSemibold"
+                                           FontSize="16"
+                                           TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0} {1}">
+                                                <Binding Path="FirstName" />
+                                                <Binding Path="LastName" />
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+
+                                    <Label Grid.Row="1" Grid.Column="0"
+                                           FontSize="Small"
+                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0} · Born {1:MMM d, yyyy}">
+                                                <Binding Path="Relationship" />
+                                                <Binding Path="DateOfBirth" />
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+
+                                    <HorizontalStackLayout Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                                                           VerticalOptions="Center" Spacing="8">
+                                        <Button Text="Edit"
+                                                Style="{StaticResource SecondaryLargeButton}"
+                                                HeightRequest="36"
+                                                Padding="12,0"
+                                                FontSize="Small"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MyDependentsViewModel}}, Path=EditDependentCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        <Button Text="Remove"
+                                                Style="{StaticResource SecondaryLargeButton}"
+                                                HeightRequest="36"
+                                                Padding="12,0"
+                                                FontSize="Small"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MyDependentsViewModel}}, Path=DeleteDependentCommand}"
+                                                CommandParameter="{Binding .}" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>
