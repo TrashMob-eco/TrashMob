@@ -32,7 +32,7 @@
 | [Project 2 - Home Page Improvements](./Projects/Project_02_Home_Page.md) | Dynamic content, ads, sponsors | Ready for Design Review |
 | [Project 3 - Litter Reporting Web](./Projects/Project_03_Litter_Reporting_Web.md) | Complete web parity for litter reports | ✅ Complete |
 | [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) | Track weight metrics | ✅ Complete |
-| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | In Progress (Phases 1-4, 6 Complete; Phase 5 Ready) |
+| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | In Progress (Phases 1-4, 5a-5e, 6 Complete; minor waiver signing pending legal) |
 | [Project 9 - Teams](./Projects/Project_09_Teams.md) | User-created teams MVP | ✅ Complete |
 | [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) | Branded partner community pages | ✅ Complete |
 | [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) | Scale email invitations | ✅ Complete |
@@ -182,7 +182,7 @@
 | [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Phases 3-5: Manual test matrix on physical devices, regression testing, load testing, accessibility audit (TalkBack/VoiceOver), supported device docs |
 | [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | Phase 4: Deployment health dashboards; Phase 5: Cost optimization & auto-scaling; Phase 6: Security scanning (OWASP ZAP, CodeQL, Trivy) |
 | [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Phase 3: Security audit — review remaining API endpoints for authorization, input validation, rate limiting |
-| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Phase 5: Dependent minors & guardian waivers — dependent profiles, minor waiver signing, per-event dependent selection, event headcount (no longer blocked on Project 23; requires legal review of minor waiver text) |
+| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Phase 5 remaining: Minor waiver signing dialog (web + mobile), WaiverVersion record with minor scope, compliance export with dependent waivers — all pending legal review of minor waiver text |
 | [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Mobile app route recording/upload device testing on iOS and Android |
 | [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | Phase 2: Core web flow E2E tests (event CRUD, litter reports, partner management); Phase 3: Mobile test foundation; Phase 4: Remaining tests & perf baseline |
 | [Project 30 - Azure Billing Alerts](./Projects/Project_30_Azure_Billing_Alerts.md) | Operational monitoring and alert tuning |
@@ -288,6 +288,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** March 1, 2026
+**Last Updated:** March 4, 2026
 **Maintained By:** Product & Engineering Team
 **Next Review:** End of Q1 2026

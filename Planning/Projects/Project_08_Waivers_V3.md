@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1-4, 6 Complete; Phase 5 Ready for Development) |
+| **Status** | In Progress (Phases 1-4, 5a-5e, 6 Complete; Phase 5 minor waiver signing pending legal review) |
 | **Priority** | High |
 | **Risk** | Very High |
 | **Size** | Very Large |
@@ -240,12 +240,12 @@ Covers the scenario where a registered adult brings children to events — child
 | GET | /events/{eventId}/dependents | EventLead | List dependents attending event |
 | GET | /events/{eventId}/dependent-count | ValidUser | Count of dependents registered |
 
-- ☐ Create Dependent model, repository, manager
-- ☐ Create EventDependent model, repository, manager
-- ☐ Create DependentWaiver model, repository, manager
-- ☐ Add migration for new tables with proper indexes and FKs
-- ☐ Create API controllers with authorization
-- ☐ Create minor-specific waiver text (add to WaiverVersion with a MinorWaiver flag or separate scope)
+- ✅ Create Dependent model, repository, manager
+- ✅ Create EventDependent model, repository, manager
+- ✅ Create DependentWaiver model, repository, manager
+- ✅ Add migration for new tables with proper indexes and FKs
+- ✅ Create API controllers with authorization
+- ☐ Create minor-specific waiver text (add to WaiverVersion with a MinorWaiver flag or separate scope) — pending legal approval
 
 #### Phase 5b - Minor Waiver Content
 
@@ -902,9 +902,9 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** March 3, 2026
+**Last Updated:** March 4, 2026
 **Owner:** Product Lead + Legal Counsel
-**Status:** In Progress (Phases 1-4, 6 Complete; Phase 5 Ready for Development — no longer blocked on Project 23)
+**Status:** In Progress (Phases 1-4, 5a-5e, 6 Complete; Phase 5 minor waiver signing pending legal review)
 **Next Review:** After legal review of minor waiver text
 
 **?? CRITICAL:** No development work begins until legal team provides written approval of approach.
