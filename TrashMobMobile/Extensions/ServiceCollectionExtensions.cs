@@ -23,6 +23,7 @@
             services.AddSingleton<ICommunityRestService, CommunityRestService>();
             services.AddSingleton<IContactRequestManager, ContactRequestManager>();
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
+            services.AddSingleton<IDependentRestService, DependentRestService>();
             services.AddSingleton<IEventAttendeeRestService, EventAttendeeRestService>();
             services.AddSingleton<IEventAttendeeMetricsRestService, EventAttendeeMetricsRestService>();
             services.AddSingleton<IEventAttendeeRouteRestService, EventAttendeeRouteRestService>();

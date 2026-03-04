@@ -180,6 +180,12 @@
 
         public virtual DbSet<GrantTask> GrantTasks { get; set; }
 
+        public virtual DbSet<Dependent> Dependents { get; set; }
+
+        public virtual DbSet<DependentWaiver> DependentWaivers { get; set; }
+
+        public virtual DbSet<EventDependent> EventDependents { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -3730,6 +3736,144 @@
                     .HasConstraintName("FK_GrantTasks_User_LastUpdatedBy");
 
                 entity.HasIndex(e => e.GrantId).HasDatabaseName("IX_GrantTasks_GrantId");
+            });
+
+            // Dependent management entities
+
+            modelBuilder.Entity<Dependent>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.FirstName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.DateOfBirth).IsRequired();
+                entity.Property(e => e.Relationship).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.MedicalNotes).HasMaxLength(500);
+                entity.Property(e => e.EmergencyContactPhone).HasMaxLength(20);
+                entity.Property(e => e.IsActive).HasDefaultValue(true);
+
+                entity.HasOne(d => d.ParentUser)
+                    .WithMany(p => p.Dependents)
+                    .HasForeignKey(d => d.ParentUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_Dependents_User");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.DependentsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Dependents_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.DependentsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Dependents_User_LastUpdatedBy");
+
+                entity.HasIndex(e => e.ParentUserId)
+                    .HasDatabaseName("IX_Dependents_ParentUserId");
+
+                entity.HasIndex(e => new { e.ParentUserId, e.IsActive })
+                    .HasDatabaseName("IX_Dependents_ParentUserId_IsActive");
+            });
+
+            modelBuilder.Entity<DependentWaiver>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.TypedLegalName).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.WaiverTextSnapshot).IsRequired();
+                entity.Property(e => e.DocumentUrl).HasMaxLength(2048);
+                entity.Property(e => e.IPAddress).HasMaxLength(50);
+                entity.Property(e => e.UserAgent).HasMaxLength(500);
+
+                entity.HasOne(d => d.Dependent)
+                    .WithMany(p => p.DependentWaivers)
+                    .HasForeignKey(d => d.DependentId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_DependentWaivers_Dependent");
+
+                entity.HasOne(d => d.WaiverVersion)
+                    .WithMany(p => p.DependentWaivers)
+                    .HasForeignKey(d => d.WaiverVersionId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_DependentWaivers_WaiverVersion");
+
+                entity.HasOne(d => d.SignedByUser)
+                    .WithMany(p => p.DependentWaiversSigned)
+                    .HasForeignKey(d => d.SignedByUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_DependentWaivers_SignedByUser");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.DependentWaiversCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DependentWaivers_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.DependentWaiversUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DependentWaivers_User_LastUpdatedBy");
+
+                entity.HasIndex(e => e.DependentId)
+                    .HasDatabaseName("IX_DependentWaivers_DependentId");
+
+                entity.HasIndex(e => e.SignedByUserId)
+                    .HasDatabaseName("IX_DependentWaivers_SignedByUserId");
+
+                entity.HasIndex(e => new { e.DependentId, e.WaiverVersionId })
+                    .HasDatabaseName("IX_DependentWaivers_DependentId_WaiverVersionId");
+
+                entity.HasIndex(e => e.ExpiryDate)
+                    .HasDatabaseName("IX_DependentWaivers_ExpiryDate");
+            });
+
+            modelBuilder.Entity<EventDependent>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.EventDependents)
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_EventDependents_Event");
+
+                entity.HasOne(d => d.Dependent)
+                    .WithMany(p => p.EventDependents)
+                    .HasForeignKey(d => d.DependentId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_EventDependents_Dependent");
+
+                entity.HasOne(d => d.ParentUser)
+                    .WithMany(p => p.EventDependentsRegistered)
+                    .HasForeignKey(d => d.ParentUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_EventDependents_User");
+
+                entity.HasOne(d => d.DependentWaiver)
+                    .WithMany(p => p.EventDependents)
+                    .HasForeignKey(d => d.DependentWaiverId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_EventDependents_DependentWaiver");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.EventDependentsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventDependents_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.EventDependentsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventDependents_User_LastUpdatedBy");
+
+                entity.HasIndex(e => new { e.EventId, e.DependentId })
+                    .IsUnique()
+                    .HasDatabaseName("IX_EventDependents_EventId_DependentId");
+
+                entity.HasIndex(e => e.ParentUserId)
+                    .HasDatabaseName("IX_EventDependents_ParentUserId");
             });
         }
     }

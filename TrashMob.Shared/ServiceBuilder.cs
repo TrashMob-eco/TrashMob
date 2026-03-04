@@ -135,6 +135,11 @@
             services.AddScoped<IUserWaiverManager, UserWaiverManager>();
             services.AddScoped<IWaiverDocumentManager, WaiverDocumentManager>();
 
+            // Dependent management
+            services.AddScoped<IDependentManager, DependentManager>();
+            services.AddScoped<IDependentWaiverManager, DependentWaiverManager>();
+            services.AddScoped<IEventDependentManager, EventDependentManager>();
+
             // Feature Metrics
             services.AddSingleton<IFeatureMetricsService, FeatureMetricsService>();
 
@@ -270,6 +275,11 @@
             services.AddScoped<IKeyedRepository<WaiverVersion>, KeyedRepository<WaiverVersion>>();
             services.AddScoped<IBaseRepository<CommunityWaiver>, BaseRepository<CommunityWaiver>>();
             services.AddScoped<IKeyedRepository<UserWaiver>, KeyedRepository<UserWaiver>>();
+
+            // Dependent repositories
+            services.AddScoped<IKeyedRepository<Dependent>, KeyedRepository<Dependent>>();
+            services.AddScoped<IKeyedRepository<DependentWaiver>, KeyedRepository<DependentWaiver>>();
+            services.AddScoped<IKeyedRepository<EventDependent>, KeyedRepository<EventDependent>>();
 
             // Email Invite repositories
             services.AddScoped<IKeyedRepository<EmailInviteBatch>, KeyedRepository<EmailInviteBatch>>();

@@ -27,6 +27,7 @@ namespace TrashMob.Models
             AdoptionEvents = [];
             AttendeeMetrics = [];
             EventPhotos = [];
+            EventDependents = [];
         }
 
         /// <summary>
@@ -186,6 +187,11 @@ namespace TrashMob.Models
         /// Gets or sets the collection of photos uploaded for this event.
         /// </summary>
         public virtual ICollection<EventPhoto> EventPhotos { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dependents registered for this event.
+        /// </summary>
+        public virtual ICollection<EventDependent> EventDependents { get; set; }
 
         /// <summary>
         /// Gets the username of the user who created the event.
