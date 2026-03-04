@@ -163,6 +163,9 @@ test.describe('Public Pages', () => {
         test('navigation should be keyboard accessible', async ({ page }) => {
             await page.goto('/');
 
+            // Wait for header to be visible before testing keyboard navigation
+            await expect(page.locator('header')).toBeVisible();
+
             // Tab through navigation elements
             await page.keyboard.press('Tab');
 
