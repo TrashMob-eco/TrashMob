@@ -403,20 +403,28 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             EventAttendees.Add(attendeeVm);
         }
 
-        if (attendees.Count() == 1)
+        var depCount = await dependentRestService.GetEventDependentCountAsync(mobEvent.Id);
+        var totalHeadcount = currentAttendeeCount + depCount;
+
+        if (totalHeadcount == 1)
         {
-            AttendeeCount = $"{attendees.Count()} person is going!";
+            AttendeeCount = "1 person is going!";
         }
         else
         {
-            AttendeeCount = $"{attendees.Count()} people are going!";
+            AttendeeCount = $"{totalHeadcount} people are going!";
+        }
+
+        if (depCount > 0)
+        {
+            AttendeeCount += $" ({currentAttendeeCount} adult{(currentAttendeeCount != 1 ? "s" : "")}, {depCount} dependent{(depCount != 1 ? "s" : "")})";
         }
 
         if (mobEvent.MaxNumberOfParticipants > 0)
         {
-            if (mobEvent.MaxNumberOfParticipants - attendees.Count() > 0)
+            if (mobEvent.MaxNumberOfParticipants - currentAttendeeCount > 0)
             {
-                SpotsLeft = $"{mobEvent.MaxNumberOfParticipants - attendees.Count()} spot left!";
+                SpotsLeft = $"{mobEvent.MaxNumberOfParticipants - currentAttendeeCount} spot left!";
             }
             else
             {

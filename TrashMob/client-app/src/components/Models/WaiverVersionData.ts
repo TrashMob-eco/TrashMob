@@ -168,6 +168,14 @@ export interface WaiverComplianceSummary {
     compliancePercentage: number;
     /** Timestamp when this summary was generated. */
     generatedAt: string;
+    /** Total number of signed dependent waivers. */
+    totalDependentWaivers: number;
+    /** Number of currently valid dependent waivers. */
+    validDependentWaivers: number;
+    /** Number of expired dependent waivers. */
+    expiredDependentWaivers: number;
+    /** Guardian relationship breakdown. */
+    guardianRelationshipBreakdown: Array<{ relationship: string; count: number }>;
 }
 
 /**

@@ -95,5 +95,24 @@ namespace TrashMob.Shared.Managers
                 .OrderByDescending(dw => dw.AcceptedDate)
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<(int Total, int Valid, int Expired, Dictionary<string, int> RelationshipBreakdown)> GetComplianceStatsAsync(CancellationToken cancellationToken = default)
+        {
+            var now = DateTimeOffset.UtcNow;
+
+            var total = await Repo.Get().CountAsync(cancellationToken);
+            var valid = await Repo.Get(dw => dw.ExpiryDate >= now).CountAsync(cancellationToken);
+            var expired = total - valid;
+
+            var relationships = await Repo.Get(dw => dw.ExpiryDate >= now)
+                .Include(dw => dw.Dependent)
+                .GroupBy(dw => dw.Dependent.Relationship)
+                .Select(g => new { Relationship = g.Key ?? "Unknown", Count = g.Count() })
+                .ToListAsync(cancellationToken);
+
+            var breakdown = relationships.ToDictionary(r => r.Relationship, r => r.Count);
+
+            return (total, valid, expired, breakdown);
+        }
     }
 }

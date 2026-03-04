@@ -229,16 +229,12 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                         <div className='container mx-auto mb-16'>
                             <hr />
                             <h2 className='font-semibold text-xl mt-5 mb-4'>
-                                <span>
-                                    Attendees ({(eventAttendees || []).length})
-                                    {dependentCount
-                                        ? ` · ${dependentCount} Dependent${dependentCount !== 1 ? 's' : ''}`
-                                        : ''}
-                                </span>
+                                Total Headcount: {(eventAttendees || []).length + (dependentCount || 0)}
                             </h2>
-                            <p className='font-semibold m-0 my-4'>
-                                Max Number of Participants:
-                                <span className='ml-2 text-muted-foreground'>{maxNumberOfParticipants}</span>
+                            <p className='text-sm text-muted-foreground mb-4'>
+                                {(eventAttendees || []).length} Adult{(eventAttendees || []).length !== 1 ? 's' : ''}
+                                {dependentCount ? ` + ${dependentCount} Dependent${dependentCount !== 1 ? 's' : ''}` : ''}
+                                {maxNumberOfParticipants ? ` · Max Participants: ${maxNumberOfParticipants}` : ''}
                             </p>
                             <EventAttendeeTable users={eventAttendees || []} event={event} />
                         </div>

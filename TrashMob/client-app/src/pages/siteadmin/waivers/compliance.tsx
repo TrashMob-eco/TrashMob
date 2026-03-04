@@ -156,6 +156,51 @@ export const WaiverComplianceDashboard = () => {
                 </CardContent>
             </Card>
 
+            {/* Dependent Waiver Stats */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Dependent Waivers</CardTitle>
+                    <CardDescription>Waiver coverage for minors (dependents)</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className='grid gap-4 md:grid-cols-3'>
+                        <div className='flex items-center gap-2'>
+                            <Users className='h-5 w-5 text-blue-500' />
+                            <div>
+                                <p className='text-sm font-medium'>Total Signed</p>
+                                <p className='text-2xl font-bold'>{summary?.totalDependentWaivers ?? 0}</p>
+                            </div>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                            <CheckCircle className='h-5 w-5 text-green-500' />
+                            <div>
+                                <p className='text-sm font-medium'>Valid</p>
+                                <p className='text-2xl font-bold'>{summary?.validDependentWaivers ?? 0}</p>
+                            </div>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                            <AlertTriangle className='h-5 w-5 text-red-500' />
+                            <div>
+                                <p className='text-sm font-medium'>Expired</p>
+                                <p className='text-2xl font-bold'>{summary?.expiredDependentWaivers ?? 0}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {(summary?.guardianRelationshipBreakdown || []).length > 0 ? (
+                        <div className='mt-4'>
+                            <p className='text-sm font-medium mb-2'>Guardian Relationships</p>
+                            <div className='flex flex-wrap gap-2'>
+                                {(summary?.guardianRelationshipBreakdown || []).map((rb) => (
+                                    <Badge key={rb.relationship} variant='outline'>
+                                        {rb.relationship}: {rb.count}
+                                    </Badge>
+                                ))}
+                            </div>
+                        </div>
+                    ) : null}
+                </CardContent>
+            </Card>
+
             {/* Waiver Records */}
             <Card>
                 <CardHeader>
