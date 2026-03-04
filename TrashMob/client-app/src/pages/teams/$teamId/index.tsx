@@ -362,7 +362,7 @@ export const TeamDetailPage = () => {
                                                             <ReportPhotoButton
                                                                 photoId={photo.id}
                                                                 photoType='TeamPhoto'
-                                                                variant='secondary'
+                                                                variant='outline'
                                                                 size='icon'
                                                                 className='h-8 w-8 bg-white/80 hover:bg-white'
                                                             />

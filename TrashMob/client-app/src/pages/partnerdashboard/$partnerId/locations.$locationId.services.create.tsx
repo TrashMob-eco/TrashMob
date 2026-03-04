@@ -15,7 +15,8 @@ import * as ToolTips from '@/store/ToolTips';
 
 import { CreateLocationService, GetLocationsByPartner } from '@/services/locations';
 import PartnerLocationServiceData from '@/components/Models/PartnerLocationServiceData';
-import { useGetServiceTypes } from '@/hooks/useGetPartnerServiceTypes';
+import { useGetPartnerServiceTypes } from '@/hooks/useGetPartnerServiceTypes';
+import ServiceTypeData from '@/components/Models/ServiceTypeData';
 import { useLogin } from '@/hooks/useLogin';
 
 interface FormInputs {
@@ -27,7 +28,7 @@ interface FormInputs {
 
 const formSchema = z.object({
     serviceTypeId: z.string({ required_error: 'Service Type cannot be empty.' }),
-    notes: z.string().optional(),
+    notes: z.string(),
     isAutoApproved: z.boolean(),
     isAdvanceNoticeRequired: z.boolean(),
 });
@@ -42,7 +43,7 @@ export const PartnerLocationServiceCreate = (props: PartnerServiceCreateProps) =
     };
     const [searchParams] = useSearchParams();
     const serviceTypeId = searchParams.get('serviceTypeId') as string;
-    const { data: serviceTypes } = useGetServiceTypes();
+    const { data: serviceTypes } = useGetPartnerServiceTypes();
 
     const { toast } = useToast();
     const queryClient = useQueryClient();
@@ -101,7 +102,7 @@ export const PartnerLocationServiceCreate = (props: PartnerServiceCreateProps) =
                                         <SelectValue placeholder='-- Select Partner Status --' />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {(serviceTypes || []).map((serviceType) => (
+                                        {(serviceTypes || []).map((serviceType: ServiceTypeData) => (
                                             <SelectItem key={serviceType.id} value={`${serviceType.id}`}>
                                                 {serviceType.name}
                                             </SelectItem>

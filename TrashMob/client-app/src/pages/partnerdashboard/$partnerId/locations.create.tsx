@@ -45,17 +45,17 @@ interface FormInputs {
 const formSchema = z.object({
     name: z.string({ required_error: 'Location Name cannot be empty.' }),
     isActive: z.boolean(),
-    publicNotes: z.string().optional(),
-    privateNotes: z.string().optional(),
+    publicNotes: z.string(),
+    privateNotes: z.string(),
     location: z.object({
-        lat: z.number().optional(),
-        lng: z.number().optional(),
+        lat: z.number(),
+        lng: z.number(),
     }),
-    streetAddress: z.string().optional(),
-    city: z.string().optional(),
-    country: z.string().optional(),
-    region: z.string().optional(),
-    postalCode: z.string().optional(),
+    streetAddress: z.string(),
+    city: z.string(),
+    country: z.string(),
+    region: z.string(),
+    postalCode: z.string(),
 });
 
 interface PartnerLocationCreateFormProps {

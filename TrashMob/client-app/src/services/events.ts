@@ -122,7 +122,7 @@ export const GetEventById = (params: GetEventById_Params) => ({
 });
 
 export type CreateEvent_Body = EventData;
-export type CreateEvent_Response = unknown;
+export type CreateEvent_Response = EventData;
 export const CreateEvent = () => ({
     key: ['/Events', 'create'],
     service: async (body: CreateEvent_Body) =>

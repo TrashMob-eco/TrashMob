@@ -32,7 +32,7 @@ const formSchema = z.object({
     version: z.string().min(1, 'Version is required'),
     scope: z.nativeEnum(WaiverScope),
     effectiveDate: z.string().min(1, 'Effective date is required'),
-    expiryDate: z.string().optional(),
+    expiryDate: z.string(),
     waiverText: z.string().min(1, 'Waiver text is required'),
     isActive: z.boolean(),
 });
@@ -99,16 +99,16 @@ export const SiteAdminWaiverEdit = () => {
 
     const onSubmit: SubmitHandler<FormInputs> = useCallback(
         (formValues) => {
-            const body: WaiverVersionData = {
+            const body = {
                 id: waiverId,
                 name: formValues.name,
                 version: formValues.version,
                 scope: formValues.scope,
                 effectiveDate: new Date(formValues.effectiveDate).toISOString(),
-                expiryDate: formValues.expiryDate ? new Date(formValues.expiryDate).toISOString() : undefined,
+                expiryDate: formValues.expiryDate ? new Date(formValues.expiryDate).toISOString() : null,
                 waiverText: formValues.waiverText,
                 isActive: formValues.isActive,
-            };
+            } as WaiverVersionData;
             updateWaiver.mutate({ id: waiverId, body });
         },
         [waiverId, updateWaiver],

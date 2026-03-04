@@ -25,6 +25,8 @@ class TeamData {
 
     postalCode: string = '';
 
+    memberCount?: number;
+
     isActive: boolean = true;
 
     createdByUserId: string = Guid.EMPTY;

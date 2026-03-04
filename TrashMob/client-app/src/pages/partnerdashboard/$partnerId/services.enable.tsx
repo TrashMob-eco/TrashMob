@@ -31,7 +31,7 @@ interface FormInputs {
 const formSchema = z.object({
     serviceTypeId: z.number({ required_error: 'Service Type cannot be empty.' }),
     partnerLocationId: z.string({ required_error: 'Location cannot be empty.' }),
-    notes: z.string().optional(),
+    notes: z.string(),
     isAutoApproved: z.boolean(),
     isAdvanceNoticeRequired: z.boolean(),
 });

@@ -46,18 +46,18 @@ interface EditPickupLocationFields {
 const formSchema = z.object({
     id: z.string(),
     eventId: z.string(),
-    latitude: z.number().optional(),
-    longitude: z.number().optional(),
+    latitude: z.number(),
+    longitude: z.number(),
     hasBeenSubmitted: z.boolean(),
     hasBeenPickedUp: z.boolean(),
     name: z.string(),
     notes: z.string(),
 
-    streetAddress: z.string().optional(),
-    city: z.string().optional(),
-    country: z.string().optional(),
-    region: z.string().optional(),
-    postalCode: z.string().optional(),
+    streetAddress: z.string(),
+    city: z.string(),
+    country: z.string(),
+    region: z.string(),
+    postalCode: z.string(),
 });
 
 interface PickupLocationEditFormProps {}
@@ -104,7 +104,21 @@ export const PickupLocationEditForm = (props: PickupLocationEditFormProps) => {
 
     const form = useForm<EditPickupLocationFields>({
         resolver: zodResolver(formSchema),
-        defaultValues: {},
+        defaultValues: {
+            id: '',
+            eventId: '',
+            latitude: 0,
+            longitude: 0,
+            hasBeenSubmitted: false,
+            hasBeenPickedUp: false,
+            name: '',
+            notes: '',
+            streetAddress: '',
+            city: '',
+            region: '',
+            postalCode: '',
+            country: '',
+        },
     });
 
     useEffect(() => {

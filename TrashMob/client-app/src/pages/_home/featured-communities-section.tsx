@@ -12,6 +12,7 @@ export const FeaturedCommunitiesSection = () => {
     const { data: communities } = useQuery({
         queryKey: GetFeaturedCommunities().key,
         queryFn: GetFeaturedCommunities().service,
+        select: (res) => res.data,
     });
 
     const featuredCommunities = communities && communities.length > 0 ? communities.slice(0, 3) : null;

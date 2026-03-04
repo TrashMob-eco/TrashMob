@@ -23,12 +23,12 @@ const profileSchema = z.object({
         .string()
         .min(3, 'Username must be at least 3 characters.')
         .max(64, 'Username must be at most 64 characters.'),
-    givenName: z.string().max(64, 'First name must be at most 64 characters.').optional().default(''),
-    surname: z.string().max(64, 'Last name must be at most 64 characters.').optional().default(''),
-    city: z.string().optional().default(''),
-    region: z.string().optional().default(''),
-    country: z.string().optional().default(''),
-    postalCode: z.string().optional().default(''),
+    givenName: z.string().max(64, 'First name must be at most 64 characters.'),
+    surname: z.string().max(64, 'Last name must be at most 64 characters.'),
+    city: z.string(),
+    region: z.string(),
+    country: z.string(),
+    postalCode: z.string(),
 });
 
 export const MyProfile = () => {
@@ -116,7 +116,15 @@ export const MyProfile = () => {
 
     const form = useForm<z.infer<typeof profileSchema>>({
         resolver: zodResolver(profileSchema),
-        defaultValues: {},
+        defaultValues: {
+            userName: '',
+            givenName: '',
+            surname: '',
+            city: '',
+            region: '',
+            country: '',
+            postalCode: '',
+        },
     });
 
     useEffect(() => {

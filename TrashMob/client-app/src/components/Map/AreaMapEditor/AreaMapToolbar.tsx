@@ -2,7 +2,7 @@ import { Pentagon, Route, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AddressSearchInput } from './AddressSearchInput';
 
-export type DrawingMode = 'polygon' | 'polyline' | 'edit' | null;
+export type DrawingMode = 'polygon' | 'polyline' | 'edit' | 'delete' | null;
 
 interface AreaMapToolbarProps {
     activeMode: DrawingMode;

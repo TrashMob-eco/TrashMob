@@ -246,7 +246,7 @@ export const LitterReportDetailPage = () => {
                                                                     <ReportPhotoButton
                                                                         photoId={image.id}
                                                                         photoType='LitterImage'
-                                                                        variant='secondary'
+                                                                        variant='outline'
                                                                         size='icon'
                                                                         className='h-8 w-8 bg-white/80 hover:bg-white'
                                                                     />

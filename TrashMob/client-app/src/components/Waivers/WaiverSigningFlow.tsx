@@ -85,7 +85,7 @@ export const WaiverSigningFlow: React.FC<WaiverSigningFlowProps> = ({ waivers, o
         return (
             <WaiverSigningDialog
                 waiver={waivers[0]}
-                open={open && selectedWaiver === null ? signedWaiverIds.size === 0 : null}
+                open={open && selectedWaiver === null ? signedWaiverIds.size === 0 : false}
                 onClose={handleSigningCancelled}
                 onSigned={handleWaiverSigned}
             />

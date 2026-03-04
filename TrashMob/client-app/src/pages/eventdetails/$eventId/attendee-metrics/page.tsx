@@ -167,7 +167,8 @@ export const AttendeeMetricsReview = () => {
     // Reject mutation
     const { mutate: rejectMetrics, isPending: isRejecting } = useMutation({
         mutationKey: RejectMetrics().key,
-        mutationFn: RejectMetrics().service,
+        mutationFn: (args: { params: { eventId: string; metricsId: string }; body: { rejectionReason: string } }) =>
+            RejectMetrics().service(args.params, args.body),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: GetAllMetrics({ eventId }).key });
             queryClient.invalidateQueries({ queryKey: GetPendingMetrics({ eventId }).key });
@@ -192,7 +193,16 @@ export const AttendeeMetricsReview = () => {
     // Adjust mutation
     const { mutate: adjustMetrics, isPending: isAdjusting } = useMutation({
         mutationKey: AdjustMetrics().key,
-        mutationFn: AdjustMetrics().service,
+        mutationFn: (args: {
+            params: { eventId: string; metricsId: string };
+            body: {
+                adjustedBagsCollected?: number;
+                adjustedPickedWeight?: number;
+                adjustedPickedWeightUnitId?: number;
+                adjustedDurationMinutes?: number;
+                adjustmentReason: string;
+            };
+        }) => AdjustMetrics().service(args.params, args.body),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: GetAllMetrics({ eventId }).key });
             queryClient.invalidateQueries({ queryKey: GetPendingMetrics({ eventId }).key });
@@ -253,10 +263,10 @@ export const AttendeeMetricsReview = () => {
 
     const handleRejectConfirm = useCallback(() => {
         if (!selectedMetrics) return;
-        rejectMetrics(
-            { eventId, metricsId: selectedMetrics.id },
-            { rejectionReason: rejectionReason || 'No reason provided' },
-        );
+        rejectMetrics({
+            params: { eventId, metricsId: selectedMetrics.id },
+            body: { rejectionReason: rejectionReason || 'No reason provided' },
+        });
     }, [eventId, selectedMetrics, rejectionReason, rejectMetrics]);
 
     const handleAdjustClick = useCallback((metrics: EventAttendeeMetricsData) => {
@@ -273,16 +283,16 @@ export const AttendeeMetricsReview = () => {
 
     const handleAdjustConfirm = useCallback(() => {
         if (!selectedMetrics) return;
-        adjustMetrics(
-            { eventId, metricsId: selectedMetrics.id },
-            {
+        adjustMetrics({
+            params: { eventId, metricsId: selectedMetrics.id },
+            body: {
                 adjustedBagsCollected: adjustedValues.bagsCollected,
                 adjustedPickedWeight: adjustedValues.pickedWeight,
                 adjustedPickedWeightUnitId: adjustedValues.pickedWeightUnitId,
                 adjustedDurationMinutes: adjustedValues.durationMinutes,
                 adjustmentReason: adjustmentReason || 'Values adjusted by lead',
             },
-        );
+        });
     }, [eventId, selectedMetrics, adjustedValues, adjustmentReason, adjustMetrics]);
 
     const handleApproveAll = useCallback(() => {

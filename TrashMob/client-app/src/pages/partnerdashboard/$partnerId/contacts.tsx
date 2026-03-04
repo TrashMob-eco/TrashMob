@@ -15,6 +15,8 @@ import {
     GetPartnerLocationContactsByLocationId,
 } from '@/services/contact';
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
+import PartnerLocationContactData from '@/components/Models/PartnerLocationContactData';
 import { Ellipsis, Pencil, SquareX, Plus } from 'lucide-react';
 import { Link, Outlet, useMatch, useNavigate, useParams } from 'react-router';
 import { SidebarLayout } from '../../layouts/_layout.sidebar';
@@ -70,7 +72,8 @@ export const PartnerContacts = () => {
             return {
                 queryKey: GetPartnerLocationContactsByLocationId({ locationId: location.id }).key,
                 queryFn: GetPartnerLocationContactsByLocationId({ locationId: location.id }).service,
-                select: (res) => (res.data || []).map((item) => ({ ...item, badgeColor })),
+                select: (res: AxiosResponse<PartnerLocationContactData[]>) =>
+                    (res.data || []).map((item) => ({ ...item, badgeColor })),
             };
         }),
     });
@@ -247,7 +250,7 @@ export const PartnerContacts = () => {
                                                                     row.id,
                                                                     row.name,
                                                                     row.partnerLocationId,
-                                                                    location?.name,
+                                                                    location?.name || '',
                                                                 )
                                                             }
                                                         >

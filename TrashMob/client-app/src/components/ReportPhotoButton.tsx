@@ -19,7 +19,7 @@ import { FlagPhoto, PhotoType } from '@/services/photo-moderation';
 interface ReportPhotoButtonProps {
     photoId: string;
     photoType: PhotoType;
-    variant?: 'default' | 'ghost' | 'outline' | 'icon';
+    variant?: 'default' | 'ghost' | 'outline' | 'secondary';
     size?: 'default' | 'sm' | 'lg' | 'icon';
     className?: string;
 }

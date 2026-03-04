@@ -42,16 +42,16 @@ interface CreatePickupLocationFields {
 }
 
 const formSchema = z.object({
-    latitude: z.number().optional(),
-    longitude: z.number().optional(),
+    latitude: z.number(),
+    longitude: z.number(),
     name: z.string(),
     notes: z.string(),
 
-    streetAddress: z.string().optional(),
-    city: z.string().optional(),
-    country: z.string().optional(),
-    region: z.string().optional(),
-    postalCode: z.string().optional(),
+    streetAddress: z.string(),
+    city: z.string(),
+    country: z.string(),
+    region: z.string(),
+    postalCode: z.string(),
 });
 
 interface PickupLocationCreateFormProps {}
@@ -87,7 +87,17 @@ export const PickupLocationCreateForm = (props: PickupLocationCreateFormProps) =
 
     const form = useForm<CreatePickupLocationFields>({
         resolver: zodResolver(formSchema),
-        defaultValues: {},
+        defaultValues: {
+            latitude: 0,
+            longitude: 0,
+            name: '',
+            notes: '',
+            streetAddress: '',
+            city: '',
+            region: '',
+            postalCode: '',
+            country: '',
+        },
     });
 
     useEffect(() => {

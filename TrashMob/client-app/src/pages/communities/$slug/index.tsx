@@ -256,8 +256,8 @@ export const CommunityDetailPage = () => {
                         {/* Photo Gallery Section */}
                         <CommunityPhotoGallery
                             slug={slug}
-                            canUpload={isUserLoaded ? !!currentUser.id : null}
-                            canDelete={isUserLoaded ? !!currentUser.id : null}
+                            canUpload={isUserLoaded ? !!currentUser.id : undefined}
+                            canDelete={isUserLoaded ? !!currentUser.id : undefined}
                             onUploadClick={() => setShowPhotoUploader(true)}
                         />
                     </div>

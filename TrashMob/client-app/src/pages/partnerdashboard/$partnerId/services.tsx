@@ -17,6 +17,8 @@ import {
     DeletePartnerLocationServiceByLocationIdAndServiceType,
     GetPartnerLocationsServicesByLocationId,
 } from '@/services/locations';
+import { AxiosResponse } from 'axios';
+import PartnerLocationServiceData from '@/components/Models/PartnerLocationServiceData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGetPartnerServiceTypes } from '@/hooks/useGetPartnerServiceTypes';
 import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
@@ -42,7 +44,7 @@ export const PartnerServices = () => {
         queries: (locations || []).map((location) => ({
             queryKey: GetPartnerLocationsServicesByLocationId({ locationId: location.id }).key,
             queryFn: GetPartnerLocationsServicesByLocationId({ locationId: location.id }).service,
-            select: (res) => res.data,
+            select: (res: AxiosResponse<PartnerLocationServiceData[]>) => res.data,
         })),
     });
 

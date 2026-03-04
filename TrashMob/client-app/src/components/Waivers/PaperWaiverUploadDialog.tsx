@@ -58,6 +58,7 @@ export const PaperWaiverUploadDialog: React.FC<PaperWaiverUploadDialogProps> = (
     const waiversQuery = useQuery({
         queryKey: GetRequiredWaivers().key,
         queryFn: GetRequiredWaivers().service,
+        select: (res) => res.data,
         enabled: open,
     });
 

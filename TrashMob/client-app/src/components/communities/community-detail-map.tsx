@@ -418,7 +418,7 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                                 headerContent={<LitterReportInfoWindowHeader name={showingLitterReport.name} />}
                                 onClose={closeInfoWindow}
                             >
-                                <LitterReportInfoWindowContent litterReport={showingLitterReport} />
+                                <LitterReportInfoWindowContent report={showingLitterReport} />
                             </InfoWindow>
                         ) : null}
                     </GoogleMap>

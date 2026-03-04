@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
-import { useMutation, useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -39,31 +39,35 @@ interface FormInputs {
 }
 
 const formSchema = z.object({
-    partnerLocationId: z.string().optional(),
+    partnerLocationId: z.string(),
     name: z.string({ required_error: 'Name cannot be blank.' }),
     email: z.string().email(),
-    phone: z.string().optional(),
+    phone: z.string(),
     notes: z
         .string({ required_error: 'Notes cannot be empty.' })
         .min(1, 'Notes cannot be empty.')
         .max(1000, 'Notes cannot be more than 1000 characters long'),
+    lastUpdatedDate: z.string(),
 });
 
 const useGetPartnerContactById = (type: PartnerContactType, contactId: string) => {
-    const queryOptions =
-        type === PartnerContactType.LOCATION_SPECIFIC
-            ? ({
-                  queryKey: GetPartnerLocationContactByContactId({ contactId }).key,
-                  queryFn: GetPartnerLocationContactByContactId({ contactId }).service,
-                  select: (res: AxiosResponse<PartnerLocationContactData>) => res.data,
-              } as UseQueryOptions)
-            : ({
-                  queryKey: GetPartnerContactsByContactId({ contactId }).key,
-                  queryFn: GetPartnerContactsByContactId({ contactId }).service,
-                  select: (res: AxiosResponse<PartnerContactData>) => res.data,
-              } as UseQueryOptions);
+    const isLocationSpecific = type === PartnerContactType.LOCATION_SPECIFIC;
 
-    return useQuery(queryOptions);
+    const locationQuery = useQuery({
+        queryKey: GetPartnerLocationContactByContactId({ contactId }).key,
+        queryFn: GetPartnerLocationContactByContactId({ contactId }).service,
+        select: (res) => res.data as PartnerContactData | PartnerLocationContactData,
+        enabled: isLocationSpecific,
+    });
+
+    const orgQuery = useQuery({
+        queryKey: GetPartnerContactsByContactId({ contactId }).key,
+        queryFn: GetPartnerContactsByContactId({ contactId }).service,
+        select: (res) => res.data as PartnerContactData | PartnerLocationContactData,
+        enabled: !isLocationSpecific,
+    });
+
+    return isLocationSpecific ? locationQuery : orgQuery;
 };
 
 interface PartnerContactEditProps {
@@ -130,10 +134,12 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
     const form = useForm<FormInputs>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: currentValues?.name,
-            phone: currentValues?.phone,
-            email: currentValues?.email,
-            partnerLocationId: locationId,
+            partnerLocationId: locationId || '',
+            name: currentValues?.name ?? '',
+            email: currentValues?.email ?? '',
+            phone: currentValues?.phone ?? '',
+            notes: '',
+            lastUpdatedDate: '',
         },
     });
 

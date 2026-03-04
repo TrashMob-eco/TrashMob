@@ -63,7 +63,7 @@ const formSchema = z.object({
             Constants.MAX_PARTNER_NAME_LENGTH,
             `Name must be less than ${Constants.MAX_PARTNER_NAME_LENGTH} characters`,
         ),
-    partnerTypeId: z.string(),
+    partnerTypeId: z.nativeEnum(PartnerType),
     email: z
         .string({ required_error: 'Email cannot be blank.' })
         .email({ message: 'Please enter valid email address.' })
@@ -71,25 +71,23 @@ const formSchema = z.object({
             Constants.MAX_CONTACT_EMAIL_LENGTH,
             `Email must be less than ${Constants.MAX_CONTACT_EMAIL_LENGTH} characters`,
         ),
-    website: z.string().url({ message: 'Please enter valid website.' }).optional(),
-    phone: z.string().regex(Constants.RegexPhoneNumber, { message: 'Please enter a valid phone number.' }).optional(),
+    website: z.string().url({ message: 'Please enter valid website.' }),
+    phone: z.string().regex(Constants.RegexPhoneNumber, { message: 'Please enter a valid phone number.' }),
     notes: z
         .string()
         .max(
             Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH,
             `Notes must be less than ${Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH} characters`,
-        )
-        .optional()
-        .default(''),
+        ),
     location: z.object({
-        lat: z.number().optional(),
-        lng: z.number().optional(),
+        lat: z.number(),
+        lng: z.number(),
     }),
-    streetAddress: z.string().optional(),
-    city: z.string().optional(),
-    country: z.string().optional(),
-    region: z.string().optional(),
-    postalCode: z.string().optional(),
+    streetAddress: z.string(),
+    city: z.string(),
+    country: z.string(),
+    region: z.string(),
+    postalCode: z.string(),
 });
 
 export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => {
@@ -131,6 +129,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
         resolver: zodResolver(formSchema),
         defaultValues: {
             partnerTypeId: defaultPartnerType,
+            notes: '',
         },
     });
 

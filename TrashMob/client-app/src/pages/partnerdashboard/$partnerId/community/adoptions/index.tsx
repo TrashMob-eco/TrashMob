@@ -129,7 +129,10 @@ export const PartnerCommunityAdoptions = () => {
 
     const { mutate: rejectAdoption, isPending: isRejecting } = useMutation({
         mutationKey: RejectAdoption().key,
-        mutationFn: RejectAdoption().service,
+        mutationFn: (args: {
+            params: { partnerId: string; adoptionId: string };
+            body: { rejectionReason: string };
+        }) => RejectAdoption().service(args.params, args.body),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: GetPendingApplications({ partnerId }).key,
@@ -168,10 +171,10 @@ export const PartnerCommunityAdoptions = () => {
 
     const handleRejectConfirm = useCallback(() => {
         if (!partnerId || !selectedAdoptionId) return;
-        rejectAdoption(
-            { partnerId, adoptionId: selectedAdoptionId },
-            { rejectionReason: rejectionReason || 'No reason provided' },
-        );
+        rejectAdoption({
+            params: { partnerId, adoptionId: selectedAdoptionId },
+            body: { rejectionReason: rejectionReason || 'No reason provided' },
+        });
     }, [partnerId, selectedAdoptionId, rejectionReason, rejectAdoption]);
 
     const formatDate = (date: Date | null | undefined) => {

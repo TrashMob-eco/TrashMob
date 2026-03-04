@@ -129,12 +129,14 @@ export const ImageUploader = ({
                 locationSource: 'none' as const,
             }));
 
-            onImagesChange([...images, ...newImages]);
+            let currentImages = [...images, ...newImages];
+            onImagesChange(currentImages);
 
             // Process EXIF for each image
             for (const img of newImages) {
                 const locationData = await extractGpsAndReverseGeocode(img.file, img.id);
-                onImagesChange((prev) => prev.map((i) => (i.id === img.id ? { ...i, ...locationData } : i)));
+                currentImages = currentImages.map((i) => (i.id === img.id ? { ...i, ...locationData } : i));
+                onImagesChange(currentImages);
             }
         },
         [images, maxImages, maxSizeMB, onImagesChange],
