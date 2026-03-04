@@ -378,8 +378,8 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Remove Dependent</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to remove {deletingDependent?.firstName} {deletingDependent?.lastName}?
-                            This will also remove them from any event registrations.
+                            Are you sure you want to remove {deletingDependent?.firstName} {deletingDependent?.lastName}
+                            ? This will also remove them from any event registrations.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

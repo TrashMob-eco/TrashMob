@@ -87,9 +87,7 @@ export const DependentRegistrationDialog: FC<DependentRegistrationDialogProps> =
                         <Baby className='h-5 w-5' />
                         Bring Dependents?
                     </DialogTitle>
-                    <DialogDescription>
-                        Select any dependents you plan to bring to this event.
-                    </DialogDescription>
+                    <DialogDescription>Select any dependents you plan to bring to this event.</DialogDescription>
                 </DialogHeader>
 
                 <div className='space-y-3 py-2'>

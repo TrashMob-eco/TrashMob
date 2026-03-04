@@ -201,9 +201,7 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
                                         </TableCell>
                                     ) : null}
                                     {isCurrentUserLead ? (
-                                        <TableCell>
-                                            {dependentCountMap.get(user.id) || 0}
-                                        </TableCell>
+                                        <TableCell>{dependentCountMap.get(user.id) || 0}</TableCell>
                                     ) : null}
                                     {isCurrentUserLead ? (
                                         <TableCell>

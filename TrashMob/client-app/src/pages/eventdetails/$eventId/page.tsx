@@ -231,7 +231,9 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                             <h2 className='font-semibold text-xl mt-5 mb-4'>
                                 <span>
                                     Attendees ({(eventAttendees || []).length})
-                                    {dependentCount ? ` · ${dependentCount} Dependent${dependentCount !== 1 ? 's' : ''}` : ''}
+                                    {dependentCount
+                                        ? ` · ${dependentCount} Dependent${dependentCount !== 1 ? 's' : ''}`
+                                        : ''}
                                 </span>
                             </h2>
                             <p className='font-semibold m-0 my-4'>
