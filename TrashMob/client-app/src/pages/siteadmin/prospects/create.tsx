@@ -69,7 +69,10 @@ export const SiteAdminProspectCreate = () => {
             navigate('/siteadmin/prospects');
         },
         onError: () => {
-            toast({ variant: 'destructive', title: 'Failed to create prospect. Please check your inputs and try again.' });
+            toast({
+                variant: 'destructive',
+                title: 'Failed to create prospect. Please check your inputs and try again.',
+            });
         },
     });
 

@@ -81,7 +81,10 @@ export const SiteAdminProspectEdit = () => {
             navigate(`/siteadmin/prospects/${prospectId}`);
         },
         onError: () => {
-            toast({ variant: 'destructive', title: 'Failed to update prospect. Please check your inputs and try again.' });
+            toast({
+                variant: 'destructive',
+                title: 'Failed to update prospect. Please check your inputs and try again.',
+            });
         },
     });
 
