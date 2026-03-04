@@ -7,6 +7,7 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
     using TrashMob.Security;
@@ -19,7 +20,9 @@ namespace TrashMob.Controllers
     [Route("api/dependents/{dependentId}/waiver")]
     public class DependentWaiversController(
         IDependentWaiverManager dependentWaiverManager,
-        IDependentManager dependentManager)
+        IDependentManager dependentManager,
+        IWaiverDocumentManager waiverDocumentManager,
+        IUserManager userManager)
         : SecureController
     {
         /// <summary>
@@ -59,6 +62,21 @@ namespace TrashMob.Controllers
             if (!result.IsSuccess)
             {
                 return BadRequest(result.ErrorMessage);
+            }
+
+            // Generate and store PDF
+            try
+            {
+                var user = await userManager.GetAsync(UserId, cancellationToken);
+                var documentUrl = await waiverDocumentManager
+                    .GenerateAndStoreDependentWaiverPdfAsync(result.Data, dependent, user, cancellationToken);
+                result.Data.DocumentUrl = documentUrl;
+                await dependentWaiverManager.UpdateAsync(result.Data, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                // Don't fail waiver acceptance if PDF generation fails
+                Logger?.LogWarning(ex, "PDF generation failed for dependent waiver {WaiverId}", result.Data.Id);
             }
 
             TrackEvent(nameof(SignWaiver));
@@ -115,6 +133,50 @@ namespace TrashMob.Controllers
 
             var waivers = await dependentWaiverManager.GetByDependentIdAsync(dependentId, cancellationToken);
             return Ok(waivers);
+        }
+
+        /// <summary>
+        /// Downloads the PDF for a signed dependent waiver.
+        /// </summary>
+        /// <param name="dependentId">The dependent ID.</param>
+        /// <param name="waiverId">The dependent waiver ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The waiver PDF file.</returns>
+        [HttpGet("{waiverId:guid}/download")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> DownloadWaiverPdf(
+            Guid dependentId, Guid waiverId, CancellationToken cancellationToken)
+        {
+            var dependent = await dependentManager.GetAsync(dependentId, cancellationToken);
+            if (dependent == null || dependent.ParentUserId != UserId)
+            {
+                return Forbid();
+            }
+
+            var waiver = await dependentWaiverManager.GetAsync(waiverId, cancellationToken);
+            if (waiver == null || waiver.DependentId != dependentId)
+            {
+                return NotFound();
+            }
+
+            // If no stored document, generate one on-the-fly
+            if (string.IsNullOrWhiteSpace(waiver.DocumentUrl))
+            {
+                var user = await userManager.GetAsync(UserId, cancellationToken);
+                var pdfBytes = waiverDocumentManager.GenerateDependentWaiverPdf(waiver, dependent, user);
+
+                TrackEvent(nameof(DownloadWaiverPdf));
+
+                return File(pdfBytes, "application/pdf", $"dependent-waiver-{waiver.Id}.pdf");
+            }
+
+            TrackEvent(nameof(DownloadWaiverPdf));
+
+            return Redirect(waiver.DocumentUrl);
         }
 
         /// <summary>

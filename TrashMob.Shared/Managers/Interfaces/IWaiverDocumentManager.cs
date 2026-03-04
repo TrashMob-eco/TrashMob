@@ -40,6 +40,29 @@ namespace TrashMob.Shared.Managers.Interfaces
         Task<Stream> GetWaiverPdfAsync(string documentUrl, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Generates a PDF document for a signed dependent waiver and stores it in blob storage.
+        /// </summary>
+        /// <param name="dependentWaiver">The dependent waiver record.</param>
+        /// <param name="dependent">The dependent (minor) the waiver covers.</param>
+        /// <param name="signer">The adult who signed the waiver.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The URL of the stored PDF document.</returns>
+        Task<string> GenerateAndStoreDependentWaiverPdfAsync(
+            DependentWaiver dependentWaiver,
+            Dependent dependent,
+            User signer,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Generates a PDF document for a signed dependent waiver as a byte array.
+        /// </summary>
+        /// <param name="dependentWaiver">The dependent waiver record.</param>
+        /// <param name="dependent">The dependent (minor) the waiver covers.</param>
+        /// <param name="signer">The adult who signed the waiver.</param>
+        /// <returns>The PDF document as a byte array.</returns>
+        byte[] GenerateDependentWaiverPdf(DependentWaiver dependentWaiver, Dependent dependent, User signer);
+
+        /// <summary>
         /// Stores an uploaded paper waiver document in blob storage.
         /// </summary>
         /// <param name="userWaiver">The user waiver record.</param>

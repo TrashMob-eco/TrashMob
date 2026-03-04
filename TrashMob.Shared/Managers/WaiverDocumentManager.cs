@@ -135,6 +135,174 @@ namespace TrashMob.Shared.Managers
             return blobClient.Uri.ToString();
         }
 
+        /// <inheritdoc />
+        public async Task<string> GenerateAndStoreDependentWaiverPdfAsync(
+            DependentWaiver dependentWaiver,
+            Dependent dependent,
+            User signer,
+            CancellationToken cancellationToken = default)
+        {
+            var pdfBytes = GenerateDependentWaiverPdf(dependentWaiver, dependent, signer);
+
+            var blobContainer = blobServiceClient.GetBlobContainerClient(WaiversContainerName);
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None, cancellationToken: cancellationToken);
+
+            var blobName = $"dependents/{dependentWaiver.DependentId}/{dependentWaiver.Id}.pdf";
+            var blobClient = blobContainer.GetBlobClient(blobName);
+
+            using var stream = new MemoryStream(pdfBytes);
+            await blobClient.UploadAsync(
+                stream,
+                new BlobHttpHeaders { ContentType = "application/pdf" },
+                cancellationToken: cancellationToken);
+
+            logger.LogInformation(
+                "Generated and stored dependent waiver PDF for dependent {DependentId}, waiver {DependentWaiverId}",
+                dependentWaiver.DependentId,
+                dependentWaiver.Id);
+
+            return blobClient.Uri.ToString();
+        }
+
+        /// <inheritdoc />
+        public byte[] GenerateDependentWaiverPdf(DependentWaiver dependentWaiver, Dependent dependent, User signer)
+        {
+            var waiverVersion = dependentWaiver.WaiverVersion;
+            var waiverText = dependentWaiver.WaiverTextSnapshot ?? waiverVersion?.WaiverText ?? string.Empty;
+
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.Letter);
+                    page.Margin(50);
+                    page.DefaultTextStyle(x => x.FontSize(10));
+
+                    page.Header().Element(header => ComposeHeader(header, waiverVersion?.Name ?? "Minor Waiver"));
+                    page.Content().Element(content => ComposeDependentContent(content, waiverText, dependentWaiver, dependent, signer));
+                    page.Footer().Element(ComposeFooter);
+                });
+            });
+
+            return document.GeneratePdf();
+        }
+
+        private static void ComposeDependentContent(
+            IContainer container,
+            string waiverText,
+            DependentWaiver dependentWaiver,
+            Dependent dependent,
+            User signer)
+        {
+            container.PaddingVertical(20).Column(column =>
+            {
+                column.Spacing(10);
+
+                // Dependent information section
+                column.Item().Border(1).BorderColor(Colors.Orange.Lighten2).Background(Colors.Orange.Lighten5).Padding(15).Column(depColumn =>
+                {
+                    depColumn.Item().Text("Dependent Information").Bold().FontSize(12);
+                    depColumn.Item().PaddingTop(10).Row(row =>
+                    {
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Name:").SemiBold();
+                            col.Item().Text($"{dependent.FirstName} {dependent.LastName}");
+                        });
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Date of Birth:").SemiBold();
+                            col.Item().Text($"{dependent.DateOfBirth:MMMM d, yyyy}");
+                        });
+                    });
+                    depColumn.Item().PaddingTop(5).Row(row =>
+                    {
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Relationship:").SemiBold();
+                            col.Item().Text($"{dependent.Relationship}");
+                        });
+                        row.RelativeItem().Column(col =>
+                        {
+                            if (!string.IsNullOrWhiteSpace(dependent.MedicalNotes))
+                            {
+                                col.Item().Text("Medical Notes:").SemiBold();
+                                col.Item().Text($"{dependent.MedicalNotes}");
+                            }
+                        });
+                    });
+                });
+
+                // Waiver text with markdown rendering
+                column.Item().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(15).Column(textColumn =>
+                {
+                    textColumn.Item().Text("Waiver Text").Bold().FontSize(12);
+                    textColumn.Item().PaddingTop(10).Element(e => RenderMarkdown(e, waiverText));
+                });
+
+                // Signature section
+                column.Item().PaddingTop(20).Border(1).BorderColor(Colors.Grey.Lighten2).Padding(15).Column(sigColumn =>
+                {
+                    sigColumn.Item().Text("Electronic Signature (Parent/Guardian)").Bold().FontSize(12);
+                    sigColumn.Item().PaddingTop(10).Row(row =>
+                    {
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Signer Name:").SemiBold();
+                            col.Item().Text($"{signer?.UserName ?? "N/A"}");
+                        });
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Typed Legal Name:").SemiBold();
+                            col.Item().Text($"{dependentWaiver.TypedLegalName}");
+                        });
+                    });
+                });
+
+                // Acceptance details
+                column.Item().PaddingTop(15).Border(1).BorderColor(Colors.Grey.Lighten2).Padding(15).Column(timeColumn =>
+                {
+                    timeColumn.Item().Text("Acceptance Details").Bold().FontSize(12);
+                    timeColumn.Item().PaddingTop(10).Row(row =>
+                    {
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Accepted Date (UTC):").SemiBold();
+                            col.Item().Text($"{dependentWaiver.AcceptedDate:yyyy-MM-dd HH:mm:ss} UTC");
+                        });
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Expiry Date:").SemiBold();
+                            col.Item().Text($"{dependentWaiver.ExpiryDate:yyyy-MM-dd HH:mm:ss} UTC");
+                        });
+                    });
+                    timeColumn.Item().PaddingTop(5).Row(row =>
+                    {
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Document ID:").SemiBold();
+                            col.Item().Text($"{dependentWaiver.Id}");
+                        });
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Dependent ID:").SemiBold();
+                            col.Item().Text($"{dependentWaiver.DependentId}");
+                        });
+                    });
+                });
+
+                // Audit trail
+                column.Item().PaddingTop(15).Border(1).BorderColor(Colors.Grey.Lighten2).Padding(15).Column(auditColumn =>
+                {
+                    auditColumn.Item().Text("Audit Trail").Bold().FontSize(12);
+                    auditColumn.Item().PaddingTop(10).Text($"IP Address: {dependentWaiver.IPAddress ?? "Not recorded"}")
+                        .FontSize(9).FontColor(Colors.Grey.Darken1);
+                    auditColumn.Item().Text($"User Agent: {TruncateUserAgent(dependentWaiver.UserAgent)}")
+                        .FontSize(9).FontColor(Colors.Grey.Darken1);
+                });
+            });
+        }
+
         private static string GetExtensionFromContentType(string contentType)
         {
             return contentType?.ToLowerInvariant() switch

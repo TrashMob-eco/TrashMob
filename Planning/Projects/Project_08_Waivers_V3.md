@@ -259,10 +259,10 @@ The minor waiver must contain language beyond the standard adult waiver:
 6. **Supervision acknowledgment:** "I understand that I am responsible for supervising [minor's name] during this activity" (for parent/guardian) or "I confirm I have been authorized by the parent/legal guardian of [minor's name] to supervise this child" (for authorized supervisors)
 7. **Activity acknowledgment:** "I understand that this activity involves outdoor litter cleanup which may include walking on uneven surfaces, handling litter and debris, exposure to weather conditions, and proximity to traffic"
 
-- ☐ Draft minor waiver text (requires legal review)
-- ☐ Draft "authorized supervisor" variant waiver text
-- ☐ Create WaiverVersion record with minor scope
-- ☐ PDF generation for dependent waivers (extend existing QuestPDF template)
+- ✅ Draft minor waiver text (requires legal review) — `TrashMob.Shared/Engine/WaiverContent/MinorWaiverText.cs`
+- ✅ Draft "authorized supervisor" variant waiver text — included in `MinorWaiverText.cs`
+- ☐ Create WaiverVersion record with minor scope (pending legal approval of waiver text)
+- ✅ PDF generation for dependent waivers (extend existing QuestPDF template) — `WaiverDocumentManager` + download endpoint
 
 #### Phase 5c - Web UX
 
