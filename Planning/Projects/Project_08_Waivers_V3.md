@@ -315,10 +315,10 @@ The minor waiver must contain language beyond the standard adult waiver:
 
 #### Phase 5e - Event Headcount & Safety
 
-- ☐ Include dependent count in event attendee totals (for capacity planning)
-- ☐ Event lead can see total headcount: registered adults + dependents
-- ☐ Dependent age display for event leads (safety planning — knowing how many young children)
-- ☐ Admin compliance dashboard extended: dependent waiver counts, guardian relationship breakdown
+- ✅ Include dependent count in event attendee totals — web shows "Total Headcount: N" with breakdown, mobile shows "(X adults, Y dependents)"
+- ✅ Event lead can see total headcount: registered adults + dependents — combined display on event detail page
+- ✅ Dependent age display for event leads — Popover on "Deps" column shows name, age, relationship per dependent
+- ✅ Admin compliance dashboard extended — Dependent Waivers card with total/valid/expired counts + guardian relationship breakdown badges
 
 **Note:** Phase 5 no longer requires Project 23 (Privo.com) for the common case of adults bringing children. Project 23 remains relevant for the separate case of 13-17 year-olds who want their own user accounts with age verification and parental consent.
 

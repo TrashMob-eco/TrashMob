@@ -15,10 +15,11 @@ import { useLogin } from '@/hooks/useLogin';
 import { GetEventLeads, PromoteToLead, DemoteFromLead, GetEventAttendees } from '@/services/events';
 import { GetEventAttendeeWaiverStatus } from '@/services/user-waivers';
 import { GetEventDependents } from '@/services/dependents';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { PaperWaiverUploadDialog } from '@/components/Waivers';
 import UserData from '../Models/UserData';
 import EventData from '../Models/EventData';
-import { ChevronUp, ChevronDown, MoreHorizontal, FileText, Upload, CircleUserRound } from 'lucide-react';
+import { ChevronUp, ChevronDown, MoreHorizontal, FileText, Upload, CircleUserRound, Info } from 'lucide-react';
 
 interface EventAttendeeTableProps {
     users: UserData[];
@@ -66,6 +67,23 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
     const dependentCountMap = new Map<string, number>();
     (eventDependents || []).forEach((ed) => {
         dependentCountMap.set(ed.parentUserId, (dependentCountMap.get(ed.parentUserId) || 0) + 1);
+    });
+
+    // Create a map of parentUserId -> dependent details for popover display
+    const dependentDetailsMap = new Map<string, Array<{ firstName: string; age: number; relationship: string }>>();
+    (eventDependents || []).forEach((ed) => {
+        if (ed.dependent) {
+            const age = Math.floor(
+                (Date.now() - new Date(ed.dependent.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000),
+            );
+            const details = dependentDetailsMap.get(ed.parentUserId) || [];
+            details.push({
+                firstName: `${ed.dependent.firstName} ${ed.dependent.lastName}`,
+                age,
+                relationship: ed.dependent.relationship,
+            });
+            dependentDetailsMap.set(ed.parentUserId, details);
+        }
     });
 
     // Create a map of userId -> waiver status for quick lookup
@@ -201,7 +219,33 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
                                         </TableCell>
                                     ) : null}
                                     {isCurrentUserLead ? (
-                                        <TableCell>{dependentCountMap.get(user.id) || 0}</TableCell>
+                                        <TableCell>
+                                            {(dependentCountMap.get(user.id) || 0) > 0 ? (
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button variant='ghost' size='sm' className='h-auto py-1 px-2'>
+                                                            {dependentCountMap.get(user.id)}
+                                                            <Info className='ml-1 h-3 w-3' />
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className='w-64'>
+                                                        <div className='space-y-2'>
+                                                            <p className='text-sm font-medium'>Dependents</p>
+                                                            {(dependentDetailsMap.get(user.id) || []).map((dep, i) => (
+                                                                <div key={i} className='text-sm flex justify-between'>
+                                                                    <span>{dep.firstName}</span>
+                                                                    <span className='text-muted-foreground'>
+                                                                        Age {dep.age} &middot; {dep.relationship}
+                                                                    </span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </PopoverContent>
+                                                </Popover>
+                                            ) : (
+                                                0
+                                            )}
+                                        </TableCell>
                                     ) : null}
                                     {isCurrentUserLead ? (
                                         <TableCell>

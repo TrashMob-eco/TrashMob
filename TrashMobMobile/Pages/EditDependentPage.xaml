@@ -39,8 +39,7 @@
                        TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
                 <DatePicker Date="{Binding DateOfBirth}"
                             MinimumDate="01/01/2000"
-                            MaximumDate="{x:Static sys:DateTime.Today}"
-                            xmlns:sys="clr-namespace:System;assembly=netstandard" />
+                            MaximumDate="{Binding Today}" />
             </VerticalStackLayout>
 
             <!-- Relationship -->

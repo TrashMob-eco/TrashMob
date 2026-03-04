@@ -93,8 +93,7 @@ namespace TrashMobMobile.Services
         {
             // This endpoint is on the users controller: api/users/{userId}/impact
             // Need to use a different base path
-            var httpClient = httpClientFactory.CreateClient("ServerAPI");
-            httpClient.BaseAddress = new Uri(TrashMobApiAddress + "users/");
+            using var httpClient = CreateHttpClient("users/");
 
             var requestUri = userId + "/impact";
 

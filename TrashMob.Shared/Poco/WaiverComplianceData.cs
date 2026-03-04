@@ -57,6 +57,42 @@ namespace TrashMob.Shared.Poco
         /// Gets or sets the timestamp when this summary was generated.
         /// </summary>
         public DateTimeOffset GeneratedAt { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total number of signed dependent waivers.
+        /// </summary>
+        public int TotalDependentWaivers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of currently valid dependent waivers.
+        /// </summary>
+        public int ValidDependentWaivers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of expired dependent waivers.
+        /// </summary>
+        public int ExpiredDependentWaivers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the breakdown of guardian relationships for dependent waivers.
+        /// </summary>
+        public List<RelationshipBreakdown> GuardianRelationshipBreakdown { get; set; } = [];
+    }
+
+    /// <summary>
+    /// Breakdown of a guardian relationship type with count.
+    /// </summary>
+    public class RelationshipBreakdown
+    {
+        /// <summary>
+        /// Gets or sets the relationship type (e.g., "Parent", "Legal Guardian").
+        /// </summary>
+        public string Relationship { get; set; }
+
+        /// <summary>
+        /// Gets or sets the count of dependents with this relationship.
+        /// </summary>
+        public int Count { get; set; }
     }
 
     /// <summary>

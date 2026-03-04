@@ -47,9 +47,9 @@ public partial class LogImpactPopup : ContentView
 
     private async void OnSubmitClicked(object? sender, EventArgs e)
     {
-        int.TryParse(BagsEntry.Text, out var bags);
-        decimal.TryParse(WeightEntry.Text, out var weight);
-        int.TryParse(DurationEntry.Text, out var duration);
+        _ = int.TryParse(BagsEntry.Text, out var bags);
+        _ = decimal.TryParse(WeightEntry.Text, out var weight);
+        _ = int.TryParse(DurationEntry.Text, out var duration);
 
         var weightUnitId = WeightUnitPicker.SelectedIndex == 1 ? KilogramsUnitId : PoundsUnitId;
 

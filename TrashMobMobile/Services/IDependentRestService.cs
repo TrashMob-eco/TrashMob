@@ -16,7 +16,7 @@ namespace TrashMobMobile.Services
         // Dependent Waivers (api/dependents/{dependentId}/waiver)
         Task<DependentWaiver> SignWaiverAsync(Guid dependentId, Guid waiverVersionId, string typedLegalName, CancellationToken cancellationToken = default);
 
-        Task<DependentWaiver> GetCurrentWaiverAsync(Guid dependentId, CancellationToken cancellationToken = default);
+        Task<DependentWaiver?> GetCurrentWaiverAsync(Guid dependentId, CancellationToken cancellationToken = default);
 
         // Event Dependents (api/events/{eventId}/dependents)
         Task<List<EventDependent>> RegisterDependentsForEventAsync(Guid eventId, List<Guid> dependentIds, CancellationToken cancellationToken = default);

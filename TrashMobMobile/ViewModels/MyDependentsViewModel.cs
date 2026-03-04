@@ -55,7 +55,7 @@ namespace TrashMobMobile.ViewModels
         {
             if (dependent == null) return;
 
-            var confirmed = await Shell.Current.DisplayAlert(
+            var confirmed = await Shell.Current.DisplayAlertAsync(
                 "Remove Dependent",
                 $"Are you sure you want to remove {dependent.FirstName} {dependent.LastName}?",
                 "Remove", "Cancel");

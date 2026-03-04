@@ -3,6 +3,7 @@ namespace TrashMob.Controllers
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.IO;
     using System.Text;
     using System.Threading;
@@ -21,7 +22,9 @@ namespace TrashMob.Controllers
     /// All endpoints require site admin privileges.
     /// </summary>
     [Route("api/admin/waivers/compliance")]
-    public class WaiverComplianceController(IUserWaiverManager userWaiverManager)
+    public class WaiverComplianceController(
+        IUserWaiverManager userWaiverManager,
+        IDependentWaiverManager dependentWaiverManager)
         : SecureController
     {
 
@@ -37,6 +40,16 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetComplianceSummary(CancellationToken cancellationToken = default)
         {
             var result = await userWaiverManager.GetComplianceSummaryAsync(cancellationToken);
+
+            var depStats = await dependentWaiverManager.GetComplianceStatsAsync(cancellationToken);
+            result.TotalDependentWaivers = depStats.Total;
+            result.ValidDependentWaivers = depStats.Valid;
+            result.ExpiredDependentWaivers = depStats.Expired;
+            result.GuardianRelationshipBreakdown = depStats.RelationshipBreakdown
+                .Select(kvp => new RelationshipBreakdown { Relationship = kvp.Key, Count = kvp.Value })
+                .OrderByDescending(r => r.Count)
+                .ToList();
+
             TrackEvent(nameof(GetComplianceSummary));
 
             return Ok(result);
