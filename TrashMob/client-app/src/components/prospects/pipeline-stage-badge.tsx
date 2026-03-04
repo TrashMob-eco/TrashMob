@@ -10,7 +10,7 @@ export const PIPELINE_STAGES = [
     { value: 6, label: 'Declined' },
 ] as const;
 
-export const PROSPECT_TYPES = ['Municipality', 'Nonprofit', 'HOA', 'CivicOrg', 'Other'] as const;
+export const PROSPECT_TYPES = ['Municipality', 'Nonprofit', 'HOA', 'CivicOrg', 'Vendor', 'Other'] as const;
 
 export const ACTIVITY_TYPES = ['EmailSent', 'EmailOpened', 'EmailClicked', 'Reply', 'StatusChange', 'Note'] as const;
 

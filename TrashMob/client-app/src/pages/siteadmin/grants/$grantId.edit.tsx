@@ -58,6 +58,9 @@ export const SiteAdminGrantEdit = () => {
             queryClient.invalidateQueries({ queryKey: ['/grants'], refetchType: 'all' });
             navigate(`/siteadmin/grants/${grantId}`);
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to update grant. Please try again.' });
+        },
     });
 
     const form = useForm<FormInputs>({

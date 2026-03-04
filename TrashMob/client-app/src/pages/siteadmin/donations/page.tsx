@@ -33,6 +33,9 @@ export const SiteAdminDonations = () => {
             queryClient.invalidateQueries({ queryKey: ['/donations'], refetchType: 'all' });
             toast({ variant: 'default', title: 'Donation deleted' });
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to delete donation. Please try again.' });
+        },
     });
 
     const handleDelete = (id: string) => {

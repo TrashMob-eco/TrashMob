@@ -52,6 +52,9 @@ export const SiteAdminGrantDetail = () => {
             setTaskDialogOpen(false);
             toast({ variant: 'primary', title: 'Task added' });
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to add task. Please try again.' });
+        },
     });
 
     const updateTask = useMutation({
@@ -63,6 +66,9 @@ export const SiteAdminGrantDetail = () => {
             setEditingTask(null);
             toast({ variant: 'default', title: 'Task updated' });
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to update task. Please try again.' });
+        },
     });
 
     const deleteTask = useMutation({
@@ -71,6 +77,9 @@ export const SiteAdminGrantDetail = () => {
         onSuccess: () => {
             invalidateTasks();
             toast({ variant: 'default', title: 'Task deleted' });
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to delete task. Please try again.' });
         },
     });
 

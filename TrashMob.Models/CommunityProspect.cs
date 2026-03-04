@@ -31,6 +31,8 @@ namespace TrashMob.Models
 
         public string ContactTitle { get; set; }
 
+        public string ContactPhone { get; set; }
+
         public int PipelineStage { get; set; }
 
         public int FitScore { get; set; }

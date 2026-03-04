@@ -50,6 +50,9 @@ export const SiteAdminPledgeEdit = () => {
             queryClient.invalidateQueries({ queryKey: ['/pledges'], refetchType: 'all' });
             navigate('/siteadmin/pledges');
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to update pledge. Please try again.' });
+        },
     });
 
     const form = useForm<FormInputs>({

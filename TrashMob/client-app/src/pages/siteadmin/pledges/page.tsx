@@ -33,6 +33,9 @@ export const SiteAdminPledges = () => {
             queryClient.invalidateQueries({ queryKey: ['/pledges'], refetchType: 'all' });
             toast({ variant: 'default', title: 'Pledge deleted' });
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to delete pledge. Please try again.' });
+        },
     });
 
     const handleDelete = (id: string) => {

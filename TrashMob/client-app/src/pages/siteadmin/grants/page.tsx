@@ -27,6 +27,9 @@ export const SiteAdminGrants = () => {
             queryClient.invalidateQueries({ queryKey: ['/grants'], refetchType: 'all' });
             toast({ variant: 'default', title: 'Grant deleted' });
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to delete grant. Please try again.' });
+        },
     });
 
     const handleDelete = (id: string) => {

@@ -3364,6 +3364,9 @@
                 entity.Property(e => e.ContactTitle)
                     .HasMaxLength(128);
 
+                entity.Property(e => e.ContactPhone)
+                    .HasMaxLength(32);
+
                 entity.Property(e => e.Notes)
                     .HasMaxLength(2000);
 

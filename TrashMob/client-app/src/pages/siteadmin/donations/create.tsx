@@ -51,6 +51,9 @@ export const SiteAdminDonationCreate = () => {
             queryClient.invalidateQueries({ queryKey: ['/donations'], refetchType: 'all' });
             navigate('/siteadmin/donations');
         },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to record donation. Please try again.' });
+        },
     });
 
     const form = useForm<FormInputs>({

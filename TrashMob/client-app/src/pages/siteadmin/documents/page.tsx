@@ -1,10 +1,13 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
+import { useToast } from '@/hooks/use-toast';
 import { DownloadPartnerDocument, GetAllPartnerDocuments } from '@/services/documents';
 import { getColumns } from './columns';
 
 export const SiteAdminDocuments = () => {
+    const { toast } = useToast();
+
     const { data: documents } = useQuery({
         queryKey: GetAllPartnerDocuments().key,
         queryFn: GetAllPartnerDocuments().service,
@@ -20,6 +23,9 @@ export const SiteAdminDocuments = () => {
             if (data.downloadUrl) {
                 window.open(data.downloadUrl, '_blank');
             }
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to download document. Please try again.' });
         },
     });
 

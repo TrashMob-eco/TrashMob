@@ -30,6 +30,7 @@ interface FormInputs {
     contactName: string;
     contactEmail: string;
     contactTitle: string;
+    contactPhone: string;
     website: string;
     population: string;
     fitScore: string;
@@ -48,6 +49,7 @@ const formSchema = z.object({
     contactName: z.string(),
     contactEmail: z.string().email('Invalid email').or(z.literal('')),
     contactTitle: z.string(),
+    contactPhone: z.string(),
     website: z.string(),
     population: z.string(),
     fitScore: z.string(),
@@ -78,6 +80,12 @@ export const SiteAdminProspectEdit = () => {
             queryClient.invalidateQueries({ queryKey: ['/communityprospects'], refetchType: 'all' });
             navigate(`/siteadmin/prospects/${prospectId}`);
         },
+        onError: () => {
+            toast({
+                variant: 'destructive',
+                title: 'Failed to update prospect. Please check your inputs and try again.',
+            });
+        },
     });
 
     const form = useForm<FormInputs>({
@@ -91,6 +99,7 @@ export const SiteAdminProspectEdit = () => {
             contactName: '',
             contactEmail: '',
             contactTitle: '',
+            contactPhone: '',
             website: '',
             population: '',
             fitScore: '0',
@@ -112,6 +121,7 @@ export const SiteAdminProspectEdit = () => {
                 contactName: prospect.contactName || '',
                 contactEmail: prospect.contactEmail || '',
                 contactTitle: prospect.contactTitle || '',
+                contactPhone: prospect.contactPhone || '',
                 website: prospect.website || '',
                 population: prospect.population != null ? String(prospect.population) : '',
                 fitScore: String(prospect.fitScore || 0),
@@ -135,6 +145,7 @@ export const SiteAdminProspectEdit = () => {
             body.contactName = formValues.contactName;
             body.contactEmail = formValues.contactEmail;
             body.contactTitle = formValues.contactTitle;
+            body.contactPhone = formValues.contactPhone;
             body.website = formValues.website;
             body.population = formValues.population ? parseInt(formValues.population, 10) : null;
             body.fitScore = parseInt(formValues.fitScore, 10) || 0;
@@ -145,7 +156,7 @@ export const SiteAdminProspectEdit = () => {
             body.lastContactedDate = prospect?.lastContactedDate ?? null;
             body.nextFollowUpDate = prospect?.nextFollowUpDate ?? null;
             body.convertedPartnerId = prospect?.convertedPartnerId ?? null;
-            body.createdDate = prospect?.createdDate ?? '';
+            body.createdDate = prospect?.createdDate ?? null;
             updateProspect.mutate(body);
         },
         [prospectId, prospect, updateProspect],
@@ -299,6 +310,19 @@ export const SiteAdminProspectEdit = () => {
                                     <FormLabel>Contact Title</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name='contactPhone'
+                            render={({ field }) => (
+                                <FormItem className='col-span-12 md:col-span-4'>
+                                    <FormLabel>Contact Phone</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} type='tel' />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

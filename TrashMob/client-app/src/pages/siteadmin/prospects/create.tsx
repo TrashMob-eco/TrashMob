@@ -26,6 +26,7 @@ interface FormInputs {
     contactName: string;
     contactEmail: string;
     contactTitle: string;
+    contactPhone: string;
     website: string;
     population: string;
     fitScore: string;
@@ -44,6 +45,7 @@ const formSchema = z.object({
     contactName: z.string(),
     contactEmail: z.string().email('Invalid email').or(z.literal('')),
     contactTitle: z.string(),
+    contactPhone: z.string(),
     website: z.string(),
     population: z.string(),
     fitScore: z.string(),
@@ -66,6 +68,12 @@ export const SiteAdminProspectCreate = () => {
             queryClient.invalidateQueries({ queryKey: ['/communityprospects'], refetchType: 'all' });
             navigate('/siteadmin/prospects');
         },
+        onError: () => {
+            toast({
+                variant: 'destructive',
+                title: 'Failed to create prospect. Please check your inputs and try again.',
+            });
+        },
     });
 
     const form = useForm<FormInputs>({
@@ -79,6 +87,7 @@ export const SiteAdminProspectCreate = () => {
             contactName: '',
             contactEmail: '',
             contactTitle: '',
+            contactPhone: '',
             website: '',
             population: '',
             fitScore: '0',
@@ -100,6 +109,7 @@ export const SiteAdminProspectCreate = () => {
             body.contactName = formValues.contactName;
             body.contactEmail = formValues.contactEmail;
             body.contactTitle = formValues.contactTitle;
+            body.contactPhone = formValues.contactPhone;
             body.website = formValues.website;
             body.population = formValues.population ? parseInt(formValues.population, 10) : null;
             body.fitScore = parseInt(formValues.fitScore, 10) || 0;
@@ -256,6 +266,19 @@ export const SiteAdminProspectCreate = () => {
                                     <FormLabel>Contact Title</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name='contactPhone'
+                            render={({ field }) => (
+                                <FormItem className='col-span-12 md:col-span-4'>
+                                    <FormLabel>Contact Phone</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} type='tel' />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
