@@ -129,10 +129,8 @@ export const PartnerCommunityAdoptions = () => {
 
     const { mutate: rejectAdoption, isPending: isRejecting } = useMutation({
         mutationKey: RejectAdoption().key,
-        mutationFn: (args: {
-            params: { partnerId: string; adoptionId: string };
-            body: { rejectionReason: string };
-        }) => RejectAdoption().service(args.params, args.body),
+        mutationFn: (args: { params: { partnerId: string; adoptionId: string }; body: { rejectionReason: string } }) =>
+            RejectAdoption().service(args.params, args.body),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: GetPendingApplications({ partnerId }).key,
