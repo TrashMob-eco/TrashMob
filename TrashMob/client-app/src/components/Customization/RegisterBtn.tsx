@@ -8,8 +8,12 @@ import { WaiverSigningFlow } from '@/components/Waivers';
 import { AgeGateDialog } from '@/components/AgeGate/AgeGateDialog';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 import { GetRequiredWaiversForEvent } from '../../services/user-waivers';
 import { AddEventAttendee, GetAllEventsBeingAttendedByUser } from '../../services/events';
+import { GetMyDependents } from '@/services/dependents';
+import DependentData from '@/components/Models/DependentData';
+import { DependentRegistrationDialog } from '@/components/events/DependentRegistrationDialog';
 import { cn } from '@/lib/utils';
 import { useFeatureMetrics } from '@/hooks/useFeatureMetrics';
 
@@ -33,8 +37,18 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
     const [registered, setRegistered] = useState<boolean>(false);
     const [showWaiverFlow, setShowWaiverFlow] = useState<boolean>(false);
     const [showAgeGate, setShowAgeGate] = useState<boolean>(false);
+    const [showDependentDialog, setShowDependentDialog] = useState<boolean>(false);
     const queryClient = useQueryClient();
     const { trackAttendance } = useFeatureMetrics();
+
+    // Fetch user's dependents to offer registration after attending
+    const dependentsQuery = GetMyDependents({ userId });
+    const { data: myDependents } = useQuery<AxiosResponse<DependentData[]>, unknown, DependentData[]>({
+        queryKey: dependentsQuery.key,
+        queryFn: dependentsQuery.service,
+        select: (res) => res.data,
+        enabled: isUserLoaded && !!userId,
+    });
 
     // Fetch required waivers for this event
     const {
@@ -58,8 +72,13 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
             // Invalidate user's list of attended events, triggering refetch
             queryClient.invalidateQueries(GetAllEventsBeingAttendedByUser({ userId }).key);
 
-            // re-direct user to event details page once they are registered
-            navigate(`/eventdetails/${eventId}`);
+            // If user has dependents, offer to register them too
+            if (myDependents && myDependents.length > 0) {
+                setShowDependentDialog(true);
+            } else {
+                // No dependents, go straight to event details
+                navigate(`/eventdetails/${eventId}`);
+            }
         },
         onError: (error: { response?: { status?: number; data?: { requiredWaiverCount?: number } } }) => {
             // Handle waiver requirement error (400 with waiver info)
@@ -153,6 +172,18 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
             ) : null}
 
             <AgeGateDialog open={showAgeGate} onOpenChange={setShowAgeGate} onConfirm={handleAgeGateConfirm} />
+
+            <DependentRegistrationDialog
+                eventId={eventId}
+                userId={userId}
+                open={showDependentDialog}
+                onOpenChange={(open) => {
+                    setShowDependentDialog(open);
+                    if (!open) {
+                        navigate(`/eventdetails/${eventId}`);
+                    }
+                }}
+            />
         </>
     );
 };

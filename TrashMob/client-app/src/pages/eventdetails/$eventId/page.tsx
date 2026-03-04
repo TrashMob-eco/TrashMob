@@ -9,6 +9,7 @@ import { RegisterBtn } from '@/components/Customization/RegisterBtn';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { getEventShareableContent, getEventShareMessage } from '@/lib/sharing-messages';
 import { GetAllEventsBeingAttendedByUser, GetEventAttendees, GetEventLeads } from '@/services/events';
+import { GetEventDependentCount } from '@/services/dependents';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { useGetEventType } from '@/hooks/useGetEventType';
 import { Button } from '@/components/ui/button';
@@ -71,6 +72,12 @@ export const EventDetails: FC<EventDetailsProps> = () => {
     const { data: eventAttendees } = useGetEventAttendees(eventId);
     const { data: myAttendanceList } = useGetEventsAttendedByUser(currentUser.id);
     const { data: eventLeads } = useGetEventLeads(eventId);
+    const { data: dependentCount } = useQuery({
+        queryKey: GetEventDependentCount({ eventId }).key,
+        queryFn: GetEventDependentCount({ eventId }).service,
+        select: (res) => res.data,
+        enabled: !!eventId,
+    });
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
     const [showPhotoUploader, setShowPhotoUploader] = useState<boolean>(false);
 
@@ -222,7 +229,12 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                         <div className='container mx-auto mb-16'>
                             <hr />
                             <h2 className='font-semibold text-xl mt-5 mb-4'>
-                                <span>Attendees ({(eventAttendees || []).length})</span>
+                                <span>
+                                    Attendees ({(eventAttendees || []).length})
+                                    {dependentCount
+                                        ? ` · ${dependentCount} Dependent${dependentCount !== 1 ? 's' : ''}`
+                                        : ''}
+                                </span>
                             </h2>
                             <p className='font-semibold m-0 my-4'>
                                 Max Number of Participants:

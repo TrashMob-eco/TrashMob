@@ -5,6 +5,7 @@ import { Link, useNavigate, useLocation } from 'react-router';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { useQuery } from '@tanstack/react-query';
 import {
+    Baby,
     Plus,
     Users,
     FileText,
@@ -81,6 +82,7 @@ import { NearbyLitterReportsWidget } from '@/pages/MyDashboard/NearbyLitterRepor
 import { MyTeamsTable } from '@/pages/MyDashboard/MyTeamsTable';
 import { MyRoutesCard } from '@/pages/MyDashboard/MyRoutesCard';
 import { MyWaiversCard } from '@/pages/MyDashboard/MyWaiversCard';
+import { MyDependentsCard } from '@/pages/MyDashboard/MyDependentsCard';
 import { MyImpactCard } from '@/pages/MyDashboard/MyImpactCard';
 import { MyCompaniesTable } from '@/pages/MyDashboard/MyCompaniesTable';
 import { MySponsorsTable } from '@/pages/MyDashboard/MySponsorsTable';
@@ -141,6 +143,7 @@ const navGroups: DashboardNavGroup[] = [
         title: 'Account',
         items: [
             { id: 'waivers', label: 'Waivers', icon: FileText },
+            { id: 'dependents', label: 'Dependents', icon: Baby },
             { id: 'newsletters', label: 'Newsletters', icon: Mail },
             { id: 'impact', label: 'Impact', icon: Trophy },
             { id: 'invite-friends', label: 'Invite Friends', icon: Users },
@@ -440,6 +443,12 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         {isSectionVisible('waivers') ? (
                             <section id='waivers'>
                                 <MyWaiversCard userId={userId} />
+                            </section>
+                        ) : null}
+
+                        {isSectionVisible('dependents') ? (
+                            <section id='dependents'>
+                                <MyDependentsCard userId={userId} />
                             </section>
                         ) : null}
 

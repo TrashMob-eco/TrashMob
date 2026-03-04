@@ -289,11 +289,12 @@ The minor waiver must contain language beyond the standard adult waiver:
 - Expandable row to see dependent names, ages, waiver status
 - Export includes dependent data
 
-- ☐ Create "My Dependents" page component
-- ☐ Add dependents section to user dashboard
-- ☐ Modify event registration flow with optional dependent selection
+- ✅ Create "My Dependents" dashboard card — `MyDependentsCard.tsx` with full CRUD (add/edit/delete dialogs)
+- ✅ Add dependents section to user dashboard — nav item + section in `MyDashboard/index.tsx`
+- ✅ Modify event registration flow with optional dependent selection — `DependentRegistrationDialog.tsx` + `RegisterBtn.tsx` integration
 - ☐ Create minor waiver signing dialog (extend WaiverSigningDialog)
-- ☐ Extend event lead attendee view with dependent information
+- ✅ Extend event lead attendee view with dependent information — "Deps" column in `event-attendee-table.tsx`
+- ✅ Add dependent count to event detail page — attendee heading shows "· N Dependents"
 - ☐ Extend compliance export with dependent waivers
 
 #### Phase 5d - Mobile UX
