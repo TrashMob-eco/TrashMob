@@ -747,7 +747,7 @@
     <!-- <x:String x:Key="IconBowlMixOutline">&#xf02e4;</x:String> -->
     <!-- <x:String x:Key="IconPot">&#xf02e5;</x:String> -->
     <!-- <x:String x:Key="IconHuman">&#xf02e6;</x:String> -->
-    <!-- <x:String x:Key="IconHumanChild">&#xf02e7;</x:String> -->
+    <x:String x:Key="IconHumanChild">&#xf02e7;</x:String>
     <!-- <x:String x:Key="IconHumanMaleFemale">&#xf02e8;</x:String> -->
     <x:String x:Key="IconImage">&#xf02e9;</x:String>
     <!-- <x:String x:Key="IconImageAlbum">&#xf02ea;</x:String> -->

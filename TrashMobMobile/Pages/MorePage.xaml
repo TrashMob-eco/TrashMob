@@ -23,6 +23,11 @@
                     ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconSignatureText}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
             <Button Style="{StaticResource SecondaryLargeButton}"
                     ContentLayout="Left, 12"
+                    Clicked="OnMyDependentsClicked"
+                    Text="My Dependents"
+                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHumanChild}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+            <Button Style="{StaticResource SecondaryLargeButton}"
+                    ContentLayout="Left, 12"
                     Clicked="OnContactUsClicked"
                     Text="Contact us"
                     ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEmail}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />

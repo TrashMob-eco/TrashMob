@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobile.Controls.SelectDependentsPopup">
+
+    <Border Padding="24"
+            BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+            StrokeShape="RoundRectangle 16"
+            Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+            StrokeThickness="1"
+            WidthRequest="320"
+            MaximumHeightRequest="500">
+        <VerticalStackLayout Spacing="16">
+
+            <Label x:Name="titleLabel"
+                   Text="Bring Dependents?"
+                   FontFamily="LexendSemibold"
+                   FontSize="18"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+
+            <Label Text="Select dependents you plan to bring to this event."
+                   FontSize="14"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+            <CollectionView x:Name="dependentsList"
+                            MaximumHeightRequest="250">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="12,10"
+                                Margin="0,3"
+                                StrokeShape="RoundRectangle 8"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+                                StrokeThickness="1">
+                            <HorizontalStackLayout Spacing="12">
+                                <CheckBox IsChecked="{Binding IsSelected}"
+                                          CheckedChanged="OnCheckChanged"
+                                          Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                <VerticalStackLayout VerticalOptions="Center">
+                                    <Label Text="{Binding DisplayName}"
+                                           FontSize="14"
+                                           FontFamily="LexendSemibold"
+                                           TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+                                    <Label Text="{Binding Relationship}"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                </VerticalStackLayout>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button x:Name="registerButton"
+                    Text="Register Selected"
+                    Style="{StaticResource PrimaryLargeButton}"
+                    IsEnabled="False"
+                    Clicked="OnRegisterClicked" />
+
+            <Button Text="Skip"
+                    Style="{StaticResource SecondaryLargeButton}"
+                    Clicked="OnSkipClicked" />
+
+        </VerticalStackLayout>
+    </Border>
+</ContentView>
