@@ -32,10 +32,12 @@ const formSchema = z.object({
         .string()
         .min(1, 'Report name is required')
         .max(MAX_LITTER_REPORT_NAME_LENGTH, `Name must be less than ${MAX_LITTER_REPORT_NAME_LENGTH} characters`),
-    description: z.string().max(
-        MAX_LITTER_REPORT_DESC_LENGTH,
-        `Description must be less than ${MAX_LITTER_REPORT_DESC_LENGTH} characters`,
-    ),
+    description: z
+        .string()
+        .max(
+            MAX_LITTER_REPORT_DESC_LENGTH,
+            `Description must be less than ${MAX_LITTER_REPORT_DESC_LENGTH} characters`,
+        ),
 });
 
 type FormInputs = z.infer<typeof formSchema>;
