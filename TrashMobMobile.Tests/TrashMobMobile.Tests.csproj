@@ -28,6 +28,8 @@
     <PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
     <PackageReference Include="Sentry.Maui" Version="6.0.0" />
     <PackageReference Include="Polly" Version="8.6.5" />
+    <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+    <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +46,7 @@
     <Compile Include="..\TrashMobMobile\Services\I*.cs" Link="LinkedSource\Services\%(Filename)%(Extension)" />
     <Compile Include="..\TrashMobMobile\Services\NotificationService.cs" Link="LinkedSource\Services\NotificationService.cs" />
     <Compile Include="..\TrashMobMobile\Services\Geolocator.cs" Link="LinkedSource\Services\Geolocator.cs" />
+    <Compile Include="..\TrashMobMobile\Services\Offline\*.cs" Link="LinkedSource\Services\Offline\%(Filename)%(Extension)" />
   </ItemGroup>
 
   <!-- Link extensions (exclude ServiceCollectionExtensions which has DI registration) -->

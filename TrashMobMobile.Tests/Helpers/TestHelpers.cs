@@ -113,6 +113,41 @@ internal static class TestHelpers
         };
     }
 
+    public static Dependent CreateTestDependent(
+        Guid? id = null,
+        Guid? parentUserId = null,
+        string firstName = "Junior",
+        string lastName = "Tester",
+        DateOnly? dateOfBirth = null,
+        string relationship = "Parent")
+    {
+        return new Dependent
+        {
+            Id = id ?? Guid.NewGuid(),
+            ParentUserId = parentUserId ?? Guid.NewGuid(),
+            FirstName = firstName,
+            LastName = lastName,
+            DateOfBirth = dateOfBirth ?? DateOnly.FromDateTime(DateTime.Today.AddYears(-8)),
+            Relationship = relationship,
+            IsActive = true,
+        };
+    }
+
+    public static List<Dependent> CreateTestDependents(int count, Guid? parentUserId = null)
+    {
+        var parent = parentUserId ?? Guid.NewGuid();
+        var dependents = new List<Dependent>();
+        for (var i = 0; i < count; i++)
+        {
+            dependents.Add(CreateTestDependent(
+                parentUserId: parent,
+                firstName: $"Child{i + 1}",
+                lastName: "Tester"));
+        }
+
+        return dependents;
+    }
+
     public static LitterReport CreateTestLitterReport(Guid? id = null)
     {
         return new LitterReport

@@ -21,6 +21,9 @@ public class EventPhotoTests
     private readonly Mock<IEventPartnerLocationServiceRestService> mockEventPartnerLocationServiceRestService;
     private readonly Mock<ILitterReportManager> mockLitterReportManager;
     private readonly Mock<IEventPhotoManager> mockEventPhotoManager;
+    private readonly Mock<IRouteTrackingSessionManager> mockRouteTrackingSessionManager;
+    private readonly Mock<IEventAttendeeMetricsRestService> mockEventAttendeeMetricsRestService;
+    private readonly Mock<IDependentRestService> mockDependentRestService;
     private readonly ViewEventViewModel sut;
     private readonly User testUser;
     private readonly Guid testEventId = Guid.NewGuid();
@@ -38,10 +41,14 @@ public class EventPhotoTests
         mockEventPartnerLocationServiceRestService = new Mock<IEventPartnerLocationServiceRestService>();
         mockLitterReportManager = new Mock<ILitterReportManager>();
         mockEventPhotoManager = new Mock<IEventPhotoManager>();
+        mockRouteTrackingSessionManager = new Mock<IRouteTrackingSessionManager>();
+        mockEventAttendeeMetricsRestService = new Mock<IEventAttendeeMetricsRestService>();
+        mockDependentRestService = new Mock<IDependentRestService>();
 
         testUser = TestHelpers.CreateTestUser();
         mockUserManager.Setup(m => m.CurrentUser).Returns(testUser);
 
+        var offlineDb = new TrashMobMobile.Services.Offline.OfflineDatabase();
         sut = new ViewEventViewModel(
             mockMobEventManager.Object,
             mockEventTypeRestService.Object,
@@ -53,7 +60,12 @@ public class EventPhotoTests
             mockUserManager.Object,
             mockEventPartnerLocationServiceRestService.Object,
             mockLitterReportManager.Object,
-            mockEventPhotoManager.Object);
+            mockEventPhotoManager.Object,
+            mockRouteTrackingSessionManager.Object,
+            mockEventAttendeeMetricsRestService.Object,
+            new TrashMobMobile.Services.Offline.RoutePointWriter(offlineDb),
+            new TrashMobMobile.Services.Offline.SyncQueue(offlineDb),
+            mockDependentRestService.Object);
     }
 
     [Fact]
@@ -64,6 +76,7 @@ public class EventPhotoTests
 
         // Act
         await sut.Init(testEventId, () => { });
+        await sut.OnTabSelected(4); // Photos load lazily on tab selection
 
         // Assert
         Assert.Equal(3, sut.EventPhotos.Count);
@@ -80,6 +93,7 @@ public class EventPhotoTests
 
         // Act
         await sut.Init(testEventId, () => { });
+        await sut.OnTabSelected(4);
 
         // Assert
         Assert.Empty(sut.EventPhotos);
@@ -96,6 +110,7 @@ public class EventPhotoTests
 
         // Act
         await sut.Init(testEventId, () => { });
+        await sut.OnTabSelected(4);
 
         // Assert
         Assert.Single(sut.EventPhotos);
@@ -116,6 +131,7 @@ public class EventPhotoTests
 
         // Act
         await sut.Init(testEventId, () => { });
+        await sut.OnTabSelected(4);
 
         // Assert
         Assert.Equal(3, sut.EventPhotos.Count);
@@ -131,6 +147,7 @@ public class EventPhotoTests
 
         // Act
         await sut.Init(testEventId, () => { });
+        await sut.OnTabSelected(4);
 
         // Assert
         Assert.True(sut.CanUploadPhoto);
@@ -144,6 +161,7 @@ public class EventPhotoTests
 
         // Act
         await sut.Init(testEventId, () => { });
+        await sut.OnTabSelected(4);
 
         // Assert
         Assert.True(sut.CanUploadPhoto);
@@ -157,6 +175,7 @@ public class EventPhotoTests
 
         // Act
         await sut.Init(testEventId, () => { });
+        await sut.OnTabSelected(4);
 
         // Assert
         Assert.False(sut.CanUploadPhoto);
@@ -175,6 +194,7 @@ public class EventPhotoTests
 
         // Act
         await sut.Init(testEventId, () => { });
+        await sut.OnTabSelected(4);
 
         // Assert
         Assert.Single(sut.EventPhotos);
@@ -193,6 +213,7 @@ public class EventPhotoTests
 
         // Act
         await sut.Init(testEventId, () => { });
+        await sut.OnTabSelected(4);
 
         // Assert
         Assert.Single(sut.EventPhotos);
@@ -212,6 +233,7 @@ public class EventPhotoTests
 
         // Act
         await sut.Init(testEventId, () => { });
+        await sut.OnTabSelected(4);
 
         // Assert
         Assert.Single(sut.EventPhotos);

@@ -21,6 +21,9 @@ public class ViewEventViewModelTests
     private readonly Mock<IEventPartnerLocationServiceRestService> mockEventPartnerLocationServiceRestService;
     private readonly Mock<ILitterReportManager> mockLitterReportManager;
     private readonly Mock<IEventPhotoManager> mockEventPhotoManager;
+    private readonly Mock<IRouteTrackingSessionManager> mockRouteTrackingSessionManager;
+    private readonly Mock<IEventAttendeeMetricsRestService> mockEventAttendeeMetricsRestService;
+    private readonly Mock<IDependentRestService> mockDependentRestService;
     private readonly User testUser;
     private readonly ViewEventViewModel sut;
 
@@ -37,10 +40,14 @@ public class ViewEventViewModelTests
         mockEventPartnerLocationServiceRestService = new Mock<IEventPartnerLocationServiceRestService>();
         mockLitterReportManager = new Mock<ILitterReportManager>();
         mockEventPhotoManager = new Mock<IEventPhotoManager>();
+        mockRouteTrackingSessionManager = new Mock<IRouteTrackingSessionManager>();
+        mockEventAttendeeMetricsRestService = new Mock<IEventAttendeeMetricsRestService>();
+        mockDependentRestService = new Mock<IDependentRestService>();
 
         testUser = TestHelpers.CreateTestUser();
         mockUserManager.Setup(m => m.CurrentUser).Returns(testUser);
 
+        var offlineDb = new TrashMobMobile.Services.Offline.OfflineDatabase();
         sut = new ViewEventViewModel(
             mockMobEventManager.Object,
             mockEventTypeRestService.Object,
@@ -52,7 +59,12 @@ public class ViewEventViewModelTests
             mockUserManager.Object,
             mockEventPartnerLocationServiceRestService.Object,
             mockLitterReportManager.Object,
-            mockEventPhotoManager.Object);
+            mockEventPhotoManager.Object,
+            mockRouteTrackingSessionManager.Object,
+            mockEventAttendeeMetricsRestService.Object,
+            new TrashMobMobile.Services.Offline.RoutePointWriter(offlineDb),
+            new TrashMobMobile.Services.Offline.SyncQueue(offlineDb),
+            mockDependentRestService.Object);
     }
 
     private Event CreateFutureEvent(Guid? createdByUserId = null, int maxParticipants = 50)
@@ -321,6 +333,7 @@ public class ViewEventViewModelTests
 
         // Act
         await sut.Init(testEvent.Id, () => { });
+        await sut.OnTabSelected(1); // Partners load lazily on tab selection
 
         // Assert
         Assert.True(sut.ArePartnersAvailable);
@@ -368,6 +381,7 @@ public class ViewEventViewModelTests
 
         // Act
         await sut.Init(testEvent.Id, () => { });
+        await sut.OnTabSelected(4); // Photos load lazily on tab selection
 
         // Assert
         Assert.True(sut.ArePhotosFound);
@@ -451,5 +465,105 @@ public class ViewEventViewModelTests
 
         // Assert
         Assert.True(sut.EnableRegister);
+    }
+
+    // 19. Init_WithDependents_ShowsHeadcountBreakdown
+    [Fact]
+    public async Task Init_WithDependents_ShowsHeadcountBreakdown()
+    {
+        // Arrange
+        var testEvent = CreateFutureEvent();
+        var attendees = new List<DisplayUser>
+        {
+            new() { Id = Guid.NewGuid(), UserName = "User1", MemberSince = DateTimeOffset.UtcNow },
+            new() { Id = Guid.NewGuid(), UserName = "User2", MemberSince = DateTimeOffset.UtcNow },
+        };
+        SetupMocks(testEvent, attendees: attendees);
+        mockDependentRestService
+            .Setup(m => m.GetEventDependentCountAsync(testEvent.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(3);
+
+        // Act
+        await sut.Init(testEvent.Id, () => { });
+
+        // Assert — total headcount is 5 (2 adults + 3 dependents)
+        Assert.Contains("5 people are going!", sut.AttendeeCount);
+        Assert.Contains("2 adults", sut.AttendeeCount);
+        Assert.Contains("3 dependents", sut.AttendeeCount);
+    }
+
+    // 20. Init_WithNoDependents_ShowsAdultOnlyCount
+    [Fact]
+    public async Task Init_WithNoDependents_ShowsAdultOnlyCount()
+    {
+        // Arrange
+        var testEvent = CreateFutureEvent();
+        var attendees = new List<DisplayUser>
+        {
+            new() { Id = Guid.NewGuid(), UserName = "User1", MemberSince = DateTimeOffset.UtcNow },
+            new() { Id = Guid.NewGuid(), UserName = "User2", MemberSince = DateTimeOffset.UtcNow },
+        };
+        SetupMocks(testEvent, attendees: attendees);
+        mockDependentRestService
+            .Setup(m => m.GetEventDependentCountAsync(testEvent.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(0);
+
+        // Act
+        await sut.Init(testEvent.Id, () => { });
+
+        // Assert — no breakdown when no dependents
+        Assert.Equal("2 people are going!", sut.AttendeeCount);
+        Assert.DoesNotContain("adult", sut.AttendeeCount);
+        Assert.DoesNotContain("dependent", sut.AttendeeCount);
+    }
+
+    // 21. Init_WithOneAdultOneDependent_ShowsSingularForms
+    [Fact]
+    public async Task Init_WithOneAdultOneDependent_ShowsSingularForms()
+    {
+        // Arrange
+        var testEvent = CreateFutureEvent();
+        var attendees = new List<DisplayUser>
+        {
+            new() { Id = Guid.NewGuid(), UserName = "User1", MemberSince = DateTimeOffset.UtcNow },
+        };
+        SetupMocks(testEvent, attendees: attendees);
+        mockDependentRestService
+            .Setup(m => m.GetEventDependentCountAsync(testEvent.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        // Act
+        await sut.Init(testEvent.Id, () => { });
+
+        // Assert — total is 2, with singular forms
+        Assert.Contains("2 people are going!", sut.AttendeeCount);
+        Assert.Contains("1 adult", sut.AttendeeCount);
+        Assert.Contains("1 dependent)", sut.AttendeeCount);
+        Assert.DoesNotContain("adults", sut.AttendeeCount);
+        Assert.DoesNotContain("dependents", sut.AttendeeCount);
+    }
+
+    // 22. Init_SpotsLeftUsesAdultCountOnly
+    [Fact]
+    public async Task Init_SpotsLeftUsesAdultCountOnly()
+    {
+        // Arrange — 10 max, 2 adults, 3 dependents → 8 spots left (adult-only)
+        var testEvent = CreateFutureEvent();
+        testEvent.MaxNumberOfParticipants = 10;
+        var attendees = new List<DisplayUser>
+        {
+            new() { Id = Guid.NewGuid(), UserName = "User1", MemberSince = DateTimeOffset.UtcNow },
+            new() { Id = Guid.NewGuid(), UserName = "User2", MemberSince = DateTimeOffset.UtcNow },
+        };
+        SetupMocks(testEvent, attendees: attendees);
+        mockDependentRestService
+            .Setup(m => m.GetEventDependentCountAsync(testEvent.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(3);
+
+        // Act
+        await sut.Init(testEvent.Id, () => { });
+
+        // Assert — spots left based on adult count only
+        Assert.Equal("8 spot left!", sut.SpotsLeft);
     }
 }

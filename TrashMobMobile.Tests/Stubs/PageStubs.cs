@@ -42,3 +42,4 @@ internal class BrowseCommunitiesPage { }
 internal class ViewCommunityPage { }
 internal class WaiverListPage { }
 internal class AgeGatePage { }
+internal class MyDependentsPage { }
