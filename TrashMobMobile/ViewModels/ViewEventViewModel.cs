@@ -1037,7 +1037,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             EventAttendeeRouteViewModels.Remove(routeVm);
             UpdateRouteStats();
-            UpdateRoutes();
 
             await NotificationService.Notify("Route deleted.");
         }, "An error occurred while deleting the route. Please try again.");
