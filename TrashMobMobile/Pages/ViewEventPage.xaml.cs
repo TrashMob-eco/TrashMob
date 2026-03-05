@@ -6,7 +6,7 @@ using TrashMobMobile.Views.ViewEvent;
 public partial class ViewEventPage : ContentPage
 {
     private readonly ViewEventViewModel viewModel;
-    private bool isInitialized;
+    private string? loadedEventId;
 
     public ViewEventPage(ViewEventViewModel viewModel)
     {
@@ -23,11 +23,14 @@ public partial class ViewEventPage : ContentPage
     {
         base.OnNavigatedTo(args);
 
-        // Only initialize on first navigation, not when returning from popups
-        if (!isInitialized)
+        // Re-subscribe to tab changes (safe pattern: unsubscribe first to avoid duplicates)
+        Switcher.PropertyChanged -= OnSwitcherPropertyChanged;
+        Switcher.PropertyChanged += OnSwitcherPropertyChanged;
+
+        // Only re-initialize when loading a different event, not when returning from popups
+        if (loadedEventId != EventId)
         {
-            isInitialized = true;
-            Switcher.PropertyChanged += OnSwitcherPropertyChanged;
+            loadedEventId = EventId;
             await viewModel.Init(new Guid(EventId), RenderRoutesOnDetailsMap);
             Switcher.SelectedIndex = 0;
         }
@@ -37,8 +40,6 @@ public partial class ViewEventPage : ContentPage
     {
         base.OnNavigatedFrom(args);
         Switcher.PropertyChanged -= OnSwitcherPropertyChanged;
-        // Reset so re-entering this page (for a different event) will re-initialize
-        isInitialized = false;
     }
 
     private async void OnSwitcherPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
