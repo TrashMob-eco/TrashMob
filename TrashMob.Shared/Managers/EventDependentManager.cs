@@ -5,6 +5,7 @@ namespace TrashMob.Shared.Managers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
@@ -70,8 +71,17 @@ namespace TrashMob.Shared.Managers
                     DependentWaiverId = currentWaiver.Id,
                 };
 
-                var created = await AddAsync(eventDependent, parentUserId, cancellationToken);
-                results.Add(created);
+                try
+                {
+                    var created = await AddAsync(eventDependent, parentUserId, cancellationToken);
+                    results.Add(created);
+                }
+                catch (DbUpdateException ex) when (ex.InnerException is SqlException { Number: 2627 or 2601 })
+                {
+                    // Unique constraint violation — another concurrent request already registered
+                    // this dependent for the event. The desired end state is achieved, so continue.
+                    continue;
+                }
             }
 
             return ServiceResult<IEnumerable<EventDependent>>.Success(results);
