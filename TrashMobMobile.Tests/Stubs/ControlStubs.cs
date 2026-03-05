@@ -43,3 +43,49 @@ public partial class PrivacyPopup : ContentView
 
     public PrivacyPopup() { }
 }
+
+public partial class SelectDependentsPopup : ContentView
+{
+    public SelectDependentsPopup(List<TrashMob.Models.Dependent> dependents) { }
+}
+
+public partial class LogPickupPopup : ContentView
+{
+    public LogPickupPopup(int? currentBags = null, decimal? currentWeight = null,
+        int? currentWeightUnitId = null, string? currentNotes = null) { }
+}
+
+public class LogPickupResult
+{
+    public int? BagsCollected { get; set; }
+    public decimal? WeightCollected { get; set; }
+    public int? WeightUnitId { get; set; }
+    public string? Notes { get; set; }
+}
+
+public partial class TrimRoutePopup : ContentView
+{
+    public TrimRoutePopup(DateTimeOffset routeStartTime, DateTimeOffset routeEndTime) { }
+}
+
+public partial class LogImpactPopup : ContentView
+{
+    public LogImpactPopup(TrashMob.Models.EventAttendeeMetrics? existing = null) { }
+
+    public class LogImpactResult
+    {
+        public int BagsCollected { get; set; }
+        public decimal PickedWeight { get; set; }
+        public int PickedWeightUnitId { get; set; }
+        public int DurationMinutes { get; set; }
+        public string? Notes { get; set; }
+    }
+}
+
+public partial class ReviewMetricsPopup : ContentView
+{
+    public const string ApprovedResult = "Approved";
+    public const string RejectedPrefix = "Rejected:";
+
+    public ReviewMetricsPopup(TrashMob.Models.EventAttendeeMetrics metrics) { }
+}

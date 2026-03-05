@@ -10,6 +10,7 @@ using Xunit;
 public class ImpactViewModelTests
 {
     private readonly Mock<IStatsRestService> mockStatsRestService;
+    private readonly Mock<IEventAttendeeMetricsRestService> mockEventAttendeeMetricsRestService;
     private readonly Mock<INotificationService> mockNotificationService;
     private readonly Mock<IUserManager> mockUserManager;
     private readonly ImpactViewModel sut;
@@ -17,6 +18,7 @@ public class ImpactViewModelTests
     public ImpactViewModelTests()
     {
         mockStatsRestService = new Mock<IStatsRestService>();
+        mockEventAttendeeMetricsRestService = new Mock<IEventAttendeeMetricsRestService>();
         mockNotificationService = new Mock<INotificationService>();
         mockUserManager = new Mock<IUserManager>();
 
@@ -25,6 +27,7 @@ public class ImpactViewModelTests
 
         sut = new ImpactViewModel(
             mockStatsRestService.Object,
+            mockEventAttendeeMetricsRestService.Object,
             mockNotificationService.Object,
             mockUserManager.Object);
     }
