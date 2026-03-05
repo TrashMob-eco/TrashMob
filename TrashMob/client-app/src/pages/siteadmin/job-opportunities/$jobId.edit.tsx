@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import * as ToolTips from '@/store/ToolTips';
-import { useLogin } from '@/hooks/useLogin';
+
 import { GetJobOpportunityById, UpdateJobOpportunity } from '@/services/opportunities';
 import { Checkbox } from '@/components/ui/checkbox';
 import { GetAllJobOpportunities } from '@/services/opportunities';
@@ -26,14 +26,13 @@ interface FormInputs {
 }
 
 const formSchema = z.object({
-    title: z.string({ required_error: 'Title cannot be blank.' }),
-    tagLine: z.string(),
-    fullDescription: z.string(),
+    title: z.string().min(1, 'Title cannot be blank.'),
+    tagLine: z.string().min(1, 'Tag line cannot be blank.'),
+    fullDescription: z.string().min(1, 'Full description cannot be blank.'),
     isActive: z.boolean(),
 });
 
 export const SiteAdminJobOpportunityEdit = () => {
-    const { currentUser } = useLogin();
     const { jobId } = useParams<{ jobId: string }>() as { jobId: string };
 
     const { data: jobOpportunity } = useQuery({
@@ -94,7 +93,6 @@ export const SiteAdminJobOpportunityEdit = () => {
         body.tagLine = formValues.tagLine;
         body.fullDescription = formValues.fullDescription;
         body.isActive = formValues.isActive;
-        body.lastUpdatedByUserId = currentUser.id;
         updateJobOpportunity.mutate(body);
     }, []);
 

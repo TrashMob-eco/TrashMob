@@ -1,18 +1,18 @@
-import { useCallback, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import { Link, useNavigate } from 'react-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import * as ToolTips from '@/store/ToolTips';
-import { useLogin } from '@/hooks/useLogin';
+
 import { CreateJobOpportunity } from '@/services/opportunities';
 import { Checkbox } from '@/components/ui/checkbox';
 import { GetAllJobOpportunities } from '@/services/opportunities';
@@ -27,15 +27,13 @@ interface FormInputs {
 }
 
 const formSchema = z.object({
-    title: z.string({ required_error: 'Title cannot be blank.' }),
-    tagLine: z.string(),
-    fullDescription: z.string(),
+    title: z.string().min(1, 'Title cannot be blank.'),
+    tagLine: z.string().min(1, 'Tag line cannot be blank.'),
+    fullDescription: z.string().min(1, 'Full description cannot be blank.'),
     isActive: z.boolean(),
 });
 
 export const SiteAdminJobOpportunityCreate = () => {
-    const { currentUser } = useLogin();
-
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
@@ -76,8 +74,6 @@ export const SiteAdminJobOpportunityCreate = () => {
         body.tagLine = formValues.tagLine;
         body.fullDescription = formValues.fullDescription;
         body.isActive = formValues.isActive;
-        body.createdByUserId = currentUser.id;
-        body.lastUpdatedByUserId = currentUser.id;
         createJobOpportunity.mutate(body);
     }, []);
 
