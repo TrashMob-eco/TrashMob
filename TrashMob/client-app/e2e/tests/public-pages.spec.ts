@@ -144,6 +144,48 @@ test.describe('Public Pages', () => {
             await expect(page).toHaveTitle(/terms|trashmob/i);
             await expect(page.locator('h1')).toBeVisible();
         });
+
+        test('should load News page', async ({ page }) => {
+            await page.goto('/news');
+            await expect(page).toHaveTitle(/news|trashmob/i);
+            await expect(page.locator('h1')).toBeVisible();
+        });
+
+        test('should load Board of Directors page', async ({ page }) => {
+            await page.goto('/board');
+            await expect(page).toHaveTitle(/board|trashmob/i);
+            await expect(page.locator('h1')).toBeVisible();
+        });
+
+        test('should load Partnerships page', async ({ page }) => {
+            await page.goto('/partnerships');
+            await expect(page).toHaveTitle(/partner|trashmob/i);
+            await expect(page.locator('h1').first()).toBeVisible();
+        });
+
+        test('should load For Communities page', async ({ page }) => {
+            await page.goto('/for-communities');
+            await expect(page).toHaveTitle(/communit|trashmob/i);
+            await expect(page.locator('h1')).toBeVisible();
+        });
+
+        test('should load Volunteer Opportunities page', async ({ page }) => {
+            await page.goto('/volunteeropportunities');
+            await expect(page).toHaveTitle(/volunteer|trashmob/i);
+            await expect(page.locator('h1').first()).toBeVisible();
+        });
+
+        test('should load Litter Reports page', async ({ page }) => {
+            await page.goto('/litterreports');
+            await expect(page).toHaveTitle(/litter|trashmob/i);
+            await expect(page.locator('h1')).toBeVisible();
+        });
+
+        test('should load Shop page', async ({ page }) => {
+            await page.goto('/shop');
+            await expect(page).toHaveTitle(/shop|trashmob/i);
+            await expect(page.locator('h1').first()).toBeVisible();
+        });
     });
 
     test.describe('Accessibility', () => {
