@@ -237,6 +237,16 @@
             <Border Style="{StaticResource RoundBorder}" Margin="10,0">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Settings" Style="{StaticResource SectionHeader}" Margin="0" />
+                    <Button Text="My Dependents"
+                            Command="{Binding MyDependentsCommand}"
+                            Style="{StaticResource SecondaryLargeButton}"
+                            ContentLayout="Left, 12"
+                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHumanChild}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
+                    <Button Text="Sign Waiver"
+                            Command="{Binding SignWaiverCommand}"
+                            Style="{StaticResource SecondaryLargeButton}"
+                            ContentLayout="Left, 12"
+                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconSignatureText}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
                     <Button Text="Privacy Policy"
                             Command="{Binding OpenPrivacyPolicyCommand}"
                             Style="{StaticResource SecondaryLargeButton}"
