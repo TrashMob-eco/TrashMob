@@ -190,12 +190,6 @@ public partial class ProfileViewModel(
     }
 
     [RelayCommand]
-    private async Task SignWaiver()
-    {
-        await Shell.Current.GoToAsync(nameof(WaiverPage));
-    }
-
-    [RelayCommand]
     private async Task ContactUs()
     {
         await Shell.Current.GoToAsync(nameof(ContactUsPage));
