@@ -534,7 +534,7 @@ const AppContent: FC = () => {
     const { currentUser, isUserLoaded } = useLogin();
 
     return (
-        <div className='flex flex-col h-100'>
+        <div className='flex flex-col min-h-screen'>
             <BrowserRouter>
                 <ScrollToTop />
                 <DefaultPageHead />
