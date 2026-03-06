@@ -91,12 +91,17 @@ const GapResearchButton = ({ gap }: { gap: GeographicGapData }) => {
                 const notes: string[] = [];
                 if (prospect.rationale) notes.push(`AI Research: ${prospect.rationale}`);
                 if (prospect.contactSuggestion) notes.push(`Suggested Contact: ${prospect.contactSuggestion}`);
-                notes.push(`Source: Geographic gap with ${gap.eventCount} events, nearest partner ${gap.nearestPartnerDistanceMiles != null ? `${gap.nearestPartnerDistanceMiles} mi` : 'none'}`);
+                notes.push(
+                    `Source: Geographic gap with ${gap.eventCount} events, nearest partner ${gap.nearestPartnerDistanceMiles != null ? `${gap.nearestPartnerDistanceMiles} mi` : 'none'}`,
+                );
                 params.set('notes', notes.join('\n\n'));
             } else {
                 params.set('name', gap.city);
                 params.set('type', 'Municipality');
-                params.set('notes', `Geographic gap with ${gap.eventCount} events, nearest partner ${gap.nearestPartnerDistanceMiles != null ? `${gap.nearestPartnerDistanceMiles} mi` : 'none'}. AI research returned no results.`);
+                params.set(
+                    'notes',
+                    `Geographic gap with ${gap.eventCount} events, nearest partner ${gap.nearestPartnerDistanceMiles != null ? `${gap.nearestPartnerDistanceMiles} mi` : 'none'}. AI research returned no results.`,
+                );
             }
 
             navigate(`/siteadmin/prospects/create?${params.toString()}`);
