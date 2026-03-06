@@ -33,8 +33,16 @@ namespace TrashMob.Shared.Managers.Prospects
             - "type": string (one of: Municipality, Nonprofit, HOA, CivicOrg, Other)
             - "estimatedPopulation": number or null (population served if applicable)
             - "website": string or null (website URL if known)
-            - "contactSuggestion": string or null (e.g., "City Clerk", "Executive Director", or a specific name)
+            - "contactSuggestion": string or null (department or role description, e.g., "Public Works Department" or "Parks & Recreation Division")
+            - "contactName": string or null (full name of the best person to contact, from public staff directories or official sources)
+            - "contactEmail": string or null (email address ONLY if you are confident it is correct from an official source — do not guess)
+            - "contactTitle": string or null (job title or role, e.g., "Public Works Director", "Parks Manager")
             - "rationale": string (1-2 sentences explaining why this is a good prospect)
+
+            For contact information, look for public staff directories, official government websites,
+            and published contact pages. Prefer department heads responsible for streets, parks,
+            public works, or environmental programs. If you cannot find a specific person, return null
+            for contactName and contactEmail but still suggest the relevant department in contactSuggestion.
 
             Return ONLY the JSON array, no markdown fences, no other text.
             """;
