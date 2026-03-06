@@ -1,7 +1,10 @@
 import { test, expect, devices } from '@playwright/test';
 
-// Mobile-specific tests using iPhone 13 viewport
-test.use({ ...devices['iPhone 13'] });
+// Mobile-specific tests using iPhone 13 viewport settings.
+// Destructure out defaultBrowserType so the test uses the project's browser (chromium in CI)
+// instead of webkit, which may not be installed.
+const { defaultBrowserType: _, ...mobileDevice } = devices['iPhone 13'];
+test.use(mobileDevice);
 
 test.describe('Mobile Responsiveness', () => {
     test('should display hamburger menu on mobile', async ({ page }) => {

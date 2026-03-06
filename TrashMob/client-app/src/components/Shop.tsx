@@ -11,8 +11,11 @@ export const Shop: React.FC = () => {
     });
 
     return (
-        <div id='myShop'>
-            <a href='https://trashmobeco.myspreadshop.com'>trashmobeco</a>
+        <div className='container py-4'>
+            <h1 className='text-3xl font-semibold mb-4'>Shop</h1>
+            <div id='myShop'>
+                <a href='https://trashmobeco.myspreadshop.com'>trashmobeco</a>
+            </div>
         </div>
     );
 };
