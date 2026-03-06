@@ -173,6 +173,22 @@ const gapColumns: ColumnDef<GeographicGapData>[] = [
         },
     },
     {
+        id: 'status',
+        header: 'Status',
+        cell: ({ row }) => {
+            const gap = row.original;
+            if (!gap.existingProspectId) return null;
+            return (
+                <Link
+                    to={`/siteadmin/prospects/${gap.existingProspectId}`}
+                    className='inline-flex items-center rounded-full bg-teal-100 px-2.5 py-0.5 text-xs font-medium text-teal-800 hover:bg-teal-200'
+                >
+                    In Pipeline
+                </Link>
+            );
+        },
+    },
+    {
         id: 'actions',
         header: '',
         cell: ({ row }) => <GapResearchButton gap={row.original} />,
