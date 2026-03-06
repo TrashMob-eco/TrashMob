@@ -5,7 +5,7 @@ class ProspectActivityData {
     subject: string = '';
     details: string = '';
     sentimentScore: string = '';
-    createdDate: string = '';
+    createdDate: string | null = null;
 }
 
 export default ProspectActivityData;

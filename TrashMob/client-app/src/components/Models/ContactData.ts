@@ -17,10 +17,10 @@ class ContactData {
     partnerId: string | null = null;
     notes: string = '';
     isActive: boolean = true;
-    createdByUserId: string = '';
-    createdDate: string = '';
-    lastUpdatedByUserId: string = '';
-    lastUpdatedDate: string = '';
+    createdByUserId: string | null = null;
+    createdDate: string | null = null;
+    lastUpdatedByUserId: string | null = null;
+    lastUpdatedDate: string | null = null;
 }
 
 export default ContactData;
