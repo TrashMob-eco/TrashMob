@@ -16,15 +16,16 @@ test.describe('Mobile Responsiveness', () => {
     });
 
     test('should toggle navigation menu on hamburger click', async ({ page }) => {
-        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.goto('/');
 
         const menuButton = page.getByRole('button', { name: /toggle menu/i });
         await expect(menuButton).toBeVisible();
         await menuButton.click();
 
         // Mobile nav uses flat links with section headers, not dropdown buttons
-        await expect(page.getByRole('link', { name: /events/i }).first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByRole('link', { name: /faq/i })).toBeVisible();
+        const nav = page.getByRole('navigation');
+        await expect(nav.getByRole('link', { name: /events/i }).first()).toBeVisible({ timeout: 10000 });
+        await expect(nav.getByRole('link', { name: /faq/i })).toBeVisible();
     });
 
     test('should display sign in button on mobile', async ({ page }) => {
