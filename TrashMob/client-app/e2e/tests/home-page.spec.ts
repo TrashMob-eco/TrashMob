@@ -51,8 +51,8 @@ test.describe('Home Page Content', () => {
             // Should have the heading
             await expect(page.getByRole('heading', { name: /what is a trashmob/i })).toBeVisible();
 
-            // Should have CTA buttons
-            await expect(page.getByRole('link', { name: /learn more/i })).toBeVisible();
+            // Should have CTA buttons (scoped to intro section to avoid strict mode violation with Getting Started's "Learn more")
+            await expect(introSection.getByRole('link', { name: /learn more/i })).toBeVisible();
         });
     });
 
