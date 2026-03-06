@@ -16,14 +16,15 @@ test.describe('Mobile Responsiveness', () => {
     });
 
     test('should toggle navigation menu on hamburger click', async ({ page }) => {
-        await page.goto('/');
+        await page.goto('/', { waitUntil: 'networkidle' });
 
         const menuButton = page.getByRole('button', { name: /toggle menu/i });
+        await expect(menuButton).toBeVisible();
         await menuButton.click();
 
-        // Navigation items should become visible after clicking hamburger
-        await expect(page.getByRole('button', { name: /explore/i })).toBeVisible();
-        await expect(page.getByRole('button', { name: /about/i })).toBeVisible();
+        // Mobile nav uses flat links with section headers, not dropdown buttons
+        await expect(page.getByRole('link', { name: /events/i }).first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByRole('link', { name: /faq/i })).toBeVisible();
     });
 
     test('should display sign in button on mobile', async ({ page }) => {
@@ -47,13 +48,13 @@ test.describe('Mobile Responsiveness', () => {
 
     test('should load static pages on mobile', async ({ page }) => {
         // Test a few key pages render correctly on mobile
-        await page.goto('/aboutus');
+        await page.goto('/aboutus', { waitUntil: 'networkidle' });
         await expect(page.locator('h1')).toBeVisible();
 
-        await page.goto('/faq');
+        await page.goto('/faq', { waitUntil: 'networkidle' });
         await expect(page.locator('h1').first()).toBeVisible();
 
-        await page.goto('/contactus');
+        await page.goto('/contactus', { waitUntil: 'networkidle' });
         await expect(page.locator('h1')).toBeVisible();
     });
 
