@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -59,6 +59,7 @@ export const SiteAdminProspectCreate = () => {
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     const createProspect = useMutation({
         mutationKey: CreateCommunityProspect().key,
@@ -79,22 +80,22 @@ export const SiteAdminProspectCreate = () => {
     const form = useForm<FormInputs>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: '',
-            type: 'Municipality',
-            city: '',
-            region: '',
-            country: 'United States',
+            name: searchParams.get('name') || '',
+            type: searchParams.get('type') || 'Municipality',
+            city: searchParams.get('city') || '',
+            region: searchParams.get('region') || '',
+            country: searchParams.get('country') || 'United States',
             contactName: '',
             contactEmail: '',
             contactTitle: '',
             contactPhone: '',
-            website: '',
-            population: '',
+            website: searchParams.get('website') || '',
+            population: searchParams.get('population') || '',
             fitScore: '0',
             pipelineStage: '0',
-            notes: '',
-            latitude: '',
-            longitude: '',
+            notes: searchParams.get('notes') || '',
+            latitude: searchParams.get('latitude') || '',
+            longitude: searchParams.get('longitude') || '',
         },
     });
 

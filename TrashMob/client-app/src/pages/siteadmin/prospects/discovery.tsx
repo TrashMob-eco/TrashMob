@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Sparkles, MapPin, RefreshCcw, Loader2 } from 'lucide-react';
+import { Sparkles, MapPin, RefreshCcw, Loader2, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -66,6 +66,82 @@ const discoveredColumns: ColumnDef<DiscoveredProspectData>[] = [
     },
 ];
 
+const GapResearchButton = ({ gap }: { gap: GeographicGapData }) => {
+    const navigate = useNavigate();
+    const { toast } = useToast();
+
+    const research = useMutation({
+        mutationKey: ['/communityprospects', 'gap-research', gap.city, gap.region],
+        mutationFn: DiscoverProspects().service,
+        onSuccess: (res) => {
+            const params = new URLSearchParams();
+            params.set('city', gap.city);
+            if (gap.region) params.set('region', gap.region);
+            if (gap.country) params.set('country', gap.country);
+            if (gap.averageLatitude != null) params.set('latitude', String(gap.averageLatitude));
+            if (gap.averageLongitude != null) params.set('longitude', String(gap.averageLongitude));
+
+            const prospect = res.data?.prospects?.[0];
+            if (prospect) {
+                params.set('name', prospect.name || gap.city);
+                if (prospect.type) params.set('type', prospect.type);
+                if (prospect.estimatedPopulation) params.set('population', String(prospect.estimatedPopulation));
+                if (prospect.website) params.set('website', prospect.website);
+
+                const notes: string[] = [];
+                if (prospect.rationale) notes.push(`AI Research: ${prospect.rationale}`);
+                if (prospect.contactSuggestion) notes.push(`Suggested Contact: ${prospect.contactSuggestion}`);
+                notes.push(`Source: Geographic gap with ${gap.eventCount} events, nearest partner ${gap.nearestPartnerDistanceMiles != null ? `${gap.nearestPartnerDistanceMiles} mi` : 'none'}`);
+                params.set('notes', notes.join('\n\n'));
+            } else {
+                params.set('name', gap.city);
+                params.set('type', 'Municipality');
+                params.set('notes', `Geographic gap with ${gap.eventCount} events, nearest partner ${gap.nearestPartnerDistanceMiles != null ? `${gap.nearestPartnerDistanceMiles} mi` : 'none'}. AI research returned no results.`);
+            }
+
+            navigate(`/siteadmin/prospects/create?${params.toString()}`);
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Research failed. Adding with basic info.' });
+            const params = new URLSearchParams();
+            params.set('name', gap.city);
+            params.set('city', gap.city);
+            if (gap.region) params.set('region', gap.region);
+            if (gap.country) params.set('country', gap.country);
+            if (gap.averageLatitude != null) params.set('latitude', String(gap.averageLatitude));
+            if (gap.averageLongitude != null) params.set('longitude', String(gap.averageLongitude));
+            params.set('type', 'Municipality');
+            navigate(`/siteadmin/prospects/create?${params.toString()}`);
+        },
+    });
+
+    return (
+        <Button
+            variant='outline'
+            size='sm'
+            disabled={research.isPending}
+            onClick={() =>
+                research.mutate({
+                    city: gap.city,
+                    region: gap.region,
+                    country: gap.country || 'United States',
+                    maxResults: 1,
+                })
+            }
+        >
+            {research.isPending ? (
+                <>
+                    <Loader2 className='mr-1 h-3 w-3 animate-spin' /> Researching...
+                </>
+            ) : (
+                <>
+                    <Search className='mr-1 h-3 w-3' /> Research & Add
+                </>
+            )}
+        </Button>
+    );
+};
+
 const gapColumns: ColumnDef<GeographicGapData>[] = [
     { accessorKey: 'city', header: 'City' },
     { accessorKey: 'region', header: 'Region' },
@@ -78,6 +154,11 @@ const gapColumns: ColumnDef<GeographicGapData>[] = [
             const val = getValue<number | null>();
             return val !== null ? `${val} mi` : 'No partners';
         },
+    },
+    {
+        id: 'actions',
+        header: '',
+        cell: ({ row }) => <GapResearchButton gap={row.original} />,
     },
 ];
 
