@@ -95,6 +95,11 @@ namespace TrashMob.Shared.Managers.Prospects
                 .Where(p => p.PartnerStatusId == (int)PartnerStatusEnum.Active && p.HomePageEnabled)
                 .ToListAsync(cancellationToken);
 
+            // Get existing prospects (not yet converted to partners)
+            var existingProspects = await prospectRepository.Get()
+                .Where(p => p.ConvertedPartnerId == null)
+                .ToListAsync(cancellationToken);
+
             List<GeographicGap> gaps = [];
 
             foreach (var group in eventGroups)
@@ -129,6 +134,11 @@ namespace TrashMob.Shared.Managers.Prospects
                     }
                 }
 
+                // Check if a prospect already exists for this city/region
+                var matchingProspect = existingProspects.FirstOrDefault(p =>
+                    string.Equals(p.City?.Trim(), group.City?.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(p.Region?.Trim(), group.Region?.Trim(), StringComparison.OrdinalIgnoreCase));
+
                 gaps.Add(new GeographicGap
                 {
                     City = group.City,
@@ -138,6 +148,8 @@ namespace TrashMob.Shared.Managers.Prospects
                     NearestPartnerDistanceMiles = nearestDistance.HasValue ? Math.Round(nearestDistance.Value, 1) : null,
                     AverageLatitude = group.HasCoordinates ? Math.Round(group.AverageLatitude, 4) : null,
                     AverageLongitude = group.HasCoordinates ? Math.Round(group.AverageLongitude, 4) : null,
+                    ExistingProspectId = matchingProspect?.Id,
+                    ExistingProspectName = matchingProspect?.Name,
                 });
             }
 

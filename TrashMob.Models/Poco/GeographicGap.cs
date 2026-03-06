@@ -25,5 +25,11 @@ namespace TrashMob.Models.Poco
 
         /// <summary>Gets or sets the average longitude of events in this area.</summary>
         public double? AverageLongitude { get; set; }
+
+        /// <summary>Gets or sets the ID of an existing prospect in the pipeline for this area, if any.</summary>
+        public Guid? ExistingProspectId { get; set; }
+
+        /// <summary>Gets or sets the name of an existing prospect in the pipeline for this area, if any.</summary>
+        public string? ExistingProspectName { get; set; }
     }
 }

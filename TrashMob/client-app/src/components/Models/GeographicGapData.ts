@@ -6,6 +6,8 @@ class GeographicGapData {
     nearestPartnerDistanceMiles: number | null = null;
     averageLatitude: number | null = null;
     averageLongitude: number | null = null;
+    existingProspectId: string | null = null;
+    existingProspectName: string | null = null;
 }
 
 export default GeographicGapData;
