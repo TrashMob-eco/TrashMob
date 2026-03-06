@@ -5,11 +5,11 @@ class ProspectOutreachEmailData {
     subject: string = '';
     htmlBody: string = '';
     status: string = 'Draft';
-    sentDate: string = '';
-    openedDate: string = '';
-    clickedDate: string = '';
+    sentDate: string | null = null;
+    openedDate: string | null = null;
+    clickedDate: string | null = null;
     errorMessage: string = '';
-    createdDate: string = '';
+    createdDate: string | null = null;
 }
 
 export default ProspectOutreachEmailData;

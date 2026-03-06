@@ -7,10 +7,10 @@ class GrantTaskData {
     completedDate: string | null = null;
     sortOrder: number = 0;
     notes: string = '';
-    createdByUserId: string = '';
-    createdDate: string = '';
-    lastUpdatedByUserId: string = '';
-    lastUpdatedDate: string = '';
+    createdByUserId: string | null = null;
+    createdDate: string | null = null;
+    lastUpdatedByUserId: string | null = null;
+    lastUpdatedDate: string | null = null;
 }
 
 export default GrantTaskData;

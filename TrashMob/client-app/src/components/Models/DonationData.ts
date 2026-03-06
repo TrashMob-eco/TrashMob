@@ -13,10 +13,10 @@ class DonationData {
     notes: string = '';
     receiptSent: boolean = false;
     thankYouSent: boolean = false;
-    createdByUserId: string = '';
-    createdDate: string = '';
-    lastUpdatedByUserId: string = '';
-    lastUpdatedDate: string = '';
+    createdByUserId: string | null = null;
+    createdDate: string | null = null;
+    lastUpdatedByUserId: string | null = null;
+    lastUpdatedDate: string | null = null;
 }
 
 export default DonationData;

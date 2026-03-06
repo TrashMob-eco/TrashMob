@@ -86,18 +86,24 @@ const features = [
 // ============================================================================
 
 const pricingFeatures = [
-    { name: 'Create and join events', free: true, community: true },
-    { name: 'Track personal impact', free: true, community: true },
+    { name: 'Create and manage cleanup events', free: true, community: true },
+    { name: 'Event co-leads', free: true, community: true },
+    { name: 'Teams, leaderboards & achievements', free: true, community: true },
+    { name: 'Before/after event photos', free: true, community: true },
+    { name: 'GPS route tracing', free: true, community: true },
     { name: 'Litter reporting', free: true, community: true },
-    { name: 'Join teams', free: true, community: true },
-    { name: 'Branded community page', free: false, community: true },
-    { name: 'Adopt-a-location programs', free: false, community: true },
-    { name: 'Community analytics dashboard', free: false, community: true },
-    { name: 'Bulk invites & newsletters', free: false, community: true },
-    { name: 'Sponsored adoption management', free: false, community: true },
-    { name: 'Professional company portal', free: false, community: true },
-    { name: 'Custom branding & logo', free: false, community: true },
+    { name: 'Impact tracking (weight, bags, hours)', free: true, community: true },
+    { name: 'Social sharing', free: true, community: true },
+    { name: 'Branded community page with custom logo', free: false, community: true },
+    { name: 'Regional community types (city/county/state)', free: false, community: true },
+    { name: 'Adopt-a-location with interactive map editor', free: false, community: true },
+    { name: 'Sponsored adoption & company portals', free: false, community: true },
+    { name: 'Custom waivers', free: false, community: true },
+    { name: 'Bulk email invites & newsletters', free: false, community: true },
+    { name: 'Analytics dashboards & heat maps', free: false, community: true },
+    { name: 'Partner document management', free: false, community: true },
     { name: 'Grant-ready impact reports', free: false, community: true },
+    { name: 'Priority support', free: false, community: true },
 ];
 
 // ============================================================================

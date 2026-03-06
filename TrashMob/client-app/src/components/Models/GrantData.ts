@@ -14,10 +14,10 @@ class GrantData {
     funderContactId: string | null = null;
     grantUrl: string = '';
     notes: string = '';
-    createdByUserId: string = '';
-    createdDate: string = '';
-    lastUpdatedByUserId: string = '';
-    lastUpdatedDate: string = '';
+    createdByUserId: string | null = null;
+    createdDate: string | null = null;
+    lastUpdatedByUserId: string | null = null;
+    lastUpdatedDate: string | null = null;
 }
 
 export default GrantData;
