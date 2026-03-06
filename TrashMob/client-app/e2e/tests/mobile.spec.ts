@@ -22,9 +22,9 @@ test.describe('Mobile Responsiveness', () => {
         await expect(menuButton).toBeVisible();
         await menuButton.click();
 
-        // Navigation items should become visible after clicking hamburger (300ms CSS transition)
-        await expect(page.getByRole('button', { name: /explore/i })).toBeVisible({ timeout: 10000 });
-        await expect(page.getByRole('button', { name: /about/i })).toBeVisible();
+        // Mobile nav uses flat links with section headers, not dropdown buttons
+        await expect(page.getByRole('link', { name: /events/i }).first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByRole('link', { name: /faq/i })).toBeVisible();
     });
 
     test('should display sign in button on mobile', async ({ page }) => {
