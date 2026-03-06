@@ -9,7 +9,8 @@ import { CreateContactRequest } from '@/services/contact';
 import ContactRequestData from '@/components/Models/ContactRequestData';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/components/ui/card';
+import { HeroSection } from '@/components/Customization/HeroSection';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 import { Input } from '@/components/ui/input';
@@ -67,10 +68,10 @@ export const ContactUs = () => {
 
     return (
         <div>
+            <HeroSection Title='Contact Us' Description="We'd love to hear from you." />
             <div className='w-full max-w-xl mx-auto py-16'>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Contact us</CardTitle>
                         <CardDescription>
                             Have a question for the TrashMob team, want to submit a suggestion for improving the
                             website, or just want to tell us you love us? Drop us a note here and we'll be sure to read

@@ -16,13 +16,14 @@ test.describe('Mobile Responsiveness', () => {
     });
 
     test('should toggle navigation menu on hamburger click', async ({ page }) => {
-        await page.goto('/');
+        await page.goto('/', { waitUntil: 'networkidle' });
 
         const menuButton = page.getByRole('button', { name: /toggle menu/i });
+        await expect(menuButton).toBeVisible();
         await menuButton.click();
 
-        // Navigation items should become visible after clicking hamburger
-        await expect(page.getByRole('button', { name: /explore/i })).toBeVisible();
+        // Navigation items should become visible after clicking hamburger (300ms CSS transition)
+        await expect(page.getByRole('button', { name: /explore/i })).toBeVisible({ timeout: 10000 });
         await expect(page.getByRole('button', { name: /about/i })).toBeVisible();
     });
 
@@ -47,13 +48,13 @@ test.describe('Mobile Responsiveness', () => {
 
     test('should load static pages on mobile', async ({ page }) => {
         // Test a few key pages render correctly on mobile
-        await page.goto('/aboutus');
+        await page.goto('/aboutus', { waitUntil: 'networkidle' });
         await expect(page.locator('h1')).toBeVisible();
 
-        await page.goto('/faq');
+        await page.goto('/faq', { waitUntil: 'networkidle' });
         await expect(page.locator('h1').first()).toBeVisible();
 
-        await page.goto('/contactus');
+        await page.goto('/contactus', { waitUntil: 'networkidle' });
         await expect(page.locator('h1')).toBeVisible();
     });
 
