@@ -41,7 +41,15 @@ const EnhancedFormLabel = React.forwardRef<React.ElementRef<typeof LabelPrimitiv
         }
 
         return (
-            <Label ref={ref} className={cn(error && 'text-destructive', className)} htmlFor={formItemId} {...props} />
+            <>
+                <Label
+                    ref={ref}
+                    className={cn(error && 'text-destructive', className)}
+                    htmlFor={formItemId}
+                    {...props}
+                />
+                {required ? <span className='text-destructive'>*</span> : ''}
+            </>
         );
     },
 );

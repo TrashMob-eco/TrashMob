@@ -6,7 +6,8 @@ import { z } from 'zod';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
@@ -151,7 +152,7 @@ export const NoteDialog = ({ open, onOpenChange, contactId, editingNote }: NoteD
                             name='body'
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Note</FormLabel>
+                                    <FormLabel required>Note</FormLabel>
                                     <FormControl>
                                         <Textarea {...field} placeholder='Write your note...' rows={5} />
                                     </FormControl>
