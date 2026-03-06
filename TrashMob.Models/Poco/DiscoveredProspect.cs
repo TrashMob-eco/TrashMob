@@ -20,6 +20,15 @@ namespace TrashMob.Models.Poco
         /// <summary>Gets or sets a suggested contact role or name.</summary>
         public string? ContactSuggestion { get; set; }
 
+        /// <summary>Gets or sets the discovered contact person's full name.</summary>
+        public string? ContactName { get; set; }
+
+        /// <summary>Gets or sets the discovered contact person's email address.</summary>
+        public string? ContactEmail { get; set; }
+
+        /// <summary>Gets or sets the discovered contact person's job title.</summary>
+        public string? ContactTitle { get; set; }
+
         /// <summary>Gets or sets the rationale for why this is a good prospect.</summary>
         public string? Rationale { get; set; }
     }

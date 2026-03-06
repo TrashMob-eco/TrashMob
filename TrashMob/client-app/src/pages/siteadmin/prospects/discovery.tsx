@@ -57,6 +57,9 @@ const discoveredColumns: ColumnDef<DiscoveredProspectData>[] = [
             if (prospect.type) params.set('type', prospect.type);
             if (prospect.estimatedPopulation) params.set('population', String(prospect.estimatedPopulation));
             if (prospect.website) params.set('website', prospect.website);
+            if (prospect.contactName) params.set('contactName', prospect.contactName);
+            if (prospect.contactEmail) params.set('contactEmail', prospect.contactEmail);
+            if (prospect.contactTitle) params.set('contactTitle', prospect.contactTitle);
             return (
                 <Button variant='outline' size='sm' asChild>
                     <Link to={`/siteadmin/prospects/create?${params.toString()}`}>Add to Pipeline</Link>
@@ -87,10 +90,19 @@ const GapResearchButton = ({ gap }: { gap: GeographicGapData }) => {
                 if (prospect.type) params.set('type', prospect.type);
                 if (prospect.estimatedPopulation) params.set('population', String(prospect.estimatedPopulation));
                 if (prospect.website) params.set('website', prospect.website);
+                if (prospect.contactName) params.set('contactName', prospect.contactName);
+                if (prospect.contactEmail) params.set('contactEmail', prospect.contactEmail);
+                if (prospect.contactTitle) params.set('contactTitle', prospect.contactTitle);
 
                 const notes: string[] = [];
                 if (prospect.rationale) notes.push(`AI Research: ${prospect.rationale}`);
                 if (prospect.contactSuggestion) notes.push(`Suggested Contact: ${prospect.contactSuggestion}`);
+                if (prospect.contactName || prospect.contactEmail) {
+                    const contactParts = [prospect.contactName, prospect.contactTitle, prospect.contactEmail]
+                        .filter(Boolean)
+                        .join(' | ');
+                    notes.push(`AI-Discovered Contact: ${contactParts} — verify before sending outreach`);
+                }
                 notes.push(
                     `Source: Geographic gap with ${gap.eventCount} events, nearest partner ${gap.nearestPartnerDistanceMiles != null ? `${gap.nearestPartnerDistanceMiles} mi` : 'none'}`,
                 );
