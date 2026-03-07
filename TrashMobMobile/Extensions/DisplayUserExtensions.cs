@@ -9,7 +9,8 @@
             return new EventAttendeeViewModel
             {
                 MemberSince = displayUser.MemberSince?.GetFormattedLocalDate() ?? string.Empty,
-                UserName = displayUser.UserName ?? string.Empty                
+                UserName = displayUser.UserName ?? string.Empty,
+                IsMinor = displayUser.IsMinor,
             };
         }
     }

@@ -46,5 +46,10 @@
         /// Gets or sets the URL of the user's profile photo.
         /// </summary>
         public string ProfilePhotoUrl { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets whether the user is a minor (13-17).
+        /// </summary>
+        public bool IsMinor { get; set; }
     }
 }

@@ -8,6 +8,7 @@ namespace TrashMob.Shared.Managers
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
+    using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Poco;
@@ -15,8 +16,11 @@ namespace TrashMob.Shared.Managers
     public class EventDependentManager(
         IKeyedRepository<EventDependent> repository,
         IKeyedRepository<Dependent> dependentRepository,
+        IKeyedRepository<Event> eventRepository,
+        IKeyedRepository<User> userRepository,
         IDependentWaiverManager dependentWaiverManager,
-        IEventAttendeeManager eventAttendeeManager)
+        IEventAttendeeManager eventAttendeeManager,
+        IEmailManager emailManager)
         : KeyedManager<EventDependent>(repository), IEventDependentManager
     {
         public async Task<ServiceResult<IEnumerable<EventDependent>>> RegisterDependentsAsync(
@@ -84,7 +88,83 @@ namespace TrashMob.Shared.Managers
                 }
             }
 
+            // Notify parent about registered dependents
+            if (results.Count > 0)
+            {
+                await SendParentNotificationAsync(eventId, results, parentUserId, cancellationToken);
+            }
+
             return ServiceResult<IEnumerable<EventDependent>>.Success(results);
+        }
+
+        private async Task SendParentNotificationAsync(
+            Guid eventId,
+            List<EventDependent> registrations,
+            Guid parentUserId,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var parentUser = await userRepository.GetAsync(parentUserId, cancellationToken);
+                if (parentUser == null || string.IsNullOrWhiteSpace(parentUser.Email))
+                {
+                    return;
+                }
+
+                var evt = await eventRepository.GetAsync(eventId, cancellationToken);
+                if (evt == null)
+                {
+                    return;
+                }
+
+                // Load dependent names for the notification
+                var dependentNames = new List<string>();
+                foreach (var reg in registrations)
+                {
+                    var dependent = await dependentRepository.GetAsync(reg.DependentId, cancellationToken);
+                    if (dependent != null)
+                    {
+                        dependentNames.Add($"{dependent.FirstName} {dependent.LastName}");
+                    }
+                }
+
+                var dependentNameList = string.Join(", ", dependentNames);
+                var eventDate = evt.EventDate.ToLocalTime();
+                var location = string.Join(", ",
+                    new[] { evt.StreetAddress, evt.City, evt.Region }.Where(s => !string.IsNullOrWhiteSpace(s)));
+
+                var subject = $"Your dependent(s) registered for {evt.Name}";
+                var message = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.DependentRegisteredForEvent.ToString());
+                message = message.Replace("{DependentName}", dependentNameList);
+                message = message.Replace("{EventName}", evt.Name);
+                message = message.Replace("{EventDate}", eventDate.ToString("D"));
+                message = message.Replace("{EventTime}", eventDate.ToString("t"));
+                message = message.Replace("{EventLocation}", string.IsNullOrWhiteSpace(location) ? "See event details" : location);
+
+                List<EmailAddress> recipients =
+                [
+                    new() { Name = parentUser.UserName ?? "TrashMob User", Email = parentUser.Email },
+                ];
+
+                var dynamicTemplateData = new
+                {
+                    username = parentUser.UserName ?? "TrashMob User",
+                    emailCopy = message,
+                    subject,
+                };
+
+                await emailManager.SendTemplatedEmailAsync(
+                    subject,
+                    SendGridEmailTemplateId.GenericEmail,
+                    SendGridEmailGroupId.General,
+                    dynamicTemplateData,
+                    recipients,
+                    cancellationToken);
+            }
+            catch
+            {
+                // Non-critical — registration succeeded, don't fail if notification fails
+            }
         }
 
         public async Task<IEnumerable<EventDependent>> GetByEventIdAsync(

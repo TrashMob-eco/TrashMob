@@ -83,9 +83,19 @@ namespace TrashMobDailyJobs
             {
                 while (await reader.ReadAsync())
                 {
+                    var isMinor = reader.GetBoolean(6);
+                    var displayName = reader.GetString(1);
+
+                    if (isMinor)
+                    {
+                        var givenName = reader.IsDBNull(7) ? null : reader.GetString(7);
+                        var surname = reader.IsDBNull(8) ? null : reader.GetString(8);
+                        displayName = MaskMinorName(givenName, surname, displayName);
+                    }
+
                     results.Add((
                         reader.GetGuid(0),
-                        reader.GetString(1),
+                        displayName,
                         reader.IsDBNull(2) ? null : reader.GetString(2),
                         reader.IsDBNull(3) ? null : reader.GetString(3),
                         reader.GetDecimal(4),
@@ -148,7 +158,10 @@ WITH UserStats AS (
         u.Region,
         u.City,
         {scoreExpression} AS Score,
-        COUNT(DISTINCT ea.EventId) AS EventCount
+        COUNT(DISTINCT ea.EventId) AS EventCount,
+        u.IsMinor,
+        u.GivenName,
+        u.Surname
     FROM dbo.Users u
     INNER JOIN dbo.EventAttendees ea ON u.Id = ea.UserId
     INNER JOIN dbo.Events e ON ea.EventId = e.Id
@@ -156,7 +169,7 @@ WITH UserStats AS (
     WHERE u.ShowOnLeaderboards = 1
       AND e.EventStatusId != 3
       {dateFilter}
-    GROUP BY u.Id, u.UserName, u.Region, u.City
+    GROUP BY u.Id, u.UserName, u.Region, u.City, u.IsMinor, u.GivenName, u.Surname
     HAVING COUNT(DISTINCT ea.EventId) >= {MinimumEventsToQualify}
 )
 SELECT
@@ -165,7 +178,10 @@ SELECT
     Region,
     City,
     CAST(Score AS DECIMAL(18,2)) AS Score,
-    ROW_NUMBER() OVER (ORDER BY Score DESC, EventCount DESC, UserId) AS Rank
+    ROW_NUMBER() OVER (ORDER BY Score DESC, EventCount DESC, UserId) AS Rank,
+    IsMinor,
+    GivenName,
+    Surname
 FROM UserStats
 WHERE Score > 0
 ORDER BY Rank";
@@ -286,6 +302,28 @@ SELECT
 FROM TeamStats
 WHERE Score > 0
 ORDER BY Rank";
+        }
+
+        private static string MaskMinorName(string? givenName, string? surname, string userName)
+        {
+            if (!string.IsNullOrWhiteSpace(givenName))
+            {
+                var lastInitial = !string.IsNullOrWhiteSpace(surname) ? $" {surname[0]}." : string.Empty;
+                return $"{givenName}{lastInitial}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(userName))
+            {
+                var parts = userName.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 2)
+                {
+                    return $"{parts[0]} {parts[1][0]}.";
+                }
+
+                return parts[0];
+            }
+
+            return "TrashMob User";
         }
 
         private async Task InsertLeaderboardEntry(

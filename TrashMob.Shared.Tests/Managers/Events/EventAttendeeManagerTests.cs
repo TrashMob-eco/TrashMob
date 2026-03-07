@@ -23,6 +23,7 @@ namespace TrashMob.Shared.Tests.Managers.Events
     {
         private readonly Mock<IBaseRepository<EventAttendee>> _attendeeRepository;
         private readonly Mock<IKeyedRepository<Event>> _eventRepository;
+        private readonly Mock<IKeyedRepository<EventDependent>> _eventDependentRepository;
         private readonly Mock<IEmailManager> _emailManager;
         private readonly EventAttendeeManager _sut;
 
@@ -30,6 +31,7 @@ namespace TrashMob.Shared.Tests.Managers.Events
         {
             _attendeeRepository = new Mock<IBaseRepository<EventAttendee>>();
             _eventRepository = new Mock<IKeyedRepository<Event>>();
+            _eventDependentRepository = new Mock<IKeyedRepository<EventDependent>>();
             _emailManager = new Mock<IEmailManager>();
 
             // Default setup for email manager
@@ -46,6 +48,7 @@ namespace TrashMob.Shared.Tests.Managers.Events
             _sut = new EventAttendeeManager(
                 _attendeeRepository.Object,
                 _eventRepository.Object,
+                _eventDependentRepository.Object,
                 _emailManager.Object);
         }
 

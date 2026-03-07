@@ -41,9 +41,23 @@
                     <Border Style="{StaticResource RoundBorder}" Margin="5,3">
                         <HorizontalStackLayout Padding="10,8" Spacing="10">
                             <VerticalStackLayout Spacing="2" HorizontalOptions="FillAndExpand">
-                                <Label Text="{Binding UserName}"
-                                       FontFamily="LexendSemibold"
-                                       FontSize="Small" />
+                                <HorizontalStackLayout Spacing="6">
+                                    <Label Text="{Binding UserName}"
+                                           FontFamily="LexendSemibold"
+                                           FontSize="Small" />
+                                    <Border Padding="6,2"
+                                            StrokeShape="RoundRectangle 6"
+                                            StrokeThickness="1"
+                                            Stroke="#93c5fd"
+                                            BackgroundColor="#dbeafe"
+                                            IsVisible="{Binding IsMinor}"
+                                            VerticalOptions="Center">
+                                        <Label Text="Minor"
+                                               FontSize="10"
+                                               FontFamily="LexendSemibold"
+                                               TextColor="#1e40af" />
+                                    </Border>
+                                </HorizontalStackLayout>
                                 <Label Text="{Binding MemberSince, StringFormat='Member since {0}'}"
                                        FontSize="Micro"
                                        TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
