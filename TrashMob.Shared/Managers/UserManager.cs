@@ -103,14 +103,14 @@ namespace TrashMob.Shared.Managers
 
             var userDynamicTemplateData = new
             {
-                username = user.UserName,
+                username = user.DisplayFirstName,
                 emailCopy = welcomeMessage,
                 subject = welcomeSubject,
             };
 
             List<EmailAddress> welcomeRecipients =
             [
-                new() { Name = user.UserName, Email = user.Email },
+                new() { Name = user.DisplayFirstName, Email = user.Email },
             ];
 
             await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,

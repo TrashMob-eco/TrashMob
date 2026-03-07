@@ -127,7 +127,7 @@ namespace TrashMob.Shared.Engine
 
             var dynamicTemplateData = new
             {
-                username = user.UserName,
+                username = user.DisplayFirstName,
                 eventName = mobEvent.Name,
                 eventDate = localDate.Date,
                 eventTime = localDate.Time,
@@ -141,7 +141,7 @@ namespace TrashMob.Shared.Engine
 
             List<EmailAddress> recipients =
             [
-                new() { Name = user.UserName, Email = user.Email },
+                new() { Name = user.DisplayFirstName, Email = user.Email },
             ];
 
             Logger.LogInformation("Sending team event email to {Email}, Subject {Subject}", user.Email,

@@ -146,12 +146,12 @@ namespace TrashMob.Shared.Engine
 
                 List<EmailAddress> recipients =
                 [
-                    new() { Name = user.UserName, Email = user.Email },
+                    new() { Name = user.DisplayFirstName, Email = user.Email },
                 ];
 
                 var dynamicTemplateData = new
                 {
-                    username = user.UserName,
+                    username = user.DisplayFirstName,
                     emailCopy,
                     subject,
                 };
