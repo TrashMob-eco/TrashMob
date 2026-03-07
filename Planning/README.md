@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (54 Total)
+### 2026 Projects (55 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -73,6 +73,7 @@
 | [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md) | Route-level metrics, litter density heatmap, route time editing | Complete (Phases 1-3); Phase 2b & 4 Deferred |
 | [Project 49 - Privacy & Compliance Review](./Projects/Project_49_Privacy_Compliance_Review.md) | Deletion audit, data export, GDPR compliance, cookie consent | In Progress (Phases 1-4 Complete, Phase 5 Partial) |
 | [Project 53 - Mobile Offline Persistence](./Projects/Project_53_Mobile_Offline_Persistence.md) | Client-side persistence for routes, metrics, and photos with background sync | Complete (Phases 1–4); Deferred: platform background sync, server-side dedup |
+| [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md) | Pre-event waiver validation, configurable check-in notifications, attendance roster for event leads | Not Started |
 
 #### High Priority (Marketing & Growth)
 
@@ -106,6 +107,7 @@
 - [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md)
 - [Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md) ✅
 - [Project 49 - Privacy & Compliance Review](./Projects/Project_49_Privacy_Compliance_Review.md)
+- [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md)
 
 ### Community Features
 - [Project 9 - Teams](./Projects/Project_09_Teams.md) ✅
