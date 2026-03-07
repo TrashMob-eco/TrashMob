@@ -36,6 +36,8 @@ using OpenTelemetry.Trace;
 using TrashMob.Common;
 using TrashMob.Security;
 using TrashMob.Services;
+using System.IO.Compression;
+using Microsoft.AspNetCore.ResponseCompression;
 using TrashMob.Shared;
 using TrashMob.Shared.Managers;
 using TrashMob.Shared.Managers.Interfaces;
@@ -213,9 +215,24 @@ public class Program
                 x.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory());
             });
 
+        builder.Services.AddResponseCompression(options =>
+        {
+            options.EnableForHttps = true;
+            options.Providers.Add<BrotliCompressionProvider>();
+            options.Providers.Add<GzipCompressionProvider>();
+            options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                ["application/json", "text/plain"]);
+        });
+
+        builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+            options.Level = CompressionLevel.Fastest);
+
+        builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+            options.Level = CompressionLevel.Fastest);
+
         builder.Services.AddDbContext<MobDbContext>(c => c.UseLazyLoadingProxies());
 
-        // Security 
+        // Security
         builder.Services.AddScoped<IAuthorizationHandler, UserOwnsEntityAuthHandler>();
         builder.Services.AddScoped<IAuthorizationHandler, UserIsValidUserAuthHandler>();
         builder.Services.AddScoped<IAuthorizationHandler, UserIsAdminAuthHandler>();
@@ -341,6 +358,7 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+        app.UseResponseCompression();
         app.UseStaticFiles();
         app.UseSpaStaticFiles();
 

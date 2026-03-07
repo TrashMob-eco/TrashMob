@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { GetAllEventsBeingAttendedByUser } from '@/services/events';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
 import { cn } from '@/lib/utils';
-import moment from 'moment';
+import { isCompletedEvent } from '@/lib/event-helpers';
 import { EventPin } from './event-pin';
 import { LitterReportPin, litterReportColors } from '../litterreports/litter-report-pin';
 import {
@@ -125,7 +125,7 @@ export const EventsMap = (props: EventsMapProps) => {
             <GoogleMap id={id} gestureHandling={gestureHandling} {...rest}>
                 {/* Event Markers */}
                 {eventsWithAttendance.map((event) => {
-                    const isCompleted = moment(event.eventDate).isBefore(new Date());
+                    const isCompleted = isCompletedEvent(event);
                     return (
                         <AdvancedMarker
                             key={event.id}
