@@ -21,6 +21,25 @@
                         Command="{Binding AddDependentCommand}"
                         Margin="0,0,0,16" />
 
+                <!-- Invite prompt -->
+                <Border Padding="12"
+                        Margin="0,0,0,12"
+                        BackgroundColor="{AppThemeBinding Light=#dbeafe, Dark=#1e3a5f}"
+                        StrokeShape="RoundRectangle 10"
+                        Stroke="{AppThemeBinding Light=#93c5fd, Dark=#3b82f6}"
+                        StrokeThickness="1"
+                        IsVisible="{Binding HasEligibleDependents}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Invitations Available"
+                               FontFamily="LexendSemibold"
+                               FontSize="14"
+                               TextColor="{AppThemeBinding Light=#1e40af, Dark=#93c5fd}" />
+                        <Label Text="{Binding EligibleDependentsMessage}"
+                               FontSize="13"
+                               TextColor="{AppThemeBinding Light=#1e40af, Dark=#bfdbfe}" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Empty state -->
                 <VerticalStackLayout IsVisible="{Binding AreNoDependentsFound}" Spacing="8">
                     <Label Text="No dependents on file"
