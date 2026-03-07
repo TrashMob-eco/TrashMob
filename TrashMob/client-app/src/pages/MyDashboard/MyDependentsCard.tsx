@@ -7,6 +7,7 @@ import { format, parseISO } from 'date-fns';
 import { Baby, Pencil, Trash2, Plus, Mail, RotateCw, X } from 'lucide-react';
 import { AxiosResponse } from 'axios';
 
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -267,6 +268,9 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
     };
 
     const dependentCount = (dependents || []).length;
+    const eligibleDependents = (dependents || []).filter(
+        (dep) => dep.dateOfBirth && getAge(dep.dateOfBirth) >= 13 && !getActiveInvitation(dep.id),
+    );
     const isSubmitting = addMutation.isPending || updateMutation.isPending;
 
     return (
@@ -283,6 +287,18 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                     </div>
                 </CardHeader>
                 <CardContent>
+                    {eligibleDependents.length > 0 && (
+                        <Alert className='mb-4'>
+                            <Mail className='h-4 w-4' />
+                            <AlertTitle>Invitations Available</AlertTitle>
+                            <AlertDescription>
+                                {eligibleDependents.length === 1
+                                    ? `${eligibleDependents[0].firstName} is old enough (13+) to create their own TrashMob account.`
+                                    : `${eligibleDependents.length} of your dependents are old enough (13+) to create their own TrashMob accounts.`}{' '}
+                                Use the <Mail className='inline h-3 w-3' /> button to send them an invitation!
+                            </AlertDescription>
+                        </Alert>
+                    )}
                     {dependentCount === 0 ? (
                         <p className='text-muted-foreground text-center py-4'>
                             No dependents added yet. Add a dependent minor to register them for events.

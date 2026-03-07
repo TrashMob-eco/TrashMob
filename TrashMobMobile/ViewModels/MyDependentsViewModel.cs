@@ -20,6 +20,12 @@ namespace TrashMobMobile.ViewModels
         [ObservableProperty]
         private bool areNoDependentsFound = true;
 
+        [ObservableProperty]
+        private bool hasEligibleDependents;
+
+        [ObservableProperty]
+        private string eligibleDependentsMessage = string.Empty;
+
         public ObservableCollection<DependentWithInvitation> Dependents { get; } = [];
 
         public async Task Init()
@@ -57,6 +63,12 @@ namespace TrashMobMobile.ViewModels
 
                 AreDependentsFound = Dependents.Count > 0;
                 AreNoDependentsFound = !AreDependentsFound;
+
+                var eligibleCount = Dependents.Count(d => d.IsEligibleForInvite);
+                HasEligibleDependents = eligibleCount > 0;
+                EligibleDependentsMessage = eligibleCount == 1
+                    ? $"{Dependents.First(d => d.IsEligibleForInvite).Dependent.FirstName} is old enough (13+) to create their own TrashMob account. Tap Invite to send them an invitation!"
+                    : $"{eligibleCount} of your dependents are old enough (13+) to create their own accounts. Tap Invite to send them invitations!";
             }, "Failed to load dependents. Please try again.");
         }
 
