@@ -98,24 +98,31 @@
             return false;
         }
 
+        public static DateTimeOffset GetEventEndTime(this Event mobEvent)
+        {
+            return mobEvent.EventDate.ToUniversalTime()
+                .AddHours(mobEvent.DurationHours)
+                .AddMinutes(mobEvent.DurationMinutes);
+        }
+
         public static bool IsCompleted(this Event mobEvent)
         {
-            return mobEvent.EventDate.ToUniversalTime() < DateTimeOffset.UtcNow;
+            return mobEvent.GetEventEndTime() < DateTimeOffset.UtcNow;
         }
 
         public static bool IsCancellable(this Event mobEvent)
         {
-            return mobEvent.EventDate.ToUniversalTime() > DateTimeOffset.UtcNow;
+            return mobEvent.GetEventEndTime() > DateTimeOffset.UtcNow;
         }
 
         public static bool AreNewRegistrationsAllowed(this Event mobEvent)
         {
-            return mobEvent.EventDate.ToUniversalTime() > DateTimeOffset.UtcNow;
+            return mobEvent.GetEventEndTime() > DateTimeOffset.UtcNow;
         }
 
         public static bool AreUnregistrationsAllowed(this Event mobEvent)
         {
-            return mobEvent.EventDate.ToUniversalTime() > DateTimeOffset.UtcNow;
+            return mobEvent.GetEventEndTime() > DateTimeOffset.UtcNow;
         }
 
         public static EventViewModel ToEventViewModel(this Event mobEvent, Guid userId)

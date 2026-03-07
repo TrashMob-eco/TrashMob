@@ -32,11 +32,14 @@
             services.AddSingleton<IEventPhotoManager, EventPhotoManager>();
             services.AddSingleton<IEventPhotoRestService, EventPhotoRestService>();
             services.AddSingleton<IEventPartnerLocationServiceRestService, EventPartnerLocationServiceRestService>();
-            services
-                .AddSingleton<IEventPartnerLocationServiceStatusRestService,
-                    EventPartnerLocationServiceStatusRestService>();
+            // CachedLookupService wraps EventType, ServiceType, and EventPartnerLocationServiceStatus
+            // with in-memory caching — lookup data is fetched once per app session
+            services.AddSingleton<CachedLookupService>();
+            services.AddSingleton<IEventPartnerLocationServiceStatusRestService>(sp =>
+                sp.GetRequiredService<CachedLookupService>());
             services.AddSingleton<IEventSummaryRestService, EventSummaryRestService>();
-            services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
+            services.AddSingleton<IEventTypeRestService>(sp =>
+                sp.GetRequiredService<CachedLookupService>());
             services.AddSingleton<ILeaderboardManager, LeaderboardManager>();
             services.AddSingleton<ILeaderboardRestService, LeaderboardRestService>();
             services.AddSingleton<INewsletterPreferenceManager, NewsletterPreferenceManager>();
@@ -48,7 +51,8 @@
             services.AddSingleton<IMobEventRestService, MobEventRestService>();
             services.AddSingleton<IPickupLocationManager, PickupLocationManager>();
             services.AddSingleton<IPickupLocationRestService, PickupLocationRestService>();
-            services.AddSingleton<IServiceTypeRestService, ServiceTypeRestService>();
+            services.AddSingleton<IServiceTypeRestService>(sp =>
+                sp.GetRequiredService<CachedLookupService>());
             services.AddSingleton<IAppVersionRestService, AppVersionRestService>();
             services.AddSingleton<IAppVersionCheckService, AppVersionCheckService>();
             services.AddSingleton<IStatsRestService, StatsRestService>();
@@ -104,8 +108,9 @@
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
-                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
-                    retryAttempt)));
+                .WaitAndRetryAsync(3, retryAttempt =>
+                    TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
+                    + TimeSpan.FromMilliseconds(Random.Shared.Next(0, 1000)));
         }
     }
 }

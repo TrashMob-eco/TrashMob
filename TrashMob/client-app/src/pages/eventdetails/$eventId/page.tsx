@@ -8,6 +8,7 @@ import { ShareDialog } from '@/components/sharing';
 import { RegisterBtn } from '@/components/Customization/RegisterBtn';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { getEventShareableContent, getEventShareMessage } from '@/lib/sharing-messages';
+import { isCompletedEvent } from '@/lib/event-helpers';
 import { GetAllEventsBeingAttendedByUser, GetEventAttendees, GetEventLeads } from '@/services/events';
 import { GetEventDependentCount } from '@/services/dependents';
 import { useGetEvent } from '@/hooks/useGetEvent';
@@ -97,7 +98,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
         maxNumberOfParticipants,
     } = event || {};
 
-    const isEventCompleted = moment(eventDate).isBefore(new Date());
+    const isEventCompleted = event ? isCompletedEvent(event) : true;
 
     const startDateTime = moment(eventDate);
     const endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');

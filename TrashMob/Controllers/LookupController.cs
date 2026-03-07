@@ -19,6 +19,7 @@
         /// </summary>
         /// <remarks>A list of lookup items.</remarks>
         [HttpGet]
+        [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> Get()
         {
             var types = await Manager.GetAsync();

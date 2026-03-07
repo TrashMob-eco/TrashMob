@@ -145,6 +145,19 @@ resource route 'Microsoft.Cdn/profiles/afdEndpoints/routes@2024-02-01' = {
     linkToDefaultDomain: 'Enabled'
     httpsRedirect: 'Enabled'
     enabledState: 'Enabled'
+    cacheConfiguration: {
+      compressionSettings: {
+        isCompressionEnabled: true
+        contentTypesToCompress: [
+          'application/json'
+          'text/plain'
+          'text/html'
+          'application/javascript'
+          'text/css'
+          'application/xml'
+        ]
+      }
+    }
   }
   dependsOn: [
     origin
