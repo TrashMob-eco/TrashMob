@@ -367,18 +367,20 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                                             </td>
                                             <td className='py-3 px-2 text-right'>
                                                 {dep.dateOfBirth &&
-                                                    getAge(dep.dateOfBirth) >= 13 &&
-                                                    !getActiveInvitation(dep.id) ? <Button
-                                                            variant='ghost'
-                                                            size='sm'
-                                                            onClick={() => {
-                                                                setInvitingDependent(dep);
-                                                                setInviteEmail('');
-                                                            }}
-                                                            title='Invite to create account'
-                                                        >
-                                                            <Mail className='h-4 w-4 text-primary' />
-                                                        </Button> : null}
+                                                getAge(dep.dateOfBirth) >= 13 &&
+                                                !getActiveInvitation(dep.id) ? (
+                                                    <Button
+                                                        variant='ghost'
+                                                        size='sm'
+                                                        onClick={() => {
+                                                            setInvitingDependent(dep);
+                                                            setInviteEmail('');
+                                                        }}
+                                                        title='Invite to create account'
+                                                    >
+                                                        <Mail className='h-4 w-4 text-primary' />
+                                                    </Button>
+                                                ) : null}
                                                 <Button
                                                     variant='ghost'
                                                     size='sm'
@@ -539,8 +541,8 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                     <DialogHeader>
                         <DialogTitle>Invite to Create Account</DialogTitle>
                         <DialogDescription>
-                            Send {invitingDependent?.firstName} an email invitation to create their own TrashMob account.
-                            They must be 13 or older.
+                            Send {invitingDependent?.firstName} an email invitation to create their own TrashMob
+                            account. They must be 13 or older.
                         </DialogDescription>
                     </DialogHeader>
                     <div className='space-y-4'>
