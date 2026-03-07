@@ -52,6 +52,53 @@ namespace TrashMobMobile.Services
             response.EnsureSuccessStatusCode();
         }
 
+        // Dependent Invitations
+
+        public async Task<List<DependentInvitation>> GetDependentInvitationsAsync(
+            Guid userId, Guid dependentId, CancellationToken cancellationToken = default)
+        {
+            using var client = CreateHttpClient("dependentinvitations/");
+            var requestUri = $"users/{userId}/dependents/{dependentId}";
+
+            using var response = await client.GetAsync(requestUri, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonConvert.DeserializeObject<List<DependentInvitation>>(content) ?? [];
+        }
+
+        public async Task<DependentInvitation> CreateDependentInvitationAsync(
+            Guid userId, Guid dependentId, string email, CancellationToken cancellationToken = default)
+        {
+            using var client = CreateHttpClient("dependentinvitations/");
+            var requestUri = $"users/{userId}/dependents/{dependentId}";
+            var body = JsonContent.Create(new { Email = email }, options: SerializerOptions);
+
+            using var response = await client.PostAsync(requestUri, body, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonConvert.DeserializeObject<DependentInvitation>(content)!;
+        }
+
+        public async Task CancelDependentInvitationAsync(Guid invitationId, CancellationToken cancellationToken = default)
+        {
+            using var client = CreateHttpClient("dependentinvitations/");
+            var requestUri = $"{invitationId}/cancel";
+
+            using var response = await client.PostAsync(requestUri, null, cancellationToken);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<DependentInvitation> ResendDependentInvitationAsync(Guid invitationId, CancellationToken cancellationToken = default)
+        {
+            using var client = CreateHttpClient("dependentinvitations/");
+            var requestUri = $"{invitationId}/resend";
+
+            using var response = await client.PostAsync(requestUri, null, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonConvert.DeserializeObject<DependentInvitation>(content)!;
+        }
+
         // Dependent Waivers
 
         public async Task<DependentWaiver> SignWaiverAsync(
