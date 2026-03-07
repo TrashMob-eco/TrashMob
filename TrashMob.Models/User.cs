@@ -43,6 +43,10 @@ namespace TrashMob.Models
             DependentWaiversUpdated = new HashSet<DependentWaiver>();
             EventDependentsCreated = new HashSet<EventDependent>();
             EventDependentsUpdated = new HashSet<EventDependent>();
+            DependentInvitationsSent = new HashSet<DependentInvitation>();
+            DependentInvitationsAccepted = new HashSet<DependentInvitation>();
+            DependentInvitationsCreated = new HashSet<DependentInvitation>();
+            DependentInvitationsUpdated = new HashSet<DependentInvitation>();
         }
 
         /// <summary>
@@ -164,6 +168,21 @@ namespace TrashMob.Models
         /// Gets or sets the date of the user's last data export request (used for rate limiting).
         /// </summary>
         public DateTimeOffset? LastDataExportRequestedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this user is a minor (13-17) with a linked parent account.
+        /// </summary>
+        public bool IsMinor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent user ID for minor accounts linked through dependent invitation.
+        /// </summary>
+        public Guid? ParentUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the dependent record ID this minor's user account was created from.
+        /// </summary>
+        public Guid? DependentId { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of events the user is attending.
@@ -758,6 +777,26 @@ namespace TrashMob.Models
         /// Gets or sets the collection of event dependents last updated by this user.
         /// </summary>
         public virtual ICollection<EventDependent> EventDependentsUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dependent invitations sent by this user (as parent).
+        /// </summary>
+        public virtual ICollection<DependentInvitation> DependentInvitationsSent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dependent invitations accepted by this user (as minor).
+        /// </summary>
+        public virtual ICollection<DependentInvitation> DependentInvitationsAccepted { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dependent invitations created by this user.
+        /// </summary>
+        public virtual ICollection<DependentInvitation> DependentInvitationsCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dependent invitations last updated by this user.
+        /// </summary>
+        public virtual ICollection<DependentInvitation> DependentInvitationsUpdated { get; set; }
 
         #endregion
     }

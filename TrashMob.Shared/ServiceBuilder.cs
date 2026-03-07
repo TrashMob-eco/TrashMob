@@ -139,6 +139,7 @@
             services.AddScoped<IDependentManager, DependentManager>();
             services.AddScoped<IDependentWaiverManager, DependentWaiverManager>();
             services.AddScoped<IEventDependentManager, EventDependentManager>();
+            services.AddScoped<IDependentInvitationManager, DependentInvitationManager>();
 
             // Feature Metrics
             services.AddSingleton<IFeatureMetricsService, FeatureMetricsService>();
@@ -280,6 +281,7 @@
             services.AddScoped<IKeyedRepository<Dependent>, KeyedRepository<Dependent>>();
             services.AddScoped<IKeyedRepository<DependentWaiver>, KeyedRepository<DependentWaiver>>();
             services.AddScoped<IKeyedRepository<EventDependent>, KeyedRepository<EventDependent>>();
+            services.AddScoped<IKeyedRepository<DependentInvitation>, KeyedRepository<DependentInvitation>>();
 
             // Email Invite repositories
             services.AddScoped<IKeyedRepository<EmailInviteBatch>, KeyedRepository<EmailInviteBatch>>();

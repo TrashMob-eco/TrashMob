@@ -68,5 +68,10 @@ namespace TrashMob.Models
         /// Gets or sets the waivers signed for this dependent.
         /// </summary>
         public virtual ICollection<DependentWaiver> DependentWaivers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the invitations sent for this dependent to create an account.
+        /// </summary>
+        public virtual ICollection<DependentInvitation> DependentInvitations { get; set; }
     }
 }

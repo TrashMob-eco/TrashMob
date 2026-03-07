@@ -16,6 +16,7 @@ namespace TrashMob.Security
         IHttpContextAccessor httpContext,
         IUserManager userManager,
         ICiamGraphService ciamGraphService,
+        IDependentInvitationManager dependentInvitationManager,
         ILogger<UserIsValidUserAuthHandler> logger) : AuthorizationHandler<UserIsValidUserRequirement>
     {
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
@@ -227,6 +228,20 @@ namespace TrashMob.Security
             {
                 var createdUser = await userManager.AddAsync(newUser, CancellationToken.None);
                 logger.LogInformation("Auto-created user {Email} (ObjectId: {ObjectId}) on first Entra login", email, objectId);
+
+                // Check if this new user's email matches a pending dependent invitation
+                if (createdUser is not null)
+                {
+                    try
+                    {
+                        await dependentInvitationManager.TryAcceptByEmailAsync(email, createdUser, CancellationToken.None);
+                    }
+                    catch (Exception linkEx)
+                    {
+                        logger.LogError(linkEx, "Failed to check dependent invitation for {Email}", email);
+                    }
+                }
+
                 return createdUser;
             }
             catch (Exception ex)
