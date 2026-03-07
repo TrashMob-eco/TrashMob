@@ -30,4 +30,7 @@ public partial class EventAttendeeViewModel : ObservableObject
 
     [ObservableProperty]
     private bool canDemote;
+
+    [ObservableProperty]
+    private bool isMinor;
 }

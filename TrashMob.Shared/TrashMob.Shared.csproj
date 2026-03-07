@@ -104,6 +104,8 @@
     <EmbeddedResource Include="Engine\EmailCopy\DonationThankYou.html" />
     <EmbeddedResource Include="Engine\EmailCopy\DonationReceipt.html" />
     <EmbeddedResource Include="Engine\EmailCopy\FundraisingAppeal.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\InviteMinorToCreateAccount.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\DependentRegisteredForEvent.html" />
   </ItemGroup>
 
   <ItemGroup>

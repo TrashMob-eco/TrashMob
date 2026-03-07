@@ -19,6 +19,7 @@ namespace TrashMob.Shared.Managers.Events
     public class EventAttendeeManager(
         IBaseRepository<EventAttendee> repository,
         IKeyedRepository<Event> eventRepository,
+        IKeyedRepository<EventDependent> eventDependentRepository,
         IEmailManager emailManager)
         : BaseManager<EventAttendee>(repository), IBaseManager<EventAttendee>, IEventAttendeeManager
     {
@@ -35,6 +36,16 @@ namespace TrashMob.Shared.Managers.Events
         /// <inheritdoc />
         public override async Task<int> Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken)
         {
+            // Auto-unregister any dependents this parent registered for the event
+            var dependentRegistrations = await eventDependentRepository
+                .Get(ed => ed.EventId == parentId && ed.ParentUserId == secondId)
+                .ToListAsync(cancellationToken);
+
+            foreach (var registration in dependentRegistrations)
+            {
+                await eventDependentRepository.DeleteAsync(registration);
+            }
+
             var eventAttendee = await Repository.Get(ea => ea.EventId == parentId && ea.UserId == secondId)
                 .FirstOrDefaultAsync(cancellationToken);
 

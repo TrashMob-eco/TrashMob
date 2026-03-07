@@ -38,6 +38,8 @@ class UserData {
     dateOfBirth: string = '';
 
     profilePhotoUrl: string = '';
+
+    isMinor: boolean = false;
 }
 
 export default UserData;

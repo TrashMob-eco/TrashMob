@@ -254,5 +254,10 @@
         /// Invitation sent to a minor dependent to create their own TrashMob account.
         /// </summary>
         InviteMinorToCreateAccount = 50,
+
+        /// <summary>
+        /// Notification sent to a parent when their dependent is registered for an event.
+        /// </summary>
+        DependentRegisteredForEvent = 51,
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Shared.Poco
 {
+    using System;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
 
@@ -15,7 +16,7 @@
         /// <returns>A <see cref="DisplayUser"/> containing the user's display information.</returns>
         public static DisplayUser ToDisplayUser(this User user)
         {
-            return new DisplayUser
+            var displayUser = new DisplayUser
             {
                 City = user.City,
                 Country = user.Country,
@@ -25,7 +26,43 @@
                 MemberSince = user.MemberSince,
                 Region = user.Region,
                 ProfilePhotoUrl = user.ProfilePhotoUrl,
+                IsMinor = user.IsMinor,
             };
+
+            if (user.IsMinor)
+            {
+                displayUser.UserName = MaskMinorName(user);
+                displayUser.Email = string.Empty;
+            }
+
+            return displayUser;
+        }
+
+        /// <summary>
+        /// Masks a minor's name to "FirstName L." format for privacy.
+        /// </summary>
+        private static string MaskMinorName(User user)
+        {
+            // Prefer GivenName/Surname if available
+            if (!string.IsNullOrWhiteSpace(user.GivenName))
+            {
+                var lastInitial = !string.IsNullOrWhiteSpace(user.Surname) ? $" {user.Surname[0]}." : string.Empty;
+                return $"{user.GivenName}{lastInitial}";
+            }
+
+            // Fall back to splitting UserName
+            if (!string.IsNullOrWhiteSpace(user.UserName))
+            {
+                var parts = user.UserName.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 2)
+                {
+                    return $"{parts[0]} {parts[1][0]}.";
+                }
+
+                return parts[0];
+            }
+
+            return "TrashMob User";
         }
 
         /// <summary>
