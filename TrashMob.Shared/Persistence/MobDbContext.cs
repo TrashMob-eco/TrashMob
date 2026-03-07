@@ -186,6 +186,8 @@
 
         public virtual DbSet<EventDependent> EventDependents { get; set; }
 
+        public virtual DbSet<DependentInvitation> DependentInvitations { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -1639,6 +1641,8 @@
                         Id = Guid.Empty, City = "Anytown", Country = "AnyCountry", Email = "info@trashmob.eco",
                         Region = "AnyState", UserName = "TrashMob", ShowOnLeaderboards = false,
                     });
+
+                entity.Property(e => e.IsMinor).HasDefaultValue(false);
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.UsersCreated)
@@ -3877,6 +3881,65 @@
 
                 entity.HasIndex(e => e.ParentUserId)
                     .HasDatabaseName("IX_EventDependents_ParentUserId");
+            });
+
+            // Dependent invitation entities
+
+            modelBuilder.Entity<DependentInvitation>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(256);
+                entity.Property(e => e.TokenHash).IsRequired().HasMaxLength(128);
+                entity.Property(e => e.DateInvited).IsRequired();
+                entity.Property(e => e.ExpiresDate).IsRequired();
+
+                entity.HasOne(d => d.Dependent)
+                    .WithMany(p => p.DependentInvitations)
+                    .HasForeignKey(d => d.DependentId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_DependentInvitations_Dependent");
+
+                entity.HasOne(d => d.ParentUser)
+                    .WithMany(p => p.DependentInvitationsSent)
+                    .HasForeignKey(d => d.ParentUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_DependentInvitations_User_Parent");
+
+                entity.HasOne(d => d.AcceptedByUser)
+                    .WithMany(p => p.DependentInvitationsAccepted)
+                    .HasForeignKey(d => d.AcceptedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DependentInvitations_User_AcceptedBy");
+
+                entity.HasOne(d => d.InvitationStatus)
+                    .WithMany(p => p.DependentInvitations)
+                    .HasForeignKey(d => d.InvitationStatusId)
+                    .HasConstraintName("FK_DependentInvitations_InvitationStatus");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.DependentInvitationsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DependentInvitations_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.DependentInvitationsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DependentInvitations_User_LastUpdatedBy");
+
+                entity.HasIndex(e => e.TokenHash)
+                    .IsUnique()
+                    .HasDatabaseName("IX_DependentInvitations_TokenHash");
+
+                entity.HasIndex(e => e.DependentId)
+                    .HasDatabaseName("IX_DependentInvitations_DependentId");
+
+                entity.HasIndex(e => e.ParentUserId)
+                    .HasDatabaseName("IX_DependentInvitations_ParentUserId");
+
+                entity.HasIndex(e => new { e.Email, e.InvitationStatusId })
+                    .HasDatabaseName("IX_DependentInvitations_Email_Status");
             });
         }
     }

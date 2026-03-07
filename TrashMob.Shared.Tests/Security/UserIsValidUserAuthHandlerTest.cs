@@ -18,6 +18,7 @@ namespace TrashMob.Shared.Tests.Security
     {
         private readonly Mock<IUserManager> _mockUserManager;
         private readonly Mock<ICiamGraphService> _mockCiamGraphService;
+        private readonly Mock<IDependentInvitationManager> _mockDependentInvitationManager;
         private readonly Mock<ILogger<UserIsValidUserAuthHandler>> _mockLogger;
         private readonly UserIsValidUserAuthHandler _sut;
         private readonly Mock<Microsoft.AspNetCore.Http.IHttpContextAccessor> _mockHttpContextAccessor;
@@ -26,12 +27,14 @@ namespace TrashMob.Shared.Tests.Security
         {
             _mockUserManager = new Mock<IUserManager>();
             _mockCiamGraphService = new Mock<ICiamGraphService>();
+            _mockDependentInvitationManager = new Mock<IDependentInvitationManager>();
             _mockLogger = new Mock<ILogger<UserIsValidUserAuthHandler>>();
             _mockHttpContextAccessor = AuthHandlerTestHelper.CreateHttpContextAccessor();
             _sut = new UserIsValidUserAuthHandler(
                 _mockHttpContextAccessor.Object,
                 _mockUserManager.Object,
                 _mockCiamGraphService.Object,
+                _mockDependentInvitationManager.Object,
                 _mockLogger.Object);
         }
 

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format, parseISO } from 'date-fns';
-import { Baby, Pencil, Trash2, Plus } from 'lucide-react';
+import { Baby, Pencil, Trash2, Plus, Mail, RotateCw, X } from 'lucide-react';
 import { AxiosResponse } from 'axios';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,6 +36,13 @@ import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 import { useToast } from '@/hooks/use-toast';
 import DependentData from '@/components/Models/DependentData';
 import { GetMyDependents, AddDependent, UpdateDependent, DeleteDependent } from '@/services/dependents';
+import {
+    GetDependentInvitations,
+    CreateDependentInvitation,
+    CancelDependentInvitation,
+    ResendDependentInvitation,
+    DependentInvitationData,
+} from '@/services/dependent-invitations';
 
 interface MyDependentsCardProps {
     userId: string;
@@ -60,6 +67,8 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
     const [showFormDialog, setShowFormDialog] = useState(false);
     const [editingDependent, setEditingDependent] = useState<DependentData | null>(null);
     const [deletingDependent, setDeletingDependent] = useState<DependentData | null>(null);
+    const [invitingDependent, setInvitingDependent] = useState<DependentData | null>(null);
+    const [inviteEmail, setInviteEmail] = useState('');
 
     const queryConfig = GetMyDependents({ userId });
     const { data: dependents } = useQuery<AxiosResponse<DependentData[]>, unknown, DependentData[]>({
@@ -84,6 +93,91 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
     const invalidateDependents = () => {
         queryClient.invalidateQueries({ queryKey: ['/users', userId, 'dependents'], refetchType: 'all' });
     };
+
+    const getAge = (dateOfBirth: string): number => {
+        const dob = new Date(dateOfBirth);
+        const today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        const monthDiff = today.getMonth() - dob.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
+    // Track invitations per dependent
+    const invitationQueries = (dependents || [])
+        .filter((dep) => dep.dateOfBirth && getAge(dep.dateOfBirth) >= 13)
+        .map((dep) => {
+            const config = GetDependentInvitations({ userId, dependentId: dep.id });
+            return { dependentId: dep.id, ...config };
+        });
+
+    // Use a single query for all invitations - we'll fetch them individually
+    const invitationResults = new Map<string, DependentInvitationData[]>();
+    for (const q of invitationQueries) {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const { data } = useQuery({
+            queryKey: q.key,
+            queryFn: q.service,
+            enabled: !!userId,
+            select: (res: { data: DependentInvitationData[] }) => res.data,
+        });
+        if (data) {
+            invitationResults.set(q.dependentId, data);
+        }
+    }
+
+    const getActiveInvitation = (dependentId: string): DependentInvitationData | undefined => {
+        const invitations = invitationResults.get(dependentId);
+        if (!invitations) return undefined;
+        // Status 2 = Sent (active), Status 3 = Accepted
+        return invitations.find((i) => i.invitationStatusId === 2 || i.invitationStatusId === 3);
+    };
+
+    const createInviteMutation = useMutation({
+        mutationFn: async () => {
+            if (!invitingDependent) return;
+            return CreateDependentInvitation({ userId, dependentId: invitingDependent.id }).service({
+                email: inviteEmail,
+            });
+        },
+        onSuccess: () => {
+            toast({ variant: 'primary', title: 'Invitation sent!' });
+            queryClient.invalidateQueries({ queryKey: ['/dependentinvitations'] });
+            setInvitingDependent(null);
+            setInviteEmail('');
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to send invitation.' });
+        },
+    });
+
+    const cancelInviteMutation = useMutation({
+        mutationFn: async (invitationId: string) => {
+            return CancelDependentInvitation({ invitationId }).service();
+        },
+        onSuccess: () => {
+            toast({ variant: 'primary', title: 'Invitation canceled.' });
+            queryClient.invalidateQueries({ queryKey: ['/dependentinvitations'] });
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to cancel invitation.' });
+        },
+    });
+
+    const resendInviteMutation = useMutation({
+        mutationFn: async (invitationId: string) => {
+            return ResendDependentInvitation({ invitationId }).service();
+        },
+        onSuccess: () => {
+            toast({ variant: 'primary', title: 'Invitation resent!' });
+            queryClient.invalidateQueries({ queryKey: ['/dependentinvitations'] });
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Failed to resend invitation.' });
+        },
+    });
 
     const addMutation = useMutation({
         mutationFn: AddDependent({ userId }).service,
@@ -201,6 +295,7 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                                         <th className='text-left py-2 px-2 font-medium'>Name</th>
                                         <th className='text-left py-2 px-2 font-medium'>Relationship</th>
                                         <th className='text-left py-2 px-2 font-medium'>Date of Birth</th>
+                                        <th className='text-left py-2 px-2 font-medium'>Account</th>
                                         <th className='text-right py-2 px-2 font-medium'>Actions</th>
                                     </tr>
                                 </thead>
@@ -225,7 +320,67 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                                                     ? format(parseISO(dep.dateOfBirth), 'MMM d, yyyy')
                                                     : '—'}
                                             </td>
+                                            <td className='py-3 px-2'>
+                                                {(() => {
+                                                    const activeInvite = getActiveInvitation(dep.id);
+                                                    if (activeInvite?.invitationStatusId === 3) {
+                                                        return <Badge variant='default'>Account Created</Badge>;
+                                                    }
+                                                    if (activeInvite?.invitationStatusId === 2) {
+                                                        return (
+                                                            <div className='flex items-center gap-1'>
+                                                                <Badge variant='outline'>Invited</Badge>
+                                                                <Button
+                                                                    variant='ghost'
+                                                                    size='sm'
+                                                                    onClick={() =>
+                                                                        resendInviteMutation.mutate(activeInvite.id)
+                                                                    }
+                                                                    title='Resend invitation'
+                                                                    disabled={resendInviteMutation.isPending}
+                                                                >
+                                                                    <RotateCw className='h-3 w-3' />
+                                                                </Button>
+                                                                <Button
+                                                                    variant='ghost'
+                                                                    size='sm'
+                                                                    onClick={() =>
+                                                                        cancelInviteMutation.mutate(activeInvite.id)
+                                                                    }
+                                                                    title='Cancel invitation'
+                                                                    disabled={cancelInviteMutation.isPending}
+                                                                >
+                                                                    <X className='h-3 w-3 text-destructive' />
+                                                                </Button>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    if (dep.dateOfBirth && getAge(dep.dateOfBirth) >= 13) {
+                                                        return (
+                                                            <Badge variant='secondary' className='text-xs'>
+                                                                Eligible
+                                                            </Badge>
+                                                        );
+                                                    }
+                                                    return <span className='text-xs text-muted-foreground'>—</span>;
+                                                })()}
+                                            </td>
                                             <td className='py-3 px-2 text-right'>
+                                                {dep.dateOfBirth &&
+                                                getAge(dep.dateOfBirth) >= 13 &&
+                                                !getActiveInvitation(dep.id) ? (
+                                                    <Button
+                                                        variant='ghost'
+                                                        size='sm'
+                                                        onClick={() => {
+                                                            setInvitingDependent(dep);
+                                                            setInviteEmail('');
+                                                        }}
+                                                        title='Invite to create account'
+                                                    >
+                                                        <Mail className='h-4 w-4 text-primary' />
+                                                    </Button>
+                                                ) : null}
                                                 <Button
                                                     variant='ghost'
                                                     size='sm'
@@ -369,6 +524,62 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                             </DialogFooter>
                         </form>
                     </Form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Invite Dialog */}
+            <Dialog
+                open={!!invitingDependent}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setInvitingDependent(null);
+                        setInviteEmail('');
+                    }
+                }}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Invite to Create Account</DialogTitle>
+                        <DialogDescription>
+                            Send {invitingDependent?.firstName} an email invitation to create their own TrashMob
+                            account. They must be 13 or older.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className='space-y-4'>
+                        <div>
+                            <label htmlFor='invite-email' className='text-sm font-medium'>
+                                Email Address
+                            </label>
+                            <Input
+                                id='invite-email'
+                                type='email'
+                                placeholder="Enter dependent's email"
+                                value={inviteEmail}
+                                onChange={(e) => setInviteEmail(e.target.value)}
+                            />
+                            <p className='text-xs text-muted-foreground mt-1'>
+                                The invitation will be sent to this email. The link expires in 30 days.
+                            </p>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button
+                            variant='outline'
+                            onClick={() => {
+                                setInvitingDependent(null);
+                                setInviteEmail('');
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={() => createInviteMutation.mutate()}
+                            disabled={!inviteEmail || createInviteMutation.isPending}
+                        >
+                            <Mail className='h-4 w-4 mr-1' />
+                            {createInviteMutation.isPending ? 'Sending...' : 'Send Invitation'}
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 

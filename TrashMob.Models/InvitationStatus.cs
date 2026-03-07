@@ -13,11 +13,17 @@ namespace TrashMob.Models
         public InvitationStatus()
         {
             PartnerAdminInvitations = new HashSet<PartnerAdminInvitation>();
+            DependentInvitations = new HashSet<DependentInvitation>();
         }
 
         /// <summary>
         /// Gets or sets the collection of partner admin invitations with this status.
         /// </summary>
         public virtual ICollection<PartnerAdminInvitation> PartnerAdminInvitations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dependent invitations with this status.
+        /// </summary>
+        public virtual ICollection<DependentInvitation> DependentInvitations { get; set; }
     }
 }

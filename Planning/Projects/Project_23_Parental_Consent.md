@@ -22,12 +22,13 @@ Support parent-managed dependents or direct minor registration with age verifica
 
 The Privo/parental consent work is implemented as part of the [Project 1 — Auth Revamp](./Project_01_Auth_Revamp.md) phased rollout:
 
-| Project 23 Phase | Implemented In | Description |
-|-----------------|----------------|-------------|
-| Phase 1 (Age Verification) | **Project 1, Phase 3** | Custom Authentication Extension for age gate via Privo API |
-| Phase 2 (Parental Consent) | **Project 1, Phase 3** | Privo VPC workflow, consent tracking, pending account limitations |
-| Phase 3 (Minor Protections) | **Project 1, Phase 7** | Communication restrictions, limited profile visibility, adult presence enforcement |
-| Phase 4 (Family Features) | **Deferred** | Parent dashboard, multiple minor management (future project) |
+| Project 23 Phase | Implemented In | Requires Privo? | Description |
+|-----------------|----------------|-----------------|-------------|
+| Phase 0 (Parent-First Flow) | **Standalone** | **No** | Parent invites minor to create account, account linking via parent email, invitation system |
+| Phase 1 (Age Verification) | **Project 1, Phase 3** | **Yes** | Custom Authentication Extension for age gate via Privo API |
+| Phase 2 (Parental Consent) | **Project 1, Phase 3** | **Yes** | Privo VPC workflow, consent tracking, minor-first registration flow |
+| Phase 3 (Minor Protections) | **Project 1, Phase 7** | **No** | Communication restrictions, limited profile visibility, adult presence enforcement |
+| Phase 4 (Family Features) | **Deferred** | **No** | Parent dashboard, multiple minor management (future project) |
 
 This combined approach minimizes risk by building Privo integration directly into the new Entra External ID auth system rather than retrofitting it into B2C.
 
@@ -711,108 +712,271 @@ User clicks "Sign Up"
 
 ## Parent Account Requirements
 
-### Core Principle
-**Privo approval is sufficient for minor registration.** Parents do NOT need a TrashMob account to approve their child's participation. However, parents who create accounts unlock additional features.
+### Core Principle — REVISED (March 2026)
 
-### Registration Scenarios
+**Parent/guardian TrashMob accounts are required for minor participation.** The original design allowed Privo-only approval without a parent account, but this is insufficient for community-specific waiver workflows.
 
-| Scenario | Flow | Minor Status |
-|----------|------|--------------|
-| **Parent has no TrashMob account** | Minor registers → Parent approves via Privo email → Minor active | ✅ Fully functional |
-| **Parent creates account later** | Minor already active → Parent registers → Links to minor via email match | ✅ Enhanced features unlocked |
-| **Parent registers first** | Parent creates account → Adds minor as dependent → Minor registers with parent's email | ✅ Streamlined flow |
-| **Minor registers before parent approves** | Minor in "Pending" status → Limited access until Privo approval | ⏳ Waiting for approval |
+### Why Parent Accounts Are Required
 
-### Capability Matrix: Parent Account Requirements
+**Community waiver constraint:** TrashMob's waiver system (Project 8) supports both Global and Community-scoped waivers. Communities (cities, counties, nonprofits) can require their own liability waivers, photo releases, or other legal documents. These community-specific waivers are only triggered when a minor registers for an event within that community's jurisdiction.
 
-| Capability | No Parent Account | With Parent Account |
-|------------|-------------------|---------------------|
-| **Minor Registration** | ✅ Privo email approval sufficient | ✅ Can initiate from parent dashboard |
-| **Consent Approval** | ✅ Via Privo interface | ✅ Via Privo interface |
-| **Consent Revocation** | ✅ Via Privo interface | ✅ Via Privo OR TrashMob app |
-| **Event Registration Notifications** | ✅ Email only | ✅ Email + in-app notifications |
-| **View Minor's Activity** | ❌ Not available | ✅ Parent dashboard |
-| **View Minor's Event History** | ❌ Not available | ✅ Parent dashboard |
-| **View Minor's Metrics/Stats** | ❌ Not available | ✅ Parent dashboard |
-| **Approve Event Participation** | ❌ Not available (Phase 4) | ✅ In-app approval (Phase 4) |
-| **Manage Multiple Minors** | ❌ Not available | ✅ Single dashboard for all dependents |
-| **Update Minor's Profile** | ❌ Not available | ✅ Can edit on behalf of minor |
-| **Delete Minor's Account** | ✅ Via Privo (revoke consent) | ✅ Via Privo OR TrashMob app |
-| **Receive Minor's Achievements** | ❌ Not available | ✅ Notified of badges earned |
-| **Sign Waiver for Minor** | ✅ Via email link | ✅ Via TrashMob app |
+Privo has no mechanism to handle this because:
+1. Privo doesn't know which community's waivers apply until the minor signs up for a specific event
+2. Community waivers can change independently of the global platform waiver
+3. New community waivers can be added at any time by community admins
+4. There is no way to route a post-event-signup community waiver through Privo's VPC flow
 
-### Account Linking
+This means the parent/guardian must have an authenticated TrashMob account to:
+- Receive notification when their minor registers for an event requiring new waivers
+- Review and sign community-specific waivers on behalf of the minor
+- Re-sign when waiver versions change
+- Participate in Event Check-In validation (Project 55)
 
-When a parent creates a TrashMob account after their minor is already registered:
+### Registration Flows
 
-1. **Email Match:** System detects parent email matches a minor's `ParentEmail` field
-2. **Verification:** Parent confirms they are the parent of the listed minor(s)
-3. **Linking:** `User.ParentUserId` set on minor's account
-4. **Dashboard:** Parent dashboard shows linked minor(s)
+Two registration paths lead to the same outcome: a minor User account linked to a parent User account via `ParentUserId`, with the parent's email stored for account matching.
+
+#### Flow A: Parent-First (No Privo Required)
+
+The parent already has a TrashMob account and initiates the process.
+
+| Step | What Happens | Privo? |
+|------|-------------|--------|
+| 1. Parent adds dependent | Parent creates Dependent record (name, DOB, relationship) in My Dependents | No |
+| 2. Parent invites minor | Parent clicks "Invite to create account" for a 13+ dependent; enters minor's email | No |
+| 3. System sends invite | Secure token-based invite email sent to minor | No |
+| 4. Minor creates account | Minor follows link → creates Entra External ID account | No |
+| 5. System links accounts | Minor's User record linked to parent via `ParentUserId` and to Dependent via `DependentId` | No |
+| 6. Parent signs waivers | Global + community waivers signed in-app on behalf of minor | No |
+| 7. Minor registers for events | Community-specific waivers routed to parent in-app | No |
+
+**This flow can be built today without Privo.** The trust chain is: authenticated parent → explicitly adds dependent → invites them. The gap is that without Privo, there's no verification the adult is actually the legal parent (self-attestation only).
+
+#### Flow B: Minor-First (Requires Privo)
+
+The minor initiates registration independently.
+
+| Step | What Happens | Privo? |
+|------|-------------|--------|
+| 1. Minor age-gated at sign-up | DOB pre-screen blocks under-13; Privo verifies age (13-17) | **Yes** |
+| 2. Minor provides parent's email | Stored on User record as `ParentEmail` for future linking | No |
+| 3. Privo VPC verifies parent identity | Privo contacts parent via email; verifies identity (credit card, ID, video call) | **Yes** |
+| 4. Minor account created (pending) | Account active but limited until parent completes setup | No |
+| 5. Parent creates TrashMob account | Parent signs up using the same email the minor provided | No |
+| 6. System auto-links accounts | System detects `ParentEmail` match → prompts parent to claim minor | No |
+| 7. Parent signs waivers | Global + community waivers signed in-app on behalf of minor | No |
+| 8. Minor registers for events | Community-specific waivers routed to parent in-app | No |
+
+**This flow requires Privo** for age verification (step 1) and parent identity verification (step 3).
+
+#### Account Linking via Parent Email
+
+Both flows converge on the same linking mechanism. The parent's email is the key:
+
+- **Flow A:** Parent's email is already known (they have an account). When minor accepts invite, `User.ParentUserId` is set directly.
+- **Flow B:** Minor provides parent's email at sign-up. When a user later creates an account with that email, the system detects unlinked minors and prompts the parent to claim them.
+
+```
+Minor signs up → provides parent email → Privo VPC → minor account created (pending)
+                                                            │
+Parent creates account (matching email) ──────────────────►│
+                                                            ▼
+                                              System prompts: "A minor listed you
+                                              as their parent. Claim this account?"
+                                                            │
+                                                   Parent confirms
+                                                            │
+                                                            ▼
+                                              User.ParentUserId = parent.Id
+                                              Dependent record auto-created
+                                              Parent signs waivers
+```
+
+**Security considerations for auto-linking:**
+- Parent must explicitly confirm the link (no silent auto-linking)
+- Minor is notified when a parent claims their account
+- Only one parent can be linked at a time (primary guardian)
+- Parent email match is necessary but not sufficient — confirmation required from both sides
+
+### Capability Matrix (Revised — Account Required)
+
+| Capability | How It Works |
+|------------|-------------|
+| **Minor Registration** | Parent account required; Privo verifies parent identity |
+| **Consent Approval** | Privo VPC for initial platform consent |
+| **Consent Revocation** | Via Privo OR TrashMob app — immediate account suspension |
+| **Global Waiver Signing** | In-app, from parent's My Dependents page |
+| **Community Waiver Signing** | In-app notification when minor registers for event in new community |
+| **Event Registration Notifications** | Email + in-app push notifications |
+| **View Minor's Activity** | Parent dashboard |
+| **Manage Multiple Minors** | Single dashboard for all dependents |
+| **Event Check-In (Project 55)** | Parent confirms attendance; system validates waiver compliance |
+| **Approve Event Participation** | In-app approval (Phase 4) |
+
+### Non-Parent Guardian Scenarios
+
+Not all adults bringing minors to events are their legal parents. Common scenarios:
+
+| Scenario | Guardian Type | Challenges |
+|----------|-------------|------------|
+| **Scout troop cleanup** | Scout master / troop leader | 15+ kids, each with different parents. Scout master has organizational authority but not legal custody. |
+| **School field trip** | Teacher / chaperone | School permission slips exist but are separate from TrashMob waivers. Teacher can't sign legal waivers. |
+| **Church youth group** | Youth pastor / volunteer leader | Similar to scouts — organizational authority, not legal custody. |
+| **Sports team** | Coach / assistant coach | Coach may have general parental permission forms but can't sign liability waivers. |
+| **After-school program** | Program director | May have blanket parental consent for activities but not specific to TrashMob. |
+| **Grandparent / family friend** | Informal guardian | May bring kids regularly but isn't the legal parent. |
+| **Foster care** | Foster parent / caseworker | Legal authority varies by jurisdiction and court order. |
+| **Divorced/separated families** | Non-custodial parent | May bring child to events but custody agreement may limit consent authority. |
+
+**Key constraint:** Only a legal parent/guardian can sign waivers on behalf of a minor. A coach or teacher bringing a group of kids cannot sign waivers for children who are not their own dependents.
+
+**Possible approaches for group scenarios:**
+
+1. **Each parent signs in advance:** Group leader tells parents to create accounts and sign waivers before the event. Leader brings kids but doesn't sign anything.
+2. **Paper waiver fallback:** Group leader brings paper waivers pre-signed by parents (existing Project 8 feature — `PaperWaiverUploadRequest`). Event lead uploads them.
+3. **Delegated authority role (future):** A new "Group Leader" concept where a parent explicitly authorizes a specific adult (coach, teacher) to register and check in their child for events. Would need legal review.
+4. **Organizational bulk consent (future):** Partner organizations (scout troops, schools) establish a relationship with TrashMob where the organization's existing consent framework is accepted. Complex legally.
+
+> **Decision needed:** For v1, approach #1 (each parent signs individually) with #2 (paper fallback) is the safest. Approaches #3 and #4 require legal review and are deferred.
 
 ```csharp
-// Account linking logic
-public async Task LinkParentToMinors(Guid parentUserId, string parentEmail)
+// Account linking logic — triggered when a new user signs up
+// Checks if any minors listed this email as their parent's email
+public async Task<List<User>> FindUnlinkedMinorsAsync(string parentEmail, CancellationToken cancellationToken)
 {
-    var unlinkedMinors = await _context.Users
+    return await _context.Users
         .Where(u => u.IsMinor &&
                     u.ParentUserId == null &&
-                    u.ParentalConsents.Any(pc => pc.ParentEmail == parentEmail &&
-                                                  pc.Status == "Verified"))
-        .ToListAsync();
+                    u.ParentEmail == parentEmail)
+        .ToListAsync(cancellationToken);
+}
 
-    foreach (var minor in unlinkedMinors)
+// Parent explicitly confirms the link (not auto-linked for security)
+public async Task LinkParentToMinorAsync(Guid parentUserId, Guid minorUserId, CancellationToken cancellationToken)
+{
+    var minor = await _context.Users
+        .FirstOrDefaultAsync(u => u.Id == minorUserId && u.IsMinor && u.ParentUserId == null, cancellationToken);
+
+    if (minor == null) return;
+
+    minor.ParentUserId = parentUserId;
+
+    // Auto-create Dependent record if one doesn't exist
+    var existingDependent = await _context.Dependents
+        .FirstOrDefaultAsync(d => d.ParentUserId == parentUserId &&
+                                   d.FirstName == minor.FirstName &&
+                                   d.DateOfBirth == minor.DateOfBirth, cancellationToken);
+
+    if (existingDependent == null)
     {
-        minor.ParentUserId = parentUserId;
+        var dependent = new Dependent
+        {
+            ParentUserId = parentUserId,
+            FirstName = minor.FirstName,
+            LastName = minor.LastName,
+            DateOfBirth = minor.DateOfBirth ?? DateOnly.MinValue,
+            Relationship = "parent",
+            IsActive = true,
+        };
+        _context.Dependents.Add(dependent);
+        minor.DependentId = dependent.Id;
     }
+    else
+    {
+        minor.DependentId = existingDependent.Id;
+    }
+
+    await _context.SaveChangesAsync(cancellationToken);
 }
 ```
 
-### Notifications to Non-Account Parents
+### Notifications to Parents
 
-Parents without TrashMob accounts still receive critical notifications via email:
+**Parents with accounts** receive notifications via email + in-app:
 
 | Notification | Delivery Method |
 |--------------|-----------------|
-| Minor registered for event | Email |
-| Event reminder (day before) | Email |
-| Event completed | Email |
+| Minor registered for event | Email + in-app |
+| Community waiver required | Email + in-app (with sign action) |
+| Event reminder (day before) | Email + in-app |
+| Event completed | Email + in-app |
 | Consent expiring (annual) | Email via Privo |
-| Waiver required | Email with sign link |
+
+**Parents without accounts** (minor-first flow, before parent signs up):
+
+| Notification | Delivery Method |
+|--------------|-----------------|
+| Your child listed you as parent | Email (with account creation link) |
+| Privo VPC consent request | Email via Privo |
+| Consent expiring (annual) | Email via Privo |
 
 ---
 
 ## Implementation Phases
 
-> **Note:** Phases 1-2 are implemented as Project 1 Phase 3, and Phase 3 is implemented as Project 1 Phase 7. See [Project 1 — Auth Revamp](./Project_01_Auth_Revamp.md) for the full implementation timeline.
+Phases are restructured to separate Privo-independent work (can start now) from Privo-dependent work (blocked on Privo API).
 
-### Phase 1: Age Gate (→ Project 1, Phase 3)
+### Phase 0: Parent-First Flow & Account Linking (No Privo Required)
+
+**Can be implemented immediately.** Builds the infrastructure that both Flow A and Flow B will use.
+
+#### Data Model
+- [ ] Add `IsMinor` (bool), `ParentUserId` (Guid?), `ParentEmail` (string?) to User model
+- [ ] Add `DependentId` (Guid?) to User model — links minor's User to their Dependent record
+- [ ] Create `DependentInvitation` entity (token, expiry, status, DependentId, ParentUserId)
+- [ ] EF migration for all schema changes
+- [ ] DbContext configuration (indexes, FK relationships, `User.ParentUser` navigation)
+
+#### Backend
+- [ ] `DependentInvitationManager` — token generation (cryptographic, 32+ byte), expiry enforcement, invitation CRUD
+- [ ] `DependentInvitationsController` — invite creation, token verification, acceptance
+- [ ] Account linking service — match parent email, prompt for confirmation, link `User.ParentUserId`
+- [ ] Minor flag logic — set `IsMinor = true` based on Dependent.DateOfBirth (13-17)
+- [ ] Email template for invite notification
+
+#### Web (React)
+- [ ] "Invite to create account" button on My Dependents card for 13+ dependents
+- [ ] Invitation status display (Pending, Accepted, Expired)
+- [ ] Resend / cancel invitation actions
+- [ ] Accept-invite page (minor follows link → guided account creation)
+- [ ] Auto-link prompt when parent creates account and unlinked minors exist
+
+#### Mobile (MAUI)
+- [ ] Invite flow from My Dependents page
+- [ ] Invitation status display
+
+### Phase 1: Age Gate (→ Project 1, Phase 3 — Requires Privo)
 - In-app DOB pre-screen on **both web (React) and mobile (MAUI)** — blocks under-13s before Entra redirect (no PII collected)
 - Custom Authentication Extension (Azure Function) on `OnAttributeCollectionSubmit` — server-side defense-in-depth
 - Privo API integration for age verification (13-17 triggers minor flow)
 - Under-13 blocking at both layers
 - Minor flag in database
 
-### Phase 2: Parental Consent (→ Project 1, Phase 3)
+### Phase 2: Parental Consent (→ Project 1, Phase 3 — Requires Privo)
 - Privo VPC workflow implementation
 - Parent notification via Privo
 - Consent status tracking (ParentalConsent entity)
 - Pending account limitations
 - Privo webhook for consent status updates
+- Minor-first flow: minor provides parent email → Privo VPC → account linking when parent signs up
 
-### Phase 3: Minor Protections (→ Project 1, Phase 7)
-- Communication restrictions (no DMs for minors)
-- Profile visibility limits (first name + last initial)
-- Adult presence enforcement at events
-- Parent notification system
+### Phase 3: Minor Protections (No Privo Required)
+
+**Can be implemented alongside or after Phase 0.** These protections apply to all minor accounts regardless of how they were created.
+
+- [ ] Communication restrictions (no DMs for minors)
+- [ ] Profile visibility limits (first name + last initial)
+- [ ] Adult presence enforcement at events
+- [ ] Parent notification system (email for event registration, attendance)
+- [ ] Minor-specific UI indicators (badges, restricted actions)
 
 ### Phase 4: Family Features (Deferred)
-- Parent dashboard (future project)
+- Parent dashboard — view minor's events, stats, activity (future project)
 - Multiple minor management (future project)
 - Event approval workflow (future project)
 - Activity reporting (future project)
 
-**Note:** Legal sign-off required before Phase 1 deployment. Phase 4 deferred to focus on core minor safety features first.
+**Note:** Legal sign-off required before Phase 1 deployment (Privo). Phase 0 and Phase 3 can proceed with product/legal review but don't require Privo contract or API.
 
 ### Sponsorship Documentation Deliverables
 
@@ -822,6 +986,50 @@ The following documentation must be produced as part of the Privo sponsorship ag
 2. **Custom Authentication Extension guide** — How to build the Azure Function and wire it to the sign-up user flow (Phase 1)
 3. **Privo VPC integration guide** — How to implement the Verifiable Parental Consent webhook and consent tracking (Phase 2)
 4. **Complete integration package** — End-to-end guide combining all of the above (Phase 3)
+
+---
+
+## Privo Value Assessment (March 2026)
+
+With the decision to require parent accounts for community waiver workflows, Privo's role narrows but remains important. Here's what Privo provides that TrashMob accounts alone cannot:
+
+### What Privo Provides
+
+| Capability | Without Privo (Account Only) | With Privo |
+|------------|------------------------------|------------|
+| **Age verification** | Self-reported DOB — a 10-year-old can claim to be 13 | Privo verifies age through authoritative methods |
+| **Parent identity verification** | Self-attestation — the minor could create a fake "parent" account and approve themselves | Privo VPC uses FTC-approved methods (credit card, government ID, video call) to verify the adult is actually the parent |
+| **COPPA safe harbor** | TrashMob bears full legal liability for any COPPA violation | Privo is an FTC-approved COPPA safe harbor program — using Privo provides legal protection if there's ever a COPPA complaint |
+| **Consent artifact retention** | TrashMob must build and maintain its own legally compliant audit trail | Privo maintains consent artifacts per COPPA requirements |
+| **Consent revocation** | Must build own revocation flow | Privo provides standardized revocation with legal compliance |
+| **Annual re-verification** | Must build own re-verification reminder system | Privo handles re-verification timing automatically |
+
+### Privo's Remaining Value — Is It Worth It?
+
+**Strong case for keeping Privo:**
+
+1. **Identity verification is the critical gap.** A TrashMob account proves someone *has an account*, not that they *are the parent*. Without Privo, a 15-year-old could create a parent account with a disposable email and approve their own participation. This is exactly the scenario COPPA is designed to prevent.
+
+2. **COPPA safe harbor is significant legal protection.** If a parent files a COPPA complaint with the FTC, Privo's safe harbor status means TrashMob followed an FTC-approved process. Without it, TrashMob would need to defend its own verification methods — expensive and risky for a small nonprofit.
+
+3. **Liability reduction for communities.** Cities and counties partnering with TrashMob will want assurance that minor participation is legally compliant. "We use an FTC-approved COPPA safe harbor provider" is a much stronger answer than "parents check a box on our website."
+
+**Case for not using Privo:**
+
+1. **Cost and complexity.** Even with the sponsorship, integrating Privo adds engineering complexity and an external dependency.
+2. **The dependent model already works.** Adults already add dependents and sign waivers for them. The self-attestation model is standard for most volunteer organizations.
+3. **Most youth volunteer programs don't use COPPA-grade verification.** Park cleanups, Habitat for Humanity, etc. typically just collect a paper permission slip.
+
+### Recommendation
+
+**Keep Privo for initial registration (age + parent identity verification) but handle all ongoing waiver management through TrashMob parent accounts.** This gives you:
+
+- FTC-approved identity verification at the front door (Privo)
+- Full control over community waiver workflows after that (TrashMob)
+- COPPA safe harbor legal protection
+- No dependency on Privo for day-to-day operations (waivers, event registration, check-in)
+
+Privo is a one-time gate at registration. Everything after that flows through the parent's TrashMob account.
 
 ---
 
@@ -839,6 +1047,12 @@ The following documentation must be produced as part of the Privo sponsorship ag
 4. **School/organization bulk consent?**
    **Decision:** Out of scope for v1; evaluate demand in future
 
+5. **Are parent accounts required?**
+   **Decision:** Yes — community-specific waivers cannot be routed through Privo's VPC flow. Parent/guardian must have a TrashMob account to sign community waivers when their minor registers for events. (March 2026)
+
+6. **Can we support both parent-first and minor-first registration?**
+   **Decision:** Yes. Both flows use parent email as the linking key. Flow A (parent-first): parent invites minor — no Privo needed. Flow B (minor-first): minor provides parent email at sign-up, Privo verifies parent identity, accounts linked when parent creates account. Phase 0 implements Flow A infrastructure; Phases 1-2 add Flow B via Privo. (March 2026)
+
 ## Open Questions
 
 1. ~~**Privo.com cost structure and timeline?**~~
@@ -849,6 +1063,31 @@ The following documentation must be produced as part of the Privo sponsorship ag
    **Status:** Pending — awaiting onboarding requirements completion
    **Owner:** Engineering + Privo
    **Due:** Before Project 1 Phase 3
+
+3. **How should group leaders (coaches, scout masters, teachers) handle minor participation?**
+   Group leaders cannot sign waivers for children who are not their legal dependents. For v1, each parent must sign individually with paper waiver fallback. Future: consider delegated authority role where a parent explicitly authorizes a specific adult for their child. Requires legal review.
+   **Status:** Open
+   **Owner:** Product + Legal
+
+4. **How do we handle divorced/separated families and custody disputes?**
+   If both parents have accounts, who has authority to sign/revoke waivers? Should we accept either parent's signature, or only the custodial parent? What if one parent revokes consent the other parent granted?
+   **Status:** Open
+   **Owner:** Legal
+
+5. **Should foster parents and non-traditional guardians be able to sign waivers?**
+   The `Dependent.Relationship` field supports "Guardian" but legal authority varies by jurisdiction. Foster parents may have limited consent authority depending on court orders. Need legal guidance on what documentation (if any) to require for non-parent guardians.
+   **Status:** Open
+   **Owner:** Legal
+
+6. **What happens when a parent account is required but the parent refuses to create one?**
+   The minor cannot participate in events requiring community waivers. Should we allow participation in events that only require the global waiver (already signed via Privo)? This creates a two-tier experience.
+   **Status:** Open
+   **Owner:** Product
+
+7. **Should Privo identity verification be required for all parent accounts, or only for parents of minors?**
+   Currently, any adult can create an account and add dependents without identity verification. If we add Privo verification only when a minor self-registers, a parent who adds their child as a dependent bypasses Privo entirely. Should the dependent flow also trigger Privo verification?
+   **Status:** Open
+   **Owner:** Product + Legal
 
 ---
 
@@ -869,7 +1108,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 22, 2026
+**Last Updated:** March 6, 2026
 **Owner:** Product Lead + Legal + Engineering
-**Status:** Planning in Progress — Auth migration complete (Project 1 Phases 0-5 live on production). Privo API integration and parental consent workflow remaining.
-**Next Review:** After Privo API documentation and test environment available
+**Status:** Planning in Progress — Auth migration complete (Project 1 Phases 0-5 live on production). Phase 0 (parent-first flow) can begin immediately. Privo API integration (Phases 1-2) blocked on Privo onboarding.
+**Next Review:** Phase 0 implementation planning; Privo API documentation availability

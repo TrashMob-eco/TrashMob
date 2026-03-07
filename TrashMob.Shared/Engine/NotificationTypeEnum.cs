@@ -249,5 +249,10 @@
         /// Fundraising appeal email sent to contacts soliciting donations.
         /// </summary>
         FundraisingAppeal = 49,
+
+        /// <summary>
+        /// Invitation sent to a minor dependent to create their own TrashMob account.
+        /// </summary>
+        InviteMinorToCreateAccount = 50,
     }
 }

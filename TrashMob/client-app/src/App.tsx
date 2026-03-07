@@ -89,6 +89,10 @@ import { PartnerRequestDetails } from './pages/partnerrequestdetails/page';
 
 /** Unsubscribe */
 import { UnsubscribePage } from './pages/unsubscribe';
+
+/** Dependent Invite */
+import { AcceptInvitePage } from './pages/invite/accept';
+
 import { NoMatch } from './pages/nomatch';
 
 /** For Communities - Landing page (lazy loaded) */
@@ -791,6 +795,7 @@ const AppContent: FC = () => {
                             <Route path='/termsofservice' element={<TermsOfService />} />
                             <Route path='/volunteeropportunities' element={<VolunteerOpportunities />} />
                             <Route path='/unsubscribe' element={<UnsubscribePage />} />
+                            <Route path='/invite/accept' element={<AcceptInvitePage />} />
                             <Route path='/' element={<Home />} />
                         </Route>
                         <Route path='*' element={<NoMatch />} />
