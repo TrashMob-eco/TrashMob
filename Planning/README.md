@@ -36,7 +36,7 @@
 | [Project 9 - Teams](./Projects/Project_09_Teams.md) | User-created teams MVP | ✅ Complete |
 | [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) | Branded partner community pages | ✅ Complete |
 | [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) | Scale email invitations | ✅ Complete |
-| [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors (combined with Project 1) | Planning (combined with Project 1) |
+| [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors (combined with Project 1) | In Progress (Phase 0, 3 Complete; Phases 1-2 blocked on Privo) |
 | [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Pagination, error handling, auto-generated clients | Not Started |
 | [Project 38 - Mobile Feature Parity](./Projects/Project_38_Mobile_Feature_Parity.md) | Teams, leaderboards, photos for mobile volunteers | ✅ Complete |
 | [Project 44 - Area Map Editor](./Projects/Project_44_Area_Map_Editor.md) | Interactive map editor, AI area suggestions, bulk import/export, AI generation | ✅ Complete |
@@ -166,9 +166,8 @@
 | Status | Count | Projects |
 |--------|-------|----------|
 | ✅ **Complete** | 32 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53 |
-| **In Progress** | 12 | Projects 1, 4, 5, 6, 8, 15, 25, 30, 41, 45, 46, 49 |
+| **In Progress** | 13 | Projects 1, 4, 5, 6, 8, 15, 23, 25, 30, 41, 45, 46, 49 |
 | **Ready for Review** | 1 | Project 2 |
-| **Planning** | 1 | Project 23 (combined with Project 1) |
 | **Not Started** | 6 | Projects 12, 24, 31, 36, 43, 52, 54 |
 | **Deprioritized** | 1 | Project 33 |
 
@@ -182,7 +181,8 @@
 
 | Project | What's Left |
 |---------|-------------|
-| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Phase 7: Minor protections (communication restrictions, profile visibility, adult presence enforcement, parent notifications, Privo docs) |
+| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Phase 7: Minor protections — core protections complete (name masking, adult presence, parent notifications, minor badges). Remaining: Privo documentation package |
+| [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Phases 0, 3 complete. Phases 1-2 (Privo age verification & parental consent) blocked on Privo API onboarding |
 | [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Phases 3-5: Manual test matrix on physical devices, regression testing, load testing, accessibility audit (TalkBack/VoiceOver), supported device docs |
 | [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | Phase 4: Deployment health dashboards; Phase 5: Cost optimization & auto-scaling; Phase 6: Security scanning (OWASP ZAP, CodeQL, Trivy) |
 | [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Phase 3: Security audit — review remaining API endpoints for authorization, input validation, rate limiting |

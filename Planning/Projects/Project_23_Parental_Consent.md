@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning in Progress (combined with Project 1; auth migration complete, Privo integration remaining) |
+| **Status** | In Progress (Phase 0 and Phase 3 complete; Privo integration Phases 1-2 remaining) |
 | **Priority** | High |
 | **Risk** | High |
 | **Size** | Large |
@@ -24,10 +24,10 @@ The Privo/parental consent work is implemented as part of the [Project 1 — Aut
 
 | Project 23 Phase | Implemented In | Requires Privo? | Description |
 |-----------------|----------------|-----------------|-------------|
-| Phase 0 (Parent-First Flow) | **Standalone** | **No** | Parent invites minor to create account, account linking via parent email, invitation system |
+| Phase 0 (Parent-First Flow) ✅ | **Standalone** | **No** | Parent invites minor to create account, account linking via parent email, invitation system |
 | Phase 1 (Age Verification) | **Project 1, Phase 3** | **Yes** | Custom Authentication Extension for age gate via Privo API |
 | Phase 2 (Parental Consent) | **Project 1, Phase 3** | **Yes** | Privo VPC workflow, consent tracking, minor-first registration flow |
-| Phase 3 (Minor Protections) | **Project 1, Phase 7** | **No** | Communication restrictions, limited profile visibility, adult presence enforcement |
+| Phase 3 (Minor Protections) ✅ | **Project 1, Phase 7** | **No** | Communication restrictions, limited profile visibility, adult presence enforcement |
 | Phase 4 (Family Features) | **Deferred** | **No** | Parent dashboard, multiple minor management (future project) |
 
 This combined approach minimizes risk by building Privo integration directly into the new Entra External ID auth system rather than retrofitting it into B2C.
@@ -83,12 +83,13 @@ See **Project 1, Phase 3 Investigation** for full task list. Key questions:
 - [ ] Consent artifact retention per COPPA requirements
 - [ ] Document Privo VPC integration (sponsorship deliverable)
 
-### Phase 3 — Minor Protections (→ Project 1, Phase 7)
-- [ ] Communication restrictions for minors (no direct messaging)
-- [ ] Limited profile visibility (first name + last initial)
-- [ ] Adult presence enforcement at events
-- [ ] Parent notification system
-- [ ] Complete Privo documentation package (sponsorship deliverable)
+### Phase 3 — Minor Protections (→ Project 1, Phase 7) ✅
+- [x] Communication restrictions for minors (no direct messaging — no DM system exists; MessageRequestController is admin-only)
+- [x] Limited profile visibility (first name + last initial via `ToDisplayUser()` name masking)
+- [x] Adult presence enforcement at events (parent must be registered attendee; auto-unregister dependents on parent cancel)
+- [x] Parent notification system (email sent when dependents registered for events)
+- [x] Minor-specific UI indicators (Minor badges on web attendee table and mobile attendee list)
+- [ ] Complete Privo documentation package (sponsorship deliverable — deferred to Phase 1-2)
 
 ### Phase 4 — Family Features (Deferred)
 - Parent can manage multiple minors (future)
@@ -920,30 +921,30 @@ Phases are restructured to separate Privo-independent work (can start now) from 
 
 **Can be implemented immediately.** Builds the infrastructure that both Flow A and Flow B will use.
 
-#### Data Model
-- [ ] Add `IsMinor` (bool), `ParentUserId` (Guid?), `ParentEmail` (string?) to User model
-- [ ] Add `DependentId` (Guid?) to User model — links minor's User to their Dependent record
-- [ ] Create `DependentInvitation` entity (token, expiry, status, DependentId, ParentUserId)
-- [ ] EF migration for all schema changes
-- [ ] DbContext configuration (indexes, FK relationships, `User.ParentUser` navigation)
+#### Data Model ✅
+- [x] Add `IsMinor` (bool), `ParentUserId` (Guid?), `ParentEmail` (string?) to User model
+- [x] Add `DependentId` (Guid?) to User model — links minor's User to their Dependent record
+- [x] Create `DependentInvitation` entity (token, expiry, status, DependentId, ParentUserId)
+- [x] EF migration for all schema changes
+- [x] DbContext configuration (indexes, FK relationships, `User.ParentUser` navigation)
 
-#### Backend
-- [ ] `DependentInvitationManager` — token generation (cryptographic, 32+ byte), expiry enforcement, invitation CRUD
-- [ ] `DependentInvitationsController` — invite creation, token verification, acceptance
-- [ ] Account linking service — match parent email, prompt for confirmation, link `User.ParentUserId`
-- [ ] Minor flag logic — set `IsMinor = true` based on Dependent.DateOfBirth (13-17)
-- [ ] Email template for invite notification
+#### Backend ✅
+- [x] `DependentInvitationManager` — token generation (cryptographic, 32+ byte), expiry enforcement, invitation CRUD
+- [x] `DependentInvitationsController` — invite creation, token verification, acceptance
+- [x] Account linking service — match parent email, prompt for confirmation, link `User.ParentUserId`
+- [x] Minor flag logic — set `IsMinor = true` based on Dependent.DateOfBirth (13-17)
+- [x] Email template for invite notification
 
-#### Web (React)
-- [ ] "Invite to create account" button on My Dependents card for 13+ dependents
-- [ ] Invitation status display (Pending, Accepted, Expired)
-- [ ] Resend / cancel invitation actions
-- [ ] Accept-invite page (minor follows link → guided account creation)
-- [ ] Auto-link prompt when parent creates account and unlinked minors exist
+#### Web (React) ✅
+- [x] "Invite to create account" button on My Dependents card for 13+ dependents
+- [x] Invitation status display (Pending, Accepted, Expired)
+- [x] Resend / cancel invitation actions
+- [x] Accept-invite page (minor follows link → guided account creation)
+- [x] Auto-link prompt when parent creates account and unlinked minors exist
 
-#### Mobile (MAUI)
-- [ ] Invite flow from My Dependents page
-- [ ] Invitation status display
+#### Mobile (MAUI) ✅
+- [x] Invite flow from My Dependents page
+- [x] Invitation status display
 
 ### Phase 1: Age Gate (→ Project 1, Phase 3 — Requires Privo)
 - In-app DOB pre-screen on **both web (React) and mobile (MAUI)** — blocks under-13s before Entra redirect (no PII collected)
@@ -960,15 +961,15 @@ Phases are restructured to separate Privo-independent work (can start now) from 
 - Privo webhook for consent status updates
 - Minor-first flow: minor provides parent email → Privo VPC → account linking when parent signs up
 
-### Phase 3: Minor Protections (No Privo Required)
+### Phase 3: Minor Protections (No Privo Required) ✅
 
-**Can be implemented alongside or after Phase 0.** These protections apply to all minor accounts regardless of how they were created.
+**Complete.** These protections apply to all minor accounts regardless of how they were created.
 
-- [ ] Communication restrictions (no DMs for minors)
-- [ ] Profile visibility limits (first name + last initial)
-- [ ] Adult presence enforcement at events
-- [ ] Parent notification system (email for event registration, attendance)
-- [ ] Minor-specific UI indicators (badges, restricted actions)
+- [x] Communication restrictions (no DMs for minors — no DM system exists; MessageRequestController is admin-only)
+- [x] Profile visibility limits (first name + last initial via `ToDisplayUser()` and leaderboard cache masking)
+- [x] Adult presence enforcement at events (parent must be registered attendee; auto-unregister dependents on parent cancel)
+- [x] Parent notification system (email sent when dependents registered for events)
+- [x] Minor-specific UI indicators ("Minor" badge on web event attendee table and mobile attendee list; `IsMinor` in `DisplayUser` DTO)
 
 ### Phase 4: Family Features (Deferred)
 - Parent dashboard — view minor's events, stats, activity (future project)
@@ -1108,7 +1109,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** March 6, 2026
+**Last Updated:** March 7, 2026
 **Owner:** Product Lead + Legal + Engineering
-**Status:** Planning in Progress — Auth migration complete (Project 1 Phases 0-5 live on production). Phase 0 (parent-first flow) can begin immediately. Privo API integration (Phases 1-2) blocked on Privo onboarding.
-**Next Review:** Phase 0 implementation planning; Privo API documentation availability
+**Status:** In Progress — Phase 0 (parent-first flow) and Phase 3 (minor protections) complete. Privo API integration (Phases 1-2) blocked on Privo onboarding.
+**Next Review:** Privo API documentation availability; Phase 1 age verification implementation
