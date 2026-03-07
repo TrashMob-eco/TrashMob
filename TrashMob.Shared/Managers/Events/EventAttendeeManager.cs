@@ -219,12 +219,12 @@ namespace TrashMob.Shared.Managers.Events
 
             List<EmailAddress> recipients =
             [
-                new() { Name = user.UserName ?? "TrashMob User", Email = user.Email },
+                new() { Name = user.DisplayFirstName, Email = user.Email },
             ];
 
             var dynamicTemplateData = new
             {
-                username = user.UserName ?? "TrashMob User",
+                username = user.DisplayFirstName,
                 emailCopy = message,
                 subject
             };

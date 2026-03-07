@@ -139,19 +139,19 @@ namespace TrashMob.Shared.Managers.Events
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventPartnerResponse.ToString());
             var partnerSubject = "A TrashMob.eco Partner has responded to your request!";
 
-            partnerMessage = partnerMessage.Replace("{UserName}", user.UserName);
+            partnerMessage = partnerMessage.Replace("{UserName}", user.DisplayFirstName);
 
             var dashboardLink = $"https://www.trashmob.eco/events/{existingService.EventId}/edit";
             partnerMessage = partnerMessage.Replace("{PartnerResponseUrl}", dashboardLink);
 
             List<EmailAddress> partnerRecipients =
             [
-                new() { Name = user.UserName, Email = user.Email },
+                new() { Name = user.DisplayFirstName, Email = user.Email },
             ];
 
             var dynamicTemplateData = new
             {
-                username = user.UserName,
+                username = user.DisplayFirstName,
                 emailCopy = partnerMessage,
                 subject,
             };

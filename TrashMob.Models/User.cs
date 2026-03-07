@@ -70,6 +70,15 @@ namespace TrashMob.Models
         public string UserName { get; set; }
 
         /// <summary>
+        /// Returns the user's given name if available, otherwise falls back to UserName.
+        /// Use this for email greetings and personalized content.
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        [System.Text.Json.Serialization.JsonIgnore]
+        public string DisplayFirstName =>
+            !string.IsNullOrWhiteSpace(GivenName) ? GivenName : UserName;
+
+        /// <summary>
         /// Gets or sets the email address of the user.
         /// </summary>
         public string Email { get; set; }

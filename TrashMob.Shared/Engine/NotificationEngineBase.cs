@@ -169,7 +169,7 @@
 
                     var dynamicTemplateData = new
                     {
-                        username = user.UserName,
+                        username = user.DisplayFirstName,
                         eventName = mobEvent.Name,
                         eventDate = localDate.Date,
                         eventTime = localDate.Time,
@@ -183,7 +183,7 @@
 
                     List<EmailAddress> recipients =
                     [
-                        new() { Name = user.UserName, Email = user.Email },
+                        new() { Name = user.DisplayFirstName, Email = user.Email },
                     ];
 
                     Logger.LogInformation("Sending email to {Email}, Subject {Subject}", user.Email, EmailSubject);
@@ -222,14 +222,14 @@
 
             var dynamicTemplateData = new
             {
-                username = user.UserName,
+                username = user.DisplayFirstName,
                 emailCopy,
                 subject = EmailSubject,
             };
 
             List<EmailAddress> recipients =
             [
-                new() { Name = user.UserName, Email = user.Email },
+                new() { Name = user.DisplayFirstName, Email = user.Email },
             ];
 
             Logger.LogInformation("Sending email to {Email}, Subject {Subject}", user.Email, EmailSubject);

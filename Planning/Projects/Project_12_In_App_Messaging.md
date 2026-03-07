@@ -492,12 +492,75 @@ public async Task<ActionResult> ReviewReport(Guid reportId, [FromBody] ReviewReq
 - Message history with delivery stats
 - Same rate limits as web
 
-### Push Notification Behavior
+### Push Notification Infrastructure & Delivery Scenarios
 
-- **Delivery:** Push notifications appear on device lock screen/notification tray even when app is closed
-- **Opt-in:** Users must grant push notification permission on first message-enabled action
-- **Content preview:** Show subject line in notification; tap to open full message
-- **Badge count:** Show unread message count on app icon
+Delivering messages to users requires different technology depending on whether the app is in the foreground, backgrounded, or completely closed. The table below maps each scenario to the required infrastructure.
+
+#### Scenario Matrix
+
+| Scenario | Mobile (Android) | Mobile (iOS) | Web Browser | Technology Required |
+|----------|------------------|--------------|-------------|---------------------|
+| **App in foreground** | In-app toast/banner | In-app toast/banner | In-app toast/banner | SignalR (real-time WebSocket) or React Query poll |
+| **App backgrounded** | System notification tray | System notification tray | Browser notification (if tab open) | FCM / APNs via Azure Notification Hub |
+| **App closed / device locked** | System notification tray + badge | System notification tray + badge | N/A (no delivery until next visit) | FCM / APNs via Azure Notification Hub |
+| **User offline (no connectivity)** | Queued by FCM/APNs, delivered when online | Queued by FCM/APNs, delivered when online | N/A | FCM / APNs built-in queuing (up to ~28 days) |
+
+#### Required Azure Infrastructure
+
+| Resource | Purpose | Estimated Cost |
+|----------|---------|----------------|
+| **Azure Notification Hub** (Free or Basic tier) | Unified push notification broker — abstracts FCM, APNs, WNS behind a single API | Free tier: 1M pushes/month; Basic ~$10/mo |
+| **Azure SignalR Service** (optional) | Real-time in-app delivery when app is in foreground; avoids polling | Free tier: 20 concurrent connections, 20K messages/day; Standard ~$50/mo |
+
+#### Required External Platform Setup
+
+| Platform | Service | Setup Required |
+|----------|---------|----------------|
+| **Google / Android** | Firebase Cloud Messaging (FCM v1) | Create Firebase project, generate service account JSON, configure in Azure Notification Hub under "Google (FCM V1)" |
+| **Apple / iOS** | Apple Push Notification Service (APNs) | Create APNs signing key or certificate in Apple Developer portal, configure in Azure Notification Hub under "Apple (APNS)" |
+| **Windows (optional)** | Windows Notification Service (WNS) | Register app in Partner Center, configure in Azure Notification Hub (low priority — most users are mobile) |
+
+#### .NET MAUI Mobile App Changes
+
+The mobile app currently has **no push notification infrastructure**. Required additions:
+
+1. **Device registration:** On app startup (after login), register with FCM (Android) / APNs (iOS) to get a device token, then register that token with Azure Notification Hub via our backend API
+2. **Token refresh handling:** FCM/APNs tokens can rotate — handle `OnNewToken` callback to re-register
+3. **Notification handler:** Process incoming push notifications:
+   - **Foreground:** Show in-app banner (existing `NotificationService` toast pattern)
+   - **Background/closed:** System handles display automatically; app handles tap-to-open navigation
+4. **Permission request:** Prompt user for notification permission (required on both iOS and Android 13+)
+5. **NuGet packages:** `Microsoft.Azure.NotificationHubs`, platform-specific Firebase/APNs bindings via `Plugin.Firebase.CloudMessaging` or similar
+
+#### Backend API for Device Registration
+
+```
+POST /api/notifications/register     — Register device token (deviceId, platform, pushToken)
+DELETE /api/notifications/register   — Unregister on logout
+POST /api/notifications/send         — Internal: send push via Azure Notification Hub
+```
+
+The backend calls `NotificationHubClient.SendNotificationAsync()` with platform-specific payloads (FCM JSON, APNs alert) when an event lead sends a message.
+
+#### Web App Considerations
+
+For the **web app**, push notifications while the browser tab is closed require a **Service Worker** and the **Web Push API** (VAPID keys). This is significantly more complex and has lower adoption than mobile push. Recommended approach:
+
+- **Phase 1:** No web push — users see messages in their inbox on next visit; rely on mobile push + optional email digest
+- **Future:** Add Web Push API with Service Worker if demand warrants it
+
+#### Delivery Flow Summary
+
+```
+Event Lead sends message
+    → Backend saves to DB (EventMessage + EventMessageRecipient rows)
+    → Backend calls Azure Notification Hub with message payload
+        → Hub fans out to FCM (Android) and APNs (iOS)
+            → Device receives system notification (background/closed)
+            → OR app receives foreground callback (in-app banner)
+    → (Optional) SignalR broadcasts to connected web/mobile clients for instant in-app update
+    → (Optional) Email digest job picks up unread messages on daily/weekly schedule
+```
 
 ### User Notification Preferences
 
@@ -593,7 +656,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** March 6, 2026
 **Owner:** Product Lead
 **Status:** Not Started
 **Next Review:** When prioritized
