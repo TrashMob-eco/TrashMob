@@ -194,7 +194,10 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
                                                 </Badge>
                                             ) : null}
                                             {user.isMinor ? (
-                                                <Badge variant='outline' className='text-xs bg-blue-50 text-blue-700 border-blue-200'>
+                                                <Badge
+                                                    variant='outline'
+                                                    className='text-xs bg-blue-50 text-blue-700 border-blue-200'
+                                                >
                                                     Minor
                                                 </Badge>
                                             ) : null}
