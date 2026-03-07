@@ -13,6 +13,15 @@ namespace TrashMobMobile.Services
 
         Task DeleteDependentAsync(Guid userId, Guid dependentId, CancellationToken cancellationToken = default);
 
+        // Dependent Invitations (api/dependentinvitations)
+        Task<List<DependentInvitation>> GetDependentInvitationsAsync(Guid userId, Guid dependentId, CancellationToken cancellationToken = default);
+
+        Task<DependentInvitation> CreateDependentInvitationAsync(Guid userId, Guid dependentId, string email, CancellationToken cancellationToken = default);
+
+        Task CancelDependentInvitationAsync(Guid invitationId, CancellationToken cancellationToken = default);
+
+        Task<DependentInvitation> ResendDependentInvitationAsync(Guid invitationId, CancellationToken cancellationToken = default);
+
         // Dependent Waivers (api/dependents/{dependentId}/waiver)
         Task<DependentWaiver> SignWaiverAsync(Guid dependentId, Guid waiverVersionId, string typedLegalName, CancellationToken cancellationToken = default);
 

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobile.Controls.InviteEmailPopup">
+
+    <Border Padding="24"
+            BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+            StrokeShape="RoundRectangle 16"
+            Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+            StrokeThickness="1"
+            WidthRequest="320">
+        <VerticalStackLayout Spacing="16">
+
+            <Label x:Name="titleLabel"
+                   FontFamily="LexendSemibold"
+                   FontSize="18"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+
+            <Label Text="Enter the email address where the invitation will be sent. They'll use this email to create their TrashMob account."
+                   FontSize="14"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+            <Entry x:Name="emailEntry"
+                   Placeholder="Email address"
+                   Keyboard="Email"
+                   TextChanged="OnEmailTextChanged"
+                   BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}"
+                   TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}"
+                   PlaceholderColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+            <Button x:Name="sendButton"
+                    Text="Send Invitation"
+                    Style="{StaticResource PrimaryLargeButton}"
+                    IsEnabled="False"
+                    Clicked="OnSendClicked" />
+
+            <Button Text="Cancel"
+                    Style="{StaticResource SecondaryLargeButton}"
+                    Clicked="OnCancelClicked" />
+
+        </VerticalStackLayout>
+    </Border>
+</ContentView>

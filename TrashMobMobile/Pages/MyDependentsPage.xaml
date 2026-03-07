@@ -39,40 +39,114 @@
                                 SelectionMode="None"
                                 IsVisible="{Binding AreDependentsFound}">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Dependent">
+                        <DataTemplate x:DataType="viewModels:DependentWithInvitation">
                             <Border Padding="16"
                                     Margin="0,0,0,8"
                                     BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
                                     StrokeShape="RoundRectangle 12"
                                     Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
                                     StrokeThickness="1">
-                                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto">
+                                <VerticalStackLayout Spacing="8">
+                                    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto">
 
-                                    <Label Grid.Row="0" Grid.Column="0"
-                                           FontFamily="LexendSemibold"
-                                           FontSize="16"
-                                           TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}">
-                                        <Label.Text>
-                                            <MultiBinding StringFormat="{}{0} {1}">
-                                                <Binding Path="FirstName" />
-                                                <Binding Path="LastName" />
-                                            </MultiBinding>
-                                        </Label.Text>
-                                    </Label>
+                                        <Label Grid.Row="0" Grid.Column="0"
+                                               FontFamily="LexendSemibold"
+                                               FontSize="16"
+                                               TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}">
+                                            <Label.Text>
+                                                <MultiBinding StringFormat="{}{0} {1}">
+                                                    <Binding Path="Dependent.FirstName" />
+                                                    <Binding Path="Dependent.LastName" />
+                                                </MultiBinding>
+                                            </Label.Text>
+                                        </Label>
 
-                                    <Label Grid.Row="1" Grid.Column="0"
-                                           FontSize="Small"
-                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}">
-                                        <Label.Text>
-                                            <MultiBinding StringFormat="{}{0} · Born {1:MMM d, yyyy}">
-                                                <Binding Path="Relationship" />
-                                                <Binding Path="DateOfBirth" />
-                                            </MultiBinding>
-                                        </Label.Text>
-                                    </Label>
+                                        <Label Grid.Row="1" Grid.Column="0"
+                                               FontSize="Small"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}">
+                                            <Label.Text>
+                                                <MultiBinding StringFormat="{}{0} · Born {1:MMM d, yyyy}">
+                                                    <Binding Path="Dependent.Relationship" />
+                                                    <Binding Path="Dependent.DateOfBirth" />
+                                                </MultiBinding>
+                                            </Label.Text>
+                                        </Label>
 
-                                    <HorizontalStackLayout Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
-                                                           VerticalOptions="Center" Spacing="8">
+                                        <!-- Status badge -->
+                                        <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                                                VerticalOptions="Center"
+                                                Padding="8,4"
+                                                StrokeShape="RoundRectangle 8"
+                                                StrokeThickness="0"
+                                                IsVisible="{Binding ShowStatusBadge}">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Style.Triggers>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding HasAcceptedInvitation}" Value="True">
+                                                            <Setter Property="BackgroundColor" Value="#dcfce7" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding HasActiveInvitation}" Value="True">
+                                                            <Setter Property="BackgroundColor" Value="#dbeafe" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding IsEligibleForInvite}" Value="True">
+                                                            <Setter Property="BackgroundColor" Value="#fef3c7" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <Label Text="{Binding InvitationStatusText}"
+                                                   FontSize="12"
+                                                   FontFamily="LexendSemibold">
+                                                <Label.Style>
+                                                    <Style TargetType="Label">
+                                                        <Style.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding HasAcceptedInvitation}" Value="True">
+                                                                <Setter Property="TextColor" Value="#166534" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding HasActiveInvitation}" Value="True">
+                                                                <Setter Property="TextColor" Value="#1e40af" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsEligibleForInvite}" Value="True">
+                                                                <Setter Property="TextColor" Value="#92400e" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Label.Style>
+                                            </Label>
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Action buttons -->
+                                    <HorizontalStackLayout Spacing="8" HorizontalOptions="End">
+                                        <!-- Invite button (eligible dependents) -->
+                                        <Button Text="Invite"
+                                                Style="{StaticResource PrimaryLargeButton}"
+                                                HeightRequest="36"
+                                                Padding="12,0"
+                                                FontSize="Small"
+                                                IsVisible="{Binding IsEligibleForInvite}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MyDependentsViewModel}}, Path=InviteDependentCommand}"
+                                                CommandParameter="{Binding .}" />
+
+                                        <!-- Resend / Cancel buttons (active invitations) -->
+                                        <Button Text="Resend"
+                                                Style="{StaticResource SecondaryLargeButton}"
+                                                HeightRequest="36"
+                                                Padding="12,0"
+                                                FontSize="Small"
+                                                IsVisible="{Binding HasActiveInvitation}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MyDependentsViewModel}}, Path=ResendInvitationCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        <Button Text="Cancel Invite"
+                                                Style="{StaticResource SecondaryLargeButton}"
+                                                HeightRequest="36"
+                                                Padding="12,0"
+                                                FontSize="Small"
+                                                IsVisible="{Binding HasActiveInvitation}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MyDependentsViewModel}}, Path=CancelInvitationCommand}"
+                                                CommandParameter="{Binding .}" />
+
+                                        <!-- Edit / Remove buttons (always shown) -->
                                         <Button Text="Edit"
                                                 Style="{StaticResource SecondaryLargeButton}"
                                                 HeightRequest="36"
@@ -88,7 +162,7 @@
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MyDependentsViewModel}}, Path=DeleteDependentCommand}"
                                                 CommandParameter="{Binding .}" />
                                     </HorizontalStackLayout>
-                                </Grid>
+                                </VerticalStackLayout>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
