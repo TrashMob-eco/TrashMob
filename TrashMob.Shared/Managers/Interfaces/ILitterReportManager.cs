@@ -2,10 +2,12 @@ namespace TrashMob.Shared.Managers.Interfaces
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Shared.Poco;
 
     /// <summary>
@@ -110,5 +112,14 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>The count of litter reports submitted by the user.</returns>
         Task<int> GetUserLitterReportCountAsync(Guid userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets a queryable of filtered litter reports for V2 API pagination. The returned IQueryable
+        /// is not materialized, allowing the caller to apply ToPagedAsync() for database-side pagination.
+        /// Includes LitterImages navigation property.
+        /// </summary>
+        /// <param name="filter">The V2 query parameters with litter report-specific filters.</param>
+        /// <returns>An unmaterialized queryable of litter reports matching the filter.</returns>
+        IQueryable<LitterReport> GetFilteredLitterReportsQueryable(LitterReportQueryParameters filter);
     }
 }

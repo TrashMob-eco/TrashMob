@@ -10,6 +10,7 @@ namespace TrashMob.Shared.Managers.LitterReport
     using TrashMob.Models;
     using TrashMob.Models.Extensions;
     using TrashMob.Models.Poco;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Extensions;
     using TrashMob.Shared.Managers.Interfaces;
@@ -498,6 +499,24 @@ namespace TrashMob.Shared.Managers.LitterReport
         public async Task<int> GetUserLitterReportCountAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             return await Repo.Get(lr => lr.CreatedByUserId == userId).CountAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public IQueryable<LitterReport> GetFilteredLitterReportsQueryable(LitterReportQueryParameters filter)
+        {
+            var query = Repo.Get(lr =>
+                lr.LitterReportStatusId != (int)LitterReportStatusEnum.Cancelled &&
+                (filter.LitterReportStatusId == null || lr.LitterReportStatusId == filter.LitterReportStatusId) &&
+                (filter.FromDate == null || lr.CreatedDate >= filter.FromDate) &&
+                (filter.ToDate == null || lr.CreatedDate <= filter.ToDate) &&
+                (filter.CreatedByUserId == null || lr.CreatedByUserId == filter.CreatedByUserId) &&
+                (filter.Country == null || lr.LitterImages.Any(li => li.Country == filter.Country)) &&
+                (filter.Region == null || lr.LitterImages.Any(li => li.Region == filter.Region)) &&
+                (filter.City == null || lr.LitterImages.Any(li => li.City == filter.City)));
+
+            return query
+                .Include(lr => lr.LitterImages)
+                .OrderByDescending(lr => lr.CreatedDate);
         }
     }
 }
