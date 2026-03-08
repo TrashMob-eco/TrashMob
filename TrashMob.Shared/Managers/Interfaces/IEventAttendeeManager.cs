@@ -2,6 +2,7 @@ namespace TrashMob.Shared.Managers.Interfaces
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
@@ -78,5 +79,21 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>The updated event attendee without lead status.</returns>
         Task<EventAttendee> DemoteFromLeadAsync(Guid eventId, Guid userId, Guid demotedByUserId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets a queryable of active attendees for an event, including User navigation.
+        /// The returned IQueryable is not materialized, allowing the caller to apply ToPagedAsync().
+        /// </summary>
+        /// <param name="eventId">The event identifier.</param>
+        /// <returns>An unmaterialized queryable of active event attendees with User included.</returns>
+        IQueryable<EventAttendee> GetEventAttendeesQueryable(Guid eventId);
+
+        /// <summary>
+        /// Gets the count of active (non-canceled) attendees for an event.
+        /// </summary>
+        /// <param name="eventId">The event identifier.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The number of active attendees.</returns>
+        Task<int> GetActiveAttendeeCountAsync(Guid eventId, CancellationToken cancellationToken = default);
     }
 }
