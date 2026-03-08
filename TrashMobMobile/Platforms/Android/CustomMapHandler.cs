@@ -170,6 +170,11 @@ public class CustomMapHandler : MapHandler
         public void OnMapReady(GoogleMap googleMap)
         {
             mapHandler.UpdateValue(nameof(IMap.Pins));
+
+            Sentry.SentrySdk.AddBreadcrumb(
+                message: $"GoogleMap ready — MapType={googleMap.MapType}",
+                category: "maps",
+                level: Sentry.BreadcrumbLevel.Info);
         }
     }
 }
