@@ -38,6 +38,8 @@ using TrashMob.Security;
 using TrashMob.Services;
 using System.IO.Compression;
 using Microsoft.AspNetCore.ResponseCompression;
+using Asp.Versioning;
+using TrashMob.Middleware;
 using TrashMob.Shared;
 using TrashMob.Shared.Managers;
 using TrashMob.Shared.Managers.Interfaces;
@@ -215,6 +217,19 @@ public class Program
                 x.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory());
             });
 
+        builder.Services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            })
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
+
         builder.Services.AddResponseCompression(options =>
         {
             options.EnableForHttps = true;
@@ -301,7 +316,8 @@ public class Program
 
         builder.Services.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "TrashMob API", Version = "v1" });
+            options.SwaggerDoc("v2", new OpenApiInfo { Title = "TrashMob API", Version = "v2" });
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -337,15 +353,16 @@ public class Program
         var enableSwagger = builder.Environment.IsDevelopment() ||
                             builder.Configuration.GetValue<bool>("EnableSwagger");
 
+        app.UseMiddleware<CorrelationIdMiddleware>();
+        app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
         if (builder.Environment.IsDevelopment())
         {
-            app.UseDeveloperExceptionPage();
             app.UseForwardedHeaders();
             app.UseMigrationsEndPoint();
         }
         else
         {
-            app.UseExceptionHandler("/Error");
             app.UseForwardedHeaders();
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
@@ -354,7 +371,11 @@ public class Program
         if (enableSwagger)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "trashmobapi v1"));
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TrashMob API v1");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "TrashMob API v2");
+            });
         }
 
         app.UseHttpsRedirection();

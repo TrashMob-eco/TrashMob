@@ -1,10 +1,12 @@
 namespace TrashMob.Controllers
 {
+    using Asp.Versioning;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
     [ApiController]
+    [ApiVersion("1.0")]
     public abstract class BaseController : ControllerBase
     {
         private ILogger logger;
