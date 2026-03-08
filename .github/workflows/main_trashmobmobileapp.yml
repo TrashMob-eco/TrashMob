@@ -130,11 +130,12 @@ jobs:
 
   callAndroidDeploy:
     name: Call Android deploy workflow
-    needs: callBuildAndroid
+    needs: [callBuildAndroid, exposeEnvironmentVariables]
     uses: ./.github/workflows/publish-android.yml
     with:
       artifact_name: ${{ needs.callBuildAndroid.outputs.artifact_name }}
       bundle_id: ${{ needs.callBuildAndroid.outputs.bundle_id }}
+      environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
     secrets:
       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
