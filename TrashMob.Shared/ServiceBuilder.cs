@@ -39,7 +39,7 @@
             services.AddScoped<ILookupManager<EventType>, LookupManager<EventType>>();
             services.AddScoped<ILookupManager<InvitationStatus>, LookupManager<InvitationStatus>>();
             services.AddScoped<IKeyedManager<JobOpportunity>, KeyedManager<JobOpportunity>>();
-            services.AddScoped<IKeyedManager<Partner>, KeyedManager<Partner>>();
+            services.AddScoped<IKeyedManager<Partner>, PartnerManager>();
             services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
             services.AddScoped<IKeyedManager<PartnerContact>, KeyedManager<PartnerContact>>();
             services.AddScoped<IKeyedManager<PartnerLocation>, KeyedManager<PartnerLocation>>();
@@ -72,6 +72,7 @@
             services.AddScoped<IEventAttendeeMetricsManager, EventAttendeeMetricsManager>();
             services.AddScoped<IEventManager, EventManager>();
             services.AddScoped<IEventPartnerLocationServiceManager, EventPartnerLocationServiceManager>();
+            services.AddScoped<IPartnerManager, PartnerManager>();
             services.AddScoped<IPartnerAdminManager, PartnerAdminManager>();
             services.AddScoped<IPartnerAdminInvitationManager, PartnerAdminInvitationManager>();
             services.AddScoped<IPartnerContactManager, PartnerContactManager>();
