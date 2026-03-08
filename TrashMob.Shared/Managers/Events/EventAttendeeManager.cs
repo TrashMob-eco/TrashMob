@@ -248,5 +248,22 @@ namespace TrashMob.Shared.Managers.Events
                 recipients,
                 cancellationToken);
         }
+
+        /// <inheritdoc />
+        public IQueryable<EventAttendee> GetEventAttendeesQueryable(Guid eventId)
+        {
+            return Repository.Get()
+                .Where(ea => ea.EventId == eventId && ea.CanceledDate == null)
+                .Include(ea => ea.User)
+                .OrderBy(ea => ea.SignUpDate);
+        }
+
+        /// <inheritdoc />
+        public async Task<int> GetActiveAttendeeCountAsync(Guid eventId, CancellationToken cancellationToken = default)
+        {
+            return await Repository.Get()
+                .Where(ea => ea.EventId == eventId && ea.CanceledDate == null)
+                .CountAsync(cancellationToken);
+        }
     }
 }
