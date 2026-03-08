@@ -2,10 +2,12 @@ namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
@@ -129,6 +131,17 @@ namespace TrashMob.Shared.Managers
         public async Task<User> UserExistsAsync(string nameIdentifier, CancellationToken cancellationToken = default)
         {
             return await Repository.Get(u => u.NameIdentifier == nameIdentifier).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public IQueryable<User> GetFilteredUsersQueryable(UserQueryParameters filter)
+        {
+            var query = Repo.Get(u =>
+                (filter.Country == null || u.Country == filter.Country) &&
+                (filter.Region == null || u.Region == filter.Region) &&
+                (filter.City == null || u.City == filter.City));
+
+            return query.OrderBy(u => u.UserName);
         }
     }
 }

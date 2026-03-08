@@ -1,9 +1,11 @@
 namespace TrashMob.Shared.Managers.Interfaces
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Models.Poco.V2;
 
     /// <summary>
     /// Defines operations for managing users.
@@ -65,5 +67,14 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>The user if they exist; otherwise, null.</returns>
         Task<User> UserExistsAsync(string nameIdentifier, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets a queryable of filtered users for V2 API pagination. The returned IQueryable
+        /// is not materialized, allowing the caller to apply ToPagedAsync() for database-side pagination.
+        /// </summary>
+        /// <param name="filter">The V2 query parameters with user-specific filters.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>An unmaterialized queryable of users matching the filter.</returns>
+        IQueryable<User> GetFilteredUsersQueryable(UserQueryParameters filter);
     }
 }
