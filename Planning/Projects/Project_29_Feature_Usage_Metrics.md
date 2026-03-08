@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Complete |
+| **Status** | In Progress |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -57,14 +57,26 @@ This project focuses on adding structured event tracking to Application Insights
 - ✅ Track event lifecycle (create)
 - ✅ Track attendance actions (register)
 - ✅ Track litter report submissions
-- ⬜ Track partner/community interactions
+- ✅ Track partner document operations (create, delete, download)
+- ⬜ Track partner/community interactions (join, leave, browse)
 - ⬜ Track search and discovery actions
+- ⬜ Track event edit/delete/view actions
+- ⬜ Track attendance unregister
+- ⬜ Track litter report edit/delete/view actions
+- ⬜ Track team actions (create, join, leave)
+- ⬜ Track page views (hook exists, not wired up)
 
 ### Phase 3 - Dashboards & Reporting
 - ✅ Create Application Insights workbook for feature metrics
 - ✅ Define key performance indicators (KPIs)
 - ✅ Set up automated weekly/monthly reports
 - ✅ Document metrics for stakeholders
+
+### Phase 4 - Backend Alignment & Gaps
+- ⬜ Align backend `TrackEvent` naming with standardized `{Category}_{Action}_{Target}` format (controllers currently use names like `AddEvent` instead of `Event_Create_Submit`)
+- ⬜ Ensure backend events appear in Application Insights workbook queries
+- ⬜ Add error/exception tracking via `trackException()` (available but unused)
+- ⬜ Ensure metrics are captured server-side for users who decline cookies
 
 ---
 
@@ -375,13 +387,14 @@ public class MetricsService : IMetricsService
 
 **Last Updated:** February 1, 2026
 **Owner:** Engineering Team
-**Status:** Complete
+**Status:** In Progress
 **Next Review:** Quarterly metrics review
 
 ---
 
 ## Changelog
 
+- **2026-03-08:** Reopened project — expanded Phase 2 with missing instrumentation items, added Phase 4 for backend alignment gaps
 - **2026-02-01:** Completed Phase 3 - Dashboards & Reporting
   - Created Application Insights workbook (`Deploy/workbooks/feature-metrics-workbook.json`)
   - Created workbook Bicep template (`Deploy/appInsightsWorkbook.bicep`)
