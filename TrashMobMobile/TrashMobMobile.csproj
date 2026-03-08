@@ -351,9 +351,9 @@
 
   <!-- Inject Google Maps API key into the intermediate AndroidManifest.xml at build time.
        The key is fetched from Azure Key Vault (dev environment) during local builds.
-       CI uses GitHub secrets to replace the placeholder instead.
-       Override: set GOOGLE_MAPS_API_KEY env var to skip the Key Vault lookup. -->
-  <Target Name="InjectGoogleMapsKey" AfterTargets="_ManifestMerger" BeforeTargets="_CreateBaseApk" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+       CI uses GitHub secrets to replace the placeholder in the source manifest instead,
+       so this target is skipped when CI=true to avoid overwriting the injected key. -->
+  <Target Name="InjectGoogleMapsKey" AfterTargets="_ManifestMerger" BeforeTargets="_CreateBaseApk" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' AND '$(CI)' != 'true'">
     <!-- If GOOGLE_MAPS_API_KEY is already set (env var or MSBuild property), use it directly -->
     <!-- Otherwise, fetch from Azure Key Vault (requires 'az login') -->
     <Exec Command="az keyvault secret show --vault-name kv-tm-dev-westus2 --name Android-Google-ApiKey-Dev --query value -o tsv" ConsoleToMsBuild="true" Condition="'$(GOOGLE_MAPS_API_KEY)' == ''" ContinueOnError="true" StandardOutputImportance="low">
