@@ -7,6 +7,7 @@ namespace TrashMob.Shared.Managers.Teams
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
@@ -102,6 +103,30 @@ namespace TrashMob.Shared.Managers.Teams
         public async Task<IEnumerable<Team>> GetAllTeamsAsync(CancellationToken cancellationToken = default)
         {
             return await Repo.Get().ToListAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public IQueryable<Team> GetFilteredTeamsQueryable(TeamQueryParameters filter)
+        {
+            var query = Repo.Get()
+                .Where(t => t.IsPublic && t.IsActive);
+
+            if (filter.City != null)
+            {
+                query = query.Where(t => t.City == filter.City);
+            }
+
+            if (filter.Region != null)
+            {
+                query = query.Where(t => t.Region == filter.Region);
+            }
+
+            if (filter.Country != null)
+            {
+                query = query.Where(t => t.Country == filter.Country);
+            }
+
+            return query.OrderBy(t => t.Name);
         }
 
         /// <summary>
