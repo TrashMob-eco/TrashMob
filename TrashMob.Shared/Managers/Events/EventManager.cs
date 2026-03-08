@@ -9,6 +9,7 @@ namespace TrashMob.Shared.Managers.Events
     using TrashMob.Models;
     using TrashMob.Models.Extensions;
     using TrashMob.Models.Poco;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Extensions;
     using TrashMob.Shared.Managers.Interfaces;
@@ -150,6 +151,32 @@ namespace TrashMob.Shared.Managers.Events
                 .ToListAsync(cancellationToken);
 
             return locations;
+        }
+
+        /// <inheritdoc />
+        public async Task<IQueryable<Event>> GetFilteredEventsQueryableAsync(EventQueryParameters filter,
+            Guid? userId = null, CancellationToken cancellationToken = default)
+        {
+            var userTeamIds = await GetUserTeamIdsAsync(userId, cancellationToken);
+
+            var query = Repo.Get(e =>
+                e.EventStatusId != (int)EventStatusEnum.Canceled &&
+                (filter.EventStatusId == null || e.EventStatusId == filter.EventStatusId) &&
+                (filter.EventTypeId == null || e.EventTypeId == filter.EventTypeId) &&
+                (filter.FromDate == null || e.EventDate >= filter.FromDate) &&
+                (filter.ToDate == null || e.EventDate <= filter.ToDate) &&
+                (filter.Country == null || e.Country == filter.Country) &&
+                (filter.Region == null || e.Region == filter.Region) &&
+                (filter.City == null || e.City == filter.City) &&
+                (
+                    e.EventVisibilityId == (int)EventVisibilityEnum.Public
+                    || (e.EventVisibilityId == (int)EventVisibilityEnum.TeamOnly
+                        && e.TeamId != null
+                        && userTeamIds.Contains(e.TeamId.Value))
+                    || (userId != null && e.CreatedByUserId == userId.Value)
+                ));
+
+            return query.OrderByDescending(e => e.EventDate);
         }
 
         /// <inheritdoc />

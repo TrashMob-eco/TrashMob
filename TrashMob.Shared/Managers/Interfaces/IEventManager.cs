@@ -2,10 +2,12 @@ namespace TrashMob.Shared.Managers.Interfaces
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
+    using TrashMob.Models.Poco.V2;
 
     /// <summary>
     /// Defines operations for managing events.
@@ -84,6 +86,17 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>A collection of event locations within the time range.</returns>
         Task<IEnumerable<Location>> GetEventLocationsByTimeRangeAsync(DateTimeOffset? startTime, DateTimeOffset? endTime,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets a queryable of filtered events for V2 API pagination. The returned IQueryable
+        /// is not materialized, allowing the caller to apply ToPagedAsync() for database-side pagination.
+        /// </summary>
+        /// <param name="filter">The V2 query parameters with event-specific filters.</param>
+        /// <param name="userId">Optional user ID to include team-only events visible to this user.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>An unmaterialized queryable of events matching the filter.</returns>
+        Task<IQueryable<Event>> GetFilteredEventsQueryableAsync(EventQueryParameters filter, Guid? userId = null,
             CancellationToken cancellationToken = default);
 
         /// <summary>
