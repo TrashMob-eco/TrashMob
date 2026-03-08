@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{{subject}}}</title>
+    <style>
+        body{
+          font-size: medium;
+          font-family: 'Poppins';
+        }
+
+        .mainContainer{
+            padding-left: 4%;
+            padding-right: 4%;
+        }
+
+        .paragraphs{
+            margin-top:12px;
+        }
+
+        .sectionHeader{
+            margin-top:24px;margin-bottom:8px;
+        }
+
+        button{
+          color: #fff;
+          background-color: #96ba00;         
+          border-radius:5px ;
+          font-style: normal;
+          font-weight: 500;
+          font-size: 15px;
+          line-height: 22.5px; 
+          border: none;
+          outline: none;        
+          height: 45px;
+        }
+
+        a{
+          color: #96ba00;
+          background-color: transparent;         
+        }
+
+        table{
+          margin-bottom: 1rem;         
+        }
+
+        tr,th,td{
+          padding: 0.5rem;
+          border: none;
+        }
+
+        td,th{
+          width: 25%;
+        }
+
+        th{
+          background-color: #EAEFF6;
+          text-align: left;
+        }
+
+        tr{
+          background-color: #F8F9FA;
+        }
+
+        .closingNotification{
+          font-size: small;
+        }
+
+        .closingLogo{
+            max-height: 40px;
+            margin-left: -15px;
+        }
+
+        .emailHeaderContainer{
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+            display: flex;
+            max-height: 200px;
+        }
+        
+         .emailHeaderContainer > table, tr, th{
+            background-color:#fff;
+            border-collapse: collapse;
+        }
+
+        .logoSlogan{
+            display: flex;
+            flex-direction: column;
+            padding:1.5rem 1.5rem 1.5rem 1.5rem;
+            width: 50%;           
+
+        }
+
+        .globeContainer{
+            width: 46.97%;
+            text-align: right;            
+        }
+
+        .bannerGlobe{
+            width:100%;
+            height: 100%;
+            margin-right: -25%;
+        }
+
+        .bannerHeading{
+            margin-left:3rem;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="emailHeaderContainer">
+      <!--<div class="logoSlogan">-->
+      <!--    <img src="http://cdn.mcauto-images-production.sendgrid.net/3980f70febc70fb8/f043a16f-bf05-44d1-b9f6-b71d80833810/412x59.png" alt="TrashMob.eco logo" class="bannerLogo">-->
+      <!--    <h3 class="bannerHeading">Meet up. Clean up. Feel good.</h3>-->
+      <!--</div>-->
+      <!--<div class="globeContainer">-->
+      <!--    <img src="http://cdn.mcauto-images-production.sendgrid.net/3980f70febc70fb8/ab3e061e-8542-4c35-acb0-87b4ab497504/407x224.png" class="bannerGlobe" alt="Globe">-->
+      <!--</div>      -->
+          <table>
+    <tr style="background-color:white">
+    <td>
+    <img src="http://cdn.mcauto-images-production.sendgrid.net/3980f70febc70fb8/f043a16f-bf05-44d1-b9f6-b71d80833810/412x59.png" alt="TrashMob.eco logo" class="bannerLogo">
+          <h3 class="bannerHeading" style="margin-left:2%">Meet up. Clean up. Feel good.</h3>
+    </td>
+    <td style="margin-left:70%">
+    <img src="http://cdn.mcauto-images-production.sendgrid.net/3980f70febc70fb8/ab3e061e-8542-4c35-acb0-87b4ab497504/407x224.png" class="bannerGlobe" alt="Globe">
+    </td>
+    </tr>
+    </table>
+    </div>
+      <div class="mainContainer">
+    <p>Hi,</p>
+    <div>
+      <p class='paragraphs'>
+        {{{emailCopy}}}
+      </p>
+      <table>
+        <tr>
+          <th>Litter report name</th>
+          <th>Litter report address</th>
+        </tr>
+        <tr>
+          <td>{{{litterReportName}}}</a></td>
+          <td><a href="{{{googleMapsUrl}}}">{{{litterReportAddress}}}</a></td>          
+        </tr>
+      </table>
+    </div>
+    <div style="margin-top:36px;">
+      <p>Thanks,</p>
+      <p>The team at TrashMob.eco.</p>
+      <img src="http://cdn.mcauto-images-production.sendgrid.net/3980f70febc70fb8/f043a16f-bf05-44d1-b9f6-b71d80833810/412x59.png" alt="TrashMob.eco logo" class="closingLogo">
+      <p class="closingNotification">
+        <a href='<%asm_group_unsubscribe_raw_url%>'>Click here</a> to manage your notification preferences for TrashMob.eco.
+      </p>
+    </div>
+</div>
+  </body>
+</html>
+

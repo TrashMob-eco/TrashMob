@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{{{subject}}}</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <style>
+    /* Progressive enhancement - these won't work in all clients */
+    @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap');
+
+    @media only screen and (max-width: 620px) {
+      .email-container {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .email-body-padding {
+        padding: 24px 20px !important;
+      }
+      .email-header-padding {
+        padding: 20px 20px !important;
+      }
+      .email-footer-padding {
+        padding: 20px 20px !important;
+      }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: 'Lexend', 'Montserrat', Arial, Helvetica, sans-serif; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+  <!-- Wrapper table -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background-color: #f5f5f5;">
+    <tr>
+      <td align="center" style="padding: 20px 10px;">
+        <!-- Container table -->
+        <table class="email-container" width="600" cellpadding="0" cellspacing="0" border="0" role="presentation" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+
+          <!-- HEADER -->
+          <tr>
+            <td class="email-header-padding" style="background-color: #005C5C; padding: 24px 32px; text-align: center;">
+              <img src="http://cdn.mcauto-images-production.sendgrid.net/3980f70febc70fb8/f043a16f-bf05-44d1-b9f6-b71d80833810/412x59.png" alt="TrashMob.eco" width="200" style="display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none;">
+              <p style="color: #e0f2f1; margin: 8px 0 0 0; font-size: 14px; font-family: 'Lexend', 'Montserrat', Arial, Helvetica, sans-serif; line-height: 1.4;">Meet up. Clean up. Feel good.</p>
+            </td>
+          </tr>
+
+          <!-- BODY -->
+          <tr>
+            <td class="email-body-padding" style="padding: 32px; font-family: 'Lexend', 'Montserrat', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 1.6; color: #333333;">
+              <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.6; color: #333333;">Hi {{username}},</p>
+              {{{emailCopy}}}
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td class="email-footer-padding" style="background-color: #f5f5f5; padding: 24px 32px; text-align: center; border-top: 1px solid #e0e0e0;">
+              <p style="color: #666666; font-size: 13px; font-family: 'Lexend', 'Montserrat', Arial, Helvetica, sans-serif; line-height: 1.5; margin: 0 0 8px 0;">Thanks,<br>The team at TrashMob.eco</p>
+              <img src="http://cdn.mcauto-images-production.sendgrid.net/3980f70febc70fb8/f043a16f-bf05-44d1-b9f6-b71d80833810/412x59.png" alt="TrashMob.eco" width="120" style="display: block; margin: 8px auto; border: 0; outline: none; text-decoration: none;">
+              <p style="color: #999999; font-size: 11px; font-family: 'Lexend', 'Montserrat', Arial, Helvetica, sans-serif; line-height: 1.5; margin: 12px 0 4px 0;">TrashMob.eco is a 501(c)(3) nonprofit organization.</p>
+              <p style="color: #999999; font-size: 11px; font-family: 'Lexend', 'Montserrat', Arial, Helvetica, sans-serif; line-height: 1.5; margin: 4px 0 0 0;">
+                <a href="<%asm_group_unsubscribe_raw_url%>" style="color: #005C5C; text-decoration: underline;">Unsubscribe</a>
+                &middot;
+                <a href="<%asm_preferences_raw_url%>" style="color: #005C5C; text-decoration: underline;">Manage Preferences</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
