@@ -1,47 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git *)",
-      "Bash(gh *)",
-      "Bash(npm *)",
-      "Bash(npx *)",
-      "Bash(node *)",
-      "Bash(dotnet *)",
-      "Bash(az *)",
-      "Bash(python *)",
-      "Bash(python3 *)",
-      "Bash(py *)",
-      "Bash(ls *)",
-      "Bash(echo *)",
-      "Bash(find *)",
-      "Bash(curl *)",
-      "Bash(where *)",
-      "Bash(cd *)",
-      "Bash(D:/Android/android-sdk/platform-tools/adb.exe *)",
-      "WebFetch",
-      "Bash(STRAPI_URL=\"https://ca-strapi-tm-pr-westus2.greenground-fd8fc385.westus2.azurecontainerapps.io\")",
-      "Bash(printf '{\"\"email\"\":\"\"admin@trashmob.eco\"\",\"\"password\"\":\"\"Admin1234!\"\"}')",
-      "Bash(/tmp/article-upload.py:*)",
-      "Bash(API_TOKEN=\"dec71efdf85f24da896e144c6f45feed5d19340f1112bfe49b6401f580151a50bedce72aad5e097f2770928cbe8cf363c238fba9d8046aab14dbe0cc4607527a0b3379183709cab80c664eaf90a8797b9e96889985ab3a7d0afcb5ab7ba4ed07b7af4330b6e196067f0098a13113b59b4c522b49a67ba61bec25ecaeeb45ee55\")",
-      "Bash(BASE_URL=https://dev.trashmob.eco npx playwright test e2e/tests/mobile.spec.ts --project=chromium)",
-      "Bash(for pr in 3013 3010 3009 2783 2782 2780 2779 2773 2766 2673)",
-      "Bash(do echo \"=== PR #$pr ===\")",
-      "Bash(done)",
-      "Bash(xargs grep -l \"UnsubscribePage\")",
-      "Bash(xargs grep -l \"invite\\\\|Invite\")",
-      "Bash(xargs grep -l \"Alert\\\\|alert-dialog\")",
-      "Bash(xargs grep -l \"unlinked\\\\|auto-link\\\\|accept.*invitation\")",
-      "Bash(xargs grep -l \"profile\\\\|Profile\")",
-      "Bash(grep -n \"userName\\\\|givenName\\\\|surname\" /d/repos/TrashMob2/TrashMobMobile/Pages/*.xaml)",
-      "Bash(grep -l \"email\\\\|sendgrid\\\\|template\" /d/repos/TrashMob2/.github/workflows/*.yml)",
-      "Bash(grep -l \"Stats\" /d/repos/TrashMob2/TrashMob/Controllers/*.cs)",
-      "Bash(grep -r \"ServiceResult\" /d/repos/TrashMob2/TrashMob/Controllers/*.cs)",
-      "Bash(grep -l \"ToDisplayEvent\\\\|ToDisplayUser\" /d/repos/TrashMob2/TrashMob.Models/Extensions/*.cs)",
-      "Bash(grep -c \"public.*Ok\\(\" /d/repos/TrashMob2/TrashMob/Controllers/*.cs)"
-    ],
-    "deny": [
-      "Bash(rm -rf /)",
-      "Bash(sudo *)"
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(az:*)",
+      "Bash(dotnet:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(ls:*)",
+      "Bash(echo:*)",
+      "Bash(find:*)"
     ]
   }
 }
