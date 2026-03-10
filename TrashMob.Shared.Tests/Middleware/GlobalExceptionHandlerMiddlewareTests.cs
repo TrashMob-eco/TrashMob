@@ -51,6 +51,7 @@ namespace TrashMob.Shared.Tests.Middleware
             Assert.Equal(400, context.Response.StatusCode);
             var problem = await GetProblemDetailsFromResponse(context);
             Assert.Equal("Bad Request", problem.Title);
+            Assert.Equal("https://httpstatuses.io/400", problem.Type);
         }
 
         [Fact]
@@ -64,6 +65,7 @@ namespace TrashMob.Shared.Tests.Middleware
             Assert.Equal(404, context.Response.StatusCode);
             var problem = await GetProblemDetailsFromResponse(context);
             Assert.Equal("Not Found", problem.Title);
+            Assert.Equal("https://httpstatuses.io/404", problem.Type);
         }
 
         [Fact]
@@ -88,6 +90,7 @@ namespace TrashMob.Shared.Tests.Middleware
             Assert.Equal(500, context.Response.StatusCode);
             var problem = await GetProblemDetailsFromResponse(context);
             Assert.Equal("Internal Server Error", problem.Title);
+            Assert.Equal("https://httpstatuses.io/500", problem.Type);
         }
 
         [Fact]

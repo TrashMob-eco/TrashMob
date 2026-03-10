@@ -1,6 +1,7 @@
 namespace TrashMob.Shared.Tests.Middleware
 {
     using System;
+    using System.Diagnostics;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
@@ -66,6 +67,21 @@ namespace TrashMob.Shared.Tests.Middleware
             // The correlation ID should be stored in Items for the response callback to use
             Assert.Equal(existingId, capturedCorrelationId);
             Assert.Equal(existingId, context.Items["CorrelationId"]);
+        }
+
+        [Fact]
+        public async Task InvokeAsync_SetsActivityTag_WhenActivityExists()
+        {
+            using var activity = new Activity("TestActivity").Start();
+            var context = new DefaultHttpContext();
+            var correlationId = "activity-correlation-id";
+            context.Request.Headers["X-Correlation-ID"] = correlationId;
+
+            var middleware = new CorrelationIdMiddleware(_ => Task.CompletedTask, logger.Object);
+
+            await middleware.InvokeAsync(context);
+
+            Assert.Equal(correlationId, activity.GetTagItem("correlation.id")?.ToString());
         }
     }
 }
