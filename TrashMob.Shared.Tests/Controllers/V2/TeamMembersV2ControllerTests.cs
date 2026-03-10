@@ -10,6 +10,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using Moq;
     using TrashMob.Controllers.V2;
     using TrashMob.Models;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Shared.Managers.Interfaces;
     using Xunit;
 
@@ -41,8 +42,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var team = new Team { Id = teamId, Name = "Public Team", IsActive = true, IsPublic = true };
             var members = new List<TeamMember>
             {
-                new() { TeamId = teamId, UserId = Guid.NewGuid(), IsTeamLead = true },
-                new() { TeamId = teamId, UserId = Guid.NewGuid(), IsTeamLead = false },
+                new() { TeamId = teamId, UserId = Guid.NewGuid(), IsTeamLead = true, User = new User { UserName = "lead" } },
+                new() { TeamId = teamId, UserId = Guid.NewGuid(), IsTeamLead = false, User = new User { UserName = "member" } },
             };
 
             teamManager
@@ -56,8 +57,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetMembers(teamId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedMembers = Assert.IsAssignableFrom<IEnumerable<TeamMember>>(okResult.Value);
-            Assert.Equal(2, new List<TeamMember>(returnedMembers).Count);
+            var returnedMembers = Assert.IsAssignableFrom<IEnumerable<TeamMemberDto>>(okResult.Value);
+            Assert.Equal(2, new List<TeamMemberDto>(returnedMembers).Count);
         }
 
         [Fact]
@@ -81,7 +82,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var team = new Team { Id = teamId, Name = "Test Team", IsActive = true, IsPublic = true };
             var leads = new List<TeamMember>
             {
-                new() { TeamId = teamId, UserId = Guid.NewGuid(), IsTeamLead = true },
+                new() { TeamId = teamId, UserId = Guid.NewGuid(), IsTeamLead = true, User = new User { UserName = "lead" } },
             };
 
             teamManager
@@ -95,7 +96,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetLeads(teamId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedLeads = Assert.IsAssignableFrom<IEnumerable<TeamMember>>(okResult.Value);
+            var returnedLeads = Assert.IsAssignableFrom<IEnumerable<TeamMemberDto>>(okResult.Value);
             Assert.Single(returnedLeads);
         }
 
@@ -105,7 +106,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var teamId = Guid.NewGuid();
             var userId = Guid.NewGuid();
             var team = new Team { Id = teamId, Name = "Public Team", IsActive = true, IsPublic = true };
-            var newMember = new TeamMember { TeamId = teamId, UserId = userId, IsTeamLead = false };
+            var newMember = new TeamMember { TeamId = teamId, UserId = userId, IsTeamLead = false, User = new User { UserName = "newmember" } };
 
             SetUserId(userId);
 
@@ -124,7 +125,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.JoinTeam(teamId, CancellationToken.None);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var returnedMember = Assert.IsType<TeamMember>(createdResult.Value);
+            var returnedMember = Assert.IsType<TeamMemberDto>(createdResult.Value);
             Assert.Equal(teamId, returnedMember.TeamId);
             Assert.Equal(userId, returnedMember.UserId);
             Assert.False(returnedMember.IsTeamLead);
@@ -192,7 +193,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var targetUserId = Guid.NewGuid();
             var team = new Team { Id = teamId, Name = "Test Team", IsActive = true, IsPublic = true };
             var member = new TeamMember { TeamId = teamId, UserId = targetUserId, IsTeamLead = false };
-            var promotedMember = new TeamMember { TeamId = teamId, UserId = targetUserId, IsTeamLead = true };
+            var promotedMember = new TeamMember { TeamId = teamId, UserId = targetUserId, IsTeamLead = true, User = new User { UserName = "promoted" } };
 
             SetUserId(currentUserId);
 
@@ -215,7 +216,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.PromoteToLead(teamId, targetUserId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedMember = Assert.IsType<TeamMember>(okResult.Value);
+            var returnedMember = Assert.IsType<TeamMemberDto>(okResult.Value);
             Assert.True(returnedMember.IsTeamLead);
         }
 

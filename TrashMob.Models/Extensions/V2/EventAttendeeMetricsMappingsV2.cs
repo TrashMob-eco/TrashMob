@@ -32,5 +32,23 @@ namespace TrashMob.Models.Extensions.V2
                 AdjustmentReason = entity.AdjustmentReason ?? string.Empty,
             };
         }
+        /// <summary>
+        /// Maps a V2 EventAttendeeMetricsDto to an EventAttendeeMetrics entity.
+        /// </summary>
+        public static EventAttendeeMetrics ToEntity(this EventAttendeeMetricsDto dto)
+        {
+            return new EventAttendeeMetrics
+            {
+                Id = dto.Id,
+                EventId = dto.EventId,
+                UserId = dto.UserId,
+                BagsCollected = dto.BagsCollected,
+                PickedWeight = dto.PickedWeight,
+                PickedWeightUnitId = dto.PickedWeightUnitId,
+                DurationMinutes = dto.DurationMinutes,
+                Notes = dto.Notes,
+                Status = dto.Status,
+            };
+        }
     }
 }

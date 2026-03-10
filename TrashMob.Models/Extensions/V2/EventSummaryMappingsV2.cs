@@ -29,5 +29,23 @@ namespace TrashMob.Models.Extensions.V2
                 LastUpdatedDate = entity.LastUpdatedDate.GetValueOrDefault(),
             };
         }
+        /// <summary>
+        /// Maps a V2 EventSummaryDto to an EventSummary entity.
+        /// </summary>
+        public static EventSummary ToEntity(this EventSummaryDto dto)
+        {
+            return new EventSummary
+            {
+                EventId = dto.EventId,
+                NumberOfBuckets = dto.NumberOfBuckets,
+                NumberOfBags = dto.NumberOfBags,
+                DurationInMinutes = dto.DurationInMinutes,
+                ActualNumberOfAttendees = dto.ActualNumberOfAttendees,
+                PickedWeight = dto.PickedWeight,
+                PickedWeightUnitId = dto.PickedWeightUnitId,
+                IsFromRouteData = dto.IsFromRouteData,
+                Notes = dto.Notes,
+            };
+        }
     }
 }

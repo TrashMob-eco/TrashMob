@@ -100,7 +100,7 @@ namespace TrashMob.Controllers.V2
         [HttpGet("userevents/{userId}/{futureEventsOnly}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUserEvents(Guid userId, bool futureEventsOnly,
             CancellationToken cancellationToken)
         {
@@ -110,7 +110,7 @@ namespace TrashMob.Controllers.V2
             var result2 = await eventAttendeeManager
                 .GetEventsUserIsAttendingAsync(userId, futureEventsOnly, cancellationToken);
 
-            var allResults = result1.Union(result2, new EventComparer());
+            var allResults = result1.Union(result2, new EventComparer()).Select(e => e.ToV2Dto());
             return Ok(allResults);
         }
 
@@ -123,14 +123,14 @@ namespace TrashMob.Controllers.V2
         [HttpGet("eventsuserisattending/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 GetEventsUserIsAttending User={UserId}", userId);
 
             var result = await eventAttendeeManager
                 .GetEventsUserIsAttendingAsync(userId, cancellationToken: cancellationToken);
-            return Ok(result);
+            return Ok(result.Select(e => e.ToV2Dto()));
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace TrashMob.Controllers.V2
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns a paginated list of filtered events.</response>
         [HttpPost("pagedfilteredevents")]
-        [ProducesResponseType(typeof(PaginatedList<Event>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedList<EventDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedFilteredEvents(
             [FromBody] EventFilter filter,
             CancellationToken cancellationToken)
@@ -170,16 +170,17 @@ namespace TrashMob.Controllers.V2
             Guid? userId = User.Identity?.IsAuthenticated == true ? UserId : (Guid?)null;
             var result = await eventManager.GetFilteredEventsAsync(filter, userId, cancellationToken);
 
+            var ordered = result.OrderByDescending(e => e.EventDate).ToList();
+
             if (filter.PageSize is not null)
             {
-                var pagedResults = PaginatedList<Event>.Create(
-                    result.OrderByDescending(e => e.EventDate).AsQueryable(),
-                    filter.PageIndex.GetValueOrDefault(0),
-                    filter.PageSize.GetValueOrDefault(10));
-                return Ok(pagedResults);
+                var pageIndex = filter.PageIndex.GetValueOrDefault(0);
+                var pageSize = filter.PageSize.GetValueOrDefault(10);
+                var items = ordered.Skip((pageIndex - 1) * pageSize).Take(pageSize).Select(e => e.ToV2Dto()).ToList();
+                return Ok(new PaginatedList<EventDto>(items, ordered.Count, pageIndex, pageSize));
             }
 
-            return Ok(result);
+            return Ok(ordered.Select(e => e.ToV2Dto()));
         }
 
         /// <summary>
@@ -192,7 +193,7 @@ namespace TrashMob.Controllers.V2
         [HttpPost("pageduserevents/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [ProducesResponseType(typeof(PaginatedList<Event>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedList<EventDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedUserEvents(
             [FromBody] EventFilter filter,
             Guid userId,
@@ -204,42 +205,43 @@ namespace TrashMob.Controllers.V2
             var result2 = await eventAttendeeManager
                 .GetEventsUserIsAttendingAsync(filter, userId, cancellationToken);
 
-            var allResults = result1.Union(result2, new EventComparer());
+            var ordered = result1.Union(result2, new EventComparer())
+                .OrderByDescending(e => e.EventDate).ToList();
 
             if (filter.PageSize is not null)
             {
-                var pagedResults = PaginatedList<Event>.Create(
-                    allResults.OrderByDescending(e => e.EventDate).AsQueryable(),
-                    filter.PageIndex.GetValueOrDefault(0),
-                    filter.PageSize.GetValueOrDefault(10));
-                return Ok(pagedResults);
+                var pageIndex = filter.PageIndex.GetValueOrDefault(0);
+                var pageSize = filter.PageSize.GetValueOrDefault(10);
+                var items = ordered.Skip((pageIndex - 1) * pageSize).Take(pageSize).Select(e => e.ToV2Dto()).ToList();
+                return Ok(new PaginatedList<EventDto>(items, ordered.Count, pageIndex, pageSize));
             }
 
-            return Ok(allResults);
+            return Ok(ordered.Select(e => e.ToV2Dto()));
         }
 
         /// <summary>
         /// Adds a new event.
         /// </summary>
-        /// <param name="mobEvent">The event to add.</param>
+        /// <param name="eventDto">The event to add.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="201">Event created.</response>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(Event), StatusCodes.Status201Created)]
-        public async Task<IActionResult> AddEvent(Event mobEvent, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(EventDto), StatusCodes.Status201Created)]
+        public async Task<IActionResult> AddEvent(EventDto eventDto, CancellationToken cancellationToken)
         {
-            logger.LogInformation("V2 AddEvent Name={Name}", mobEvent.Name);
+            logger.LogInformation("V2 AddEvent Name={Name}", eventDto.Name);
 
+            var mobEvent = eventDto.ToEntity();
             var newEvent = await eventManager.AddAsync(mobEvent, UserId, cancellationToken);
-            return CreatedAtAction(nameof(GetEvent), new { id = newEvent.Id }, newEvent);
+            return CreatedAtAction(nameof(GetEvent), new { id = newEvent.Id }, newEvent.ToV2Dto());
         }
 
         /// <summary>
         /// Updates an existing event. Only event leads can update.
         /// </summary>
-        /// <param name="mobEvent">The event to update.</param>
+        /// <param name="eventDto">The event to update.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns the updated event.</response>
         /// <response code="403">User is not an event lead.</response>
@@ -247,12 +249,14 @@ namespace TrashMob.Controllers.V2
         [HttpPut]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(EventDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateEvent(Event mobEvent, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateEvent(EventDto eventDto, CancellationToken cancellationToken)
         {
-            logger.LogInformation("V2 UpdateEvent Event={EventId}", mobEvent.Id);
+            logger.LogInformation("V2 UpdateEvent Event={EventId}", eventDto.Id);
+
+            var mobEvent = eventDto.ToEntity();
 
             if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
@@ -262,7 +266,7 @@ namespace TrashMob.Controllers.V2
             try
             {
                 var updatedEvent = await eventManager.UpdateAsync(mobEvent, UserId, cancellationToken);
-                return Ok(updatedEvent);
+                return Ok(updatedEvent.ToV2Dto());
             }
             catch (DbUpdateConcurrencyException)
             {

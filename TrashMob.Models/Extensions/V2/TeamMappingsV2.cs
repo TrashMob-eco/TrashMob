@@ -34,5 +34,28 @@ namespace TrashMob.Models.Extensions.V2
                 LastUpdatedDate = entity.LastUpdatedDate.GetValueOrDefault(),
             };
         }
+        /// <summary>
+        /// Maps a V2 TeamDto to a Team entity.
+        /// </summary>
+        public static Team ToEntity(this TeamDto dto)
+        {
+            return new Team
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Description = dto.Description,
+                LogoUrl = dto.LogoUrl,
+                IsPublic = dto.IsPublic,
+                RequiresApproval = dto.RequiresApproval,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude,
+                City = dto.City,
+                Region = dto.Region,
+                Country = dto.Country,
+                PostalCode = dto.PostalCode,
+                IsActive = dto.IsActive,
+                CreatedByUserId = dto.CreatedByUserId,
+            };
+        }
     }
 }

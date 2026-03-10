@@ -2,6 +2,7 @@ namespace TrashMob.Controllers.V2
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
@@ -12,6 +13,8 @@ namespace TrashMob.Controllers.V2
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
+    using TrashMob.Models.Extensions.V2;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
@@ -38,7 +41,7 @@ namespace TrashMob.Controllers.V2
         /// <response code="200">Returns the team members.</response>
         /// <response code="404">Team not found.</response>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<TeamMember>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<TeamMemberDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetMembers(Guid teamId, CancellationToken cancellationToken)
         {
@@ -65,7 +68,7 @@ namespace TrashMob.Controllers.V2
             }
 
             var members = await teamMemberManager.GetByTeamIdAsync(teamId, cancellationToken);
-            return Ok(members);
+            return Ok(members.Select(m => m.ToV2Dto()));
         }
 
         /// <summary>
@@ -76,7 +79,7 @@ namespace TrashMob.Controllers.V2
         /// <response code="200">Returns the team leads.</response>
         /// <response code="404">Team not found.</response>
         [HttpGet("leads")]
-        [ProducesResponseType(typeof(IEnumerable<TeamMember>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<TeamMemberDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetLeads(Guid teamId, CancellationToken cancellationToken)
         {
@@ -89,7 +92,7 @@ namespace TrashMob.Controllers.V2
             }
 
             var leads = await teamMemberManager.GetTeamLeadsAsync(teamId, cancellationToken);
-            return Ok(leads);
+            return Ok(leads.Select(m => m.ToV2Dto()));
         }
 
         /// <summary>
@@ -103,7 +106,7 @@ namespace TrashMob.Controllers.V2
         [HttpPost("join")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(TeamMember), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(TeamMemberDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> JoinTeam(Guid teamId, CancellationToken cancellationToken)
@@ -128,7 +131,7 @@ namespace TrashMob.Controllers.V2
             }
 
             var member = await teamMemberManager.AddMemberAsync(teamId, UserId, isTeamLead: false, UserId, cancellationToken);
-            return CreatedAtAction(nameof(GetMembers), new { teamId }, member);
+            return CreatedAtAction(nameof(GetMembers), new { teamId }, member.ToV2Dto());
         }
 
         /// <summary>
@@ -196,7 +199,7 @@ namespace TrashMob.Controllers.V2
         [HttpPut("{userId}/promote")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(TeamMember), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TeamMemberDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -228,7 +231,7 @@ namespace TrashMob.Controllers.V2
             }
 
             var updatedMember = await teamMemberManager.PromoteToLeadAsync(teamId, userId, UserId, cancellationToken);
-            return Ok(updatedMember);
+            return Ok(updatedMember.ToV2Dto());
         }
 
         /// <summary>
@@ -244,7 +247,7 @@ namespace TrashMob.Controllers.V2
         [HttpPut("{userId}/demote")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(TeamMember), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TeamMemberDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -282,7 +285,7 @@ namespace TrashMob.Controllers.V2
             }
 
             var updatedMember = await teamMemberManager.DemoteFromLeadAsync(teamId, userId, UserId, cancellationToken);
-            return Ok(updatedMember);
+            return Ok(updatedMember.ToV2Dto());
         }
     }
 }

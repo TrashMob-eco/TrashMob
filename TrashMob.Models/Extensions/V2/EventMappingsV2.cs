@@ -2,6 +2,9 @@
 
 namespace TrashMob.Models.Extensions.V2
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using TrashMob.Models.Poco;
     using TrashMob.Models.Poco.V2;
 
     /// <summary>
@@ -38,5 +41,33 @@ namespace TrashMob.Models.Extensions.V2
                 LastUpdatedDate = entity.LastUpdatedDate.GetValueOrDefault(),
             };
         }
+        /// <summary>
+        /// Maps a V2 EventDto to an Event entity.
+        /// </summary>
+        public static Event ToEntity(this EventDto dto)
+        {
+            return new Event
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Description = dto.Description,
+                EventDate = dto.EventDate,
+                DurationHours = dto.DurationHours,
+                DurationMinutes = dto.DurationMinutes,
+                EventTypeId = dto.EventTypeId,
+                EventStatusId = dto.EventStatusId,
+                StreetAddress = dto.StreetAddress,
+                City = dto.City,
+                Region = dto.Region,
+                Country = dto.Country,
+                PostalCode = dto.PostalCode,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude,
+                MaxNumberOfParticipants = dto.MaxNumberOfParticipants,
+                EventVisibilityId = dto.IsEventPublic ? (int)EventVisibilityEnum.Public : (int)EventVisibilityEnum.Private,
+                CreatedByUserId = dto.CreatedByUserId,
+            };
+        }
+
     }
 }

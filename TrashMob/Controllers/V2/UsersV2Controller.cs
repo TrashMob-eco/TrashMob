@@ -89,37 +89,38 @@ namespace TrashMob.Controllers.V2
         /// <summary>
         /// Adds a new user.
         /// </summary>
-        /// <param name="user">The user to add.</param>
+        /// <param name="userDto">The user to add.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="201">User created.</response>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(User), StatusCodes.Status201Created)]
-        public async Task<IActionResult> AddUser(User user, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
+        public async Task<IActionResult> AddUser(UserWriteDto userDto, CancellationToken cancellationToken)
         {
-            logger.LogInformation("V2 AddUser UserName={UserName}", user.UserName);
+            logger.LogInformation("V2 AddUser UserName={UserName}", userDto.UserName);
 
+            var user = userDto.ToEntity();
             var result = await userManager.AddAsync(user, UserId, cancellationToken);
-            return CreatedAtAction(nameof(GetUser), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(GetUser), new { id = result.Id }, result.ToV2Dto());
         }
 
         /// <summary>
         /// Updates a user. Users can only update themselves unless they are a site admin.
         /// </summary>
-        /// <param name="user">The user to update.</param>
+        /// <param name="userDto">The user to update.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns the updated user.</response>
         /// <response code="403">User is not authorized.</response>
         /// <response code="404">User not found.</response>
         [HttpPut]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateUser(User user, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateUser(UserWriteDto userDto, CancellationToken cancellationToken)
         {
-            logger.LogInformation("V2 UpdateUser User={UserId}", user.Id);
+            logger.LogInformation("V2 UpdateUser User={UserId}", userDto.Id);
 
             var currentUser = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken);
 
@@ -128,19 +129,20 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            if (user.Id != UserId && !currentUser.IsSiteAdmin)
+            if (userDto.Id != UserId && !currentUser.IsSiteAdmin)
             {
                 return Forbid();
             }
 
             try
             {
+                var user = userDto.ToEntity();
                 var updatedUser = await userManager.UpdateAsync(user, cancellationToken);
-                return Ok(updatedUser);
+                return Ok(updatedUser.ToV2Dto());
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await userManager.UserExistsAsync(user.Id, cancellationToken))
+                if (!await userManager.UserExistsAsync(userDto.Id, cancellationToken))
                 {
                     return NotFound();
                 }
@@ -158,7 +160,7 @@ namespace TrashMob.Controllers.V2
         /// <response code="404">User not found.</response>
         [HttpGet("getuserbyemail/{email}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUserByEmail(string email, CancellationToken cancellationToken)
         {
@@ -171,7 +173,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            return Ok(user);
+            return Ok(user.ToV2Dto());
         }
 
         /// <summary>
@@ -183,7 +185,7 @@ namespace TrashMob.Controllers.V2
         /// <response code="404">User not found.</response>
         [HttpGet("getbyobjectid/{objectId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUserByObjectId(Guid objectId, CancellationToken cancellationToken)
         {
@@ -196,7 +198,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            return Ok(user);
+            return Ok(user.ToV2Dto());
         }
 
         /// <summary>
@@ -236,7 +238,7 @@ namespace TrashMob.Controllers.V2
         [HttpPost("photo")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UploadProfilePhoto(
             [FromForm] ImageUpload imageUpload,
@@ -264,7 +266,7 @@ namespace TrashMob.Controllers.V2
             user.ProfilePhotoUrl = imageUrl;
 
             var updatedUser = await userManager.UpdateAsync(user, cancellationToken);
-            return Ok(updatedUser);
+            return Ok(updatedUser.ToV2Dto());
         }
     }
 }

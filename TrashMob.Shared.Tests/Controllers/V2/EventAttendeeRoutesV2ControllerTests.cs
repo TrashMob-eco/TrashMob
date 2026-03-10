@@ -147,7 +147,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetByUser(userId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedRoutes = Assert.IsAssignableFrom<IEnumerable<EventAttendeeRoute>>(okResult.Value);
+            var returnedRoutes = Assert.IsAssignableFrom<IEnumerable<DisplayEventAttendeeRoute>>(okResult.Value);
             Assert.Single(returnedRoutes);
         }
 
@@ -163,7 +163,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
                 Id = routeId,
                 EventId = Guid.NewGuid(),
             };
-            var updatedRoute = new EventAttendeeRoute { Id = routeId };
+            var updatedRoute = new EventAttendeeRoute { Id = routeId, UserPath = TestPath };
 
             routeManager
                 .Setup(m => m.UpdateAsync(It.IsAny<EventAttendeeRoute>(), userId, It.IsAny<CancellationToken>()))
@@ -172,7 +172,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.Update(displayRoute, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<EventAttendeeRoute>(okResult.Value);
+            Assert.IsType<DisplayEventAttendeeRoute>(okResult.Value);
         }
     }
 }

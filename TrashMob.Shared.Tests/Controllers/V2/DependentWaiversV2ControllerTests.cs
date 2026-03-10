@@ -10,6 +10,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using Moq;
     using TrashMob.Controllers.V2;
     using TrashMob.Models;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
     using Xunit;
@@ -65,7 +66,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetCurrentWaiver(dependentId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedWaiver = Assert.IsType<DependentWaiver>(okResult.Value);
+            var returnedWaiver = Assert.IsType<DependentWaiverDto>(okResult.Value);
             Assert.Equal(waiver.Id, returnedWaiver.Id);
         }
 
@@ -146,7 +147,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var statusResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(StatusCodes.Status201Created, statusResult.StatusCode);
-            var returnedWaiver = Assert.IsType<DependentWaiver>(statusResult.Value);
+            var returnedWaiver = Assert.IsType<DependentWaiverDto>(statusResult.Value);
             Assert.Equal(signedWaiver.Id, returnedWaiver.Id);
         }
 
@@ -212,8 +213,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetWaiverHistory(dependentId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedWaivers = Assert.IsAssignableFrom<IEnumerable<DependentWaiver>>(okResult.Value);
-            Assert.Equal(2, new List<DependentWaiver>(returnedWaivers).Count);
+            var returnedWaivers = Assert.IsAssignableFrom<IEnumerable<DependentWaiverDto>>(okResult.Value);
+            Assert.Equal(2, new List<DependentWaiverDto>(returnedWaivers).Count);
         }
     }
 }

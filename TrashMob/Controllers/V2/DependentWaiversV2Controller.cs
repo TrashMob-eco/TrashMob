@@ -11,7 +11,10 @@ namespace TrashMob.Controllers.V2
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Web.Resource;
+    using System.Linq;
     using TrashMob.Models;
+    using TrashMob.Models.Extensions.V2;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
@@ -43,7 +46,7 @@ namespace TrashMob.Controllers.V2
         [HttpGet]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [ProducesResponseType(typeof(DependentWaiver), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DependentWaiverDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCurrentWaiver(Guid dependentId, CancellationToken cancellationToken)
@@ -62,7 +65,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            return Ok(waiver);
+            return Ok(waiver.ToV2Dto());
         }
 
         /// <summary>
@@ -77,7 +80,7 @@ namespace TrashMob.Controllers.V2
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(DependentWaiver), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(DependentWaiverDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> SignWaiver(
@@ -121,7 +124,7 @@ namespace TrashMob.Controllers.V2
                 logger.LogWarning(ex, "PDF generation failed for dependent waiver {WaiverId}", result.Data.Id);
             }
 
-            return StatusCode(StatusCodes.Status201Created, result.Data);
+            return StatusCode(StatusCodes.Status201Created, result.Data.ToV2Dto());
         }
 
         /// <summary>
@@ -134,7 +137,7 @@ namespace TrashMob.Controllers.V2
         [HttpGet("history")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [ProducesResponseType(typeof(IEnumerable<DependentWaiver>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<DependentWaiverDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetWaiverHistory(Guid dependentId, CancellationToken cancellationToken)
         {
@@ -147,7 +150,7 @@ namespace TrashMob.Controllers.V2
             }
 
             var waivers = await dependentWaiverManager.GetByDependentIdAsync(dependentId, cancellationToken);
-            return Ok(waivers);
+            return Ok(waivers.Select(w => w.ToV2Dto()));
         }
 
         /// <summary>

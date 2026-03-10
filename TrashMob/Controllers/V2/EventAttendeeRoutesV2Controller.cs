@@ -138,13 +138,13 @@ namespace TrashMob.Controllers.V2
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns the routes for the user.</response>
         [HttpGet("by-user/{userId}")]
-        [ProducesResponseType(typeof(IEnumerable<EventAttendeeRoute>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<DisplayEventAttendeeRoute>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetByUser(Guid userId, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 GetEventAttendeeRoutesByUser User={UserId}", userId);
 
             var result = await eventAttendeeRouteManager.GetByCreatedUserIdAsync(userId, cancellationToken);
-            return Ok(result);
+            return Ok(result.Select(x => x.ToDisplayEventAttendeeRoute()));
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace TrashMob.Controllers.V2
         [HttpPut]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventAttendeeRoute), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DisplayEventAttendeeRoute), StatusCodes.Status200OK)]
         public async Task<IActionResult> Update(
             DisplayEventAttendeeRoute displayEventAttendeeRoute,
             CancellationToken cancellationToken)
@@ -168,7 +168,7 @@ namespace TrashMob.Controllers.V2
             var updatedRoute = await eventAttendeeRouteManager
                 .UpdateAsync(eventAttendeeRoute, UserId, cancellationToken);
 
-            return Ok(updatedRoute);
+            return Ok(updatedRoute.ToDisplayEventAttendeeRoute());
         }
 
         /// <summary>
