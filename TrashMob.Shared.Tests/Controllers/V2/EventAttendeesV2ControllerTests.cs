@@ -9,26 +9,32 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using TrashMob.Controllers;
     using TrashMob.Controllers.V2;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMob.Models.Poco.V2;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
     using TrashMob.Shared.Tests.Fixtures;
     using Xunit;
 
     public class EventAttendeesV2ControllerTests
     {
         private readonly Mock<IEventAttendeeManager> eventAttendeeManager = new();
+        private readonly Mock<IUserWaiverManager> userWaiverManager = new();
         private readonly Mock<ILogger<EventAttendeesV2Controller>> logger = new();
         private readonly EventAttendeesV2Controller controller;
+        private readonly Guid currentUserId = Guid.NewGuid();
 
         public EventAttendeesV2ControllerTests()
         {
-            controller = new EventAttendeesV2Controller(eventAttendeeManager.Object, logger.Object);
+            controller = new EventAttendeesV2Controller(eventAttendeeManager.Object, userWaiverManager.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),
             };
+            controller.HttpContext.Items["UserId"] = currentUserId.ToString();
         }
 
         [Fact]
@@ -133,6 +139,172 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var response = Assert.IsType<PagedResponse<EventAttendeeDto>>(okResult.Value);
             Assert.Empty(response.Items);
             Assert.Equal(0, response.Pagination.TotalCount);
+        }
+
+        [Fact]
+        public async Task AddEventAttendee_ReturnsOk_WhenWaiverValid()
+        {
+            var eventId = Guid.NewGuid();
+            var attendee = new EventAttendee { UserId = currentUserId };
+
+            userWaiverManager
+                .Setup(m => m.HasValidWaiverForEventAsync(currentUserId, eventId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            var result = await controller.AddEventAttendee(eventId, attendee, CancellationToken.None);
+
+            Assert.IsType<OkResult>(result);
+            eventAttendeeManager.Verify(
+                m => m.AddAsync(It.Is<EventAttendee>(ea => ea.EventId == eventId), currentUserId, It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task AddEventAttendee_ReturnsBadRequest_WhenWaiverRequired()
+        {
+            var eventId = Guid.NewGuid();
+            var attendee = new EventAttendee { UserId = currentUserId };
+            var requiredWaivers = new List<WaiverVersion>
+            {
+                new() { Id = Guid.NewGuid() },
+            };
+
+            userWaiverManager
+                .Setup(m => m.HasValidWaiverForEventAsync(currentUserId, eventId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
+            userWaiverManager
+                .Setup(m => m.GetRequiredWaiversForEventAsync(currentUserId, eventId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(requiredWaivers);
+
+            var result = await controller.AddEventAttendee(eventId, attendee, CancellationToken.None);
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task DeleteEventAttendee_ReturnsNoContent()
+        {
+            var eventId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            var result = await controller.DeleteEventAttendee(eventId, userId, CancellationToken.None);
+
+            Assert.IsType<NoContentResult>(result);
+            eventAttendeeManager.Verify(m => m.Delete(eventId, userId, It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetEventLeads_ReturnsOk()
+        {
+            var eventId = Guid.NewGuid();
+            var leads = new List<EventAttendee>
+            {
+                new()
+                {
+                    EventId = eventId,
+                    UserId = Guid.NewGuid(),
+                    IsEventLead = true,
+                    User = new User { UserName = "lead1", City = "Seattle" },
+                },
+            };
+
+            eventAttendeeManager
+                .Setup(m => m.GetEventLeadsAsync(eventId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(leads);
+
+            var result = await controller.GetEventLeads(eventId, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var users = Assert.IsAssignableFrom<IEnumerable<DisplayUser>>(okResult.Value);
+            Assert.Single(users);
+        }
+
+        [Fact]
+        public async Task PromoteToLead_ReturnsOk_WhenCurrentUserIsLead()
+        {
+            var eventId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            var promoted = new EventAttendee { EventId = eventId, UserId = userId, IsEventLead = true };
+
+            eventAttendeeManager
+                .Setup(m => m.IsEventLeadAsync(eventId, currentUserId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+            eventAttendeeManager
+                .Setup(m => m.PromoteToLeadAsync(eventId, userId, currentUserId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(promoted);
+
+            var result = await controller.PromoteToLead(eventId, userId, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var attendee = Assert.IsType<EventAttendee>(okResult.Value);
+            Assert.True(attendee.IsEventLead);
+        }
+
+        [Fact]
+        public async Task PromoteToLead_ReturnsForbid_WhenNotLead()
+        {
+            var eventId = Guid.NewGuid();
+
+            eventAttendeeManager
+                .Setup(m => m.IsEventLeadAsync(eventId, currentUserId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
+
+            var result = await controller.PromoteToLead(eventId, Guid.NewGuid(), CancellationToken.None);
+
+            Assert.IsType<ForbidResult>(result);
+        }
+
+        [Fact]
+        public async Task DemoteFromLead_ReturnsBadRequest_WhenInvalidOperation()
+        {
+            var eventId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            eventAttendeeManager
+                .Setup(m => m.IsEventLeadAsync(eventId, currentUserId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+            eventAttendeeManager
+                .Setup(m => m.DemoteFromLeadAsync(eventId, userId, currentUserId, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new InvalidOperationException("Cannot demote the last lead"));
+
+            var result = await controller.DemoteFromLead(eventId, userId, CancellationToken.None);
+
+            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Cannot demote the last lead", badRequest.Value);
+        }
+
+        [Fact]
+        public async Task VerifyWaiverStatus_ReturnsOk_WhenEventLead()
+        {
+            var eventId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            eventAttendeeManager
+                .Setup(m => m.IsEventLeadAsync(eventId, currentUserId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+            userWaiverManager
+                .Setup(m => m.HasValidWaiverForEventAsync(userId, eventId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            var result = await controller.VerifyAttendeeWaiverStatus(eventId, userId, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var waiverResult = Assert.IsType<WaiverCheckResult>(okResult.Value);
+            Assert.True(waiverResult.HasValidWaiver);
+        }
+
+        [Fact]
+        public async Task VerifyWaiverStatus_ReturnsForbid_WhenNotLeadOrAdmin()
+        {
+            var eventId = Guid.NewGuid();
+
+            eventAttendeeManager
+                .Setup(m => m.IsEventLeadAsync(eventId, currentUserId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
+
+            var result = await controller.VerifyAttendeeWaiverStatus(eventId, Guid.NewGuid(), CancellationToken.None);
+
+            Assert.IsType<ForbidResult>(result);
         }
     }
 }

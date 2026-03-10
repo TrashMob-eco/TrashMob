@@ -4,6 +4,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -16,12 +18,26 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     public class EventSummaryV2ControllerTests
     {
         private readonly Mock<IEventSummaryManager> eventSummaryManager = new();
+        private readonly Mock<IKeyedManager<Event>> eventManager = new();
+        private readonly Mock<IAuthorizationService> authorizationService = new();
         private readonly Mock<ILogger<EventSummaryV2Controller>> logger = new();
         private readonly EventSummaryV2Controller controller;
 
+        private readonly Guid currentUserId = Guid.NewGuid();
+
         public EventSummaryV2ControllerTests()
         {
-            controller = new EventSummaryV2Controller(eventSummaryManager.Object, logger.Object);
+            controller = new EventSummaryV2Controller(eventSummaryManager.Object, eventManager.Object, authorizationService.Object, logger.Object);
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new System.Security.Claims.ClaimsPrincipal(
+                        new System.Security.Claims.ClaimsIdentity(
+                            new[] { new System.Security.Claims.Claim("sub", currentUserId.ToString()) }, "test")),
+                },
+            };
+            controller.HttpContext.Items["UserId"] = currentUserId.ToString();
         }
 
         [Fact]
@@ -81,6 +97,59 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             Assert.Equal(0, dto.DurationInMinutes);
             Assert.Equal(0, dto.ActualNumberOfAttendees);
             Assert.Equal(0m, dto.PickedWeight);
+        }
+
+        [Fact]
+        public async Task AddEventSummary_ReturnsCreated_WhenAuthorized()
+        {
+            var eventId = Guid.NewGuid();
+            var summary = new EventSummary { NumberOfBags = 5 };
+            var created = new EventSummary { EventId = eventId, NumberOfBags = 5 };
+
+            authorizationService
+                .Setup(a => a.AuthorizeAsync(It.IsAny<System.Security.Claims.ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<string>()))
+                .ReturnsAsync(AuthorizationResult.Success());
+            eventSummaryManager
+                .Setup(m => m.AddAsync(It.IsAny<EventSummary>(), currentUserId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(created);
+
+            var result = await controller.AddEventSummary(eventId, summary, CancellationToken.None);
+
+            Assert.IsType<CreatedAtActionResult>(result);
+        }
+
+        [Fact]
+        public async Task AddEventSummary_ReturnsForbid_WhenNotAuthorized()
+        {
+            var eventId = Guid.NewGuid();
+            var summary = new EventSummary { NumberOfBags = 5 };
+
+            authorizationService
+                .Setup(a => a.AuthorizeAsync(It.IsAny<System.Security.Claims.ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<string>()))
+                .ReturnsAsync(AuthorizationResult.Failed());
+
+            var result = await controller.AddEventSummary(eventId, summary, CancellationToken.None);
+
+            Assert.IsType<ForbidResult>(result);
+        }
+
+        [Fact]
+        public async Task DeleteEventSummary_ReturnsNoContent_WhenAuthorized()
+        {
+            var eventId = Guid.NewGuid();
+            var mobEvent = new Event { Id = eventId };
+
+            eventManager
+                .Setup(m => m.GetAsync(eventId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(mobEvent);
+            authorizationService
+                .Setup(a => a.AuthorizeAsync(It.IsAny<System.Security.Claims.ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<string>()))
+                .ReturnsAsync(AuthorizationResult.Success());
+
+            var result = await controller.DeleteEventSummary(eventId, CancellationToken.None);
+
+            Assert.IsType<NoContentResult>(result);
+            eventSummaryManager.Verify(m => m.DeleteAsync(eventId, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

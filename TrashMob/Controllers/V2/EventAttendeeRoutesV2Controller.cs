@@ -132,6 +132,46 @@ namespace TrashMob.Controllers.V2
         }
 
         /// <summary>
+        /// Gets event attendee routes by user ID.
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the routes for the user.</response>
+        [HttpGet("by-user/{userId}")]
+        [ProducesResponseType(typeof(IEnumerable<EventAttendeeRoute>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetByUser(Guid userId, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 GetEventAttendeeRoutesByUser User={UserId}", userId);
+
+            var result = await eventAttendeeRouteManager.GetByCreatedUserIdAsync(userId, cancellationToken);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Updates an existing event attendee route.
+        /// </summary>
+        /// <param name="displayEventAttendeeRoute">The route to update.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the updated route.</response>
+        [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(EventAttendeeRoute), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Update(
+            DisplayEventAttendeeRoute displayEventAttendeeRoute,
+            CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 UpdateEventAttendeeRoute Id={Id}", displayEventAttendeeRoute.Id);
+
+            var eventAttendeeRoute = displayEventAttendeeRoute.ToEventAttendeeRoute();
+
+            var updatedRoute = await eventAttendeeRouteManager
+                .UpdateAsync(eventAttendeeRoute, UserId, cancellationToken);
+
+            return Ok(updatedRoute);
+        }
+
+        /// <summary>
         /// Deletes an event attendee route.
         /// </summary>
         /// <param name="routeId">The route ID.</param>

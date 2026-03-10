@@ -123,5 +123,56 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             Assert.IsType<NoContentResult>(result);
             routeManager.Verify(m => m.DeleteAsync(routeId, It.IsAny<CancellationToken>()), Times.Once);
         }
+
+        [Fact]
+        public async Task GetByUser_ReturnsOk_WithRoutes()
+        {
+            var userId = Guid.NewGuid();
+            var routes = new List<EventAttendeeRoute>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    EventId = Guid.NewGuid(),
+                    CreatedByUserId = userId,
+                    UserId = userId,
+                    TotalDistanceMeters = 2000,
+                    UserPath = TestPath,
+                },
+            };
+
+            routeManager.Setup(m => m.GetByCreatedUserIdAsync(userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(routes);
+
+            var result = await controller.GetByUser(userId, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedRoutes = Assert.IsAssignableFrom<IEnumerable<EventAttendeeRoute>>(okResult.Value);
+            Assert.Single(returnedRoutes);
+        }
+
+        [Fact]
+        public async Task Update_ReturnsOk()
+        {
+            var routeId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+
+            var displayRoute = new DisplayEventAttendeeRoute
+            {
+                Id = routeId,
+                EventId = Guid.NewGuid(),
+            };
+            var updatedRoute = new EventAttendeeRoute { Id = routeId };
+
+            routeManager
+                .Setup(m => m.UpdateAsync(It.IsAny<EventAttendeeRoute>(), userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(updatedRoute);
+
+            var result = await controller.Update(displayRoute, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<EventAttendeeRoute>(okResult.Value);
+        }
     }
 }
