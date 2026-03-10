@@ -140,16 +140,6 @@ const PARTNERSHIP_SECTIONS = new Set([
 
 const navGroups: DashboardNavGroup[] = [
     {
-        title: 'Account',
-        items: [
-            { id: 'waivers', label: 'Waivers', icon: FileText },
-            { id: 'dependents', label: 'Dependents', icon: Baby },
-            { id: 'newsletters', label: 'Newsletters', icon: Mail },
-            { id: 'impact', label: 'Impact', icon: Trophy },
-            { id: 'invite-friends', label: 'Invite Friends', icon: Users },
-        ],
-    },
-    {
         title: 'Events',
         items: [
             { id: 'upcoming-events', label: 'Upcoming', icon: CalendarCheck },
@@ -157,18 +147,28 @@ const navGroups: DashboardNavGroup[] = [
         ],
     },
     {
-        title: 'Teams',
-        items: [{ id: 'teams', label: 'My Teams', icon: UsersRound }],
+        title: 'Litter Reports',
+        items: [
+            { id: 'litter-reports', label: 'My Reports', icon: Trash2 },
+            { id: 'nearby-litter-reports', label: 'Nearby', icon: MapPin },
+        ],
     },
     {
         title: 'Routes',
         items: [{ id: 'routes', label: 'My Routes', icon: Route }],
     },
     {
-        title: 'Litter Reports',
+        title: 'Teams',
+        items: [{ id: 'teams', label: 'My Teams', icon: UsersRound }],
+    },
+    {
+        title: 'Account',
         items: [
-            { id: 'litter-reports', label: 'My Reports', icon: Trash2 },
-            { id: 'nearby-litter-reports', label: 'Nearby', icon: MapPin },
+            { id: 'impact', label: 'Impact', icon: Trophy },
+            { id: 'waivers', label: 'Waivers', icon: FileText },
+            { id: 'dependents', label: 'Dependents', icon: Baby },
+            { id: 'invite-friends', label: 'Invite Friends', icon: Users },
+            { id: 'newsletters', label: 'Newsletters', icon: Mail },
         ],
     },
     {
@@ -439,37 +439,6 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             </div>
                         </section>
 
-                        {/* Account sections */}
-                        {isSectionVisible('waivers') ? (
-                            <section id='waivers'>
-                                <MyWaiversCard userId={userId} />
-                            </section>
-                        ) : null}
-
-                        {isSectionVisible('dependents') ? (
-                            <section id='dependents'>
-                                <MyDependentsCard userId={userId} />
-                            </section>
-                        ) : null}
-
-                        {isSectionVisible('newsletters') ? (
-                            <section id='newsletters'>
-                                <MyNewsletterPreferencesCard />
-                            </section>
-                        ) : null}
-
-                        {isSectionVisible('impact') ? (
-                            <section id='impact'>
-                                <MyImpactCard userId={userId} prefersMetric={currentUser?.prefersMetric ?? false} />
-                            </section>
-                        ) : null}
-
-                        {isSectionVisible('invite-friends') ? (
-                            <section id='invite-friends'>
-                                <InviteFriendsCard />
-                            </section>
-                        ) : null}
-
                         {/* Events */}
                         {isEventsVisible ? (
                             <div>
@@ -556,44 +525,6 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             </section>
                         ) : null}
 
-                        {/* Teams */}
-                        {isSectionVisible('teams') ? (
-                            <section id='teams'>
-                                <Card>
-                                    <CardHeader>
-                                        <div className='flex flex-row items-center gap-2'>
-                                            <CardTitle className='grow text-primary'>
-                                                <Users className='inline-block h-5 w-5 mr-2' />
-                                                My Teams ({(myTeams || []).length})
-                                            </CardTitle>
-                                            {(myTeams || []).length > 0 ? (
-                                                <ViewModeToggle viewMode={teamsView} onChange={setTeamsView} />
-                                            ) : null}
-                                            <Button variant='outline' size='sm' asChild>
-                                                <Link to='/teams'>Browse Teams</Link>
-                                            </Button>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        {teamsView === 'map' && (myTeams || []).length > 0 ? (
-                                            <MyTeamsMapView teams={myTeams || []} teamsILead={teamsILead || []} />
-                                        ) : (
-                                            <div className='overflow-auto'>
-                                                <MyTeamsTable items={myTeams || []} teamsILead={teamsILead || []} />
-                                            </div>
-                                        )}
-                                    </CardContent>
-                                </Card>
-                            </section>
-                        ) : null}
-
-                        {/* Routes */}
-                        {isSectionVisible('routes') ? (
-                            <section id='routes'>
-                                <MyRoutesCard />
-                            </section>
-                        ) : null}
-
                         {/* Litter Reports */}
                         {isSectionVisible('litter-reports') ? (
                             <section id='litter-reports'>
@@ -667,6 +598,75 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                         />
                                     </CardContent>
                                 </Card>
+                            </section>
+                        ) : null}
+
+                        {/* Routes */}
+                        {isSectionVisible('routes') ? (
+                            <section id='routes'>
+                                <MyRoutesCard />
+                            </section>
+                        ) : null}
+
+                        {/* Teams */}
+                        {isSectionVisible('teams') ? (
+                            <section id='teams'>
+                                <Card>
+                                    <CardHeader>
+                                        <div className='flex flex-row items-center gap-2'>
+                                            <CardTitle className='grow text-primary'>
+                                                <Users className='inline-block h-5 w-5 mr-2' />
+                                                My Teams ({(myTeams || []).length})
+                                            </CardTitle>
+                                            {(myTeams || []).length > 0 ? (
+                                                <ViewModeToggle viewMode={teamsView} onChange={setTeamsView} />
+                                            ) : null}
+                                            <Button variant='outline' size='sm' asChild>
+                                                <Link to='/teams'>Browse Teams</Link>
+                                            </Button>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        {teamsView === 'map' && (myTeams || []).length > 0 ? (
+                                            <MyTeamsMapView teams={myTeams || []} teamsILead={teamsILead || []} />
+                                        ) : (
+                                            <div className='overflow-auto'>
+                                                <MyTeamsTable items={myTeams || []} teamsILead={teamsILead || []} />
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        ) : null}
+
+                        {/* Account sections */}
+                        {isSectionVisible('impact') ? (
+                            <section id='impact'>
+                                <MyImpactCard userId={userId} prefersMetric={currentUser?.prefersMetric ?? false} />
+                            </section>
+                        ) : null}
+
+                        {isSectionVisible('waivers') ? (
+                            <section id='waivers'>
+                                <MyWaiversCard userId={userId} />
+                            </section>
+                        ) : null}
+
+                        {isSectionVisible('dependents') ? (
+                            <section id='dependents'>
+                                <MyDependentsCard userId={userId} />
+                            </section>
+                        ) : null}
+
+                        {isSectionVisible('invite-friends') ? (
+                            <section id='invite-friends'>
+                                <InviteFriendsCard />
+                            </section>
+                        ) : null}
+
+                        {isSectionVisible('newsletters') ? (
+                            <section id='newsletters'>
+                                <MyNewsletterPreferencesCard />
                             </section>
                         ) : null}
 
