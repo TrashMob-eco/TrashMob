@@ -60,9 +60,16 @@ export const RouteMetadataDialog = ({ route, open, onOpenChange, eventId }: Rout
                 trimStartMeters: route.trimStartMeters,
                 trimEndMeters: route.trimEndMeters,
                 notes: values.notes || null,
-                bagsCollected: values.bagsCollected !== '' && values.bagsCollected != null ? Number(values.bagsCollected) : null,
-                weightCollected: values.weightCollected !== '' && values.weightCollected != null ? Number(values.weightCollected) : null,
-                weightUnitId: values.weightCollected !== '' && values.weightCollected != null ? Number(values.weightUnitId) : null,
+                bagsCollected:
+                    values.bagsCollected !== '' && values.bagsCollected != null ? Number(values.bagsCollected) : null,
+                weightCollected:
+                    values.weightCollected !== '' && values.weightCollected != null
+                        ? Number(values.weightCollected)
+                        : null,
+                weightUnitId:
+                    values.weightCollected !== '' && values.weightCollected != null
+                        ? Number(values.weightUnitId)
+                        : null,
             });
             return result.data;
         },
@@ -201,7 +208,11 @@ export const RouteMetadataDialog = ({ route, open, onOpenChange, eventId }: Rout
                                 <FormItem>
                                     <FormLabel>Notes</FormLabel>
                                     <FormControl>
-                                        <Textarea {...field} placeholder='Optional notes about this route...' rows={3} />
+                                        <Textarea
+                                            {...field}
+                                            placeholder='Optional notes about this route...'
+                                            rows={3}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

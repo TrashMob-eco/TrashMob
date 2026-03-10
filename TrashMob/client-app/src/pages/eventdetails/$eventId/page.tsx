@@ -219,13 +219,9 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                             <EventRouteStatsCard eventId={eventId} />
                             <EventRoutesMap
                                 eventId={eventId}
-                                defaultCenter={
-                                    latitude && longitude ? { lat: latitude, lng: longitude } : undefined
-                                }
+                                defaultCenter={latitude && longitude ? { lat: latitude, lng: longitude } : undefined}
                             />
-                            {currentUser ? (
-                                <EventRouteCards eventId={eventId} currentUserId={currentUser.id} />
-                            ) : null}
+                            {currentUser ? <EventRouteCards eventId={eventId} currentUserId={currentUser.id} /> : null}
                         </div>
                     </div>
                     {currentUser ? (

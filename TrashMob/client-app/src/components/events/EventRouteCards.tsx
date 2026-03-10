@@ -82,10 +82,7 @@ export const EventRouteCards = ({ eventId, currentUserId }: EventRouteCardsProps
                 {routeList.map((route, index) => {
                     const isOwner = route.userId === currentUserId;
                     return (
-                        <div
-                            key={route.id}
-                            className='border rounded-lg p-4 space-y-2'
-                        >
+                        <div key={route.id} className='border rounded-lg p-4 space-y-2'>
                             <div className='flex items-center justify-between'>
                                 <div className='flex items-center gap-2'>
                                     <span className='text-sm font-semibold text-muted-foreground'>
@@ -139,7 +136,8 @@ export const EventRouteCards = ({ eventId, currentUserId }: EventRouteCardsProps
                                 <span>{formatDistance(route.totalDistanceMeters)}</span>
                                 <span>{formatDuration(route.durationMinutes)}</span>
                                 <span className='text-muted-foreground'>
-                                    {moment(route.startTime).format('h:mm A')} – {moment(route.endTime).format('h:mm A')}
+                                    {moment(route.startTime).format('h:mm A')} –{' '}
+                                    {moment(route.endTime).format('h:mm A')}
                                 </span>
                                 {route.densityGramsPerMeter != null ? (
                                     <span className='flex items-center gap-1'>
@@ -152,10 +150,12 @@ export const EventRouteCards = ({ eventId, currentUserId }: EventRouteCardsProps
                                 ) : null}
                             </div>
 
-                            {(route.bagsCollected != null || route.weightCollected != null) ? (
+                            {route.bagsCollected != null || route.weightCollected != null ? (
                                 <div className='flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground'>
                                     {route.bagsCollected != null ? (
-                                        <span>{route.bagsCollected} bag{route.bagsCollected !== 1 ? 's' : ''}</span>
+                                        <span>
+                                            {route.bagsCollected} bag{route.bagsCollected !== 1 ? 's' : ''}
+                                        </span>
                                     ) : null}
                                     {route.weightCollected != null ? (
                                         <span>{formatWeight(route.weightCollected, route.weightUnitId)}</span>
@@ -163,9 +163,7 @@ export const EventRouteCards = ({ eventId, currentUserId }: EventRouteCardsProps
                                 </div>
                             ) : null}
 
-                            {route.notes ? (
-                                <p className='text-sm text-muted-foreground italic'>{route.notes}</p>
-                            ) : null}
+                            {route.notes ? <p className='text-sm text-muted-foreground italic'>{route.notes}</p> : null}
                         </div>
                     );
                 })}
