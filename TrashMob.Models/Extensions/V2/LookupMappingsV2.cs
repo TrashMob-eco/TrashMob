@@ -20,5 +20,53 @@ namespace TrashMob.Models.Extensions.V2
                 DisplayOrder = entity.DisplayOrder ?? 0,
             };
         }
+
+        /// <summary>
+        /// Maps a V2 <see cref="LookupItemDto"/> to an <see cref="EventType"/> entity.
+        /// Sets IsActive to true by default.
+        /// </summary>
+        public static EventType ToEventType(this LookupItemDto dto)
+        {
+            return new EventType
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Description = dto.Description,
+                DisplayOrder = dto.DisplayOrder,
+                IsActive = true,
+            };
+        }
+
+        /// <summary>
+        /// Maps a V2 <see cref="LookupItemDto"/> to a <see cref="ServiceType"/> entity.
+        /// Sets IsActive to true by default.
+        /// </summary>
+        public static ServiceType ToServiceType(this LookupItemDto dto)
+        {
+            return new ServiceType
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Description = dto.Description,
+                DisplayOrder = dto.DisplayOrder,
+                IsActive = true,
+            };
+        }
+
+        /// <summary>
+        /// Maps a V2 <see cref="LookupItemDto"/> to an <see cref="EventPartnerLocationServiceStatus"/> entity.
+        /// Sets IsActive to true by default.
+        /// </summary>
+        public static EventPartnerLocationServiceStatus ToEventPartnerLocationServiceStatus(this LookupItemDto dto)
+        {
+            return new EventPartnerLocationServiceStatus
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Description = dto.Description,
+                DisplayOrder = dto.DisplayOrder,
+                IsActive = true,
+            };
+        }
     }
 }

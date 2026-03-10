@@ -27,5 +27,20 @@ namespace TrashMob.Models.Extensions.V2
                 JoinedDate = entity.JoinedDate,
             };
         }
+
+        /// <summary>
+        /// Maps a V2 <see cref="TeamMemberDto"/> back to a <see cref="TeamMember"/> entity.
+        /// </summary>
+        public static TeamMember ToEntity(this TeamMemberDto dto)
+        {
+            return new TeamMember
+            {
+                Id = dto.Id,
+                TeamId = dto.TeamId,
+                UserId = dto.UserId,
+                IsTeamLead = dto.IsTeamLead,
+                JoinedDate = dto.JoinedDate,
+            };
+        }
     }
 }

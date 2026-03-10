@@ -27,5 +27,23 @@ namespace TrashMob.Models.Extensions.V2
                 TotalLitterReportsClosed = stats.TotalLitterReportsClosed,
             };
         }
+
+        /// <summary>
+        /// Maps a V2 StatsDto back to a Stats object.
+        /// </summary>
+        public static Stats ToEntity(this StatsDto dto)
+        {
+            return new Stats
+            {
+                TotalBags = dto.TotalBags,
+                TotalHours = dto.TotalHours,
+                TotalEvents = dto.TotalEvents,
+                TotalWeightInPounds = dto.TotalWeightInPounds,
+                TotalWeightInKilograms = dto.TotalWeightInKilograms,
+                TotalParticipants = dto.TotalParticipants,
+                TotalLitterReportsSubmitted = dto.TotalLitterReportsSubmitted,
+                TotalLitterReportsClosed = dto.TotalLitterReportsClosed,
+            };
+        }
     }
 }

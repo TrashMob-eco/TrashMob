@@ -1,8 +1,10 @@
-﻿namespace TrashMobMobile.Services;
+namespace TrashMobMobile.Services;
 
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using TrashMob.Models;
+using TrashMob.Models.Extensions.V2;
+using TrashMob.Models.Poco.V2;
 using TrashMobMobile.Models;
 
 public class PickupLocationRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IPickupLocationRestService
@@ -18,35 +20,39 @@ public class PickupLocationRestService(IHttpClientFactory httpClientFactory) : R
         {
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<PickupLocation>(content)!;
+            var dto = JsonConvert.DeserializeObject<PickupLocationDto>(content)!;
+            return dto.ToEntity();
         }
     }
 
     public async Task<PickupLocation> UpdatePickupLocationAsync(PickupLocation pickupLocation,
         CancellationToken cancellationToken = default)
     {
-        var content = JsonContent.Create(pickupLocation, typeof(PickupLocation), null, SerializerOptions);
+        var dto = pickupLocation.ToV2Dto();
+        var content = JsonContent.Create(dto, typeof(PickupLocationDto), null, SerializerOptions);
+        var requestUri = Controller + "/" + pickupLocation.Id;
 
-        using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
+        using (var response = await AuthorizedHttpClient.PutAsync(requestUri, content, cancellationToken))
         {
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonConvert.DeserializeObject<PickupLocation>(responseContent)!;
-            return result;
+            var resultDto = JsonConvert.DeserializeObject<PickupLocationDto>(responseContent)!;
+            return resultDto.ToEntity();
         }
     }
 
     public async Task<PickupLocation> AddPickupLocationAsync(PickupLocation pickupLocation,
         CancellationToken cancellationToken = default)
     {
-        var content = JsonContent.Create(pickupLocation, typeof(PickupLocation), null, SerializerOptions);
+        var dto = pickupLocation.ToV2Dto();
+        var content = JsonContent.Create(dto, typeof(PickupLocationDto), null, SerializerOptions);
 
         using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
         {
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonConvert.DeserializeObject<PickupLocation>(responseContent)!;
-            return result;
+            var resultDto = JsonConvert.DeserializeObject<PickupLocationDto>(responseContent)!;
+            return resultDto.ToEntity();
         }
     }
 
@@ -66,14 +72,14 @@ public class PickupLocationRestService(IHttpClientFactory httpClientFactory) : R
     public async Task<IEnumerable<PickupLocation>> GetPickupLocationsAsync(Guid eventId,
         CancellationToken cancellationToken = default)
     {
-        var requestUri = Controller + "/getbyevent/" + eventId;
+        var requestUri = Controller + "/by-event/" + eventId;
 
         using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
         {
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonConvert.DeserializeObject<List<PickupLocation>>(content) ?? [];
-            return result;
+            var dtos = JsonConvert.DeserializeObject<List<PickupLocationDto>>(content) ?? [];
+            return dtos.Select(d => d.ToEntity()).ToList();
         }
     }
 
@@ -90,7 +96,7 @@ public class PickupLocationRestService(IHttpClientFactory httpClientFactory) : R
     public async Task<string> GetPickupLocationImageAsync(Guid pickupLocationId, ImageSizeEnum imageSize,
         CancellationToken cancellationToken = default)
     {
-        var requestUri = Controller + "/image/" + pickupLocationId + "/" + imageSize;
+        var requestUri = Controller + "/" + pickupLocationId + "/image";
 
         using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
         {
@@ -103,7 +109,7 @@ public class PickupLocationRestService(IHttpClientFactory httpClientFactory) : R
     public async Task AddPickupLocationImageAsync(Guid eventId, Guid pickupLocationId, string localFileName,
         CancellationToken cancellationToken = default)
     {
-        var requestUri = Controller + "/image/" + eventId;
+        var requestUri = Controller + "/" + pickupLocationId + "/image";
 
         using (var stream = File.OpenRead(localFileName))
         {

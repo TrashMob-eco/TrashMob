@@ -8,6 +8,19 @@ namespace TrashMob.Models.Extensions.V2
     public static class ContactRequestMappingsV2
     {
         /// <summary>
+        /// Maps a <see cref="ContactRequest"/> entity to a <see cref="ContactRequestDto"/>.
+        /// </summary>
+        public static ContactRequestDto ToV2Dto(this ContactRequest entity)
+        {
+            return new ContactRequestDto
+            {
+                Name = entity.Name,
+                Email = entity.Email,
+                Message = entity.Message,
+            };
+        }
+
+        /// <summary>
         /// Maps a <see cref="ContactRequestDto"/> to a <see cref="ContactRequest"/> entity.
         /// </summary>
         public static ContactRequest ToEntity(this ContactRequestDto dto)

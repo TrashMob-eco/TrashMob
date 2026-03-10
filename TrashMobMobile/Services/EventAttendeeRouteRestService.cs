@@ -1,4 +1,4 @@
-﻿namespace TrashMobMobile.Services
+namespace TrashMobMobile.Services
 {
     using System.Diagnostics;
     using System.Net.Http.Json;
@@ -26,7 +26,7 @@
         public async Task<IEnumerable<DisplayEventAttendeeRoute>> GetEventAttendeeRoutesForEventAsync(Guid eventId,
                 CancellationToken cancellationToken = default)
         {
-            var requestUri = Controller + "/byeventid/" + eventId;
+            var requestUri = Controller + "/by-event/" + eventId;
 
             using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
             {
@@ -39,7 +39,7 @@
         public async Task<IEnumerable<DisplayEventAttendeeRoute>> GetEventAttendeeRoutesForUserAsync(Guid userId,
         CancellationToken cancellationToken = default)
         {
-            var requestUri = Controller + "/byuserid/" + userId;
+            var requestUri = Controller + "/by-user/" + userId;
 
             using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
             {
@@ -87,9 +87,10 @@
 
         public async Task<DisplayEventAttendeeRoute> SimulateRouteAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
-            var requestUri = "routes/simulate/" + eventId;
+            using var client = CreateHttpClient("events/");
+            var requestUri = eventId + "/routes/simulate";
 
-            using (var response = await AuthorizedHttpClient.PostAsync(requestUri, null, cancellationToken))
+            using (var response = await client.PostAsync(requestUri, null, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -99,7 +100,7 @@
 
         public async Task<DisplayEventAttendeeRoute> UpdateRouteMetadataAsync(Guid routeId, UpdateRouteMetadataRequest request, CancellationToken cancellationToken = default)
         {
-            var requestUri = "routes/" + routeId;
+            var requestUri = Controller + "/" + routeId;
             var content = JsonContent.Create(request, typeof(UpdateRouteMetadataRequest), null, SerializerOptions);
 
             using (var response = await AuthorizedHttpClient.PutAsync(requestUri, content, cancellationToken))
@@ -112,9 +113,10 @@
 
         public async Task<EventSummaryPrefill> GetEventSummaryPrefillAsync(Guid eventId, int weightUnitId = 1, CancellationToken cancellationToken = default)
         {
-            var requestUri = $"events/{eventId}/routes/summary-prefill?weightUnitId={weightUnitId}";
+            using var client = CreateHttpClient("events/");
+            var requestUri = $"{eventId}/routes/summary-prefill?weightUnitId={weightUnitId}";
 
-            using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
+            using (var response = await client.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -124,7 +126,7 @@
 
         public async Task<DisplayEventAttendeeRoute> TrimRouteTimeAsync(Guid routeId, TrimRouteTimeRequest request, CancellationToken cancellationToken = default)
         {
-            var requestUri = "routes/" + routeId + "/trim-time";
+            var requestUri = Controller + "/" + routeId + "/trim-time";
             var content = JsonContent.Create(request, typeof(TrimRouteTimeRequest), null, SerializerOptions);
 
             using (var response = await AuthorizedHttpClient.PutAsync(requestUri, content, cancellationToken))
@@ -137,7 +139,7 @@
 
         public async Task<DisplayEventAttendeeRoute> RestoreRouteTimeAsync(Guid routeId, CancellationToken cancellationToken = default)
         {
-            var requestUri = "routes/" + routeId + "/restore-time";
+            var requestUri = Controller + "/" + routeId + "/restore-time";
 
             using (var response = await AuthorizedHttpClient.PutAsync(requestUri, null, cancellationToken))
             {

@@ -2,7 +2,9 @@
 
 using System.Diagnostics;
 using Newtonsoft.Json;
+using TrashMob.Models.Extensions.V2;
 using TrashMob.Models.Poco;
+using TrashMob.Models.Poco.V2;
 
 public class StatsRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IStatsRestService
 {
@@ -15,7 +17,7 @@ public class StatsRestService(IHttpClientFactory httpClientFactory) : RestServic
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<Stats>(responseString)!;
+            return JsonConvert.DeserializeObject<StatsDto>(responseString)!.ToEntity();
         }
     }
 
@@ -28,7 +30,7 @@ public class StatsRestService(IHttpClientFactory httpClientFactory) : RestServic
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<Stats>(responseString)!;
+            return JsonConvert.DeserializeObject<StatsDto>(responseString)!.ToEntity();
         }
     }
 }

@@ -45,5 +45,44 @@ namespace TrashMob.Models.Extensions.V2
                 GuardianRelationship = entity.GuardianRelationship ?? string.Empty,
             };
         }
+
+        /// <summary>
+        /// Maps a V2 <see cref="WaiverVersionDto"/> back to a <see cref="WaiverVersion"/> entity.
+        /// </summary>
+        public static WaiverVersion ToEntity(this WaiverVersionDto dto)
+        {
+            return new WaiverVersion
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Version = dto.Version,
+                WaiverText = dto.WaiverText,
+                EffectiveDate = dto.EffectiveDate,
+                ExpiryDate = dto.ExpiryDate,
+                IsActive = dto.IsActive,
+                Scope = dto.Scope,
+            };
+        }
+
+        /// <summary>
+        /// Maps a V2 <see cref="UserWaiverDto"/> back to a <see cref="UserWaiver"/> entity.
+        /// </summary>
+        public static UserWaiver ToEntity(this UserWaiverDto dto)
+        {
+            return new UserWaiver
+            {
+                Id = dto.Id,
+                UserId = dto.UserId,
+                WaiverVersionId = dto.WaiverVersionId,
+                AcceptedDate = dto.AcceptedDate,
+                ExpiryDate = dto.ExpiryDate,
+                TypedLegalName = dto.TypedLegalName,
+                SigningMethod = dto.SigningMethod,
+                DocumentUrl = dto.DocumentUrl,
+                IsMinor = dto.IsMinor,
+                GuardianName = dto.GuardianName,
+                GuardianRelationship = dto.GuardianRelationship,
+            };
+        }
     }
 }

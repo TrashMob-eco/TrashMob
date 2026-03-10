@@ -3,7 +3,9 @@ namespace TrashMobMobile.Services;
 using System.Globalization;
 using Newtonsoft.Json;
 using TrashMob.Models;
+using TrashMob.Models.Extensions.V2;
 using TrashMob.Models.Poco;
+using TrashMob.Models.Poco.V2;
 
 public class CommunityRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), ICommunityRestService
 {
@@ -37,7 +39,8 @@ public class CommunityRestService(IHttpClientFactory httpClientFactory) : RestSe
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<List<Partner>>(content) ?? [];
+        var dtos = JsonConvert.DeserializeObject<List<PartnerDto>>(content) ?? [];
+        return dtos.Select(d => d.ToEntity()).ToList();
     }
 
     public async Task<Partner> GetCommunityBySlugAsync(string slug, CancellationToken cancellationToken = default)
@@ -46,7 +49,8 @@ public class CommunityRestService(IHttpClientFactory httpClientFactory) : RestSe
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<Partner>(content)!;
+        var dto = JsonConvert.DeserializeObject<PartnerDto>(content)!;
+        return dto.ToEntity();
     }
 
     public async Task<IEnumerable<Event>> GetCommunityEventsAsync(string slug, bool upcomingOnly = true, CancellationToken cancellationToken = default)
@@ -55,7 +59,8 @@ public class CommunityRestService(IHttpClientFactory httpClientFactory) : RestSe
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<List<Event>>(content) ?? [];
+        var dtos = JsonConvert.DeserializeObject<List<EventDto>>(content) ?? [];
+        return dtos.Select(d => d.ToEntity()).ToList();
     }
 
     public async Task<IEnumerable<Team>> GetCommunityTeamsAsync(string slug, double radiusMiles = 50, CancellationToken cancellationToken = default)
@@ -64,7 +69,8 @@ public class CommunityRestService(IHttpClientFactory httpClientFactory) : RestSe
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<List<Team>>(content) ?? [];
+        var dtos = JsonConvert.DeserializeObject<List<TeamDto>>(content) ?? [];
+        return dtos.Select(d => d.ToEntity()).ToList();
     }
 
     public async Task<Stats> GetCommunityStatsAsync(string slug, CancellationToken cancellationToken = default)
@@ -73,6 +79,7 @@ public class CommunityRestService(IHttpClientFactory httpClientFactory) : RestSe
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<Stats>(content) ?? new Stats();
+        var dto = JsonConvert.DeserializeObject<StatsDto>(content)!;
+        return dto.ToEntity();
     }
 }

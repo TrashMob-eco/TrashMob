@@ -1,8 +1,11 @@
 namespace TrashMobMobile.Services;
 
+using System.Linq;
 using System.Net.Http.Json;
 using System.Text.Json;
 using TrashMob.Models;
+using TrashMob.Models.Extensions.V2;
+using TrashMob.Models.Poco.V2;
 
 public class EventPhotoRestService(IHttpClientFactory httpClientFactory)
     : RestServiceBase(httpClientFactory), IEventPhotoRestService
@@ -23,7 +26,8 @@ public class EventPhotoRestService(IHttpClientFactory httpClientFactory)
             return [];
         }
 
-        return JsonSerializer.Deserialize<IEnumerable<EventPhoto>>(content, SerializerOptions) ?? [];
+        var dtos = JsonSerializer.Deserialize<IEnumerable<EventPhotoDto>>(content, SerializerOptions) ?? [];
+        return dtos.Select(d => d.ToEntity());
     }
 
     public async Task<EventPhoto> UploadPhotoAsync(Guid eventId, string localFilePath,
@@ -51,8 +55,9 @@ public class EventPhotoRestService(IHttpClientFactory httpClientFactory)
         response.EnsureSuccessStatusCode();
         var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        return JsonSerializer.Deserialize<EventPhoto>(responseContent, SerializerOptions)
+        var dto = JsonSerializer.Deserialize<EventPhotoDto>(responseContent, SerializerOptions)
                ?? throw new InvalidOperationException("Failed to deserialize uploaded photo response.");
+        return dto.ToEntity();
     }
 
     public async Task DeletePhotoAsync(Guid eventId, Guid photoId,

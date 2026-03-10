@@ -34,6 +34,59 @@ namespace TrashMob.Models.Extensions.V2
         }
 
         /// <summary>
+        /// Maps a V2 <see cref="UserDto"/> back to a <see cref="User"/> entity.
+        /// PII fields (Email, DateOfBirth, TravelLimitForLocalEvents) are not available
+        /// in UserDto and will not be populated on the returned entity.
+        /// </summary>
+        public static User ToEntity(this UserDto dto)
+        {
+            return new User
+            {
+                Id = dto.Id,
+                UserName = dto.UserName,
+                City = dto.City,
+                Region = dto.Region,
+                Country = dto.Country,
+                PostalCode = dto.PostalCode,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude,
+                PrefersMetric = dto.PrefersMetric,
+                GivenName = dto.GivenName,
+                Surname = dto.Surname,
+                ProfilePhotoUrl = dto.ProfilePhotoUrl,
+                MemberSince = dto.MemberSince,
+                IsMinor = dto.IsMinor,
+            };
+        }
+
+        /// <summary>
+        /// Maps a User entity to a V2 UserWriteDto for create/update operations.
+        /// Includes PII fields needed for write endpoints.
+        /// </summary>
+        public static Poco.V2.UserWriteDto ToWriteDto(this User entity)
+        {
+            return new Poco.V2.UserWriteDto
+            {
+                Id = entity.Id,
+                UserName = entity.UserName,
+                Email = entity.Email,
+                GivenName = entity.GivenName,
+                Surname = entity.Surname,
+                City = entity.City,
+                Region = entity.Region,
+                Country = entity.Country,
+                PostalCode = entity.PostalCode,
+                Latitude = entity.Latitude,
+                Longitude = entity.Longitude,
+                PrefersMetric = entity.PrefersMetric,
+                DateOfBirth = entity.DateOfBirth,
+                IsMinor = entity.IsMinor,
+                TravelLimitForLocalEvents = entity.TravelLimitForLocalEvents,
+                ProfilePhotoUrl = entity.ProfilePhotoUrl,
+            };
+        }
+
+        /// <summary>
         /// Maps a V2 UserWriteDto to a User entity for create/update operations.
         /// </summary>
         public static User ToEntity(this Poco.V2.UserWriteDto dto)

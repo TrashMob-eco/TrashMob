@@ -27,5 +27,23 @@ namespace TrashMob.Models.Extensions.V2
                 DocumentUrl = entity.DocumentUrl ?? string.Empty,
             };
         }
+
+        /// <summary>
+        /// Maps a V2 DependentWaiverDto back to a DependentWaiver entity.
+        /// </summary>
+        public static DependentWaiver ToEntity(this DependentWaiverDto dto)
+        {
+            return new DependentWaiver
+            {
+                Id = dto.Id,
+                DependentId = dto.DependentId,
+                WaiverVersionId = dto.WaiverVersionId,
+                SignedByUserId = dto.SignedByUserId,
+                TypedLegalName = dto.TypedLegalName,
+                AcceptedDate = dto.AcceptedDate,
+                ExpiryDate = dto.ExpiryDate,
+                DocumentUrl = dto.DocumentUrl,
+            };
+        }
     }
 }

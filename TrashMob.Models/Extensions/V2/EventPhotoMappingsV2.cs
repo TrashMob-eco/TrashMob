@@ -25,5 +25,24 @@ namespace TrashMob.Models.Extensions.V2
                 UploadedDate = entity.UploadedDate,
             };
         }
+
+        /// <summary>
+        /// Maps a V2 <see cref="EventPhotoDto"/> back to an <see cref="EventPhoto"/> entity.
+        /// </summary>
+        public static EventPhoto ToEntity(this EventPhotoDto dto)
+        {
+            return new EventPhoto
+            {
+                Id = dto.Id,
+                EventId = dto.EventId,
+                UploadedByUserId = dto.UploadedByUserId,
+                ImageUrl = dto.ImageUrl,
+                ThumbnailUrl = dto.ThumbnailUrl,
+                PhotoType = dto.PhotoType,
+                Caption = dto.Caption,
+                TakenAt = dto.TakenAt,
+                UploadedDate = dto.UploadedDate,
+            };
+        }
     }
 }
