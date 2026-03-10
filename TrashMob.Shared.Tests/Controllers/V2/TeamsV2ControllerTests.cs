@@ -175,7 +175,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetMyTeams(CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedTeams = Assert.IsAssignableFrom<IEnumerable<Team>>(okResult.Value);
+            var returnedTeams = Assert.IsAssignableFrom<IEnumerable<TeamDto>>(okResult.Value);
             Assert.Single(returnedTeams);
         }
 
@@ -184,7 +184,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         {
             var userId = Guid.NewGuid();
             controller.HttpContext.Items["UserId"] = userId.ToString();
-            var team = new Team { Name = "New Team" };
+            var teamDto = new TeamDto { Name = "New Team" };
             var user = new User { Id = userId, UserName = "creator" };
 
             teamManager
@@ -197,7 +197,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
                 .Setup(m => m.AddAsync(It.IsAny<Team>(), userId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Team t, Guid _, CancellationToken _) => t);
 
-            var result = await controller.CreateTeam(team, CancellationToken.None);
+            var result = await controller.CreateTeam(teamDto, CancellationToken.None);
 
             Assert.IsType<CreatedAtActionResult>(result);
             teamMemberManager.Verify(
@@ -210,13 +210,13 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         {
             var userId = Guid.NewGuid();
             controller.HttpContext.Items["UserId"] = userId.ToString();
-            var team = new Team { Name = "Existing Team" };
+            var teamDto = new TeamDto { Name = "Existing Team" };
 
             teamManager
                 .Setup(m => m.IsTeamNameAvailableAsync("Existing Team", It.IsAny<Guid?>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
 
-            var result = await controller.CreateTeam(team, CancellationToken.None);
+            var result = await controller.CreateTeam(teamDto, CancellationToken.None);
 
             Assert.IsType<BadRequestObjectResult>(result);
         }

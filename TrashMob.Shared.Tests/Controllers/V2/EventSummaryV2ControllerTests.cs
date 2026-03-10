@@ -103,7 +103,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         public async Task AddEventSummary_ReturnsCreated_WhenAuthorized()
         {
             var eventId = Guid.NewGuid();
-            var summary = new EventSummary { NumberOfBags = 5 };
+            var summaryDto = new EventSummaryDto { NumberOfBags = 5 };
             var created = new EventSummary { EventId = eventId, NumberOfBags = 5 };
 
             authorizationService
@@ -113,7 +113,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
                 .Setup(m => m.AddAsync(It.IsAny<EventSummary>(), currentUserId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(created);
 
-            var result = await controller.AddEventSummary(eventId, summary, CancellationToken.None);
+            var result = await controller.AddEventSummary(eventId, summaryDto, CancellationToken.None);
 
             Assert.IsType<CreatedAtActionResult>(result);
         }
@@ -122,13 +122,13 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         public async Task AddEventSummary_ReturnsForbid_WhenNotAuthorized()
         {
             var eventId = Guid.NewGuid();
-            var summary = new EventSummary { NumberOfBags = 5 };
+            var summaryDto = new EventSummaryDto { NumberOfBags = 5 };
 
             authorizationService
                 .Setup(a => a.AuthorizeAsync(It.IsAny<System.Security.Claims.ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<string>()))
                 .ReturnsAsync(AuthorizationResult.Failed());
 
-            var result = await controller.AddEventSummary(eventId, summary, CancellationToken.None);
+            var result = await controller.AddEventSummary(eventId, summaryDto, CancellationToken.None);
 
             Assert.IsType<ForbidResult>(result);
         }

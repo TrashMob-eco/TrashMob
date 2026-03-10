@@ -65,7 +65,7 @@ namespace TrashMob.Controllers.V2
         /// Submits or updates metrics for the current user.
         /// </summary>
         /// <param name="eventId">The event ID.</param>
-        /// <param name="metrics">The metrics to submit.</param>
+        /// <param name="dto">The metrics DTO to submit.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns the submitted metrics.</response>
         /// <response code="400">Validation error.</response>
@@ -76,10 +76,13 @@ namespace TrashMob.Controllers.V2
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SubmitMyMetrics(
             Guid eventId,
-            [FromBody] EventAttendeeMetrics metrics,
+            [FromBody] EventAttendeeMetricsDto dto,
             CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 SubmitMyMetrics for Event={EventId}", eventId);
+
+            var metrics = dto.ToEntity();
+            metrics.EventId = eventId;
 
             var result = await metricsManager.SubmitMetricsAsync(eventId, UserId, metrics, cancellationToken);
 

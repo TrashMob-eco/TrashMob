@@ -76,7 +76,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         public async Task SubmitMyMetrics_ReturnsOk_OnSuccess()
         {
             var eventId = Guid.NewGuid();
-            var metrics = new EventAttendeeMetrics { BagsCollected = 5 };
+            var metricsDto = new EventAttendeeMetricsDto { BagsCollected = 5 };
             var resultMetrics = new EventAttendeeMetrics
             {
                 Id = Guid.NewGuid(),
@@ -86,10 +86,10 @@ namespace TrashMob.Shared.Tests.Controllers.V2
                 Status = "Pending",
             };
 
-            metricsManager.Setup(m => m.SubmitMetricsAsync(eventId, userId, metrics, It.IsAny<CancellationToken>()))
+            metricsManager.Setup(m => m.SubmitMetricsAsync(eventId, userId, It.IsAny<EventAttendeeMetrics>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(ServiceResult<EventAttendeeMetrics>.Success(resultMetrics));
 
-            var result = await controller.SubmitMyMetrics(eventId, metrics, CancellationToken.None);
+            var result = await controller.SubmitMyMetrics(eventId, metricsDto, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             var dto = Assert.IsType<EventAttendeeMetricsDto>(okResult.Value);
@@ -103,7 +103,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             metricsManager.Setup(m => m.SubmitMetricsAsync(eventId, userId, It.IsAny<EventAttendeeMetrics>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(ServiceResult<EventAttendeeMetrics>.Failure("Event not found"));
 
-            var result = await controller.SubmitMyMetrics(eventId, new EventAttendeeMetrics(), CancellationToken.None);
+            var result = await controller.SubmitMyMetrics(eventId, new EventAttendeeMetricsDto(), CancellationToken.None);
 
             var badResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal("Event not found", badResult.Value);

@@ -156,17 +156,17 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         public async Task AddLitterReport_ReturnsOk_WhenSuccess()
         {
             controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
-            var report = new LitterReport { Name = "Test Report" };
+            var reportDto = new LitterReportDto { Name = "Test Report" };
             var created = new LitterReport { Id = Guid.NewGuid(), Name = "Test Report" };
 
             litterReportManager
-                .Setup(m => m.AddWithResultAsync(report, It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .Setup(m => m.AddWithResultAsync(It.IsAny<LitterReport>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(ServiceResult<LitterReport>.Success(created));
 
-            var result = await controller.AddLitterReport(report, CancellationToken.None);
+            var result = await controller.AddLitterReport(reportDto, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedReport = Assert.IsType<LitterReport>(okResult.Value);
+            var returnedReport = Assert.IsType<LitterReportDto>(okResult.Value);
             Assert.Equal("Test Report", returnedReport.Name);
         }
 
@@ -174,13 +174,13 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         public async Task AddLitterReport_ReturnsBadRequest_WhenFailure()
         {
             controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
-            var report = new LitterReport { Name = "Bad Report" };
+            var reportDto = new LitterReportDto { Name = "Bad Report" };
 
             litterReportManager
-                .Setup(m => m.AddWithResultAsync(report, It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .Setup(m => m.AddWithResultAsync(It.IsAny<LitterReport>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(ServiceResult<LitterReport>.Failure("Invalid report"));
 
-            var result = await controller.AddLitterReport(report, CancellationToken.None);
+            var result = await controller.AddLitterReport(reportDto, CancellationToken.None);
 
             Assert.IsType<BadRequestObjectResult>(result);
         }
@@ -202,7 +202,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetUserLitterReports(userId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedReports = Assert.IsAssignableFrom<IEnumerable<LitterReport>>(okResult.Value);
+            var returnedReports = Assert.IsAssignableFrom<IEnumerable<LitterReportDto>>(okResult.Value);
             Assert.Single(returnedReports);
         }
 

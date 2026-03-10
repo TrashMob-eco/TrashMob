@@ -2,6 +2,7 @@ namespace TrashMob.Controllers.V2
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
@@ -12,7 +13,9 @@ namespace TrashMob.Controllers.V2
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
+    using TrashMob.Models.Extensions.V2;
     using TrashMob.Models.Poco;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
@@ -59,7 +62,7 @@ namespace TrashMob.Controllers.V2
         [HttpGet("users/{userId}/dependents/{dependentId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [ProducesResponseType(typeof(IEnumerable<DependentInvitation>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<DependentInvitationDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetInvitationsForDependent(
             Guid userId, Guid dependentId, CancellationToken cancellationToken)
@@ -72,7 +75,7 @@ namespace TrashMob.Controllers.V2
             }
 
             var invitations = await dependentInvitationManager.GetByDependentIdAsync(dependentId, cancellationToken);
-            return Ok(invitations);
+            return Ok(invitations.Select(i => i.ToV2Dto()));
         }
 
         /// <summary>
@@ -89,7 +92,7 @@ namespace TrashMob.Controllers.V2
         [HttpPost("users/{userId}/dependents/{dependentId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(DependentInvitation), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(DependentInvitationDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -116,7 +119,7 @@ namespace TrashMob.Controllers.V2
                     dependentId, request.Email, userId, cancellationToken);
 
                 return CreatedAtAction(nameof(GetInvitationsForDependent),
-                    new { userId, dependentId }, result);
+                    new { userId, dependentId }, result.ToV2Dto());
             }
             catch (InvalidOperationException ex)
             {
@@ -161,7 +164,7 @@ namespace TrashMob.Controllers.V2
         [HttpPost("{invitationId}/resend")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(DependentInvitation), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DependentInvitationDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ResendInvitation(Guid invitationId, CancellationToken cancellationToken)
         {
@@ -170,7 +173,7 @@ namespace TrashMob.Controllers.V2
             try
             {
                 var result = await dependentInvitationManager.ResendInvitationAsync(invitationId, UserId, cancellationToken);
-                return Ok(result);
+                return Ok(result.ToV2Dto());
             }
             catch (InvalidOperationException ex)
             {

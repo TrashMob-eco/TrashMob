@@ -11,6 +11,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using TrashMob.Controllers.V2;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Shared.Managers.Interfaces;
     using Xunit;
 
@@ -38,7 +39,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var dependentId = Guid.NewGuid();
             var invitations = new List<DependentInvitation>
             {
-                new() { Id = Guid.NewGuid() },
+                new() { Id = Guid.NewGuid(), DependentId = dependentId, ParentUserId = userId, Email = "test@example.com" },
             };
 
             invitationManager.Setup(m => m.GetByDependentIdAsync(dependentId, It.IsAny<CancellationToken>()))
@@ -47,7 +48,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetInvitationsForDependent(userId, dependentId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returned = Assert.IsAssignableFrom<IEnumerable<DependentInvitation>>(okResult.Value);
+            var returned = Assert.IsAssignableFrom<IEnumerable<DependentInvitationDto>>(okResult.Value);
             Assert.Single(returned);
         }
 
@@ -123,7 +124,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         public async Task ResendInvitation_ReturnsOk()
         {
             var invitationId = Guid.NewGuid();
-            var updatedInvitation = new DependentInvitation { Id = invitationId };
+            var updatedInvitation = new DependentInvitation { Id = invitationId, DependentId = Guid.NewGuid(), ParentUserId = userId, Email = "test@example.com" };
 
             invitationManager.Setup(m => m.ResendInvitationAsync(invitationId, userId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updatedInvitation);
@@ -131,7 +132,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.ResendInvitation(invitationId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returned = Assert.IsType<DependentInvitation>(okResult.Value);
+            var returned = Assert.IsType<DependentInvitationDto>(okResult.Value);
             Assert.Equal(invitationId, returned.Id);
         }
     }

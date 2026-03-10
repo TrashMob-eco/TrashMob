@@ -63,20 +63,21 @@ namespace TrashMob.Controllers.V2
         /// Adds a new event summary. Only event leads can add.
         /// </summary>
         /// <param name="eventId">The event identifier.</param>
-        /// <param name="eventSummary">The event summary to add.</param>
+        /// <param name="dto">The event summary DTO to add.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="201">Event summary created.</response>
         /// <response code="403">User is not an event lead.</response>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventSummary), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(EventSummaryDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> AddEventSummary(Guid eventId, EventSummary eventSummary,
+        public async Task<IActionResult> AddEventSummary(Guid eventId, EventSummaryDto dto,
             CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 AddEventSummary Event={EventId}", eventId);
 
+            var eventSummary = dto.ToEntity();
             eventSummary.EventId = eventId;
 
             if (!await IsAuthorizedAsync(eventSummary, AuthorizationPolicyConstants.UserIsEventLead))
@@ -86,27 +87,28 @@ namespace TrashMob.Controllers.V2
 
             var result = await eventSummaryManager.AddAsync(eventSummary, UserId, cancellationToken);
 
-            return CreatedAtAction(nameof(GetEventSummary), new { eventId }, result);
+            return CreatedAtAction(nameof(GetEventSummary), new { eventId }, result.ToV2Dto());
         }
 
         /// <summary>
         /// Updates an existing event summary. Only event leads can update.
         /// </summary>
         /// <param name="eventId">The event identifier.</param>
-        /// <param name="eventSummary">The event summary to update.</param>
+        /// <param name="dto">The event summary DTO to update.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns the updated event summary.</response>
         /// <response code="403">User is not an event lead.</response>
         [HttpPut]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventSummary), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(EventSummaryDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> UpdateEventSummary(Guid eventId, EventSummary eventSummary,
+        public async Task<IActionResult> UpdateEventSummary(Guid eventId, EventSummaryDto dto,
             CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 UpdateEventSummary Event={EventId}", eventId);
 
+            var eventSummary = dto.ToEntity();
             eventSummary.EventId = eventId;
 
             if (!await IsAuthorizedAsync(eventSummary, AuthorizationPolicyConstants.UserIsEventLead))
@@ -115,7 +117,7 @@ namespace TrashMob.Controllers.V2
             }
 
             var updatedEvent = await eventSummaryManager.UpdateAsync(eventSummary, UserId, cancellationToken);
-            return Ok(updatedEvent);
+            return Ok(updatedEvent.ToV2Dto());
         }
 
         /// <summary>

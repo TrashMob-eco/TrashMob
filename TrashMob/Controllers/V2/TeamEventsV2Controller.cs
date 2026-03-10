@@ -14,6 +14,8 @@ namespace TrashMob.Controllers.V2
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
+    using TrashMob.Models.Extensions.V2;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
@@ -43,7 +45,7 @@ namespace TrashMob.Controllers.V2
         /// <response code="200">Returns upcoming team events.</response>
         /// <response code="404">Team not found.</response>
         [HttpGet("upcoming")]
-        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUpcomingTeamEvents(Guid teamId, CancellationToken cancellationToken)
         {
@@ -78,7 +80,7 @@ namespace TrashMob.Controllers.V2
                 .OrderBy(e => e.EventDate)
                 .ToListAsync(cancellationToken);
 
-            return Ok(teamEvents);
+            return Ok(teamEvents.Select(e => e.ToV2Dto()));
         }
 
         /// <summary>
@@ -89,7 +91,7 @@ namespace TrashMob.Controllers.V2
         /// <response code="200">Returns past team events.</response>
         /// <response code="404">Team not found.</response>
         [HttpGet("past")]
-        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPastTeamEvents(Guid teamId, CancellationToken cancellationToken)
         {
@@ -124,7 +126,7 @@ namespace TrashMob.Controllers.V2
                 .OrderByDescending(e => e.EventDate)
                 .ToListAsync(cancellationToken);
 
-            return Ok(teamEvents);
+            return Ok(teamEvents.Select(e => e.ToV2Dto()));
         }
 
         /// <summary>

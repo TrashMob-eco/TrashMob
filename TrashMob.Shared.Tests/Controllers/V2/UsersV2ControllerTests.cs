@@ -168,14 +168,14 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         {
             var userId = Guid.NewGuid();
             controller.HttpContext.Items["UserId"] = userId.ToString();
-            var user = new User { UserName = "newuser" };
+            var userDto = new UserWriteDto { UserName = "newuser" };
             var created = new User { Id = userId, UserName = "newuser" };
 
             userManager
-                .Setup(m => m.AddAsync(user, userId, It.IsAny<CancellationToken>()))
+                .Setup(m => m.AddAsync(It.IsAny<User>(), userId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(created);
 
-            var result = await controller.AddUser(user, CancellationToken.None);
+            var result = await controller.AddUser(userDto, CancellationToken.None);
 
             Assert.IsType<CreatedAtActionResult>(result);
         }
@@ -193,7 +193,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetUserByEmail("test@example.com", CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<User>(okResult.Value);
+            Assert.IsType<UserDto>(okResult.Value);
         }
 
         [Fact]
@@ -224,7 +224,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetUserByObjectId(objectId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<User>(okResult.Value);
+            Assert.IsType<UserDto>(okResult.Value);
         }
 
         [Fact]

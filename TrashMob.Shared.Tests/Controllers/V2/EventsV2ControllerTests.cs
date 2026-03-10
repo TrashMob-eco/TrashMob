@@ -179,11 +179,11 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         {
             controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
 
-            var mobEvent = new Event { Id = Guid.NewGuid(), Name = "New Cleanup" };
-            eventManager.Setup(m => m.AddAsync(mobEvent, It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(mobEvent);
+            var eventDto = new EventDto { Id = Guid.NewGuid(), Name = "New Cleanup" };
+            eventManager.Setup(m => m.AddAsync(It.IsAny<Event>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Event { Id = eventDto.Id, Name = eventDto.Name });
 
-            var result = await controller.AddEvent(mobEvent, CancellationToken.None);
+            var result = await controller.AddEvent(eventDto, CancellationToken.None);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
             Assert.Equal(nameof(EventsV2Controller.GetEvent), createdResult.ActionName);
@@ -198,9 +198,9 @@ namespace TrashMob.Shared.Tests.Controllers.V2
                     It.IsAny<object>(), It.IsAny<string>()))
                 .ReturnsAsync(AuthorizationResult.Failed());
 
-            var mobEvent = new Event { Id = Guid.NewGuid(), Name = "Cleanup" };
+            var eventDto = new EventDto { Id = Guid.NewGuid(), Name = "Cleanup" };
 
-            var result = await controller.UpdateEvent(mobEvent, CancellationToken.None);
+            var result = await controller.UpdateEvent(eventDto, CancellationToken.None);
 
             Assert.IsType<ForbidResult>(result);
         }

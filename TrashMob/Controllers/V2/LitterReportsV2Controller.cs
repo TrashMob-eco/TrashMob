@@ -98,17 +98,17 @@ namespace TrashMob.Controllers.V2
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(LitterReport), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(LitterReportDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddLitterReport(LitterReport litterReport, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddLitterReport(LitterReportDto litterReport, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 AddLitterReport Name={Name}", litterReport.Name);
 
-            var result = await litterReportManager.AddWithResultAsync(litterReport, UserId, cancellationToken);
+            var result = await litterReportManager.AddWithResultAsync(litterReport.ToEntity(), UserId, cancellationToken);
 
             if (result.IsSuccess)
             {
-                return Ok(result.Data);
+                return Ok(result.Data.ToV2Dto());
             }
 
             return BadRequest(result.ErrorMessage);
@@ -124,24 +124,26 @@ namespace TrashMob.Controllers.V2
         [HttpPut]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(LitterReport), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(LitterReportDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateLitterReport(LitterReport litterReport,
+        public async Task<IActionResult> UpdateLitterReport(LitterReportDto litterReport,
             CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 UpdateLitterReport Id={Id}", litterReport.Id);
 
-            if (!await IsAuthorizedAsync(litterReport, AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin))
+            var entity = litterReport.ToEntity();
+
+            if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin))
             {
                 return Forbid();
             }
 
-            var updatedLitterReport = await litterReportManager.UpdateAsync(litterReport, UserId, cancellationToken);
+            var updatedLitterReport = await litterReportManager.UpdateAsync(entity, UserId, cancellationToken);
 
             if (updatedLitterReport is not null)
             {
-                return Ok(updatedLitterReport);
+                return Ok(updatedLitterReport.ToV2Dto());
             }
 
             return BadRequest("Failed to update litter report");
@@ -190,13 +192,13 @@ namespace TrashMob.Controllers.V2
         [HttpGet("userlitterreports/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [ProducesResponseType(typeof(IEnumerable<LitterReport>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<LitterReportDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUserLitterReports(Guid userId, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 GetUserLitterReports User={UserId}", userId);
 
             var result = await litterReportManager.GetUserLitterReportsAsync(userId, cancellationToken);
-            return Ok(result);
+            return Ok(result.Select(r => r.ToV2Dto()));
         }
 
         /// <summary>
@@ -206,7 +208,7 @@ namespace TrashMob.Controllers.V2
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns a paginated list of filtered litter reports.</response>
         [HttpPost("pagedfilteredlitterreports")]
-        [ProducesResponseType(typeof(PaginatedList<LitterReport>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedList<LitterReportDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedFilteredLitterReports(
             [FromBody] LitterReportFilter filter,
             CancellationToken cancellationToken)
@@ -215,16 +217,16 @@ namespace TrashMob.Controllers.V2
 
             var result = await litterReportManager.GetFilteredLitterReportsAsync(filter, cancellationToken);
 
+            var ordered = result.OrderByDescending(r => r.CreatedDate).ToList();
             if (filter.PageSize is not null)
             {
-                var pagedResults = PaginatedList<LitterReport>.Create(
-                    result.OrderByDescending(e => e.CreatedDate).AsQueryable(),
-                    filter.PageIndex.GetValueOrDefault(0),
-                    filter.PageSize.GetValueOrDefault(10));
-                return Ok(pagedResults);
+                var pageIndex = filter.PageIndex.GetValueOrDefault(0);
+                var pageSize = filter.PageSize.GetValueOrDefault(10);
+                var items = ordered.Skip((pageIndex - 1) * pageSize).Take(pageSize).Select(r => r.ToV2Dto()).ToList();
+                return Ok(new PaginatedList<LitterReportDto>(items, ordered.Count, pageIndex, pageSize));
             }
 
-            return Ok(result);
+            return Ok(ordered.Select(r => r.ToV2Dto()));
         }
 
         /// <summary>

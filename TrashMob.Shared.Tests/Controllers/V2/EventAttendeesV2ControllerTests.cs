@@ -145,13 +145,13 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         public async Task AddEventAttendee_ReturnsOk_WhenWaiverValid()
         {
             var eventId = Guid.NewGuid();
-            var attendee = new EventAttendee { UserId = currentUserId };
+            var attendeeDto = new EventAttendeeDto { UserId = currentUserId };
 
             userWaiverManager
                 .Setup(m => m.HasValidWaiverForEventAsync(currentUserId, eventId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            var result = await controller.AddEventAttendee(eventId, attendee, CancellationToken.None);
+            var result = await controller.AddEventAttendee(eventId, attendeeDto, CancellationToken.None);
 
             Assert.IsType<OkResult>(result);
             eventAttendeeManager.Verify(
@@ -163,7 +163,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         public async Task AddEventAttendee_ReturnsBadRequest_WhenWaiverRequired()
         {
             var eventId = Guid.NewGuid();
-            var attendee = new EventAttendee { UserId = currentUserId };
+            var attendeeDto = new EventAttendeeDto { UserId = currentUserId };
             var requiredWaivers = new List<WaiverVersion>
             {
                 new() { Id = Guid.NewGuid() },
@@ -176,7 +176,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
                 .Setup(m => m.GetRequiredWaiversForEventAsync(currentUserId, eventId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(requiredWaivers);
 
-            var result = await controller.AddEventAttendee(eventId, attendee, CancellationToken.None);
+            var result = await controller.AddEventAttendee(eventId, attendeeDto, CancellationToken.None);
 
             Assert.IsType<BadRequestObjectResult>(result);
         }
@@ -224,7 +224,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         {
             var eventId = Guid.NewGuid();
             var userId = Guid.NewGuid();
-            var promoted = new EventAttendee { EventId = eventId, UserId = userId, IsEventLead = true };
+            var promoted = new EventAttendee { EventId = eventId, UserId = userId, IsEventLead = true, User = new User { UserName = "promoted" } };
 
             eventAttendeeManager
                 .Setup(m => m.IsEventLeadAsync(eventId, currentUserId, It.IsAny<CancellationToken>()))
@@ -236,7 +236,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.PromoteToLead(eventId, userId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var attendee = Assert.IsType<EventAttendee>(okResult.Value);
+            var attendee = Assert.IsType<EventAttendeeDto>(okResult.Value);
             Assert.True(attendee.IsEventLead);
         }
 

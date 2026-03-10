@@ -32,5 +32,31 @@ namespace TrashMob.Models.Extensions.V2
                 IsMinor = entity.IsMinor,
             };
         }
+
+        /// <summary>
+        /// Maps a V2 UserWriteDto to a User entity for create/update operations.
+        /// </summary>
+        public static User ToEntity(this Poco.V2.UserWriteDto dto)
+        {
+            return new User
+            {
+                Id = dto.Id,
+                UserName = dto.UserName,
+                Email = dto.Email,
+                GivenName = dto.GivenName,
+                Surname = dto.Surname,
+                City = dto.City,
+                Region = dto.Region,
+                Country = dto.Country,
+                PostalCode = dto.PostalCode,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude,
+                PrefersMetric = dto.PrefersMetric,
+                DateOfBirth = dto.DateOfBirth,
+                IsMinor = dto.IsMinor,
+                TravelLimitForLocalEvents = dto.TravelLimitForLocalEvents,
+                ProfilePhotoUrl = dto.ProfilePhotoUrl,
+            };
+        }
     }
 }

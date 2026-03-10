@@ -2,6 +2,7 @@ namespace TrashMob.Controllers.V2
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
@@ -92,13 +93,13 @@ namespace TrashMob.Controllers.V2
         [HttpGet("my")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [ProducesResponseType(typeof(IEnumerable<Team>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<TeamDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMyTeams(CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 GetMyTeams User={UserId}", UserId);
 
             var teams = await teamManager.GetTeamsByUserAsync(UserId, cancellationToken);
-            return Ok(teams);
+            return Ok(teams.Select(t => t.ToV2Dto()));
         }
 
         /// <summary>
@@ -111,9 +112,9 @@ namespace TrashMob.Controllers.V2
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(Team), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(TeamDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateTeam([FromBody] Team team, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateTeam([FromBody] TeamDto team, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 CreateTeam Name={Name}", team.Name);
 
@@ -129,18 +130,19 @@ namespace TrashMob.Controllers.V2
                 return BadRequest("User not found.");
             }
 
-            team.Id = Guid.NewGuid();
-            team.IsActive = true;
-            team.CreatedByUserId = UserId;
-            team.CreatedDate = DateTimeOffset.UtcNow;
-            team.LastUpdatedByUserId = UserId;
-            team.LastUpdatedDate = DateTimeOffset.UtcNow;
+            var entity = team.ToEntity();
+            entity.Id = Guid.NewGuid();
+            entity.IsActive = true;
+            entity.CreatedByUserId = UserId;
+            entity.CreatedDate = DateTimeOffset.UtcNow;
+            entity.LastUpdatedByUserId = UserId;
+            entity.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-            var createdTeam = await teamManager.AddAsync(team, UserId, cancellationToken);
+            var createdTeam = await teamManager.AddAsync(entity, UserId, cancellationToken);
 
             await teamMemberManager.AddMemberAsync(createdTeam.Id, UserId, isTeamLead: true, UserId, cancellationToken);
 
-            return CreatedAtAction(nameof(GetTeam), new { id = createdTeam.Id }, createdTeam);
+            return CreatedAtAction(nameof(GetTeam), new { id = createdTeam.Id }, createdTeam.ToV2Dto());
         }
 
         /// <summary>
@@ -155,11 +157,11 @@ namespace TrashMob.Controllers.V2
         [HttpPut("{teamId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(Team), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TeamDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateTeam(Guid teamId, [FromBody] Team team, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateTeam(Guid teamId, [FromBody] TeamDto team, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 UpdateTeam Team={TeamId}", teamId);
 
@@ -204,7 +206,7 @@ namespace TrashMob.Controllers.V2
             existingTeam.LastUpdatedDate = DateTimeOffset.UtcNow;
 
             var updatedTeam = await teamManager.UpdateAsync(existingTeam, UserId, cancellationToken);
-            return Ok(updatedTeam);
+            return Ok(updatedTeam.ToV2Dto());
         }
 
         /// <summary>

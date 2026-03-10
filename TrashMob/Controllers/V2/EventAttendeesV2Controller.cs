@@ -91,7 +91,7 @@ namespace TrashMob.Controllers.V2
         /// Adds a new event attendee. Requires all waivers to be signed.
         /// </summary>
         /// <param name="eventId">The event identifier.</param>
-        /// <param name="eventAttendee">The event attendee to add.</param>
+        /// <param name="dto">The event attendee DTO containing the UserId.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Attendee registered.</response>
         /// <response code="400">Waivers required.</response>
@@ -102,12 +102,12 @@ namespace TrashMob.Controllers.V2
         [ProducesResponseType(typeof(WaiverRequiredResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddEventAttendee(
             Guid eventId,
-            EventAttendee eventAttendee,
+            EventAttendeeDto dto,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation("V2 AddEventAttendee Event={EventId}, User={UserId}", eventId, eventAttendee.UserId);
+            logger.LogInformation("V2 AddEventAttendee Event={EventId}, User={UserId}", eventId, dto.UserId);
 
-            eventAttendee.EventId = eventId;
+            var eventAttendee = new EventAttendee { EventId = eventId, UserId = dto.UserId };
 
             var hasValidWaiver = await userWaiverManager
                 .HasValidWaiverForEventAsync(eventAttendee.UserId, eventId, cancellationToken);
@@ -179,7 +179,7 @@ namespace TrashMob.Controllers.V2
         [HttpPut("{userId}/promote")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventAttendee), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(EventAttendeeDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> PromoteToLead(Guid eventId, Guid userId, CancellationToken cancellationToken)
@@ -195,7 +195,7 @@ namespace TrashMob.Controllers.V2
             try
             {
                 var result = await eventAttendeeManager.PromoteToLeadAsync(eventId, userId, UserId, cancellationToken);
-                return Ok(result);
+                return Ok(result.ToV2Dto());
             }
             catch (InvalidOperationException ex)
             {
@@ -215,7 +215,7 @@ namespace TrashMob.Controllers.V2
         [HttpPut("{userId}/demote")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventAttendee), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(EventAttendeeDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> DemoteFromLead(Guid eventId, Guid userId, CancellationToken cancellationToken)
@@ -231,7 +231,7 @@ namespace TrashMob.Controllers.V2
             try
             {
                 var result = await eventAttendeeManager.DemoteFromLeadAsync(eventId, userId, UserId, cancellationToken);
-                return Ok(result);
+                return Ok(result.ToV2Dto());
             }
             catch (InvalidOperationException ex)
             {

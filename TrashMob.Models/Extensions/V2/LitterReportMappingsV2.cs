@@ -53,5 +53,21 @@ namespace TrashMob.Models.Extensions.V2
                 Longitude = entity.Longitude,
             };
         }
+
+        /// <summary>
+        /// Maps a V2 LitterReportDto to a LitterReport entity.
+        /// Note: LitterImages are not reverse-mapped; they are handled separately via image upload.
+        /// </summary>
+        public static LitterReport ToEntity(this LitterReportDto dto)
+        {
+            return new LitterReport
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Description = dto.Description,
+                LitterReportStatusId = dto.LitterReportStatusId,
+                CreatedByUserId = dto.CreatedByUserId,
+            };
+        }
     }
 }
