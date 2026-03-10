@@ -19,12 +19,14 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     public class UsersV2ControllerTests
     {
         private readonly Mock<IUserManager> userManager = new();
+        private readonly Mock<IEventAttendeeMetricsManager> metricsManager = new();
+        private readonly Mock<IImageManager> imageManager = new();
         private readonly Mock<ILogger<UsersV2Controller>> logger = new();
         private readonly UsersV2Controller controller;
 
         public UsersV2ControllerTests()
         {
-            controller = new UsersV2Controller(userManager.Object, logger.Object);
+            controller = new UsersV2Controller(userManager.Object, metricsManager.Object, imageManager.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),
@@ -157,6 +159,85 @@ namespace TrashMob.Shared.Tests.Controllers.V2
                 .ReturnsAsync((User)null);
 
             var result = await controller.GetUser(userId, CancellationToken.None);
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task AddUser_ReturnsCreated()
+        {
+            var userId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+            var user = new User { UserName = "newuser" };
+            var created = new User { Id = userId, UserName = "newuser" };
+
+            userManager
+                .Setup(m => m.AddAsync(user, userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(created);
+
+            var result = await controller.AddUser(user, CancellationToken.None);
+
+            Assert.IsType<CreatedAtActionResult>(result);
+        }
+
+        [Fact]
+        public async Task GetUserByEmail_ReturnsOk_WhenFound()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+            var user = new User { Id = Guid.NewGuid(), UserName = "emailuser", Email = "test@example.com" };
+
+            userManager
+                .Setup(m => m.GetUserByEmailAsync("test@example.com", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(user);
+
+            var result = await controller.GetUserByEmail("test@example.com", CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<User>(okResult.Value);
+        }
+
+        [Fact]
+        public async Task GetUserByEmail_ReturnsNotFound_WhenNotFound()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+
+            userManager
+                .Setup(m => m.GetUserByEmailAsync("missing@example.com", It.IsAny<CancellationToken>()))
+                .ReturnsAsync((User)null);
+
+            var result = await controller.GetUserByEmail("missing@example.com", CancellationToken.None);
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task GetUserByObjectId_ReturnsOk_WhenFound()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+            var objectId = Guid.NewGuid();
+            var user = new User { Id = Guid.NewGuid(), UserName = "oiduser" };
+
+            userManager
+                .Setup(m => m.GetUserByObjectIdAsync(objectId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(user);
+
+            var result = await controller.GetUserByObjectId(objectId, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<User>(okResult.Value);
+        }
+
+        [Fact]
+        public async Task GetUserImpact_ReturnsNotFound_WhenUserNotFound()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+            var userId = Guid.NewGuid();
+
+            userManager
+                .Setup(m => m.GetUserByInternalIdAsync(userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((User)null);
+
+            var result = await controller.GetUserImpact(userId, CancellationToken.None);
 
             Assert.IsType<NotFoundResult>(result);
         }

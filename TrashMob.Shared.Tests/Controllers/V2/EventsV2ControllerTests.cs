@@ -5,6 +5,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -19,12 +20,14 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     public class EventsV2ControllerTests
     {
         private readonly Mock<IEventManager> eventManager = new();
+        private readonly Mock<IEventAttendeeManager> eventAttendeeManager = new();
+        private readonly Mock<IAuthorizationService> authorizationService = new();
         private readonly Mock<ILogger<EventsV2Controller>> logger = new();
         private readonly EventsV2Controller controller;
 
         public EventsV2ControllerTests()
         {
-            controller = new EventsV2Controller(eventManager.Object, logger.Object);
+            controller = new EventsV2Controller(eventManager.Object, eventAttendeeManager.Object, authorizationService.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),
@@ -169,6 +172,107 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetEvent(eventId, CancellationToken.None);
 
             Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task AddEvent_ReturnsCreated()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+
+            var mobEvent = new Event { Id = Guid.NewGuid(), Name = "New Cleanup" };
+            eventManager.Setup(m => m.AddAsync(mobEvent, It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(mobEvent);
+
+            var result = await controller.AddEvent(mobEvent, CancellationToken.None);
+
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result);
+            Assert.Equal(nameof(EventsV2Controller.GetEvent), createdResult.ActionName);
+        }
+
+        [Fact]
+        public async Task UpdateEvent_ReturnsForbid_WhenNotAuthorized()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+
+            authorizationService.Setup(a => a.AuthorizeAsync(It.IsAny<System.Security.Claims.ClaimsPrincipal>(),
+                    It.IsAny<object>(), It.IsAny<string>()))
+                .ReturnsAsync(AuthorizationResult.Failed());
+
+            var mobEvent = new Event { Id = Guid.NewGuid(), Name = "Cleanup" };
+
+            var result = await controller.UpdateEvent(mobEvent, CancellationToken.None);
+
+            Assert.IsType<ForbidResult>(result);
+        }
+
+        [Fact]
+        public async Task DeleteEvent_ReturnsNoContent_WhenAuthorized()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+            controller.HttpContext.User = new System.Security.Claims.ClaimsPrincipal(
+                new System.Security.Claims.ClaimsIdentity(
+                    new[] { new System.Security.Claims.Claim("sub", Guid.NewGuid().ToString()) }, "test"));
+
+            var eventId = Guid.NewGuid();
+            var mobEvent = new Event { Id = eventId };
+
+            eventManager.Setup(m => m.GetAsync(eventId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(mobEvent);
+            authorizationService.Setup(a => a.AuthorizeAsync(It.IsAny<System.Security.Claims.ClaimsPrincipal>(),
+                    It.IsAny<object>(), It.IsAny<string>()))
+                .ReturnsAsync(AuthorizationResult.Success());
+            eventManager.Setup(m => m.DeleteAsync(eventId, It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            var request = new TrashMob.Shared.Poco.EventCancellationRequest { EventId = eventId, CancellationReason = "Rain" };
+
+            var result = await controller.DeleteEvent(request, CancellationToken.None);
+
+            Assert.IsType<NoContentResult>(result);
+        }
+
+        [Fact]
+        public async Task GetUserEvents_ReturnsOk()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+            var userId = Guid.NewGuid();
+
+            eventManager.Setup(m => m.GetUserEventsAsync(userId, true, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Event>());
+            eventAttendeeManager.Setup(m => m.GetEventsUserIsAttendingAsync(userId, true, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Event>());
+
+            var result = await controller.GetUserEvents(userId, true, CancellationToken.None);
+
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task GetEventsUserIsAttending_ReturnsOk()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+            var userId = Guid.NewGuid();
+
+            eventAttendeeManager.Setup(m => m.GetEventsUserIsAttendingAsync(userId, false, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Event>());
+
+            var result = await controller.GetEventsUserIsAttending(userId, CancellationToken.None);
+
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task GetEventLocationsByTimeRange_ReturnsOk()
+        {
+            var start = DateTimeOffset.UtcNow.AddDays(-30);
+            var end = DateTimeOffset.UtcNow;
+
+            eventManager.Setup(m => m.GetEventLocationsByTimeRangeAsync(start, end, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Models.Poco.Location>());
+
+            var result = await controller.GetEventLocationsByTimeRange(start, end, CancellationToken.None);
+
+            Assert.IsType<OkObjectResult>(result);
         }
     }
 }

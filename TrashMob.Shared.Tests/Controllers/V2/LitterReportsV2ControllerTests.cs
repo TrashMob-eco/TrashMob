@@ -5,6 +5,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -13,18 +14,22 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using TrashMob.Models;
     using TrashMob.Models.Poco.V2;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
     using TrashMob.Shared.Tests.Fixtures;
     using Xunit;
 
     public class LitterReportsV2ControllerTests
     {
         private readonly Mock<ILitterReportManager> litterReportManager = new();
+        private readonly Mock<ILitterImageManager> litterImageManager = new();
+        private readonly Mock<IImageManager> imageManager = new();
+        private readonly Mock<IAuthorizationService> authorizationService = new();
         private readonly Mock<ILogger<LitterReportsV2Controller>> logger = new();
         private readonly LitterReportsV2Controller controller;
 
         public LitterReportsV2ControllerTests()
         {
-            controller = new LitterReportsV2Controller(litterReportManager.Object, logger.Object);
+            controller = new LitterReportsV2Controller(litterReportManager.Object, litterImageManager.Object, imageManager.Object, authorizationService.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),
@@ -145,6 +150,89 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetLitterReport(reportId, CancellationToken.None);
 
             Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task AddLitterReport_ReturnsOk_WhenSuccess()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+            var report = new LitterReport { Name = "Test Report" };
+            var created = new LitterReport { Id = Guid.NewGuid(), Name = "Test Report" };
+
+            litterReportManager
+                .Setup(m => m.AddWithResultAsync(report, It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ServiceResult<LitterReport>.Success(created));
+
+            var result = await controller.AddLitterReport(report, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedReport = Assert.IsType<LitterReport>(okResult.Value);
+            Assert.Equal("Test Report", returnedReport.Name);
+        }
+
+        [Fact]
+        public async Task AddLitterReport_ReturnsBadRequest_WhenFailure()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+            var report = new LitterReport { Name = "Bad Report" };
+
+            litterReportManager
+                .Setup(m => m.AddWithResultAsync(report, It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ServiceResult<LitterReport>.Failure("Invalid report"));
+
+            var result = await controller.AddLitterReport(report, CancellationToken.None);
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task GetUserLitterReports_ReturnsOk()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+            var userId = Guid.NewGuid();
+            var reports = new List<LitterReport>
+            {
+                new() { Id = Guid.NewGuid(), Name = "My Report" },
+            };
+
+            litterReportManager
+                .Setup(m => m.GetUserLitterReportsAsync(userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(reports);
+
+            var result = await controller.GetUserLitterReports(userId, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedReports = Assert.IsAssignableFrom<IEnumerable<LitterReport>>(okResult.Value);
+            Assert.Single(returnedReports);
+        }
+
+        [Fact]
+        public async Task GetImage_ReturnsOk_WhenUrlExists()
+        {
+            var imageId = Guid.NewGuid();
+
+            imageManager
+                .Setup(m => m.GetImageUrlAsync(imageId, ImageTypeEnum.LitterImage, ImageSizeEnum.Reduced, It.IsAny<CancellationToken>()))
+                .ReturnsAsync("https://blob.example.com/image.jpg");
+
+            var result = await controller.GetImage(imageId, ImageSizeEnum.Reduced, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal("https://blob.example.com/image.jpg", okResult.Value);
+        }
+
+        [Fact]
+        public async Task GetImage_ReturnsNoContent_WhenUrlEmpty()
+        {
+            var imageId = Guid.NewGuid();
+
+            imageManager
+                .Setup(m => m.GetImageUrlAsync(imageId, ImageTypeEnum.LitterImage, ImageSizeEnum.Reduced, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(string.Empty);
+
+            var result = await controller.GetImage(imageId, ImageSizeEnum.Reduced, CancellationToken.None);
+
+            Assert.IsType<NoContentResult>(result);
         }
     }
 }
