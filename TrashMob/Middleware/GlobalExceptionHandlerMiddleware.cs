@@ -53,9 +53,12 @@ namespace TrashMob.Middleware
                 ? mapped
                 : (HttpStatusCode.InternalServerError, "Internal Server Error");
 
+            var statusCodeInt = (int)statusCode;
+
             var problemDetails = new ProblemDetails
             {
-                Status = (int)statusCode,
+                Type = $"https://httpstatuses.io/{statusCodeInt}",
+                Status = statusCodeInt,
                 Title = title,
                 Detail = environment.IsDevelopment() ? exception.Message : null,
                 Instance = context.Request.Path,
@@ -68,7 +71,7 @@ namespace TrashMob.Middleware
                 problemDetails.Extensions["correlationId"] = correlationId;
             }
 
-            context.Response.StatusCode = (int)statusCode;
+            context.Response.StatusCode = statusCodeInt;
             context.Response.ContentType = "application/problem+json";
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, JsonOptions));

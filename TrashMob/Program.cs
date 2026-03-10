@@ -314,10 +314,45 @@ public class Program
                 name: "database",
                 tags: ["db", "sql", "sqlserver"]);
 
+        builder.Services.AddProblemDetails();
+        builder.Services.Configure<Microsoft.AspNetCore.Mvc.ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = context =>
+            {
+                var problemDetails = new Microsoft.AspNetCore.Mvc.ValidationProblemDetails(context.ModelState)
+                {
+                    Type = "https://httpstatuses.io/400",
+                    Instance = context.HttpContext.Request.Path,
+                };
+                problemDetails.Extensions["traceId"] = context.HttpContext.TraceIdentifier;
+
+                var correlationId = context.HttpContext.Items["CorrelationId"]?.ToString();
+                if (correlationId is not null)
+                {
+                    problemDetails.Extensions["correlationId"] = correlationId;
+                }
+
+                return new Microsoft.AspNetCore.Mvc.BadRequestObjectResult(problemDetails)
+                {
+                    ContentTypes = { "application/problem+json" },
+                };
+            };
+        });
+
         builder.Services.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "TrashMob API", Version = "v1" });
-            options.SwaggerDoc("v2", new OpenApiInfo { Title = "TrashMob API", Version = "v2" });
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "TrashMob API",
+                Version = "v1",
+                Description = "Legacy API endpoints. Maintained for backward compatibility while clients migrate to v2.",
+            });
+            options.SwaggerDoc("v2", new OpenApiInfo
+            {
+                Title = "TrashMob API",
+                Version = "v2",
+                Description = "Modern API with server-side pagination, filtering, and lean DTOs. Designed for web and mobile clients.",
+            });
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
