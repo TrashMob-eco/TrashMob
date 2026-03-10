@@ -88,3 +88,13 @@ export interface EventSummaryPrefill {
     actualNumberOfAttendees: number;
     hasRouteData: boolean;
 }
+
+export interface UpdateRouteMetadataRequest {
+    privacyLevel: string;
+    trimStartMeters: number;
+    trimEndMeters: number;
+    notes: string | null;
+    bagsCollected: number | null;
+    weightCollected: number | null;
+    weightUnitId: number | null;
+}
