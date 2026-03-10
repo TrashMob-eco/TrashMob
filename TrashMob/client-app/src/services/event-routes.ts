@@ -5,6 +5,7 @@ import {
     DisplayEventRouteStats,
     DisplayUserRouteHistory,
     EventSummaryPrefill,
+    UpdateRouteMetadataRequest,
 } from '../components/Models/RouteData';
 
 export type GetEventRoutes_Params = { eventId: string };
@@ -68,5 +69,35 @@ export const GetEventSummaryPrefill = (params: GetEventSummaryPrefill_Params) =>
         ApiService('protected').fetchData<GetEventSummaryPrefill_Response>({
             url: `/events/${params.eventId}/routes/summary-prefill?weightUnitId=${params.weightUnitId ?? 1}`,
             method: 'get',
+        }),
+});
+
+export type GetEventAttendeeRoutesByEventId_Params = { eventId: string };
+export type GetEventAttendeeRoutesByEventId_Response = DisplayEventAttendeeRoute[];
+export const GetEventAttendeeRoutesByEventId = (params: GetEventAttendeeRoutesByEventId_Params) => ({
+    key: ['/eventattendeeroutes/byeventid/', params.eventId],
+    service: async () =>
+        ApiService('protected').fetchData<GetEventAttendeeRoutesByEventId_Response>({
+            url: `/eventattendeeroutes/byeventid/${params.eventId}`,
+            method: 'get',
+        }),
+});
+
+export type UpdateRouteMetadata_Params = { routeId: string };
+export const UpdateRouteMetadata = (params: UpdateRouteMetadata_Params) => ({
+    service: async (data: UpdateRouteMetadataRequest) =>
+        ApiService('protected').fetchData<DisplayEventAttendeeRoute>({
+            url: `/routes/${params.routeId}`,
+            method: 'put',
+            data,
+        }),
+});
+
+export type DeleteEventAttendeeRoute_Params = { routeId: string };
+export const DeleteEventAttendeeRoute = (params: DeleteEventAttendeeRoute_Params) => ({
+    service: async () =>
+        ApiService('protected').fetchData<void>({
+            url: `/eventattendeeroutes/${params.routeId}`,
+            method: 'delete',
         }),
 });
