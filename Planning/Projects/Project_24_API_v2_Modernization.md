@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phase 1 complete, Phase 2 complete) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Very Large |
@@ -90,27 +90,30 @@ The goals were valid and are fully covered by this project.
 
 Infrastructure that all v2 endpoints will use. No v1 endpoints are modified.
 
-- [ ] **API versioning** - Install `Asp.Versioning.Mvc` + `Asp.Versioning.Mvc.ApiExplorer`; configure default v1; add `[ApiVersion("1.0")]` to `BaseController`; add v2 Swagger doc alongside v1
-- [ ] **Problem Details middleware** - Global exception handler returning RFC 9457 responses with correlation IDs; replace manual error responses
-- [ ] **Correlation ID middleware** - Generate/propagate `X-Correlation-ID` header; integrate with OpenTelemetry and structured logging
-- [ ] **Pagination framework** - `PagedRequest` (page, pageSize, sort) and `PagedResponse<T>` (items, pagination metadata); reusable extension method on `IQueryable<T>`
-- [ ] **Server-side filtering framework** - Standard `IFilterable<T>` pattern with per-endpoint filter classes (see Filtering Strategy below)
-- [ ] **V2 DTO layer** - Create `TrashMob.Models/Poco/V2/` with DTOs decoupled from entities; manual mapping extension methods; reusable for MCP server
-- [ ] **OpenAPI 3.1 dual-doc** - v1 (existing endpoints, unchanged) + v2 (new endpoints) side by side in Swagger UI
-- [ ] **Client generation pipeline** - NSwag for TypeScript (Fetch template), Kiota for .NET; GitHub Actions workflow triggered by V2 controller changes
+- [x] **API versioning** - Install `Asp.Versioning.Mvc` + `Asp.Versioning.Mvc.ApiExplorer`; configure default v1; add `[ApiVersion("1.0")]` to `BaseController`; add v2 Swagger doc alongside v1 *(PR #3051)*
+- [x] **Problem Details middleware** - Global exception handler returning RFC 9457 responses with Type URI, correlation IDs, trace IDs; model validation 400s also wrapped in ProblemDetails *(PR #3051, polished in PR #3054)*
+- [x] **Correlation ID middleware** - Generate/propagate `X-Correlation-ID` header; integrated with structured logging scopes and OpenTelemetry Activity tags *(PR #3051, polished in PR #3054)*
+- [x] **Pagination framework** - `QueryParameters` (page, pageSize, sort) and `PagedResponse<T>` (items, pagination metadata); reusable `ToPagedAsync` extension on `IQueryable<T>` *(PR #3051)*
+- [x] **Server-side filtering framework** - Per-endpoint typed filter classes (`EventQueryParameters`, `UserQueryParameters`, etc.) extending `QueryParameters` *(PR #3051)*
+- [x] **V2 DTO layer** - Created `TrashMob.Models/Poco/V2/` with DTOs decoupled from entities; manual mapping extension methods in `TrashMob.Models/Extensions/V2/` *(PR #3051)*
+- [x] **OpenAPI 3.1 dual-doc** - v1 (legacy, backward-compatible) + v2 (modern, paginated) side by side in Swagger UI with descriptive text *(PR #3051, polished in PR #3054)*
+- **Client generation pipeline** - Deferred (NSwag for TypeScript, Kiota for .NET; will set up when Phase 3 client migration begins)
 
 ### Phase 2 - Core Endpoints
 
 New v2 controllers alongside existing v1 controllers. V1 remains untouched.
 
-- [ ] **Events v2** - Pilot endpoint; paginated list, filtered by status/city/region/date range; `EventDto` response
-- [ ] **Users v2** - Paginated list; `UserDto` (no PII leaks, minor privacy masking built into DTO)
-- [ ] **Partners/Communities v2** - Paginated list; community dashboard aggregates
-- [ ] **EventAttendees v2** - Filtered by event; paginated
-- [ ] **EventSummaries/Stats v2** - Aggregate stats (optimized query); filtered summaries
-- [ ] **LitterReports v2** - Paginated with geospatial filtering
-- [ ] **Generate and commit TypeScript client** (NSwag)
-- [ ] **Generate and commit .NET MAUI client** (Kiota)
+- [x] **Events v2** - Full CRUD + paginated list, filtered by status/city/region/date range; `EventDto` response; user events, paged filtered events, location queries *(PR #3051)*
+- [x] **Users v2** - Full CRUD + paginated list; `UserDto` (no PII leaks); email/OID lookup, impact stats, photo upload *(PR #3051)*
+- [x] **Partners/Communities v2** - Partners: paginated list with filtering + detail; Communities: list with geo-filtering, slug lookup, events, teams, stats *(PR #3051)*
+- [x] **EventAttendees v2** - Full CRUD + filtered by event; paginated; lead management, waiver checks *(PR #3051)*
+- [x] **EventSummaries/Stats v2** - CRUD as nested resource under events (`/events/{eventId}/summary`) *(PR #3051)*
+- [x] **LitterReports v2** - Full CRUD + paginated with filtering; image upload/retrieval; user reports, paged filtered, location queries *(PR #3051)*
+- [x] **Teams v2** - Full CRUD + paginated list; team name availability check; nested TeamMembers and TeamEvents controllers *(PR #3051)*
+- [x] **EventAttendeeRoutes v2** - CRUD + route simulation, time trimming/restore *(PR #3051)*
+- [x] **Dependents v2** - DependentInvitations, DependentWaivers, EventDependents controllers *(PR #3051)*
+- **Generate and commit TypeScript client** (NSwag) - Deferred with client generation pipeline
+- **Generate and commit .NET MAUI client** (Kiota) - Deferred with client generation pipeline
 
 ### Phase 3 - Client Migration
 
@@ -536,15 +539,16 @@ jobs:
 
 ---
 
-**Last Updated:** March 8, 2026
+**Last Updated:** March 9, 2026
 **Owner:** Engineering Team
-**Status:** Not Started
-**Next Review:** Before Phase 1 kickoff
+**Status:** In Progress
+**Next Review:** Before Phase 3 client migration kickoff
 
 ---
 
 ## Changelog
 
+- **2026-03-09:** Updated status — Phase 1 Foundation complete (PR #3051, #3054); Phase 2 complete with 13 v2 controllers and ~45 endpoints (PR #3051); client generation deferred; 719 tests passing
 - **2026-03-08:** Major revision — fixed misleading status markers (were showing checkmarks for unstarted items); documented prior work from Project 6; added "Current State" inventory; incorporated learnings from PR #2490; added server-side filtering strategy section; restructured rollout plan with per-step risk analysis and validation criteria; moved response compression to "already done"; moved sparse fieldsets and OData to out-of-scope; added per-endpoint typed filter approach
 - **2026-01-31:** Added v2 DTO layer requirement with manual mapping (MCP server reuse)
 - **2026-01-31:** Removed week-based schedule from rollout plan (agile approach)

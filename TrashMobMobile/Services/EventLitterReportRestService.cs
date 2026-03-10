@@ -7,6 +7,7 @@ using TrashMob.Models.Poco;
 public class EventLitterReportRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventLitterReportRestService
 {
     protected override string Controller => "eventlitterreports";
+    protected override bool UseV2 => true;
 
     public async Task<IEnumerable<FullEventLitterReport>> GetEventLitterReportsAsync(Guid eventId,
         CancellationToken cancellationToken = default)

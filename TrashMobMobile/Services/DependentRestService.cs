@@ -9,6 +9,7 @@ namespace TrashMobMobile.Services
         : RestServiceBase(httpClientFactory), IDependentRestService
     {
         protected override string Controller => "users/";
+        protected override bool UseV2 => true;
 
         // Dependent CRUD
 

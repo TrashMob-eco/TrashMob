@@ -9,6 +9,7 @@ using TrashMob.Models.Poco;
 public class EventPartnerLocationServiceRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventPartnerLocationServiceRestService
 {
     protected override string Controller => "eventpartnerlocationservices";
+    protected override bool UseV2 => true;
 
     public async Task<PartnerLocation> GetHaulingPartnerLocationAsync(Guid eventId,
         CancellationToken cancellationToken = default)

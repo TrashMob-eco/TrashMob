@@ -7,6 +7,7 @@ using TrashMob.Models.Poco;
 public class StatsRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IStatsRestService
 {
     protected override string Controller => "stats";
+    protected override bool UseV2 => true;
 
     public async Task<Stats> GetStatsAsync(CancellationToken cancellationToken = default)
     {

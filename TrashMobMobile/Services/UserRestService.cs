@@ -7,6 +7,7 @@ using TrashMob.Models;
 public class UserRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IUserRestService
 {
     protected override string Controller => "users";
+    protected override bool UseV2 => true;
 
     public async Task<User> GetUserAsync(string userId, CancellationToken cancellationToken = default)
     {

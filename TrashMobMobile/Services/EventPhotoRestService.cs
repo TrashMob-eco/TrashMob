@@ -8,6 +8,7 @@ public class EventPhotoRestService(IHttpClientFactory httpClientFactory)
     : RestServiceBase(httpClientFactory), IEventPhotoRestService
 {
     protected override string Controller => "events";
+    protected override bool UseV2 => true;
 
     public async Task<IEnumerable<EventPhoto>> GetEventPhotosAsync(Guid eventId,
         CancellationToken cancellationToken = default)

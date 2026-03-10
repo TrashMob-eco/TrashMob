@@ -8,6 +8,7 @@ using TrashMobMobile.Models;
 public class PickupLocationRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IPickupLocationRestService
 {
     protected override string Controller => "pickuplocations";
+    protected override bool UseV2 => true;
 
     public async Task<PickupLocation> GetPickupLocationAsync(Guid pickupLocationId,
         CancellationToken cancellationToken = default)

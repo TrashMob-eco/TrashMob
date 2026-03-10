@@ -7,6 +7,7 @@ using TrashMob.Models;
 public class TeamRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), ITeamRestService
 {
     protected override string Controller => "teams";
+    protected override bool UseV2 => true;
 
     public async Task<IEnumerable<Team>> GetPublicTeamsAsync(double? latitude = null, double? longitude = null, double? radiusMiles = null, CancellationToken cancellationToken = default)
     {

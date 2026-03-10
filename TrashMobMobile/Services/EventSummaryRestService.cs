@@ -1,18 +1,18 @@
-﻿namespace TrashMobMobile.Services
+namespace TrashMobMobile.Services
 {
-    using System.Diagnostics;
     using System.Net.Http.Json;
     using Newtonsoft.Json;
     using TrashMob.Models;
 
     public class EventSummaryRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventSummaryRestService
     {
-        protected override string Controller => "eventsummaries";
+        protected override string Controller => "events/";
+        protected override bool UseV2 => true;
 
         public async Task<EventSummary> GetEventSummaryAsync(Guid eventId,
             CancellationToken cancellationToken = default)
         {
-            var requestUri = Controller + "/v2/" + eventId;
+            var requestUri = eventId + "/summary";
 
             HttpResponseMessage? response = null;
             try
@@ -46,9 +46,10 @@
         public async Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary,
             CancellationToken cancellationToken = default)
         {
+            var requestUri = eventSummary.EventId + "/summary";
             var content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
-            using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
+            using (var response = await AuthorizedHttpClient.PutAsync(requestUri, content, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
             }
@@ -59,9 +60,10 @@
         public async Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary,
             CancellationToken cancellationToken = default)
         {
+            var requestUri = eventSummary.EventId + "/summary";
             var content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
-            using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
+            using (var response = await AuthorizedHttpClient.PostAsync(requestUri, content, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
             }

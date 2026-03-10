@@ -7,6 +7,7 @@ using TrashMob.Models;
 public class ContactRequestRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IContactRequestRestService
 {
     protected override string Controller => "contactrequest";
+    protected override bool UseV2 => true;
 
     public async Task AddContactRequest(ContactRequest contactRequest, CancellationToken cancellationToken = default)
     {

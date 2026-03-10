@@ -9,7 +9,8 @@
 
     public class LitterReportRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), ILitterReportRestService
     {
-        protected override string Controller => "litterreport";
+        protected override string Controller => "litterreports";
+        protected override bool UseV2 => true;
 
         public async Task<LitterReport> GetLitterReportAsync(Guid litterReportId,
             CancellationToken cancellationToken = default)

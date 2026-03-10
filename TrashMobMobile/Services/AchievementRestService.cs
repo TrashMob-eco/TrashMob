@@ -8,6 +8,7 @@ public class AchievementRestService(IHttpClientFactory httpClientFactory)
     : RestServiceBase(httpClientFactory), IAchievementRestService
 {
     protected override string Controller => "achievements";
+    protected override bool UseV2 => true;
 
     public async Task<UserAchievementsResponse> GetMyAchievementsAsync(
         CancellationToken cancellationToken = default)

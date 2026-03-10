@@ -8,6 +8,7 @@
     public class EventAttendeeRouteRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventAttendeeRouteRestService
     {
         protected override string Controller => "eventattendeeroutes";
+        protected override bool UseV2 => true;
 
         public async Task<IEnumerable<DisplayEventAttendeeRoute>> GetEventAttendeeRoutesAsync(Guid eventId,
             Guid userId,

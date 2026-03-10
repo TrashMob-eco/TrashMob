@@ -8,6 +8,7 @@ using TrashMob.Models.Poco;
 public class CommunityRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), ICommunityRestService
 {
     protected override string Controller => "communities";
+    protected override bool UseV2 => true;
 
     public async Task<IEnumerable<Partner>> GetCommunitiesAsync(double? latitude = null, double? longitude = null, double? radiusMiles = null, CancellationToken cancellationToken = default)
     {

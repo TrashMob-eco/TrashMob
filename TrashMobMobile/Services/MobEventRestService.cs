@@ -10,6 +10,7 @@ using TrashMobMobile.Models;
 public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IMobEventRestService
 {
     protected override string Controller => "events";
+    protected override bool UseV2 => true;
 
     public async Task<PaginatedList<Event>> GetFilteredEventsAsync(EventFilter filter, CancellationToken cancellationToken = default)
     {

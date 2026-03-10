@@ -7,6 +7,7 @@ using TrashMob.Models;
 public class MapRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IMapRestService
 {
     protected override string Controller => "maps";
+    protected override bool UseV2 => true;
 
     public async Task<Address> GetAddressAsync(double latitude, double longitude,
         CancellationToken cancellationToken = default)

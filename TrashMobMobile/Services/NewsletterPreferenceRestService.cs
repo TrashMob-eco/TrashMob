@@ -8,6 +8,7 @@ public class NewsletterPreferenceRestService(IHttpClientFactory httpClientFactor
     : RestServiceBase(httpClientFactory), INewsletterPreferenceRestService
 {
     protected override string Controller => "newsletter-preferences";
+    protected override bool UseV2 => true;
 
     public async Task<IEnumerable<NewsletterCategoryDto>> GetCategoriesAsync(
         CancellationToken cancellationToken = default)

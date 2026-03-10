@@ -7,6 +7,7 @@ using TrashMobMobile.Models;
 public class WaiverRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IWaiverRestService
 {
     protected override string Controller => "waivers";
+    protected override bool UseV2 => true;
 
     public async Task<List<WaiverVersion>> GetRequiredWaiversAsync(Guid? communityId = null, CancellationToken cancellationToken = default)
     {

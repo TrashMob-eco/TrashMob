@@ -10,6 +10,7 @@ namespace TrashMobMobile.Services
         : RestServiceBase(httpClientFactory), IEventAttendeeMetricsRestService
     {
         protected override string Controller => "events/";
+        protected override bool UseV2 => true;
 
         public async Task<EventAttendeeMetrics?> GetMyMetricsAsync(Guid eventId, CancellationToken cancellationToken = default)
         {

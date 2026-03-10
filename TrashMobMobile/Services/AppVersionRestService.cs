@@ -7,6 +7,7 @@ public class AppVersionRestService(IHttpClientFactory httpClientFactory)
     : RestServiceBase(httpClientFactory), IAppVersionRestService
 {
     protected override string Controller => "appversion";
+    protected override bool UseV2 => true;
 
     public async Task<AppVersionInfo?> GetAppVersionAsync(CancellationToken cancellationToken = default)
     {

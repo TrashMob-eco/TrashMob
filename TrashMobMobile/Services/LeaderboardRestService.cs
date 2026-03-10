@@ -7,6 +7,7 @@ public class LeaderboardRestService(IHttpClientFactory httpClientFactory)
     : RestServiceBase(httpClientFactory), ILeaderboardRestService
 {
     protected override string Controller => "leaderboards";
+    protected override bool UseV2 => true;
 
     public async Task<LeaderboardResponse> GetLeaderboardAsync(string type = "Events",
         string timeRange = "Month", int limit = 50, CancellationToken cancellationToken = default)
