@@ -171,6 +171,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
 
             _eventRepo.SetupGet(events);
             _partnerRepo.SetupGet(partners);
+            _prospectRepo.SetupGet(new List<CommunityProspect>());
 
             var gaps = (await _sut.GetGeographicGapsAsync()).ToList();
 
@@ -192,6 +193,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
 
             _eventRepo.SetupGet(events);
             _partnerRepo.SetupGet(new List<Partner>());
+            _prospectRepo.SetupGet(new List<CommunityProspect>());
 
             var gaps = (await _sut.GetGeographicGapsAsync()).ToList();
 
