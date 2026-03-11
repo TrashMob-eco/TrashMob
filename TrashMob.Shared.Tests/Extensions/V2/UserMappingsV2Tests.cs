@@ -179,6 +179,20 @@ namespace TrashMob.Shared.Tests.Extensions.V2
         }
 
         [Fact]
+        public void UserWriteDto_ToEntity_HandlesNullEmail()
+        {
+            var dto = new Models.Poco.V2.UserWriteDto
+            {
+                Id = Guid.NewGuid(),
+                Email = null,
+            };
+
+            var entity = dto.ToEntity();
+
+            Assert.Equal(string.Empty, entity.Email);
+        }
+
+        [Fact]
         public void ToWriteDto_MapsAllProperties()
         {
             var entity = new User

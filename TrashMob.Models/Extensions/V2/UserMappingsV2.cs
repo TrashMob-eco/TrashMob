@@ -97,7 +97,7 @@ namespace TrashMob.Models.Extensions.V2
             {
                 Id = dto.Id,
                 UserName = dto.UserName,
-                Email = dto.Email,
+                Email = dto.Email ?? string.Empty,
                 GivenName = dto.GivenName,
                 Surname = dto.Surname,
                 City = dto.City,
