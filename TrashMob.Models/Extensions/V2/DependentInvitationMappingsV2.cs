@@ -28,5 +28,24 @@ namespace TrashMob.Models.Extensions.V2
                 AcceptedByUserId = entity.AcceptedByUserId,
             };
         }
+
+        /// <summary>
+        /// Maps a V2 DependentInvitationDto back to a DependentInvitation entity.
+        /// </summary>
+        public static DependentInvitation ToEntity(this DependentInvitationDto dto)
+        {
+            return new DependentInvitation
+            {
+                Id = dto.Id,
+                DependentId = dto.DependentId,
+                ParentUserId = dto.ParentUserId,
+                Email = dto.Email,
+                InvitationStatusId = dto.InvitationStatusId,
+                DateInvited = dto.DateInvited,
+                ExpiresDate = dto.ExpiresDate,
+                DateAccepted = dto.DateAccepted,
+                AcceptedByUserId = dto.AcceptedByUserId,
+            };
+        }
     }
 }

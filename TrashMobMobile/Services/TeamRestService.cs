@@ -3,6 +3,8 @@ namespace TrashMobMobile.Services;
 using System.Globalization;
 using Newtonsoft.Json;
 using TrashMob.Models;
+using TrashMob.Models.Extensions.V2;
+using TrashMob.Models.Poco.V2;
 
 public class TeamRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), ITeamRestService
 {
@@ -36,7 +38,8 @@ public class TeamRestService(IHttpClientFactory httpClientFactory) : RestService
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<List<Team>>(content) ?? [];
+        var pagedResponse = JsonConvert.DeserializeObject<PagedResponse<TeamDto>>(content);
+        return pagedResponse?.Items.Select(d => d.ToEntity()).ToList() ?? [];
     }
 
     public async Task<Team> GetTeamAsync(Guid teamId, CancellationToken cancellationToken = default)
@@ -45,7 +48,8 @@ public class TeamRestService(IHttpClientFactory httpClientFactory) : RestService
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<Team>(content)!;
+        var dto = JsonConvert.DeserializeObject<TeamDto>(content)!;
+        return dto.ToEntity();
     }
 
     public async Task<IEnumerable<Team>> GetMyTeamsAsync(CancellationToken cancellationToken = default)
@@ -54,7 +58,8 @@ public class TeamRestService(IHttpClientFactory httpClientFactory) : RestService
         using var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<List<Team>>(content) ?? [];
+        var dtos = JsonConvert.DeserializeObject<List<TeamDto>>(content) ?? [];
+        return dtos.Select(d => d.ToEntity()).ToList();
     }
 
     public async Task<IEnumerable<TeamMember>> GetTeamMembersAsync(Guid teamId, CancellationToken cancellationToken = default)
@@ -63,7 +68,8 @@ public class TeamRestService(IHttpClientFactory httpClientFactory) : RestService
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<List<TeamMember>>(content) ?? [];
+        var dtos = JsonConvert.DeserializeObject<List<TeamMemberDto>>(content) ?? [];
+        return dtos.Select(d => d.ToEntity()).ToList();
     }
 
     public async Task<IEnumerable<TeamMember>> GetTeamLeadsAsync(Guid teamId, CancellationToken cancellationToken = default)
@@ -72,7 +78,8 @@ public class TeamRestService(IHttpClientFactory httpClientFactory) : RestService
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<List<TeamMember>>(content) ?? [];
+        var dtos = JsonConvert.DeserializeObject<List<TeamMemberDto>>(content) ?? [];
+        return dtos.Select(d => d.ToEntity()).ToList();
     }
 
     public async Task<TeamMember> JoinTeamAsync(Guid teamId, CancellationToken cancellationToken = default)
@@ -81,7 +88,8 @@ public class TeamRestService(IHttpClientFactory httpClientFactory) : RestService
         using var response = await AuthorizedHttpClient.PostAsync(requestUri, null, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<TeamMember>(content)!;
+        var dto = JsonConvert.DeserializeObject<TeamMemberDto>(content)!;
+        return dto.ToEntity();
     }
 
     public async Task<IEnumerable<Event>> GetUpcomingTeamEventsAsync(Guid teamId, CancellationToken cancellationToken = default)
@@ -90,7 +98,8 @@ public class TeamRestService(IHttpClientFactory httpClientFactory) : RestService
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<List<Event>>(content) ?? [];
+        var dtos = JsonConvert.DeserializeObject<List<EventDto>>(content) ?? [];
+        return dtos.Select(d => d.ToEntity()).ToList();
     }
 
     public async Task<IEnumerable<Event>> GetPastTeamEventsAsync(Guid teamId, CancellationToken cancellationToken = default)
@@ -99,7 +108,8 @@ public class TeamRestService(IHttpClientFactory httpClientFactory) : RestService
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<List<Event>>(content) ?? [];
+        var dtos = JsonConvert.DeserializeObject<List<EventDto>>(content) ?? [];
+        return dtos.Select(d => d.ToEntity()).ToList();
     }
 
     public async Task LinkEventAsync(Guid teamId, Guid eventId, CancellationToken cancellationToken = default)

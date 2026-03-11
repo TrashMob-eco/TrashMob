@@ -1,9 +1,12 @@
 namespace TrashMobMobile.Services
 {
+    using System.Linq;
     using System.Net;
     using System.Net.Http.Json;
     using Newtonsoft.Json;
     using TrashMob.Models;
+    using TrashMob.Models.Extensions.V2;
+    using TrashMob.Models.Poco.V2;
 
     public class DependentRestService(IHttpClientFactory httpClientFactory)
         : RestServiceBase(httpClientFactory), IDependentRestService
@@ -19,29 +22,34 @@ namespace TrashMobMobile.Services
             using var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<List<Dependent>>(content) ?? [];
+            var dtos = JsonConvert.DeserializeObject<List<DependentDto>>(content) ?? [];
+            return dtos.Select(d => d.ToEntity()).ToList();
         }
 
         public async Task<Dependent> AddDependentAsync(Guid userId, Dependent dependent, CancellationToken cancellationToken = default)
         {
             var requestUri = userId + "/dependents";
-            var body = JsonContent.Create(dependent, typeof(Dependent), null, SerializerOptions);
+            var dto = dependent.ToV2Dto();
+            var body = JsonContent.Create(dto, typeof(DependentDto), null, SerializerOptions);
 
             using var response = await AuthorizedHttpClient.PostAsync(requestUri, body, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<Dependent>(content)!;
+            var resultDto = JsonConvert.DeserializeObject<DependentDto>(content)!;
+            return resultDto.ToEntity();
         }
 
         public async Task<Dependent> UpdateDependentAsync(Guid userId, Dependent dependent, CancellationToken cancellationToken = default)
         {
             var requestUri = userId + "/dependents/" + dependent.Id;
-            var body = JsonContent.Create(dependent, typeof(Dependent), null, SerializerOptions);
+            var dto = dependent.ToV2Dto();
+            var body = JsonContent.Create(dto, typeof(DependentDto), null, SerializerOptions);
 
             using var response = await AuthorizedHttpClient.PutAsync(requestUri, body, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<Dependent>(content)!;
+            var resultDto = JsonConvert.DeserializeObject<DependentDto>(content)!;
+            return resultDto.ToEntity();
         }
 
         public async Task DeleteDependentAsync(Guid userId, Guid dependentId, CancellationToken cancellationToken = default)
@@ -63,7 +71,8 @@ namespace TrashMobMobile.Services
             using var response = await client.GetAsync(requestUri, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<List<DependentInvitation>>(content) ?? [];
+            var dtos = JsonConvert.DeserializeObject<List<DependentInvitationDto>>(content) ?? [];
+            return dtos.Select(d => d.ToEntity()).ToList();
         }
 
         public async Task<DependentInvitation> CreateDependentInvitationAsync(
@@ -76,7 +85,8 @@ namespace TrashMobMobile.Services
             using var response = await client.PostAsync(requestUri, body, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<DependentInvitation>(content)!;
+            var dto = JsonConvert.DeserializeObject<DependentInvitationDto>(content)!;
+            return dto.ToEntity();
         }
 
         public async Task CancelDependentInvitationAsync(Guid invitationId, CancellationToken cancellationToken = default)
@@ -96,7 +106,8 @@ namespace TrashMobMobile.Services
             using var response = await client.PostAsync(requestUri, null, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<DependentInvitation>(content)!;
+            var dto = JsonConvert.DeserializeObject<DependentInvitationDto>(content)!;
+            return dto.ToEntity();
         }
 
         // Dependent Waivers
@@ -113,7 +124,8 @@ namespace TrashMobMobile.Services
             using var response = await client.PostAsync(requestUri, body, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<DependentWaiver>(content)!;
+            var dto = JsonConvert.DeserializeObject<DependentWaiverDto>(content)!;
+            return dto.ToEntity();
         }
 
         public async Task<DependentWaiver?> GetCurrentWaiverAsync(Guid dependentId, CancellationToken cancellationToken = default)
@@ -130,7 +142,8 @@ namespace TrashMobMobile.Services
 
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<DependentWaiver>(content);
+            var dto = JsonConvert.DeserializeObject<DependentWaiverDto>(content);
+            return dto?.ToEntity();
         }
 
         // Event Dependents

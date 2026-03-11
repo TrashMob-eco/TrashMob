@@ -4,7 +4,9 @@ namespace TrashMobMobile.Services
     using System.Net.Http.Json;
     using Newtonsoft.Json;
     using TrashMob.Models;
+    using TrashMob.Models.Extensions.V2;
     using TrashMob.Models.Poco;
+    using TrashMob.Models.Poco.V2;
 
     public class EventAttendeeMetricsRestService(IHttpClientFactory httpClientFactory)
         : RestServiceBase(httpClientFactory), IEventAttendeeMetricsRestService
@@ -24,18 +26,19 @@ namespace TrashMobMobile.Services
 
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<EventAttendeeMetrics>(content);
+            return JsonConvert.DeserializeObject<EventAttendeeMetricsDto>(content)?.ToEntity();
         }
 
         public async Task<EventAttendeeMetrics> SubmitMyMetricsAsync(Guid eventId, EventAttendeeMetrics metrics, CancellationToken cancellationToken = default)
         {
             var requestUri = eventId + "/attendee-metrics/my-metrics";
-            var body = JsonContent.Create(metrics, typeof(EventAttendeeMetrics), null, SerializerOptions);
+            var dto = metrics.ToV2Dto();
+            var body = JsonContent.Create(dto, typeof(EventAttendeeMetricsDto), null, SerializerOptions);
 
             using var response = await AuthorizedHttpClient.PostAsync(requestUri, body, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<EventAttendeeMetrics>(content)!;
+            return JsonConvert.DeserializeObject<EventAttendeeMetricsDto>(content)!.ToEntity();
         }
 
         public async Task<EventMetricsPublicSummary> GetPublicMetricsAsync(Guid eventId, CancellationToken cancellationToken = default)
@@ -55,7 +58,8 @@ namespace TrashMobMobile.Services
             using var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<List<EventAttendeeMetrics>>(content) ?? [];
+            var dtos = JsonConvert.DeserializeObject<List<EventAttendeeMetricsDto>>(content) ?? [];
+            return dtos.Select(d => d.ToEntity()).ToList();
         }
 
         public async Task<int> ApproveAllPendingAsync(Guid eventId, CancellationToken cancellationToken = default)
@@ -75,24 +79,23 @@ namespace TrashMobMobile.Services
             using var response = await AuthorizedHttpClient.PostAsync(requestUri, null, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<EventAttendeeMetrics>(content)!;
+            return JsonConvert.DeserializeObject<EventAttendeeMetricsDto>(content)!.ToEntity();
         }
 
         public async Task<EventAttendeeMetrics> RejectMetricsAsync(Guid eventId, Guid metricsId, string reason, CancellationToken cancellationToken = default)
         {
             var requestUri = eventId + "/attendee-metrics/" + metricsId + "/reject";
-            var body = JsonContent.Create(new { RejectionReason = reason }, null, SerializerOptions);
+            var body = JsonContent.Create(new RejectMetricsRequestDto { RejectionReason = reason }, typeof(RejectMetricsRequestDto), null, SerializerOptions);
 
             using var response = await AuthorizedHttpClient.PostAsync(requestUri, body, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<EventAttendeeMetrics>(content)!;
+            return JsonConvert.DeserializeObject<EventAttendeeMetricsDto>(content)!.ToEntity();
         }
 
         public async Task<UserImpactStats> GetUserImpactAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            // This endpoint is on the users controller: api/users/{userId}/impact
-            // Need to use a different base path
+            // This endpoint is on the users controller: api/v2.0/users/{userId}/impact
             using var httpClient = CreateHttpClient("users/");
 
             var requestUri = userId + "/impact";

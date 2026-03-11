@@ -22,5 +22,21 @@ namespace TrashMob.Models.Extensions.V2
                 County = entity.County ?? string.Empty,
             };
         }
+
+        /// <summary>
+        /// Maps a V2 <see cref="AddressDto"/> back to an <see cref="Address"/>.
+        /// </summary>
+        public static Address ToEntity(this AddressDto dto)
+        {
+            return new Address
+            {
+                StreetAddress = dto.StreetAddress,
+                City = dto.City,
+                Region = dto.Region,
+                PostalCode = dto.PostalCode,
+                Country = dto.Country,
+                County = dto.County,
+            };
+        }
     }
 }

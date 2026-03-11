@@ -25,5 +25,19 @@ namespace TrashMob.Models.Extensions.V2
                 IsEventLead = entity.IsEventLead,
             };
         }
+
+        /// <summary>
+        /// Maps a V2 <see cref="EventAttendeeDto"/> back to an <see cref="EventAttendee"/> entity.
+        /// Note: EventId is not present in the DTO and must be set separately.
+        /// </summary>
+        public static EventAttendee ToEntity(this EventAttendeeDto dto)
+        {
+            return new EventAttendee
+            {
+                UserId = dto.UserId,
+                SignUpDate = dto.SignUpDate,
+                IsEventLead = dto.IsEventLead,
+            };
+        }
     }
 }

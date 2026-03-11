@@ -3,11 +3,11 @@
 public static class Settings
 {
 #if USETEST
-    public const string ApiBaseUrl = "https://dev.trashmob.eco/api/";
+    public const string ApiBaseUrl = "https://dev.trashmob.eco/api/v2.0/";
 
     public const string SiteBaseUrl = "https://dev.trashmob.eco";
 #else
-    public const string ApiBaseUrl = "https://www.trashmob.eco/api/";
+    public const string ApiBaseUrl = "https://www.trashmob.eco/api/v2.0/";
 
     public const string SiteBaseUrl = "https://www.trashmob.eco";
 #endif

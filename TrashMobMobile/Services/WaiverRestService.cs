@@ -1,7 +1,10 @@
 namespace TrashMobMobile.Services;
 
+using System.Linq;
 using System.Net.Http.Json;
 using TrashMob.Models;
+using TrashMob.Models.Extensions.V2;
+using TrashMob.Models.Poco.V2;
 using TrashMobMobile.Models;
 
 public class WaiverRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IWaiverRestService
@@ -14,26 +17,35 @@ public class WaiverRestService(IHttpClientFactory httpClientFactory) : RestServi
             ? $"{Controller}/required?communityId={communityId.Value}"
             : $"{Controller}/required";
 
-        var result = await AuthorizedHttpClient.GetFromJsonAsync<List<WaiverVersion>>(requestUri, SerializerOptions, cancellationToken);
-        return result ?? [];
+        var dtos = await AuthorizedHttpClient.GetFromJsonAsync<List<WaiverVersionDto>>(requestUri, SerializerOptions, cancellationToken);
+        return dtos?.Select(d => d.ToEntity()).ToList() ?? [];
     }
 
     public async Task<List<UserWaiver>> GetMyWaiversAsync(CancellationToken cancellationToken = default)
     {
         var requestUri = $"{Controller}/my";
-        var result = await AuthorizedHttpClient.GetFromJsonAsync<List<UserWaiver>>(requestUri, SerializerOptions, cancellationToken);
-        return result ?? [];
+        var dtos = await AuthorizedHttpClient.GetFromJsonAsync<List<UserWaiverDto>>(requestUri, SerializerOptions, cancellationToken);
+        return dtos?.Select(d => d.ToEntity()).ToList() ?? [];
     }
 
     public async Task<UserWaiver> AcceptWaiverAsync(AcceptWaiverApiRequest request, CancellationToken cancellationToken = default)
     {
         var requestUri = $"{Controller}/accept";
-        var content = JsonContent.Create(request, typeof(AcceptWaiverApiRequest), null, SerializerOptions);
+        var dto = new AcceptWaiverRequestDto
+        {
+            WaiverVersionId = request.WaiverVersionId,
+            TypedLegalName = request.TypedLegalName,
+            IsMinor = request.IsMinor,
+            GuardianUserId = request.GuardianUserId,
+            GuardianName = request.GuardianName ?? string.Empty,
+            GuardianRelationship = request.GuardianRelationship ?? string.Empty,
+        };
+        var content = JsonContent.Create(dto, typeof(AcceptWaiverRequestDto), null, SerializerOptions);
 
         using var response = await AuthorizedHttpClient.PostAsync(requestUri, content, cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadFromJsonAsync<UserWaiver>(SerializerOptions, cancellationToken);
-        return result!;
+        var resultDto = await response.Content.ReadFromJsonAsync<UserWaiverDto>(SerializerOptions, cancellationToken);
+        return resultDto!.ToEntity();
     }
 }

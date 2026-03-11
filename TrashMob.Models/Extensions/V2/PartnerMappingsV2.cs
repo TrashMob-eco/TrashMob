@@ -48,5 +48,43 @@ namespace TrashMob.Models.Extensions.V2
                 LastUpdatedDate = entity.LastUpdatedDate.GetValueOrDefault(),
             };
         }
+
+        /// <summary>
+        /// Maps a V2 <see cref="PartnerDto"/> back to a <see cref="Partner"/> entity.
+        /// </summary>
+        public static Partner ToEntity(this PartnerDto dto)
+        {
+            return new Partner
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Website = dto.Website,
+                PublicNotes = dto.PublicNotes,
+                LogoUrl = dto.LogoUrl,
+                PartnerStatusId = dto.PartnerStatusId,
+                PartnerTypeId = dto.PartnerTypeId,
+                Slug = dto.Slug,
+                HomePageEnabled = dto.HomePageEnabled,
+                IsFeatured = dto.IsFeatured,
+                BrandingPrimaryColor = dto.BrandingPrimaryColor,
+                BrandingSecondaryColor = dto.BrandingSecondaryColor,
+                BannerImageUrl = dto.BannerImageUrl,
+                Tagline = dto.Tagline,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude,
+                City = dto.City,
+                Region = dto.Region,
+                Country = dto.Country,
+                PhysicalAddress = dto.PhysicalAddress,
+                BoundsNorth = dto.BoundsNorth,
+                BoundsSouth = dto.BoundsSouth,
+                BoundsEast = dto.BoundsEast,
+                BoundsWest = dto.BoundsWest,
+                BoundaryGeoJson = dto.BoundaryGeoJson,
+                RegionType = dto.RegionType,
+                CountyName = dto.CountyName,
+                CreatedByUserId = dto.CreatedByUserId,
+            };
+        }
     }
 }

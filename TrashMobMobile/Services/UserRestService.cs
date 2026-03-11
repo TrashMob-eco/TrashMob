@@ -1,8 +1,10 @@
-﻿namespace TrashMobMobile.Services;
+namespace TrashMobMobile.Services;
 
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using TrashMob.Models;
+using TrashMob.Models.Extensions.V2;
+using TrashMob.Models.Poco.V2;
 
 public class UserRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IUserRestService
 {
@@ -17,7 +19,7 @@ public class UserRestService(IHttpClientFactory httpClientFactory) : RestService
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<User>(responseString)!;
+            return JsonConvert.DeserializeObject<UserDto>(responseString)!.ToEntity();
         }
     }
 
@@ -31,7 +33,7 @@ public class UserRestService(IHttpClientFactory httpClientFactory) : RestService
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<User>(responseString)!;
+            return JsonConvert.DeserializeObject<UserDto>(responseString)!.ToEntity();
         }
     }
 
@@ -45,32 +47,35 @@ public class UserRestService(IHttpClientFactory httpClientFactory) : RestService
         if (!response.IsSuccessStatusCode) return null;
 
         var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<User>(responseString);
+        var dto = JsonConvert.DeserializeObject<UserDto>(responseString);
+        return dto?.ToEntity();
     }
 
     public async Task<User> AddUserAsync(User user, CancellationToken cancellationToken = default)
     {
-        var content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
+        var writeDto = user.ToWriteDto();
+        var content = JsonContent.Create(writeDto, typeof(UserWriteDto), null, SerializerOptions);
 
         using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
         {
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<User>(responseString)!;
+            return JsonConvert.DeserializeObject<UserDto>(responseString)!.ToEntity();
         }
     }
 
     public async Task<User> UpdateUserAsync(User user, CancellationToken cancellationToken = default)
     {
-        var content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
+        var writeDto = user.ToWriteDto();
+        var content = JsonContent.Create(writeDto, typeof(UserWriteDto), null, SerializerOptions);
 
         using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
         {
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<User>(responseString)!;
+            return JsonConvert.DeserializeObject<UserDto>(responseString)!.ToEntity();
         }
     }
 }

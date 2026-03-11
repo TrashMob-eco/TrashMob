@@ -1,15 +1,17 @@
-﻿namespace TrashMobMobile.Services
+namespace TrashMobMobile.Services
 {
     using System.Globalization;
     using System.Net.Http.Json;
     using Newtonsoft.Json;
     using TrashMob.Models;
+    using TrashMob.Models.Extensions.V2;
     using TrashMob.Models.Poco;
+    using TrashMob.Models.Poco.V2;
     using TrashMobMobile.Models;
 
     public class LitterReportRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), ILitterReportRestService
     {
-        protected override string Controller => "litterreport";
+        protected override string Controller => "litterreports";
 
         public async Task<LitterReport> GetLitterReportAsync(Guid litterReportId,
             CancellationToken cancellationToken = default)
@@ -20,7 +22,8 @@
             {
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<LitterReport>(content)!;
+                var dto = JsonConvert.DeserializeObject<LitterReportDto>(content)!;
+                return dto.ToEntity();
             }
         }
 
@@ -50,7 +53,8 @@
         public async Task<LitterReport> UpdateLitterReportAsync(LitterReport litterReport,
             CancellationToken cancellationToken = default)
         {
-            var content = JsonContent.Create(litterReport, typeof(LitterReport), null, SerializerOptions);
+            var dto = litterReport.ToV2Dto();
+            var content = JsonContent.Create(dto, typeof(LitterReportDto), null, SerializerOptions);
 
             using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
             {
@@ -62,7 +66,7 @@
                 }
 
                 var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                var result = JsonConvert.DeserializeObject<LitterReport>(responseContent);
+                var result = JsonConvert.DeserializeObject<LitterReportDto>(responseContent);
 
                 if (result != null)
                 {
@@ -81,7 +85,8 @@
         public async Task<LitterReport> AddLitterReportAsync(LitterReport litterReport,
             CancellationToken cancellationToken = default)
         {
-            var content = JsonContent.Create(litterReport, typeof(LitterReport), null, SerializerOptions);
+            var dto = litterReport.ToV2Dto();
+            var content = JsonContent.Create(dto, typeof(LitterReportDto), null, SerializerOptions);
 
             using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
             {
@@ -93,7 +98,7 @@
                 }
 
                 var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                var result = JsonConvert.DeserializeObject<LitterReport>(responseContent);
+                var result = JsonConvert.DeserializeObject<LitterReportDto>(responseContent);
 
                 if (result != null)
                 {
@@ -117,7 +122,10 @@
                 response.EnsureSuccessStatusCode();
                 var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                return JsonConvert.DeserializeObject<PaginatedList<LitterReport>>(returnContent)!;
+                var paged = JsonConvert.DeserializeObject<PaginatedResponseDto<LitterReportDto>>(returnContent)!;
+                var entityItems = paged.Items.Select(d => d.ToEntity()).ToList();
+                var pageSize = filter.PageSize.GetValueOrDefault(entityItems.Count);
+                return new PaginatedList<LitterReport>(entityItems, paged.TotalPages * pageSize, paged.PageIndex, pageSize);
             }
         }
 
@@ -136,7 +144,8 @@
                     return [];
                 }
 
-                return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content) ?? [];
+                var dtos = JsonConvert.DeserializeObject<IEnumerable<LitterReportDto>>(content) ?? [];
+                return dtos.Select(d => d.ToEntity());
             }
         }
 

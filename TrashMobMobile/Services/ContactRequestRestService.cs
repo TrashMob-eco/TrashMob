@@ -3,6 +3,8 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
 using TrashMob.Models;
+using TrashMob.Models.Extensions.V2;
+using TrashMob.Models.Poco.V2;
 
 public class ContactRequestRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IContactRequestRestService
 {
@@ -10,8 +12,8 @@ public class ContactRequestRestService(IHttpClientFactory httpClientFactory) : R
 
     public async Task AddContactRequest(ContactRequest contactRequest, CancellationToken cancellationToken = default)
     {
-        contactRequest.Id = Guid.NewGuid();
-        var content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
+        var dto = contactRequest.ToV2Dto();
+        var content = JsonContent.Create(dto, typeof(ContactRequestDto), null, SerializerOptions);
 
         using (var response = await AnonymousHttpClient.PostAsync(Controller, content, cancellationToken))
         {

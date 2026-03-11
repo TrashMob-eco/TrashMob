@@ -1,4 +1,4 @@
-﻿namespace TrashMobMobile.Services;
+namespace TrashMobMobile.Services;
 
 using System.Net.Http.Json;
 using TrashMob.Models;
@@ -11,7 +11,7 @@ public class EventLitterReportRestService(IHttpClientFactory httpClientFactory) 
     public async Task<IEnumerable<FullEventLitterReport>> GetEventLitterReportsAsync(Guid eventId,
         CancellationToken cancellationToken = default)
     {
-        var requestUri = string.Concat(Controller, $"/{eventId}");
+        var requestUri = string.Concat(Controller, $"/by-event/{eventId}");
         var eventLitterReports =
             await AuthorizedHttpClient.GetFromJsonAsync<IEnumerable<FullEventLitterReport>>(requestUri, SerializerOptions,
                 cancellationToken);
@@ -21,7 +21,7 @@ public class EventLitterReportRestService(IHttpClientFactory httpClientFactory) 
     public async Task<FullEventLitterReport> GetEventLitterReportByLitterReportIdAsync(Guid litterReportId,
         CancellationToken cancellationToken = default)
     {
-        var requestUri = string.Concat(Controller, $"/GetByLitterReportId/{litterReportId}");
+        var requestUri = string.Concat(Controller, $"/by-litter-report/{litterReportId}");
         var eventLitterReport =
             await AuthorizedHttpClient.GetFromJsonAsync<FullEventLitterReport>(requestUri, SerializerOptions,
                 cancellationToken);
