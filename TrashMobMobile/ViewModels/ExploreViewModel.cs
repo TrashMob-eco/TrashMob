@@ -1,6 +1,7 @@
 namespace TrashMobMobile.ViewModels;
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Maps;
@@ -187,11 +188,34 @@ public partial class ExploreViewModel(
             // Compute user map span for centering
             ComputeUserMapSpan();
 
-            await Task.WhenAll(
-                RefreshEvents(),
-                RefreshLitterReports());
+            var tasks = new (string Name, Func<Task> Action)[]
+            {
+                ("RefreshEvents", RefreshEvents),
+                ("RefreshLitterReports", RefreshLitterReports),
+            };
+
+            var errors = new List<string>();
+
+            await Task.WhenAll(tasks.Select(async t =>
+            {
+                try
+                {
+                    await t.Action();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[Explore] {t.Name} failed: {ex.GetType().Name}: {ex.Message}\n{ex}");
+                    SentrySdk.CaptureException(ex);
+                    errors.Add($"{t.Name}: {ex.Message}");
+                }
+            }));
 
             RebuildAddresses();
+
+            if (errors.Count > 0)
+            {
+                throw new InvalidOperationException(string.Join("; ", errors));
+            }
         }, "Failed to load explore data. Please try again.");
     }
 

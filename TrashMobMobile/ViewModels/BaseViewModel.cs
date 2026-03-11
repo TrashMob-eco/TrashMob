@@ -1,5 +1,6 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using TrashMobMobile.Services;
 
@@ -26,27 +27,31 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
         }
         catch (HttpRequestException ex) when (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
         {
+            Debug.WriteLine($"[ExecuteAsync] Network error: {ex}");
             SentrySdk.CaptureException(ex);
             IsError = true;
             await NotificationService.NotifyError("No internet connection. Please check your network and try again.");
         }
         catch (HttpRequestException ex)
         {
+            Debug.WriteLine($"[ExecuteAsync] HTTP error: {ex.StatusCode} - {ex.Message}\n{ex}");
             SentrySdk.CaptureException(ex);
             IsError = true;
             await NotificationService.NotifyError(string.IsNullOrEmpty(ex.Message) ? errorMessage : ex.Message);
         }
         catch (TaskCanceledException ex)
         {
+            Debug.WriteLine($"[ExecuteAsync] Timeout: {ex}");
             SentrySdk.CaptureException(ex);
             IsError = true;
             await NotificationService.NotifyError("The request timed out. Please try again.");
         }
         catch (Exception ex)
         {
+            Debug.WriteLine($"[ExecuteAsync] Unhandled {ex.GetType().Name}: {ex.Message}\n{ex}");
             SentrySdk.CaptureException(ex);
             IsError = true;
-            await NotificationService.NotifyError(errorMessage);
+            await NotificationService.NotifyError($"{errorMessage} ({ex.GetType().Name}: {ex.Message})");
         }
         finally
         {
@@ -65,6 +70,7 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
         }
         catch (HttpRequestException ex) when (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
         {
+            Debug.WriteLine($"[ExecuteAsync<T>] Network error: {ex}");
             SentrySdk.CaptureException(ex);
             IsError = true;
             await NotificationService.NotifyError("No internet connection. Please check your network and try again.");
@@ -72,6 +78,7 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
         }
         catch (HttpRequestException ex)
         {
+            Debug.WriteLine($"[ExecuteAsync<T>] HTTP error: {ex.StatusCode} - {ex.Message}\n{ex}");
             SentrySdk.CaptureException(ex);
             IsError = true;
             await NotificationService.NotifyError(string.IsNullOrEmpty(ex.Message) ? errorMessage : ex.Message);
@@ -79,6 +86,7 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
         }
         catch (TaskCanceledException ex)
         {
+            Debug.WriteLine($"[ExecuteAsync<T>] Timeout: {ex}");
             SentrySdk.CaptureException(ex);
             IsError = true;
             await NotificationService.NotifyError("The request timed out. Please try again.");
@@ -86,9 +94,10 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
         }
         catch (Exception ex)
         {
+            Debug.WriteLine($"[ExecuteAsync<T>] Unhandled {ex.GetType().Name}: {ex.Message}\n{ex}");
             SentrySdk.CaptureException(ex);
             IsError = true;
-            await NotificationService.NotifyError(errorMessage);
+            await NotificationService.NotifyError($"{errorMessage} ({ex.GetType().Name}: {ex.Message})");
             return default;
         }
         finally

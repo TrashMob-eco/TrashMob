@@ -1,6 +1,7 @@
 namespace TrashMobMobile.ViewModels;
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
@@ -101,11 +102,34 @@ public partial class ProfileViewModel(
                 ? string.Join(", ", locationParts)
                 : "No location set";
 
-            await Task.WhenAll(
-                RefreshUpcomingEvents(),
-                RefreshCompletedEvents(),
-                RefreshLitterReports(),
-                RefreshMyTeams());
+            var tasks = new (string Name, Func<Task> Action)[]
+            {
+                ("RefreshUpcomingEvents", RefreshUpcomingEvents),
+                ("RefreshCompletedEvents", RefreshCompletedEvents),
+                ("RefreshLitterReports", RefreshLitterReports),
+                ("RefreshMyTeams", RefreshMyTeams),
+            };
+
+            var errors = new List<string>();
+
+            await Task.WhenAll(tasks.Select(async t =>
+            {
+                try
+                {
+                    await t.Action();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[Profile] {t.Name} failed: {ex.GetType().Name}: {ex.Message}\n{ex}");
+                    SentrySdk.CaptureException(ex);
+                    errors.Add($"{t.Name}: {ex.Message}");
+                }
+            }));
+
+            if (errors.Count > 0)
+            {
+                throw new InvalidOperationException(string.Join("; ", errors));
+            }
         }, "Failed to load profile. Please try again.");
     }
 
