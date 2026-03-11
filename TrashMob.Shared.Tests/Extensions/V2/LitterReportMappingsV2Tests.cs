@@ -2,6 +2,7 @@ namespace TrashMob.Shared.Tests.Extensions.V2
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using TrashMob.Models;
     using TrashMob.Models.Extensions.V2;
     using Xunit;
@@ -153,6 +154,120 @@ namespace TrashMob.Shared.Tests.Extensions.V2
             Assert.Null(dtoType.GetProperty("ModeratedByUserId"));
             Assert.Null(dtoType.GetProperty("ModerationReason"));
             Assert.Null(dtoType.GetProperty("IsCancelled"));
+        }
+
+        [Fact]
+        public void ToEntity_MapsAllProperties()
+        {
+            var reportId = Guid.NewGuid();
+            var imageId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            var dto = new Models.Poco.V2.LitterReportDto
+            {
+                Id = reportId,
+                Name = "Park Litter",
+                Description = "Litter near the fountain",
+                LitterReportStatusId = 2,
+                CreatedByUserId = userId,
+                CreatedDate = new DateTimeOffset(2026, 1, 15, 0, 0, 0, TimeSpan.Zero),
+                LastUpdatedDate = new DateTimeOffset(2026, 2, 1, 0, 0, 0, TimeSpan.Zero),
+                Images =
+                [
+                    new Models.Poco.V2.LitterImageDto
+                    {
+                        Id = imageId,
+                        ImageUrl = "https://blob.example.com/img1.jpg",
+                        StreetAddress = "123 Main St",
+                        City = "Seattle",
+                        Region = "WA",
+                        Country = "US",
+                        PostalCode = "98101",
+                        Latitude = 47.6062,
+                        Longitude = -122.3321,
+                    },
+                ],
+            };
+
+            var entity = dto.ToEntity();
+
+            Assert.Equal(reportId, entity.Id);
+            Assert.Equal("Park Litter", entity.Name);
+            Assert.Equal("Litter near the fountain", entity.Description);
+            Assert.Equal(2, entity.LitterReportStatusId);
+            Assert.Equal(userId, entity.CreatedByUserId);
+            Assert.NotNull(entity.LitterImages);
+            Assert.Single(entity.LitterImages);
+            var image = entity.LitterImages.First();
+            Assert.Equal(imageId, image.Id);
+            Assert.Equal(reportId, image.LitterReportId);
+            Assert.Equal("https://blob.example.com/img1.jpg", image.AzureBlobURL);
+            Assert.Equal("Seattle", image.City);
+            Assert.Equal("WA", image.Region);
+            Assert.Equal("US", image.Country);
+            Assert.Equal("98101", image.PostalCode);
+            Assert.Equal(47.6062, image.Latitude);
+            Assert.Equal(-122.3321, image.Longitude);
+        }
+
+        [Fact]
+        public void ToEntity_MapsEmptyImages()
+        {
+            var dto = new Models.Poco.V2.LitterReportDto
+            {
+                Id = Guid.NewGuid(),
+                Images = [],
+            };
+
+            var entity = dto.ToEntity();
+
+            Assert.NotNull(entity.LitterImages);
+            Assert.Empty(entity.LitterImages);
+        }
+
+        [Fact]
+        public void RoundTrip_EntityToDtoToEntity_PreservesProperties()
+        {
+            var imageId = Guid.NewGuid();
+            var entity = new LitterReport
+            {
+                Id = Guid.NewGuid(),
+                Name = "Beach Cleanup",
+                Description = "Litter on the shore",
+                LitterReportStatusId = 1,
+                CreatedByUserId = Guid.NewGuid(),
+                CreatedDate = new DateTimeOffset(2026, 3, 1, 0, 0, 0, TimeSpan.Zero),
+                LastUpdatedDate = new DateTimeOffset(2026, 3, 5, 0, 0, 0, TimeSpan.Zero),
+                LitterImages =
+                [
+                    new LitterImage
+                    {
+                        Id = imageId,
+                        AzureBlobURL = "https://blob.example.com/beach.jpg",
+                        StreetAddress = "1 Beach Rd",
+                        City = "Malibu",
+                        Region = "CA",
+                        Country = "US",
+                        PostalCode = "90265",
+                        Latitude = 34.0259,
+                        Longitude = -118.7798,
+                    },
+                ],
+            };
+
+            var roundTripped = entity.ToV2Dto().ToEntity();
+
+            Assert.Equal(entity.Id, roundTripped.Id);
+            Assert.Equal(entity.Name, roundTripped.Name);
+            Assert.Equal(entity.Description, roundTripped.Description);
+            Assert.Equal(entity.LitterReportStatusId, roundTripped.LitterReportStatusId);
+            Assert.Equal(entity.CreatedByUserId, roundTripped.CreatedByUserId);
+            Assert.NotNull(roundTripped.LitterImages);
+            Assert.Single(roundTripped.LitterImages);
+            var img = roundTripped.LitterImages.First();
+            Assert.Equal(imageId, img.Id);
+            Assert.Equal("https://blob.example.com/beach.jpg", img.AzureBlobURL);
+            Assert.Equal("Malibu", img.City);
+            Assert.Equal("CA", img.Region);
         }
     }
 }

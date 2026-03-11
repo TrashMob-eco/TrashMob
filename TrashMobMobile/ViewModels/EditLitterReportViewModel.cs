@@ -74,10 +74,7 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
             {
                 Name = litterReport.Name;
                 Description = litterReport.Description;
-
                 LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(litterReport.LitterReportStatusId);
-                Name = litterReport.Name;
-                Description = litterReport.Description;
 
                 LitterImageViewModels.Clear();
                 foreach (var litterImage in litterReport.LitterImages)
