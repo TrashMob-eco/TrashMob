@@ -1,6 +1,7 @@
 namespace TrashMobMobile.ViewModels;
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
@@ -46,9 +47,32 @@ public partial class HomeFeedViewModel(
             var user = userManager.CurrentUser;
             WelcomeMessage = $"Welcome, {user.UserName}!";
 
-            await Task.WhenAll(
-                RefreshUpcomingEvents(),
-                RefreshNearbyLitterReports());
+            var tasks = new (string Name, Func<Task> Action)[]
+            {
+                ("RefreshUpcomingEvents", RefreshUpcomingEvents),
+                ("RefreshNearbyLitterReports", RefreshNearbyLitterReports),
+            };
+
+            var errors = new List<string>();
+
+            await Task.WhenAll(tasks.Select(async t =>
+            {
+                try
+                {
+                    await t.Action();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[HomeFeed] {t.Name} failed: {ex.GetType().Name}: {ex.Message}\n{ex}");
+                    SentrySdk.CaptureException(ex);
+                    errors.Add($"{t.Name}: {ex.Message}");
+                }
+            }));
+
+            if (errors.Count > 0)
+            {
+                throw new InvalidOperationException(string.Join("; ", errors));
+            }
         }, "Failed to load feed. Please try again.");
     }
 

@@ -11,7 +11,7 @@
         <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
     </ContentPage.Resources>
 
-    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy, Mode=OneWay}">
         <ScrollView>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
 

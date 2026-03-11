@@ -67,6 +67,29 @@ namespace TrashMob.Models.Extensions.V2
                 Description = dto.Description,
                 LitterReportStatusId = dto.LitterReportStatusId,
                 CreatedByUserId = dto.CreatedByUserId,
+                LitterImages = dto.Images
+                    .Select(img => img.ToEntity(dto.Id))
+                    .ToList(),
+            };
+        }
+
+        /// <summary>
+        /// Maps a V2 LitterImageDto back to a LitterImage entity.
+        /// </summary>
+        public static LitterImage ToEntity(this LitterImageDto dto, System.Guid litterReportId)
+        {
+            return new LitterImage
+            {
+                Id = dto.Id,
+                LitterReportId = litterReportId,
+                AzureBlobURL = dto.ImageUrl,
+                StreetAddress = dto.StreetAddress,
+                City = dto.City,
+                Region = dto.Region,
+                Country = dto.Country,
+                PostalCode = dto.PostalCode,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude,
             };
         }
     }

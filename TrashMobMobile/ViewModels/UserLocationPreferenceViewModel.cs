@@ -90,10 +90,10 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
         await ExecuteAsync(async () =>
         {
             userManager.CurrentUser.City = Address.City;
+            userManager.CurrentUser.Region = Address.Region;
             userManager.CurrentUser.Country = Address.Country;
             userManager.CurrentUser.Latitude = Address.Latitude;
             userManager.CurrentUser.Longitude = Address.Longitude;
-            userManager.CurrentUser.Country = Address.Country;
             userManager.CurrentUser.PostalCode = Address.PostalCode;
             userManager.CurrentUser.TravelLimitForLocalEvents = TravelDistance;
             userManager.CurrentUser.PrefersMetric = Units == "Kilometers";

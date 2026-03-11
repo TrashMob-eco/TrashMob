@@ -137,6 +137,18 @@ namespace TrashMob.Controllers.V2
             try
             {
                 var user = userDto.ToEntity();
+
+                // Preserve server-managed fields that clients may not have
+                if (string.IsNullOrEmpty(user.Email))
+                {
+                    user.Email = currentUser.Email;
+                }
+
+                user.ObjectId = currentUser.ObjectId;
+                user.IsSiteAdmin = currentUser.IsSiteAdmin;
+                user.CreatedByUserId = currentUser.CreatedByUserId;
+                user.CreatedDate = currentUser.CreatedDate;
+
                 var updatedUser = await userManager.UpdateAsync(user, cancellationToken);
                 return Ok(updatedUser.ToV2Dto());
             }

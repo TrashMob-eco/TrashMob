@@ -78,5 +78,10 @@ namespace TrashMob.Models.Poco.V2
         /// Gets or sets whether the user is a minor (13-17).
         /// </summary>
         public bool IsMinor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the travel distance limit for finding local events.
+        /// </summary>
+        public int TravelLimitForLocalEvents { get; set; }
     }
 }

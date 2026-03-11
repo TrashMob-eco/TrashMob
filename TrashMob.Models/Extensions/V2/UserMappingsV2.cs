@@ -30,13 +30,14 @@ namespace TrashMob.Models.Extensions.V2
                 ProfilePhotoUrl = entity.ProfilePhotoUrl,
                 MemberSince = entity.MemberSince,
                 IsMinor = entity.IsMinor,
+                TravelLimitForLocalEvents = entity.TravelLimitForLocalEvents,
             };
         }
 
         /// <summary>
         /// Maps a V2 <see cref="UserDto"/> back to a <see cref="User"/> entity.
-        /// PII fields (Email, DateOfBirth, TravelLimitForLocalEvents) are not available
-        /// in UserDto and will not be populated on the returned entity.
+        /// PII fields (Email, DateOfBirth) are not available in UserDto
+        /// and will not be populated on the returned entity.
         /// </summary>
         public static User ToEntity(this UserDto dto)
         {
@@ -56,6 +57,7 @@ namespace TrashMob.Models.Extensions.V2
                 ProfilePhotoUrl = dto.ProfilePhotoUrl,
                 MemberSince = dto.MemberSince,
                 IsMinor = dto.IsMinor,
+                TravelLimitForLocalEvents = dto.TravelLimitForLocalEvents,
             };
         }
 
