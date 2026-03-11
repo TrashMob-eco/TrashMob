@@ -72,7 +72,15 @@ public class UserRestService(IHttpClientFactory httpClientFactory) : RestService
 
         using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
         {
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                System.Diagnostics.Debug.WriteLine($"UpdateUserAsync failed: {response.StatusCode} - {errorBody}");
+                System.Diagnostics.Debug.WriteLine($"Request URL: {response.RequestMessage?.RequestUri}");
+                throw new HttpRequestException(
+                    $"UpdateUser failed ({response.StatusCode}): {errorBody}");
+            }
+
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
             return JsonConvert.DeserializeObject<UserDto>(responseString)!.ToEntity();

@@ -22,8 +22,9 @@ namespace TrashMob.Models.Poco.V2
 
         /// <summary>
         /// Gets or sets the user's email address.
+        /// Optional on update — the server preserves the existing email if not provided.
         /// </summary>
-        public string Email { get; set; } = string.Empty;
+        public string? Email { get; set; }
 
         /// <summary>
         /// Gets or sets the user's given (first) name.
