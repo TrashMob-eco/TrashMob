@@ -9,19 +9,22 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using Microsoft.Extensions.Logging;
     using Moq;
     using TrashMob.Controllers.V2;
+    using TrashMob.Models;
     using TrashMob.Models.Poco;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Persistence.Interfaces;
     using Xunit;
 
     public class EventRoutesV2ControllerTests
     {
         private readonly Mock<IEventAttendeeRouteManager> routeManager = new();
+        private readonly Mock<IKeyedRepository<Event>> eventRepository = new();
         private readonly Mock<ILogger<EventRoutesV2Controller>> logger = new();
         private readonly EventRoutesV2Controller controller;
 
         public EventRoutesV2ControllerTests()
         {
-            controller = new EventRoutesV2Controller(routeManager.Object, logger.Object);
+            controller = new EventRoutesV2Controller(routeManager.Object, eventRepository.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),
