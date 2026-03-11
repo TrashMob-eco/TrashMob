@@ -160,7 +160,7 @@ namespace TrashMob.Controllers.V2
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns a paginated list of filtered events.</response>
         [HttpPost("pagedfilteredevents")]
-        [ProducesResponseType(typeof(PaginatedList<EventDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedResponseDto<EventDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedFilteredEvents(
             [FromBody] EventFilter filter,
             CancellationToken cancellationToken)
@@ -172,15 +172,16 @@ namespace TrashMob.Controllers.V2
 
             var ordered = result.OrderByDescending(e => e.EventDate).ToList();
 
-            if (filter.PageSize is not null)
-            {
-                var pageIndex = filter.PageIndex.GetValueOrDefault(0);
-                var pageSize = filter.PageSize.GetValueOrDefault(10);
-                var items = ordered.Skip((pageIndex - 1) * pageSize).Take(pageSize).Select(e => e.ToV2Dto()).ToList();
-                return Ok(new PaginatedList<EventDto>(items, ordered.Count, pageIndex, pageSize));
-            }
+            var pageIndex = filter.PageIndex.GetValueOrDefault(1);
+            var pageSize = filter.PageSize.GetValueOrDefault(ordered.Count);
+            var items = ordered.Skip((pageIndex - 1) * pageSize).Take(pageSize).Select(e => e.ToV2Dto()).ToList();
 
-            return Ok(ordered.Select(e => e.ToV2Dto()));
+            return Ok(new PaginatedResponseDto<EventDto>
+            {
+                Items = items,
+                PageIndex = pageIndex,
+                TotalPages = pageSize > 0 ? (int)Math.Ceiling(ordered.Count / (double)pageSize) : 1,
+            });
         }
 
         /// <summary>
@@ -193,7 +194,7 @@ namespace TrashMob.Controllers.V2
         [HttpPost("pageduserevents/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [ProducesResponseType(typeof(PaginatedList<EventDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedResponseDto<EventDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedUserEvents(
             [FromBody] EventFilter filter,
             Guid userId,
@@ -208,15 +209,16 @@ namespace TrashMob.Controllers.V2
             var ordered = result1.Union(result2, new EventComparer())
                 .OrderByDescending(e => e.EventDate).ToList();
 
-            if (filter.PageSize is not null)
-            {
-                var pageIndex = filter.PageIndex.GetValueOrDefault(0);
-                var pageSize = filter.PageSize.GetValueOrDefault(10);
-                var items = ordered.Skip((pageIndex - 1) * pageSize).Take(pageSize).Select(e => e.ToV2Dto()).ToList();
-                return Ok(new PaginatedList<EventDto>(items, ordered.Count, pageIndex, pageSize));
-            }
+            var pageIndex = filter.PageIndex.GetValueOrDefault(1);
+            var pageSize = filter.PageSize.GetValueOrDefault(ordered.Count);
+            var items = ordered.Skip((pageIndex - 1) * pageSize).Take(pageSize).Select(e => e.ToV2Dto()).ToList();
 
-            return Ok(ordered.Select(e => e.ToV2Dto()));
+            return Ok(new PaginatedResponseDto<EventDto>
+            {
+                Items = items,
+                PageIndex = pageIndex,
+                TotalPages = pageSize > 0 ? (int)Math.Ceiling(ordered.Count / (double)pageSize) : 1,
+            });
         }
 
         /// <summary>

@@ -122,12 +122,10 @@ namespace TrashMobMobile.Services
                 response.EnsureSuccessStatusCode();
                 var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                var dtoPaged = JsonConvert.DeserializeObject<PaginatedList<LitterReportDto>>(returnContent)!;
-                var entityItems = dtoPaged.Select(d => d.ToEntity()).ToList();
-                // Reconstruct PaginatedList preserving pagination metadata from the DTO list
-                var pageSize = filter.PageSize.GetValueOrDefault(10);
-                var totalCount = dtoPaged.TotalPages * pageSize;
-                return new PaginatedList<LitterReport>(entityItems, totalCount, dtoPaged.PageIndex, pageSize);
+                var paged = JsonConvert.DeserializeObject<PaginatedResponseDto<LitterReportDto>>(returnContent)!;
+                var entityItems = paged.Items.Select(d => d.ToEntity()).ToList();
+                var pageSize = filter.PageSize.GetValueOrDefault(entityItems.Count);
+                return new PaginatedList<LitterReport>(entityItems, paged.TotalPages * pageSize, paged.PageIndex, pageSize);
             }
         }
 

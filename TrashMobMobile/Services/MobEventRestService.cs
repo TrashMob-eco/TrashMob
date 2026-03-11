@@ -20,10 +20,9 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
         var response = await AnonymousHttpClient.PostAsync(requestUri, content, cancellationToken);
         response.EnsureSuccessStatusCode();
         var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        var dtoResult = JsonConvert.DeserializeObject<PaginatedList<EventDto>>(returnContent) ?? new();
-        var result = new PaginatedList<Event>();
-        result.AddRange(dtoResult.Select(d => d.ToEntity()));
-        return result;
+        var paged = JsonConvert.DeserializeObject<PaginatedResponseDto<EventDto>>(returnContent)!;
+        var items = paged.Items.Select(d => d.ToEntity()).ToList();
+        return new PaginatedList<Event>(items, paged.TotalPages * (filter.PageSize ?? items.Count), paged.PageIndex, filter.PageSize ?? items.Count);
     }
 
     public async Task<PaginatedList<Event>> GetUserEventsAsync(EventFilter filter, Guid userId, CancellationToken cancellationToken = default)
@@ -33,10 +32,9 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
         var response = await AuthorizedHttpClient.PostAsync(requestUri, content, cancellationToken);
         response.EnsureSuccessStatusCode();
         var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        var dtoResult = JsonConvert.DeserializeObject<PaginatedList<EventDto>>(returnContent) ?? new();
-        var result = new PaginatedList<Event>();
-        result.AddRange(dtoResult.Select(d => d.ToEntity()));
-        return result;
+        var paged = JsonConvert.DeserializeObject<PaginatedResponseDto<EventDto>>(returnContent)!;
+        var items = paged.Items.Select(d => d.ToEntity()).ToList();
+        return new PaginatedList<Event>(items, paged.TotalPages * (filter.PageSize ?? items.Count), paged.PageIndex, filter.PageSize ?? items.Count);
     }
 
     public async Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly,

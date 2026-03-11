@@ -208,7 +208,7 @@ namespace TrashMob.Controllers.V2
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns a paginated list of filtered litter reports.</response>
         [HttpPost("pagedfilteredlitterreports")]
-        [ProducesResponseType(typeof(PaginatedList<LitterReportDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedResponseDto<LitterReportDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedFilteredLitterReports(
             [FromBody] LitterReportFilter filter,
             CancellationToken cancellationToken)
@@ -218,15 +218,17 @@ namespace TrashMob.Controllers.V2
             var result = await litterReportManager.GetFilteredLitterReportsAsync(filter, cancellationToken);
 
             var ordered = result.OrderByDescending(r => r.CreatedDate).ToList();
-            if (filter.PageSize is not null)
-            {
-                var pageIndex = filter.PageIndex.GetValueOrDefault(0);
-                var pageSize = filter.PageSize.GetValueOrDefault(10);
-                var items = ordered.Skip((pageIndex - 1) * pageSize).Take(pageSize).Select(r => r.ToV2Dto()).ToList();
-                return Ok(new PaginatedList<LitterReportDto>(items, ordered.Count, pageIndex, pageSize));
-            }
 
-            return Ok(ordered.Select(r => r.ToV2Dto()));
+            var pageIndex = filter.PageIndex.GetValueOrDefault(1);
+            var pageSize = filter.PageSize.GetValueOrDefault(ordered.Count);
+            var items = ordered.Skip((pageIndex - 1) * pageSize).Take(pageSize).Select(r => r.ToV2Dto()).ToList();
+
+            return Ok(new PaginatedResponseDto<LitterReportDto>
+            {
+                Items = items,
+                PageIndex = pageIndex,
+                TotalPages = pageSize > 0 ? (int)Math.Ceiling(ordered.Count / (double)pageSize) : 1,
+            });
         }
 
         /// <summary>
