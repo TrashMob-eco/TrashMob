@@ -81,7 +81,7 @@
                                 Style="{StaticResource SecondaryLargeButton}"
                                 Text="Mark as Cleaned"
                                 ContentLayout="Left, 12"
-                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCheck}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCheck}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
                         <Button Command="{Binding DeleteLitterReportCommand}"
                                 IsEnabled="{Binding CanDeleteLitterReport}"
                                 IsVisible="{Binding CanDeleteLitterReport}"
@@ -95,14 +95,14 @@
                                 Style="{StaticResource SecondaryLargeButton}"
                                 Text="View Event"
                                 ContentLayout="Left, 12"
-                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEye}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEye}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
                         <Button Command="{Binding CreateEventCommand}"
                                 IsEnabled="{Binding IsNotAssignedToEvent}"
                                 IsVisible="{Binding IsNotAssignedToEvent}"
                                 Style="{StaticResource SecondaryLargeButton}"
                                 Text="Create Event"
                                 ContentLayout="Left, 12"
-                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCalendarPlus}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCalendarPlus}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>
