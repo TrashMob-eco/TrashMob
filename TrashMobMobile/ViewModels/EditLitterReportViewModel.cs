@@ -170,6 +170,8 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
             litterReport.LitterImages.Clear();
             foreach (var litterImageViewModel in LitterImageViewModels)
             {
+                var isNewImage = !string.IsNullOrEmpty(litterImageViewModel.FilePath);
+
                 var litterImage = new LitterImage
                 {
                     Id = litterImageViewModel.Id == Guid.Empty ? Guid.NewGuid() : litterImageViewModel.Id,
@@ -186,8 +188,8 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
                     CreatedDate = litterImageViewModel.CreatedDate,
                     LastUpdatedDate = litterImageViewModel.LastUpdatedDate,
 
-                    // Use the Azure Blob Url as local file on create
-                    AzureBlobURL = litterImageViewModel.FilePath,
+                    // New images: local file path for upload; existing images: server URL
+                    AzureBlobURL = isNewImage ? litterImageViewModel.FilePath : litterImageViewModel.AzureBlobUrl,
                 };
 
                 litterReport.LitterImages.Add(litterImage);

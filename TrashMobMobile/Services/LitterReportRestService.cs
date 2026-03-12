@@ -70,9 +70,10 @@ namespace TrashMobMobile.Services
 
                 if (result != null)
                 {
-                    // Only add images that have not been uploaded yet
+                    // Only upload images that have a local file path (new photos, not existing server URLs)
                     foreach (var litterImage in litterReport.LitterImages.Where(l =>
-                                 l.LastUpdatedByUserId == Guid.Empty))
+                                 !string.IsNullOrEmpty(l.AzureBlobURL) &&
+                                 !l.AzureBlobURL.StartsWith("http", StringComparison.OrdinalIgnoreCase)))
                     {
                         await AddLitterImageAsync(litterImage.Id, litterImage.AzureBlobURL, cancellationToken);
                     }
