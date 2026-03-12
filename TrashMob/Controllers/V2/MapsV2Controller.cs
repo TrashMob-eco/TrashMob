@@ -1,5 +1,6 @@
 namespace TrashMob.Controllers.V2
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
     using Microsoft.AspNetCore.Authorization;
@@ -30,6 +31,7 @@ namespace TrashMob.Controllers.V2
         /// </summary>
         /// <param name="latitude">The latitude.</param>
         /// <param name="longitude">The longitude.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The address at the specified coordinates.</returns>
         /// <response code="200">Returns the address.</response>
         /// <response code="401">Authentication required.</response>
@@ -41,7 +43,8 @@ namespace TrashMob.Controllers.V2
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAddress(
             [FromQuery] double latitude,
-            [FromQuery] double longitude)
+            [FromQuery] double longitude,
+            CancellationToken cancellationToken = default)
         {
             logger.LogInformation("V2 GetAddress requested Lat={Latitude}, Lon={Longitude}",
                 latitude, longitude);

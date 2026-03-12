@@ -114,7 +114,7 @@ namespace TrashMob.Controllers.V2
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(DisplayEventAttendeeRoute), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> SimulateRoute(
             Guid eventId,
             [FromQuery] int distanceMeters = 1000,
@@ -125,13 +125,13 @@ namespace TrashMob.Controllers.V2
         {
             if (ProductionHosts.Contains(Request.Host.Host))
             {
-                return NotFound();
+                return Problem(detail: "Route simulation is not available in production.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             var eventData = await eventRepository.GetAsync(eventId, cancellationToken);
             if (eventData is null)
             {
-                return NotFound($"Event {eventId} not found");
+                return Problem(detail: $"Event {eventId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             logger.LogInformation("V2 SimulateRoute for Event={EventId}", eventId);

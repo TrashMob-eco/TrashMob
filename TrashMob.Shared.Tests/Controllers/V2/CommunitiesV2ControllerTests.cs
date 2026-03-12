@@ -4,6 +4,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -115,7 +116,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var result = await controller.GetCommunityBySlug("nonexistent", CancellationToken.None);
 
-            Assert.IsType<NotFoundResult>(result);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
         }
 
         [Fact]
@@ -159,7 +161,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var result = await controller.GetCommunityEvents("nonexistent", cancellationToken: CancellationToken.None);
 
-            Assert.IsType<NotFoundResult>(result);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
         }
 
         [Fact]
@@ -234,7 +237,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var result = await controller.GetCommunityStats("nonexistent", CancellationToken.None);
 
-            Assert.IsType<NotFoundResult>(result);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
         }
     }
 }

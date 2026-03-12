@@ -69,7 +69,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var result = await controller.GetMyMetrics(Guid.NewGuid(), CancellationToken.None);
 
-            Assert.IsType<NotFoundResult>(result);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
         }
 
         [Fact]
@@ -105,8 +106,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var result = await controller.SubmitMyMetrics(eventId, new EventAttendeeMetricsDto(), CancellationToken.None);
 
-            var badResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Event not found", badResult.Value);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status400BadRequest, objectResult.StatusCode);
         }
 
         [Fact]
@@ -133,7 +134,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var result = await controller.GetPublicMetrics(Guid.NewGuid(), CancellationToken.None);
 
-            Assert.IsType<NotFoundResult>(result);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
         }
     }
 }

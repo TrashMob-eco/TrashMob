@@ -48,7 +48,7 @@ namespace TrashMob.Controllers.V2
         [RequiredScope(Constants.TrashMobReadScope)]
         [ProducesResponseType(typeof(DependentWaiverDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCurrentWaiver(Guid dependentId, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 GetCurrentWaiver Dependent={DependentId}", dependentId);
@@ -62,7 +62,7 @@ namespace TrashMob.Controllers.V2
             var waiver = await dependentWaiverManager.GetCurrentWaiverAsync(dependentId, cancellationToken);
             if (waiver == null)
             {
-                return NotFound();
+                return Problem(detail: $"No valid waiver found for dependent {dependentId}.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             return Ok(waiver.ToV2Dto());
@@ -81,7 +81,7 @@ namespace TrashMob.Controllers.V2
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(DependentWaiverDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> SignWaiver(
             Guid dependentId, SignDependentWaiverRequest request, CancellationToken cancellationToken)
@@ -108,7 +108,7 @@ namespace TrashMob.Controllers.V2
 
             if (!result.IsSuccess)
             {
-                return BadRequest(result.ErrorMessage);
+                return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status400BadRequest, title: "Waiver signing failed");
             }
 
             try

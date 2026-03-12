@@ -269,8 +269,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var result = await controller.DemoteFromLead(eventId, userId, CancellationToken.None);
 
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Cannot demote the last lead", badRequest.Value);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status400BadRequest, objectResult.StatusCode);
         }
 
         [Fact]

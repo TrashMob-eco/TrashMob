@@ -46,7 +46,7 @@ namespace TrashMob.Controllers.V2
         /// <response code="404">Team not found.</response>
         [HttpGet("upcoming")]
         [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUpcomingTeamEvents(Guid teamId, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 GetUpcomingTeamEvents Team={TeamId}", teamId);
@@ -54,20 +54,20 @@ namespace TrashMob.Controllers.V2
             var team = await teamManager.GetAsync(teamId, cancellationToken);
             if (team is null || !team.IsActive)
             {
-                return NotFound();
+                return Problem(detail: $"Team {teamId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             if (!team.IsPublic)
             {
                 if (User.Identity?.IsAuthenticated != true)
                 {
-                    return NotFound();
+                    return Problem(detail: $"Team {teamId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
                 }
 
                 var isMember = await teamMemberManager.IsMemberAsync(teamId, UserId, cancellationToken);
                 if (!isMember)
                 {
-                    return NotFound();
+                    return Problem(detail: $"Team {teamId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
                 }
             }
 
@@ -92,7 +92,7 @@ namespace TrashMob.Controllers.V2
         /// <response code="404">Team not found.</response>
         [HttpGet("past")]
         [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPastTeamEvents(Guid teamId, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 GetPastTeamEvents Team={TeamId}", teamId);
@@ -100,20 +100,20 @@ namespace TrashMob.Controllers.V2
             var team = await teamManager.GetAsync(teamId, cancellationToken);
             if (team is null || !team.IsActive)
             {
-                return NotFound();
+                return Problem(detail: $"Team {teamId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             if (!team.IsPublic)
             {
                 if (User.Identity?.IsAuthenticated != true)
                 {
-                    return NotFound();
+                    return Problem(detail: $"Team {teamId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
                 }
 
                 var isMember = await teamMemberManager.IsMemberAsync(teamId, UserId, cancellationToken);
                 if (!isMember)
                 {
-                    return NotFound();
+                    return Problem(detail: $"Team {teamId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
                 }
             }
 
@@ -143,9 +143,9 @@ namespace TrashMob.Controllers.V2
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(TeamEvent), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> LinkEventToTeam(Guid teamId, Guid eventId, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 LinkEventToTeam Team={TeamId}, Event={EventId}", teamId, eventId);
@@ -153,7 +153,7 @@ namespace TrashMob.Controllers.V2
             var team = await teamManager.GetAsync(teamId, cancellationToken);
             if (team is null || !team.IsActive)
             {
-                return NotFound("Team not found.");
+                return Problem(detail: "Team not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             var isLead = await teamMemberManager.IsTeamLeadAsync(teamId, UserId, cancellationToken);
@@ -165,7 +165,7 @@ namespace TrashMob.Controllers.V2
             var eventEntity = await eventManager.GetAsync(eventId, cancellationToken);
             if (eventEntity is null)
             {
-                return NotFound("Event not found.");
+                return Problem(detail: "Event not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             var existingLink = await teamEventRepository.Get()
@@ -173,7 +173,7 @@ namespace TrashMob.Controllers.V2
 
             if (existingLink is not null)
             {
-                return BadRequest("Event is already linked to this team.");
+                return Problem(detail: "Event is already linked to this team.", statusCode: StatusCodes.Status400BadRequest, title: "Duplicate link");
             }
 
             var teamEvent = new TeamEvent
@@ -205,7 +205,7 @@ namespace TrashMob.Controllers.V2
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UnlinkEventFromTeam(Guid teamId, Guid eventId, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 UnlinkEventFromTeam Team={TeamId}, Event={EventId}", teamId, eventId);
@@ -213,7 +213,7 @@ namespace TrashMob.Controllers.V2
             var team = await teamManager.GetAsync(teamId, cancellationToken);
             if (team is null)
             {
-                return NotFound("Team not found.");
+                return Problem(detail: "Team not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             var isLead = await teamMemberManager.IsTeamLeadAsync(teamId, UserId, cancellationToken);
@@ -227,7 +227,7 @@ namespace TrashMob.Controllers.V2
 
             if (teamEvent is null)
             {
-                return NotFound("Event is not linked to this team.");
+                return Problem(detail: "Event is not linked to this team.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             await teamEventRepository.DeleteAsync(teamEvent.Id);

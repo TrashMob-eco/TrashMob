@@ -93,9 +93,9 @@ namespace TrashMob.Controllers.V2
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(DependentInvitationDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CreateInvitation(
             Guid userId, Guid dependentId, [FromBody] CreateDependentInvitationRequest request,
             CancellationToken cancellationToken)
@@ -110,7 +110,10 @@ namespace TrashMob.Controllers.V2
             var dependent = await dependentManager.GetAsync(dependentId, cancellationToken);
             if (dependent == null || dependent.ParentUserId != userId)
             {
-                return NotFound();
+                return Problem(
+                    detail: $"Dependent {dependentId} not found for user {userId}.",
+                    statusCode: StatusCodes.Status404NotFound,
+                    title: "Not found");
             }
 
             try
@@ -123,7 +126,10 @@ namespace TrashMob.Controllers.V2
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(ex.Message);
+                return Problem(
+                    detail: ex.Message,
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Invalid request");
             }
         }
 
@@ -138,7 +144,7 @@ namespace TrashMob.Controllers.V2
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CancelInvitation(Guid invitationId, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 CancelInvitation Id={InvitationId}", invitationId);
@@ -150,7 +156,10 @@ namespace TrashMob.Controllers.V2
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(ex.Message);
+                return Problem(
+                    detail: ex.Message,
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Cancellation failed");
             }
         }
 
@@ -165,7 +174,7 @@ namespace TrashMob.Controllers.V2
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(DependentInvitationDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ResendInvitation(Guid invitationId, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 ResendInvitation Id={InvitationId}", invitationId);
@@ -177,7 +186,10 @@ namespace TrashMob.Controllers.V2
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(ex.Message);
+                return Problem(
+                    detail: ex.Message,
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Resend failed");
             }
         }
     }

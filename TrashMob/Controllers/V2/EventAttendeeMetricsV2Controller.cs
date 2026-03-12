@@ -55,7 +55,7 @@ namespace TrashMob.Controllers.V2
 
             if (metrics is null)
             {
-                return NotFound();
+                return Problem(detail: $"Event {eventId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             return Ok(metrics.ToV2Dto());
@@ -73,7 +73,7 @@ namespace TrashMob.Controllers.V2
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventAttendeeMetricsDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SubmitMyMetrics(
             Guid eventId,
             [FromBody] EventAttendeeMetricsDto dto,
@@ -88,7 +88,7 @@ namespace TrashMob.Controllers.V2
 
             if (!result.IsSuccess)
             {
-                return BadRequest(result.ErrorMessage);
+                return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status400BadRequest, title: "Validation failed");
             }
 
             return Ok(result.Data.ToV2Dto());
@@ -112,7 +112,7 @@ namespace TrashMob.Controllers.V2
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
             if (mobEvent is null)
             {
-                return NotFound();
+                return Problem(detail: $"Event {eventId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             var summary = await metricsManager.GetPublicMetricsSummaryAsync(eventId, cancellationToken);
@@ -141,7 +141,7 @@ namespace TrashMob.Controllers.V2
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
             if (mobEvent is null)
             {
-                return NotFound();
+                return Problem(detail: $"Event {eventId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
@@ -176,7 +176,7 @@ namespace TrashMob.Controllers.V2
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
             if (mobEvent is null)
             {
-                return NotFound();
+                return Problem(detail: $"Event {eventId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
@@ -188,7 +188,7 @@ namespace TrashMob.Controllers.V2
 
             if (!result.IsSuccess)
             {
-                return BadRequest(result.ErrorMessage);
+                return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status400BadRequest, title: "Validation failed");
             }
 
             return Ok(result.Data);
@@ -206,7 +206,7 @@ namespace TrashMob.Controllers.V2
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventAttendeeMetricsDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Approve(Guid eventId, Guid metricsId, CancellationToken cancellationToken)
@@ -216,7 +216,7 @@ namespace TrashMob.Controllers.V2
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
             if (mobEvent is null)
             {
-                return NotFound();
+                return Problem(detail: $"Event {eventId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
@@ -228,7 +228,7 @@ namespace TrashMob.Controllers.V2
 
             if (!result.IsSuccess)
             {
-                return BadRequest(result.ErrorMessage);
+                return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status400BadRequest, title: "Validation failed");
             }
 
             return Ok(result.Data.ToV2Dto());
@@ -247,7 +247,7 @@ namespace TrashMob.Controllers.V2
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventAttendeeMetricsDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Reject(
@@ -261,7 +261,7 @@ namespace TrashMob.Controllers.V2
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
             if (mobEvent is null)
             {
-                return NotFound();
+                return Problem(detail: $"Event {eventId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
@@ -273,7 +273,7 @@ namespace TrashMob.Controllers.V2
 
             if (!result.IsSuccess)
             {
-                return BadRequest(result.ErrorMessage);
+                return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status400BadRequest, title: "Validation failed");
             }
 
             return Ok(result.Data.ToV2Dto());

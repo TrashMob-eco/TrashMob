@@ -82,7 +82,7 @@ namespace TrashMob.Controllers.V2
 
             if (litterReport is null)
             {
-                return NotFound();
+                return Problem(detail: $"Litter report {id} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
             return Ok(litterReport.ToV2Dto());
@@ -99,7 +99,7 @@ namespace TrashMob.Controllers.V2
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(LitterReportDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddLitterReport(LitterReportDto litterReport, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 AddLitterReport Name={Name}", litterReport.Name);
@@ -111,7 +111,7 @@ namespace TrashMob.Controllers.V2
                 return Ok(result.Data.ToV2Dto());
             }
 
-            return BadRequest(result.ErrorMessage);
+            return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status400BadRequest, title: "Invalid litter report");
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace TrashMob.Controllers.V2
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(LitterReportDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateLitterReport(LitterReportDto litterReport,
             CancellationToken cancellationToken)
         {
@@ -146,7 +146,7 @@ namespace TrashMob.Controllers.V2
                 return Ok(updatedLitterReport.ToV2Dto());
             }
 
-            return BadRequest("Failed to update litter report");
+            return Problem(detail: "Failed to update litter report.", statusCode: StatusCodes.Status400BadRequest, title: "Update failed");
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace TrashMob.Controllers.V2
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteLitterReport(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 DeleteLitterReport Id={Id}", id);
@@ -180,7 +180,7 @@ namespace TrashMob.Controllers.V2
                 return NoContent();
             }
 
-            return BadRequest("Could not find the litter report, delete failed");
+            return Problem(detail: "Could not find the litter report, delete failed.", statusCode: StatusCodes.Status400BadRequest, title: "Delete failed");
         }
 
         /// <summary>

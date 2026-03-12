@@ -51,7 +51,7 @@
                         <Border Style="{x:StaticResource RoundBorder}" Margin="4"
                                 Opacity="{Binding Opacity}">
                             <VerticalStackLayout Spacing="2" Padding="6">
-                                <Image Source="{Binding IconUrl}"
+                                <Image Source="{Binding IconImageSource}"
                                        HeightRequest="48"
                                        WidthRequest="48"
                                        HorizontalOptions="Center"

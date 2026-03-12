@@ -116,8 +116,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var result = await controller.CancelInvitation(invitationId, CancellationToken.None);
 
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Invitation already cancelled", badRequest.Value);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status400BadRequest, objectResult.StatusCode);
         }
 
         [Fact]
