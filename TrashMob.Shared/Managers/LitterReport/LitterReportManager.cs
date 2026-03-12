@@ -61,9 +61,11 @@ namespace TrashMob.Shared.Managers.LitterReport
                 existingInstance.Description = litterReport.Description;
                 existingInstance.LitterReportStatusId = litterReport.LitterReportStatusId;
 
+                var existingImageIds = existingInstance.LitterImages.Select(x => x.Id).ToHashSet();
+
                 foreach (var litterImage in litterReport.LitterImages)
                 {
-                    if (litterImage.CreatedByUserId == Guid.Empty)
+                    if (!existingImageIds.Contains(litterImage.Id))
                     {
                         litterImage.LitterReportId = litterReport.Id;
                         litterImage.CreatedByUserId = userId;
