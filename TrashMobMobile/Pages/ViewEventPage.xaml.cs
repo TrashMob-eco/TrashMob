@@ -27,11 +27,14 @@ public partial class ViewEventPage : ContentPage
         Switcher.PropertyChanged -= OnSwitcherPropertyChanged;
         Switcher.PropertyChanged += OnSwitcherPropertyChanged;
 
-        // Only re-initialize when loading a different event, not when returning from popups
-        if (loadedEventId != EventId)
+        // Always re-initialize to pick up changes from edit pages.
+        // Popups don't trigger OnNavigatedTo, so this only fires for Shell navigation.
+        var isNewEvent = loadedEventId != EventId;
+        loadedEventId = EventId;
+        await viewModel.Init(new Guid(EventId), RenderRoutesOnDetailsMap);
+
+        if (isNewEvent)
         {
-            loadedEventId = EventId;
-            await viewModel.Init(new Guid(EventId), RenderRoutesOnDetailsMap);
             Switcher.SelectedIndex = 0;
         }
     }
