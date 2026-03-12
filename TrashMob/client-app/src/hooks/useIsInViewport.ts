@@ -1,16 +1,22 @@
-import { RefObject, useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 
 export function useIsInViewport<T extends HTMLElement = HTMLDivElement>() {
-    const ref = useRef<T>(null);
     const [isIntersecting, setIntersecting] = useState(false);
+    const observerRef = useRef<IntersectionObserver | null>(null);
 
-    const observer = useMemo(() => new IntersectionObserver(([entry]) => setIntersecting(entry.isIntersecting)), []);
+    const ref = useCallback((node: T | null) => {
+        if (observerRef.current) {
+            observerRef.current.disconnect();
+        }
+
+        if (node) {
+            observerRef.current = new IntersectionObserver(([entry]) => setIntersecting(entry.isIntersecting));
+            observerRef.current.observe(node);
+        }
+    }, []);
 
     useEffect(() => {
-        if (ref.current) {
-            observer.observe(ref.current);
-        }
-        return () => observer.disconnect();
+        return () => observerRef.current?.disconnect();
     }, []);
 
     return { ref, isInViewPort: isIntersecting };
