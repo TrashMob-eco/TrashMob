@@ -40,6 +40,13 @@ namespace TrashMob.Models.Extensions.V2
                 UserId = dto.UserId,
                 IsTeamLead = dto.IsTeamLead,
                 JoinedDate = dto.JoinedDate,
+                User = new User
+                {
+                    Id = dto.UserId,
+                    UserName = dto.UserName ?? string.Empty,
+                    GivenName = dto.GivenName ?? string.Empty,
+                    ProfilePhotoUrl = dto.ProfilePhotoUrl ?? string.Empty,
+                },
             };
         }
     }
