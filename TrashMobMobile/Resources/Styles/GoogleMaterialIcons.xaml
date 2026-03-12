@@ -834,7 +834,7 @@
     <!-- <x:String x:Key="IconLinkedin">&#xf033b;</x:String> -->
     <!-- <x:String x:Key="IconSortReverseVariant">&#xf033c;</x:String> -->
     <!-- <x:String x:Key="IconLinux">&#xf033d;</x:String> -->
-    <!-- <x:String x:Key="IconLock">&#xf033e;</x:String> -->
+    <x:String x:Key="IconLock">&#xf033e;</x:String>
     <!-- <x:String x:Key="IconLockOpen">&#xf033f;</x:String> -->
     <!-- <x:String x:Key="IconLockOpenOutline">&#xf0340;</x:String> -->
     <!-- <x:String x:Key="IconLockOutline">&#xf0341;</x:String> -->
@@ -1232,7 +1232,7 @@
     <!-- <x:String x:Key="IconAccountSwitchOutline">&#xf04cb;</x:String> -->
     <!-- <x:String x:Key="IconStackOverflow">&#xf04cc;</x:String> -->
     <!-- <x:String x:Key="IconStairs">&#xf04cd;</x:String> -->
-    <!-- <x:String x:Key="IconStar">&#xf04ce;</x:String> -->
+    <x:String x:Key="IconStar">&#xf04ce;</x:String>
     <!-- <x:String x:Key="IconStarCircle">&#xf04cf;</x:String> -->
     <!-- <x:String x:Key="IconStarHalfFull">&#xf04d0;</x:String> -->
     <!-- <x:String x:Key="IconStarOff">&#xf04d1;</x:String> -->
@@ -1280,7 +1280,7 @@
     <!-- <x:String x:Key="IconTagMultiple">&#xf04fb;</x:String> -->
     <!-- <x:String x:Key="IconTagOutline">&#xf04fc;</x:String> -->
     <!-- <x:String x:Key="IconTagTextOutline">&#xf04fd;</x:String> -->
-    <!-- <x:String x:Key="IconTarget">&#xf04fe;</x:String> -->
+    <x:String x:Key="IconTarget">&#xf04fe;</x:String>
     <!-- <x:String x:Key="IconTaxi">&#xf04ff;</x:String> -->
     <!-- <x:String x:Key="IconTeamviewer">&#xf0500;</x:String> -->
     <!-- <x:String x:Key="IconSkateboarding">&#xf0501;</x:String> -->

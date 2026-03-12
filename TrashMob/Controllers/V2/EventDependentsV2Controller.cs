@@ -37,12 +37,12 @@ namespace TrashMob.Controllers.V2
         /// <param name="request">The registration request containing dependent IDs.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns the created registrations.</response>
-        /// <response code="400">Invalid request.</response>
+        /// <response code="400">Invalid request (e.g., missing waiver, parent not attending).</response>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(IEnumerable<EventDependent>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RegisterDependents(
             Guid eventId, RegisterEventDependentsRequest request, CancellationToken cancellationToken)
         {
@@ -53,7 +53,10 @@ namespace TrashMob.Controllers.V2
 
             if (!result.IsSuccess)
             {
-                return BadRequest(result.ErrorMessage);
+                return Problem(
+                    detail: result.ErrorMessage,
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Registration failed");
             }
 
             return Ok(result.Data);
@@ -70,7 +73,7 @@ namespace TrashMob.Controllers.V2
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
         [ProducesResponseType(typeof(IEnumerable<EventDependent>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetEventDependents(Guid eventId, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 GetEventDependents Event={EventId}", eventId);
@@ -115,7 +118,7 @@ namespace TrashMob.Controllers.V2
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UnregisterDependent(
             Guid eventId, Guid dependentId, CancellationToken cancellationToken)
         {
@@ -126,7 +129,10 @@ namespace TrashMob.Controllers.V2
 
             if (result == 0)
             {
-                return NotFound();
+                return Problem(
+                    detail: $"No registration found for dependent {dependentId} on event {eventId}.",
+                    statusCode: StatusCodes.Status404NotFound,
+                    title: "Not found");
             }
 
             return NoContent();

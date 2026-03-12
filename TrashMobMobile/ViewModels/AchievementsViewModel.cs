@@ -40,6 +40,7 @@ public partial class AchievementsViewModel(
                 Achievements.Add(new AchievementViewModel
                 {
                     Id = achievement.Id,
+                    Name = achievement.Name,
                     DisplayName = achievement.DisplayName,
                     Description = achievement.Description,
                     IconUrl = achievement.IconUrl,
