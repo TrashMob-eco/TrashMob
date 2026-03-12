@@ -15,6 +15,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using TrashMob.Models.Poco;
     using NetTopologySuite.Geometries;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
     using Xunit;
 
     public class EventAttendeeRoutesV2ControllerTests
@@ -173,6 +174,139 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.IsType<DisplayEventAttendeeRoute>(okResult.Value);
+        }
+
+        [Fact]
+        public async Task UpdateRouteMetadata_ReturnsOk_WhenSuccessful()
+        {
+            var routeId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+
+            var request = new UpdateRouteMetadataRequest { Notes = "Picked up 3 bags" };
+            var route = new EventAttendeeRoute { Id = routeId, UserPath = TestPath };
+
+            routeManager
+                .Setup(m => m.UpdateRouteMetadataAsync(routeId, userId, request, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ServiceResult<EventAttendeeRoute>.Success(route));
+
+            var result = await controller.UpdateRouteMetadata(routeId, request, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<DisplayEventAttendeeRoute>(okResult.Value);
+        }
+
+        [Fact]
+        public async Task UpdateRouteMetadata_ReturnsNotFound_WhenRouteNotFound()
+        {
+            var routeId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+
+            var request = new UpdateRouteMetadataRequest();
+
+            routeManager
+                .Setup(m => m.UpdateRouteMetadataAsync(routeId, userId, request, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ServiceResult<EventAttendeeRoute>.Failure("Route not found."));
+
+            var result = await controller.UpdateRouteMetadata(routeId, request, CancellationToken.None);
+
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task UpdateRouteMetadata_ReturnsBadRequest_WhenValidationFails()
+        {
+            var routeId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+
+            var request = new UpdateRouteMetadataRequest();
+
+            routeManager
+                .Setup(m => m.UpdateRouteMetadataAsync(routeId, userId, request, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ServiceResult<EventAttendeeRoute>.Failure("You do not own this route."));
+
+            var result = await controller.UpdateRouteMetadata(routeId, request, CancellationToken.None);
+
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status400BadRequest, objectResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task TrimRouteTime_ReturnsOk_WhenSuccessful()
+        {
+            var routeId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+
+            var request = new TrimRouteTimeRequest { NewEndTime = DateTimeOffset.UtcNow };
+            var route = new EventAttendeeRoute { Id = routeId, UserPath = TestPath };
+
+            routeManager
+                .Setup(m => m.TrimRouteTimeAsync(routeId, userId, request, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ServiceResult<EventAttendeeRoute>.Success(route));
+
+            var result = await controller.TrimRouteTime(routeId, request, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<DisplayEventAttendeeRoute>(okResult.Value);
+        }
+
+        [Fact]
+        public async Task TrimRouteTime_ReturnsNotFound_WhenRouteNotFound()
+        {
+            var routeId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+
+            var request = new TrimRouteTimeRequest { NewEndTime = DateTimeOffset.UtcNow };
+
+            routeManager
+                .Setup(m => m.TrimRouteTimeAsync(routeId, userId, request, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ServiceResult<EventAttendeeRoute>.Failure("Route not found."));
+
+            var result = await controller.TrimRouteTime(routeId, request, CancellationToken.None);
+
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task RestoreRouteTime_ReturnsOk_WhenSuccessful()
+        {
+            var routeId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+
+            var route = new EventAttendeeRoute { Id = routeId, UserPath = TestPath };
+
+            routeManager
+                .Setup(m => m.RestoreRouteTimeAsync(routeId, userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ServiceResult<EventAttendeeRoute>.Success(route));
+
+            var result = await controller.RestoreRouteTime(routeId, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<DisplayEventAttendeeRoute>(okResult.Value);
+        }
+
+        [Fact]
+        public async Task RestoreRouteTime_ReturnsNotFound_WhenRouteNotFound()
+        {
+            var routeId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+
+            routeManager
+                .Setup(m => m.RestoreRouteTimeAsync(routeId, userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ServiceResult<EventAttendeeRoute>.Failure("Route not found."));
+
+            var result = await controller.RestoreRouteTime(routeId, CancellationToken.None);
+
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
         }
     }
 }

@@ -189,5 +189,111 @@ namespace TrashMob.Controllers.V2
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Updates route metadata (privacy, trim, notes, pickup data). Owner only.
+        /// </summary>
+        /// <param name="routeId">The route ID.</param>
+        /// <param name="request">The metadata update request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the updated route.</response>
+        /// <response code="400">Validation error.</response>
+        /// <response code="404">Route not found.</response>
+        [HttpPut("{routeId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(DisplayEventAttendeeRoute), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateRouteMetadata(Guid routeId, UpdateRouteMetadataRequest request,
+            CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 UpdateRouteMetadata Route={RouteId}", routeId);
+
+            var result = await eventAttendeeRouteManager
+                .UpdateRouteMetadataAsync(routeId, UserId, request, cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                if (result.ErrorMessage.Contains("not found"))
+                {
+                    return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status404NotFound, title: "Not found");
+                }
+
+                return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status400BadRequest, title: "Validation failed");
+            }
+
+            return Ok(result.Data.ToDisplayEventAttendeeRoute());
+        }
+
+        /// <summary>
+        /// Trims a route's end time, rebuilding the path from GPS points up to the new end time.
+        /// </summary>
+        /// <param name="routeId">The route ID.</param>
+        /// <param name="request">The trim request containing the new end time.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the trimmed route.</response>
+        /// <response code="400">Validation error.</response>
+        /// <response code="404">Route not found.</response>
+        [HttpPut("{routeId}/trim-time")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(DisplayEventAttendeeRoute), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> TrimRouteTime(Guid routeId, TrimRouteTimeRequest request,
+            CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 TrimRouteTime Route={RouteId}", routeId);
+
+            var result = await eventAttendeeRouteManager
+                .TrimRouteTimeAsync(routeId, UserId, request, cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                if (result.ErrorMessage.Contains("not found"))
+                {
+                    return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status404NotFound, title: "Not found");
+                }
+
+                return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status400BadRequest, title: "Validation failed");
+            }
+
+            return Ok(result.Data.ToDisplayEventAttendeeRoute());
+        }
+
+        /// <summary>
+        /// Restores a time-trimmed route to its original values.
+        /// </summary>
+        /// <param name="routeId">The route ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the restored route.</response>
+        /// <response code="400">Validation error.</response>
+        /// <response code="404">Route not found.</response>
+        [HttpPut("{routeId}/restore-time")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(DisplayEventAttendeeRoute), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RestoreRouteTime(Guid routeId, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 RestoreRouteTime Route={RouteId}", routeId);
+
+            var result = await eventAttendeeRouteManager
+                .RestoreRouteTimeAsync(routeId, UserId, cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                if (result.ErrorMessage.Contains("not found"))
+                {
+                    return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status404NotFound, title: "Not found");
+                }
+
+                return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status400BadRequest, title: "Validation failed");
+            }
+
+            return Ok(result.Data.ToDisplayEventAttendeeRoute());
+        }
     }
 }
