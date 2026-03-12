@@ -2,6 +2,7 @@ namespace TrashMob.Controllers.V2
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
     using Microsoft.AspNetCore.Cors;
@@ -34,7 +35,7 @@ namespace TrashMob.Controllers.V2
         [HttpGet("event-types")]
         [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any)]
         [ProducesResponseType(typeof(IReadOnlyList<LookupItemDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetEventTypes()
+        public async Task<IActionResult> GetEventTypes(CancellationToken cancellationToken = default)
         {
             logger.LogInformation("V2 GetEventTypes requested");
 
@@ -52,7 +53,7 @@ namespace TrashMob.Controllers.V2
         [HttpGet("service-types")]
         [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any)]
         [ProducesResponseType(typeof(IReadOnlyList<LookupItemDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetServiceTypes()
+        public async Task<IActionResult> GetServiceTypes(CancellationToken cancellationToken = default)
         {
             logger.LogInformation("V2 GetServiceTypes requested");
 
@@ -70,7 +71,7 @@ namespace TrashMob.Controllers.V2
         [HttpGet("partner-service-statuses")]
         [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any)]
         [ProducesResponseType(typeof(IReadOnlyList<LookupItemDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetPartnerServiceStatuses()
+        public async Task<IActionResult> GetPartnerServiceStatuses(CancellationToken cancellationToken = default)
         {
             logger.LogInformation("V2 GetPartnerServiceStatuses requested");
 

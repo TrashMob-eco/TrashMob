@@ -56,7 +56,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var result = await controller.GetUpcomingTeamEvents(teamId, CancellationToken.None);
 
-            Assert.IsType<NotFoundResult>(result);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
         }
 
         [Fact]
@@ -77,7 +78,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var result = await controller.GetPastTeamEvents(teamId, CancellationToken.None);
 
-            Assert.IsType<NotFoundResult>(result);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
         }
 
         [Fact]
@@ -135,8 +137,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var result = await controller.UnlinkEventFromTeam(teamId, eventId, CancellationToken.None);
 
-            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal("Event is not linked to this team.", notFoundResult.Value);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
         }
     }
 }

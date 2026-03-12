@@ -74,7 +74,10 @@ namespace TrashMob.Controllers.V2
 
             if (community is null)
             {
-                return NotFound();
+                return Problem(
+                    detail: $"Community with slug '{slug}' not found or not enabled.",
+                    statusCode: StatusCodes.Status404NotFound,
+                    title: "Not found");
             }
 
             return Ok(community.ToV2Dto());
@@ -105,7 +108,10 @@ namespace TrashMob.Controllers.V2
 
             if (community is null)
             {
-                return NotFound();
+                return Problem(
+                    detail: $"Community with slug '{slug}' not found.",
+                    statusCode: StatusCodes.Status404NotFound,
+                    title: "Not found");
             }
 
             var events = await communityManager.GetCommunityEventsAsync(slug, upcomingOnly, cancellationToken);
@@ -139,7 +145,10 @@ namespace TrashMob.Controllers.V2
 
             if (community is null)
             {
-                return NotFound();
+                return Problem(
+                    detail: $"Community with slug '{slug}' not found.",
+                    statusCode: StatusCodes.Status404NotFound,
+                    title: "Not found");
             }
 
             var teams = await communityManager.GetCommunityTeamsAsync(slug, radiusMiles, cancellationToken);
@@ -170,7 +179,10 @@ namespace TrashMob.Controllers.V2
 
             if (community is null)
             {
-                return NotFound();
+                return Problem(
+                    detail: $"Community with slug '{slug}' not found.",
+                    statusCode: StatusCodes.Status404NotFound,
+                    title: "Not found");
             }
 
             var stats = await communityManager.GetCommunityStatsAsync(slug, cancellationToken);
