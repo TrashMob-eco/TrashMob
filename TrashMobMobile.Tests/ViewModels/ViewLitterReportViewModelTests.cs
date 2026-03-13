@@ -223,6 +223,87 @@ public class ViewLitterReportViewModelTests
         Assert.False(sut.CanMarkLitterReportCleaned);
     }
 
+    [Fact]
+    public async Task MarkLitterReportCleaned_SetsStatusToCleaned_AndCallsUpdate()
+    {
+        // Arrange
+        var testLitterReport = CreateLitterReportForCurrentUser(statusId: (int)LitterReportStatusEnum.New);
+        testLitterReport.LitterImages = new List<LitterImage>
+        {
+            CreateTestLitterImage(testLitterReport.Id),
+        };
+        SetupGetLitterReport(testLitterReport);
+        mockLitterReportManager
+            .Setup(m => m.UpdateLitterReportAsync(It.IsAny<LitterReport>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(testLitterReport);
+
+        await sut.Init(testLitterReport.Id);
+
+        // Act
+        await sut.MarkLitterReportCleanedCommand.ExecuteAsync(null);
+
+        // Assert
+        mockLitterReportManager.Verify(
+            m => m.UpdateLitterReportAsync(
+                It.Is<LitterReport>(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task MarkLitterReportCleaned_PreservesLitterImages()
+    {
+        // Arrange - this was the bug: images were being lost during update
+        var testLitterReport = CreateLitterReportForCurrentUser(statusId: (int)LitterReportStatusEnum.New);
+        testLitterReport.LitterImages = new List<LitterImage>
+        {
+            CreateTestLitterImage(testLitterReport.Id),
+            CreateTestLitterImage(testLitterReport.Id),
+        };
+        SetupGetLitterReport(testLitterReport);
+        mockLitterReportManager
+            .Setup(m => m.UpdateLitterReportAsync(It.IsAny<LitterReport>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(testLitterReport);
+
+        await sut.Init(testLitterReport.Id);
+
+        // Act
+        await sut.MarkLitterReportCleanedCommand.ExecuteAsync(null);
+
+        // Assert - images must still be present when update is called
+        mockLitterReportManager.Verify(
+            m => m.UpdateLitterReportAsync(
+                It.Is<LitterReport>(lr => lr.LitterImages != null && lr.LitterImages.Count == 2),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteLitterReport_CallsDelete()
+    {
+        // Arrange
+        var testLitterReport = CreateLitterReportForCurrentUser(statusId: (int)LitterReportStatusEnum.New);
+        SetupGetLitterReport(testLitterReport);
+
+        await sut.Init(testLitterReport.Id);
+
+        // Act — Navigation.PopAsync() throws NullReferenceException in test (no Shell),
+        // but the delete call happens before navigation
+        try
+        {
+            await sut.DeleteLitterReportCommand.ExecuteAsync(null);
+        }
+        catch (NullReferenceException)
+        {
+            // Expected: Shell.Current is null in test environment
+        }
+
+        // Assert
+        mockLitterReportManager.Verify(
+            m => m.DeleteLitterReportAsync(testLitterReport.Id, It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
     private LitterReport CreateLitterReportForCurrentUser(int statusId = (int)LitterReportStatusEnum.New)
     {
         var testLitterReport = TestHelpers.CreateTestLitterReport();

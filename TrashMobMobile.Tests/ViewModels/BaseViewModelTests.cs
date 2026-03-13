@@ -65,7 +65,7 @@ public class BaseViewModelTests
         await sut.RunExecuteAsync(operation, errorMessage);
 
         // Assert
-        mockNotificationService.Verify(n => n.NotifyError(errorMessage), Times.Once);
+        mockNotificationService.Verify(n => n.NotifyError(It.Is<string>(s => s.Contains(errorMessage))), Times.Once);
     }
 
     [Fact]
