@@ -12,6 +12,7 @@ public class HomeFeedViewModelTests
 {
     private readonly Mock<IMobEventManager> mockMobEventManager;
     private readonly Mock<ILitterReportManager> mockLitterReportManager;
+    private readonly Mock<IStatsRestService> mockStatsRestService;
     private readonly Mock<INotificationService> mockNotificationService;
     private readonly Mock<IUserManager> mockUserManager;
     private readonly HomeFeedViewModel sut;
@@ -20,15 +21,21 @@ public class HomeFeedViewModelTests
     {
         mockMobEventManager = new Mock<IMobEventManager>();
         mockLitterReportManager = new Mock<ILitterReportManager>();
+        mockStatsRestService = new Mock<IStatsRestService>();
         mockNotificationService = new Mock<INotificationService>();
         mockUserManager = new Mock<IUserManager>();
 
         var testUser = TestHelpers.CreateTestUser();
         mockUserManager.Setup(m => m.CurrentUser).Returns(testUser);
 
+        mockStatsRestService
+            .Setup(m => m.GetUserStatsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Stats());
+
         sut = new HomeFeedViewModel(
             mockMobEventManager.Object,
             mockLitterReportManager.Object,
+            mockStatsRestService.Object,
             mockNotificationService.Object,
             mockUserManager.Object);
     }
@@ -43,7 +50,7 @@ public class HomeFeedViewModelTests
         await sut.Init();
 
         // Assert
-        Assert.Equal("Welcome, TestUser!", sut.WelcomeMessage);
+        Assert.Equal("Hi, TestUser", sut.WelcomeMessage);
     }
 
     [Fact]
