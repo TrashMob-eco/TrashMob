@@ -130,13 +130,19 @@ namespace TrashMob.Controllers.V2
         public async Task<IActionResult> UpdateLitterReport(LitterReportDto litterReport,
             CancellationToken cancellationToken)
         {
+            var imageCount = litterReport.Images?.Count ?? 0;
             logger.LogInformation("V2 UpdateLitterReport Id={Id}, ImageCount={ImageCount}",
-                litterReport.Id, litterReport.Images?.Count ?? -1);
+                litterReport.Id, imageCount);
+
+            if (imageCount == 0)
+            {
+                return Problem(
+                    detail: $"Litter report must have at least one image. Received 0 images for report {litterReport.Id}.",
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Validation failed");
+            }
 
             var entity = litterReport.ToEntity();
-
-            logger.LogInformation("V2 UpdateLitterReport entity LitterImageCount={LitterImageCount}",
-                entity.LitterImages?.Count ?? -1);
 
             if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin))
             {
@@ -150,7 +156,7 @@ namespace TrashMob.Controllers.V2
                 return Ok(updatedLitterReport.ToV2Dto());
             }
 
-            return Problem(detail: "Failed to update litter report.", statusCode: StatusCodes.Status400BadRequest, title: "Update failed");
+            return Problem(detail: "Failed to update litter report (manager returned null).", statusCode: StatusCodes.Status400BadRequest, title: "Update failed");
         }
 
         /// <summary>
