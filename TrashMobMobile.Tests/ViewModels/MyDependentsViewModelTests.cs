@@ -85,9 +85,9 @@ public class MyDependentsViewModelTests
         await sut.Init();
 
         // Assert
-        Assert.Equal("Alice", sut.Dependents[0].FirstName);
-        Assert.Equal("Mike", sut.Dependents[1].FirstName);
-        Assert.Equal("Zoe", sut.Dependents[2].FirstName);
+        Assert.Equal("Alice", sut.Dependents[0].Dependent.FirstName);
+        Assert.Equal("Mike", sut.Dependents[1].Dependent.FirstName);
+        Assert.Equal("Zoe", sut.Dependents[2].Dependent.FirstName);
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class MyDependentsViewModelTests
         // so ExecuteAsync will catch the NullReferenceException from Shell.Current being null)
         // We verify the service method signature instead
         mockDependentRestService
-            .Setup(m => m.DeleteDependentAsync(testUser.Id, toDelete.Id, It.IsAny<CancellationToken>()))
+            .Setup(m => m.DeleteDependentAsync(testUser.Id, toDelete.Dependent.Id, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         // Act — the command will fail due to Shell.Current being null,
