@@ -193,6 +193,56 @@ public class EditLitterReportViewModelTests
         Assert.True(sut.ReportIsValid);
     }
 
+    [Fact]
+    public async Task SaveLitterReport_CallsUpdateWithCorrectData()
+    {
+        // Arrange
+        var testLitterReport = CreateTestLitterReportWithImages(imageCount: 2);
+        SetupGetLitterReport(testLitterReport);
+        mockLitterReportManager
+            .Setup(m => m.UpdateLitterReportAsync(It.IsAny<LitterReport>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(testLitterReport);
+
+        await sut.Init(testLitterReport.Id);
+
+        sut.Name = "Updated Name Here";
+        sut.Description = "Updated Description Here";
+
+        // Act
+        await sut.SaveLitterReportCommand.ExecuteAsync(null);
+
+        // Assert
+        mockLitterReportManager.Verify(
+            m => m.UpdateLitterReportAsync(
+                It.Is<LitterReport>(lr =>
+                    lr.Name == "Updated Name Here" &&
+                    lr.Description == "Updated Description Here" &&
+                    lr.LitterImages.Count == 2),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task SaveLitterReport_WhenInvalid_DoesNotCallUpdate()
+    {
+        // Arrange
+        var testLitterReport = CreateTestLitterReportWithImages();
+        SetupGetLitterReport(testLitterReport);
+
+        await sut.Init(testLitterReport.Id);
+
+        sut.Name = "Short"; // Too short — validation fails
+        sut.Description = "Valid Description Here";
+
+        // Act
+        await sut.SaveLitterReportCommand.ExecuteAsync(null);
+
+        // Assert
+        mockLitterReportManager.Verify(
+            m => m.UpdateLitterReportAsync(It.IsAny<LitterReport>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
     private void SetupGetLitterReport(LitterReport litterReport)
     {
         mockLitterReportManager
