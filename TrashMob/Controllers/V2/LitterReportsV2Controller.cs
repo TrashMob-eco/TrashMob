@@ -131,13 +131,19 @@ namespace TrashMob.Controllers.V2
             CancellationToken cancellationToken)
         {
             var imageCount = litterReport.Images?.Count ?? 0;
-            logger.LogInformation("V2 UpdateLitterReport Id={Id}, ImageCount={ImageCount}",
-                litterReport.Id, imageCount);
+            logger.LogInformation("V2 UpdateLitterReport Id={Id}, ImageCount={ImageCount}, Name={Name}",
+                litterReport.Id, imageCount, litterReport.Name);
 
             if (imageCount == 0)
             {
+                // Log raw body for diagnostics
+                HttpContext.Request.Body.Position = 0;
+                using var reader = new System.IO.StreamReader(HttpContext.Request.Body);
+                var rawBody = await reader.ReadToEndAsync(cancellationToken);
+                logger.LogWarning("V2 UpdateLitterReport 0 images. RawBody={RawBody}", rawBody);
+
                 return Problem(
-                    detail: "Litter report must have at least one image.",
+                    detail: $"Litter report must have at least one image. Received 0 images for report {litterReport.Id}.",
                     statusCode: StatusCodes.Status400BadRequest,
                     title: "Validation failed");
             }

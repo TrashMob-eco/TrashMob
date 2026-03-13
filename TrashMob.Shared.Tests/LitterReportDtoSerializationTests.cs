@@ -156,10 +156,11 @@ namespace TrashMob.Shared.Tests
         }
 
         [Fact]
-        public void ServerOptions_WithoutCaseInsensitive_FailsToDeserializeCamelCase()
+        public void ServerOptions_WithoutCaseInsensitive_StillWorksWithJsonPropertyName()
         {
-            // This test proves the bug: if PropertyNameCaseInsensitive is not set,
-            // camelCase JSON won't map to PascalCase C# properties
+            // With [JsonPropertyName] attributes on DTO properties, deserialization
+            // succeeds even without PropertyNameCaseInsensitive because the attribute
+            // explicitly defines the JSON property name.
             var dto = new LitterReportDto
             {
                 Id = Guid.NewGuid(),
@@ -174,10 +175,11 @@ namespace TrashMob.Shared.Tests
 
             var deserialized = JsonSerializer.Deserialize<LitterReportDto>(json, StrictServerOptions);
 
-            // With strict case matching, camelCase "images" won't match "Images"
+            // With [JsonPropertyName] attributes, deserialization works regardless of case sensitivity settings
             Assert.NotNull(deserialized);
-            Assert.Empty(deserialized.Images); // Images will be empty!
-            Assert.Equal(Guid.Empty, deserialized.Id); // Even Id won't match "id"!
+            Assert.Single(deserialized.Images);
+            Assert.Equal(dto.Id, deserialized.Id);
+            Assert.Equal(dto.Images[0].ImageUrl, deserialized.Images[0].ImageUrl);
         }
     }
 }
