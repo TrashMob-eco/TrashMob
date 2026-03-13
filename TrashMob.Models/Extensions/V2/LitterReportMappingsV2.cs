@@ -29,7 +29,7 @@ namespace TrashMob.Models.Extensions.V2
                     .Where(li => !li.IsCancelled)
                     .Select(li => li.ToV2Dto())
                     .ToList()
-                    ?? (IReadOnlyList<LitterImageDto>)[],
+                    ?? [],
             };
         }
 
