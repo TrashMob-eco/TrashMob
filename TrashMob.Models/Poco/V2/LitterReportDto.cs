@@ -48,6 +48,6 @@ namespace TrashMob.Models.Poco.V2
         /// <summary>
         /// Gets or sets the associated images for this litter report.
         /// </summary>
-        public IReadOnlyList<LitterImageDto> Images { get; set; } = [];
+        public List<LitterImageDto> Images { get; set; } = [];
     }
 }
