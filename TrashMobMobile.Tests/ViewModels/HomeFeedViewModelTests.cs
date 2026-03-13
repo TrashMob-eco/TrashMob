@@ -51,6 +51,9 @@ public class HomeFeedViewModelTests
 
         // Assert
         Assert.Equal("Hi, TestUser", sut.WelcomeMessage);
+        Assert.Equal("T", sut.UserInitials);
+        Assert.Contains("Seattle", sut.LocationSummary);
+        Assert.Contains("WA", sut.LocationSummary);
     }
 
     [Fact]
