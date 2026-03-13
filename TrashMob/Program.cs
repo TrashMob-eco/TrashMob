@@ -391,13 +391,6 @@ public class Program
         var enableSwagger = builder.Environment.IsDevelopment() ||
                             builder.Configuration.GetValue<bool>("EnableSwagger");
 
-        // Enable request body buffering so controllers can re-read the body for diagnostics
-        app.Use(async (context, next) =>
-        {
-            context.Request.EnableBuffering();
-            await next();
-        });
-
         app.UseMiddleware<CorrelationIdMiddleware>();
         app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 

@@ -36,13 +36,8 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             try
             {
-                if (litterReport.LitterImages is null || litterReport.LitterImages.Count == 0)
-                {
-                    logger.LogWarning("UpdateAsync returning null: LitterImages is null or empty for report {Id}", litterReport.Id);
-                    return null;
-                }
-
-                logger.LogInformation("Updating litter report {Id} with {ImageCount} images", litterReport.Id, litterReport.LitterImages.Count);
+                logger.LogInformation("Updating litter report {Id} with {ImageCount} images",
+                    litterReport.Id, litterReport.LitterImages?.Count ?? 0);
 
                 var existingInstance = Repo.Get(l => l.Id == litterReport.Id, withNoTracking: false)
                     .Include(l => l.LitterImages)
@@ -63,32 +58,37 @@ namespace TrashMob.Shared.Managers.LitterReport
                 existingInstance.Description = litterReport.Description;
                 existingInstance.LitterReportStatusId = litterReport.LitterReportStatusId;
 
-                var existingImageIds = existingInstance.LitterImages.Select(x => x.Id).ToHashSet();
-
-                foreach (var litterImage in litterReport.LitterImages)
+                // Only process image changes if images were provided in the request.
+                // If no images sent, keep existing images unchanged (metadata-only update).
+                if (litterReport.LitterImages is not null && litterReport.LitterImages.Count > 0)
                 {
-                    if (!existingImageIds.Contains(litterImage.Id))
+                    var existingImageIds = existingInstance.LitterImages.Select(x => x.Id).ToHashSet();
+
+                    foreach (var litterImage in litterReport.LitterImages)
                     {
-                        litterImage.LitterReportId = litterReport.Id;
-                        litterImage.CreatedByUserId = userId;
-                        litterImage.CreatedDate = DateTime.UtcNow;
-                        existingInstance.LitterImages.Add(litterImage);
+                        if (!existingImageIds.Contains(litterImage.Id))
+                        {
+                            litterImage.LitterReportId = litterReport.Id;
+                            litterImage.CreatedByUserId = userId;
+                            litterImage.CreatedDate = DateTime.UtcNow;
+                            existingInstance.LitterImages.Add(litterImage);
+                        }
                     }
-                }
 
-                List<Guid> deletedIds = [];
-                foreach (var litterImage in existingInstance.LitterImages)
-                {
-                    if (!litterReport.LitterImages.Select(x => x.Id).Contains(litterImage.Id))
+                    List<Guid> deletedIds = [];
+                    foreach (var litterImage in existingInstance.LitterImages)
                     {
-                        deletedIds.Add(litterImage.Id);
+                        if (!litterReport.LitterImages.Select(x => x.Id).Contains(litterImage.Id))
+                        {
+                            deletedIds.Add(litterImage.Id);
+                        }
                     }
-                }
 
-                foreach (var deletedId in deletedIds)
-                {
-                    await litterImageManager.DeleteAsync(deletedId, userId, cancellationToken);
-                    existingInstance.LitterImages.Remove(existingInstance.LitterImages.First(x => x.Id == deletedId));
+                    foreach (var deletedId in deletedIds)
+                    {
+                        await litterImageManager.DeleteAsync(deletedId, userId, cancellationToken);
+                        existingInstance.LitterImages.Remove(existingInstance.LitterImages.First(x => x.Id == deletedId));
+                    }
                 }
 
                 var resultLitterReport = await base.UpdateAsync(existingInstance, userId, cancellationToken);

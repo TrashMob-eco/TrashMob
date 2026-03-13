@@ -23,7 +23,16 @@ namespace TrashMobMobile.Services
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
                 var dto = JsonConvert.DeserializeObject<LitterReportDto>(content)!;
-                return dto.ToEntity();
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"[LitterReport] GetLitterReportAsync Id={litterReportId}, DtoImages={dto.Images?.Count ?? 0}, ResponseLength={content.Length}");
+
+                var entity = dto.ToEntity();
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"[LitterReport] GetLitterReportAsync after ToEntity, EntityImages={entity.LitterImages?.Count ?? 0}");
+
+                return entity;
             }
         }
 
@@ -53,7 +62,19 @@ namespace TrashMobMobile.Services
         public async Task<LitterReport> UpdateLitterReportAsync(LitterReport litterReport,
             CancellationToken cancellationToken = default)
         {
+            var entityImageCount = litterReport.LitterImages?.Count ?? 0;
             var dto = litterReport.ToV2Dto();
+            var dtoImageCount = dto.Images?.Count ?? 0;
+
+            System.Diagnostics.Debug.WriteLine(
+                $"[LitterReport] UpdateLitterReportAsync Id={litterReport.Id}, EntityImages={entityImageCount}, DtoImages={dtoImageCount}");
+
+            if (dtoImageCount == 0 && entityImageCount > 0)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"[LitterReport] WARNING: Images lost during ToV2Dto()! Entity had {entityImageCount} images but DTO has 0");
+            }
+
             var content = JsonContent.Create(dto, typeof(LitterReportDto), null, SerializerOptions);
 
             using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
