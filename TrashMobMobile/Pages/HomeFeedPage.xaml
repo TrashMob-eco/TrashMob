@@ -6,23 +6,147 @@
              xmlns:converters="clr-namespace:TrashMobMobile.Converters"
              x:DataType="viewModels:HomeFeedViewModel"
              x:Class="TrashMobMobile.Pages.HomeFeedPage"
-             Title="Home">
+             Title="Home"
+             Shell.NavBarIsVisible="False">
     <ContentPage.Resources>
         <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
     </ContentPage.Resources>
 
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy, Mode=OneWay}">
         <ScrollView>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="0">
 
-                <!-- Welcome Header -->
-                <Label Text="{Binding WelcomeMessage}"
-                       AutomationId="WelcomeMessage"
-                       FontFamily="LexendSemibold"
-                       FontSize="Title"
-                       Margin="10,15,10,5" />
+                <!-- ═══ TOP BAR ═══ -->
+                <Grid ColumnDefinitions="Auto, *, Auto, Auto"
+                      Padding="14,12,14,8"
+                      ColumnSpacing="12">
 
-                <!-- Upcoming Events Near You -->
+                    <!-- User avatar circle -->
+                    <Border Grid.Column="0"
+                            StrokeShape="RoundRectangle 20"
+                            StrokeThickness="0"
+                            WidthRequest="40" HeightRequest="40"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                        <Label Text="{Binding UserInitials}"
+                               TextColor="White"
+                               FontFamily="LexendSemibold"
+                               FontSize="14"
+                               HorizontalTextAlignment="Center"
+                               VerticalTextAlignment="Center"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+
+                    <!-- Greeting + location -->
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0">
+                        <Label Text="{Binding WelcomeMessage}"
+                               AutomationId="WelcomeMessage"
+                               FontFamily="LexendSemibold"
+                               FontSize="16"
+                               LineBreakMode="TailTruncation" />
+                        <Label Text="{Binding LocationSummary}"
+                               FontSize="12"
+                               IsVisible="{Binding LocationSummary, Converter={StaticResource StringToBoolConverter}}"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </VerticalStackLayout>
+
+                    <!-- Notification bell (placeholder for future) -->
+                    <ImageButton Grid.Column="2"
+                                 WidthRequest="32" HeightRequest="32"
+                                 Padding="4"
+                                 BackgroundColor="Transparent"
+                                 VerticalOptions="Center">
+                        <ImageButton.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconBellOutline}"
+                                             Size="22"
+                                             Color="{AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}" />
+                        </ImageButton.Source>
+                    </ImageButton>
+
+                    <!-- Settings / profile -->
+                    <ImageButton Grid.Column="3"
+                                 Command="{Binding OpenSettingsCommand}"
+                                 WidthRequest="32" HeightRequest="32"
+                                 Padding="4"
+                                 BackgroundColor="Transparent"
+                                 VerticalOptions="Center">
+                        <ImageButton.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconCog}"
+                                             Size="22"
+                                             Color="{AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}" />
+                        </ImageButton.Source>
+                    </ImageButton>
+                </Grid>
+
+                <!-- ═══ QUICK IMPACT STATS ═══ -->
+                <Border Margin="10,4,10,8"
+                        Padding="12,10"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                    <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="4">
+
+                        <!-- Events stat -->
+                        <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="0">
+                            <Label Text="{Binding PersonalStats.TotalEvents}"
+                                   TextColor="White"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="20"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Events"
+                                   TextColor="#FFFFFFCC"
+                                   FontSize="11"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+
+                        <!-- Bags stat -->
+                        <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="0">
+                            <Label Text="{Binding PersonalStats.TotalBags}"
+                                   TextColor="White"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="20"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Bags"
+                                   TextColor="#FFFFFFCC"
+                                   FontSize="11"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+
+                        <!-- Weight stat -->
+                        <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="0">
+                            <Label Text="{Binding PersonalStats.TotalWeightInPounds, StringFormat='{0:N0}'}"
+                                   TextColor="White"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="20"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Lbs"
+                                   TextColor="#FFFFFFCC"
+                                   FontSize="11"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+
+                        <!-- Hours stat -->
+                        <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" Spacing="0">
+                            <Label Text="{Binding PersonalStats.TotalHours}"
+                                   TextColor="White"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="20"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Hours"
+                                   TextColor="#FFFFFFCC"
+                                   FontSize="11"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+
+                    </Grid>
+                </Border>
+
+                <!-- ═══ UPCOMING EVENTS ═══ -->
                 <Label Text="Upcoming Events"
                        Style="{StaticResource SectionHeader}" />
 
@@ -76,7 +200,7 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                <!-- Nearby Litter Reports -->
+                <!-- ═══ RECENT LITTER REPORTS ═══ -->
                 <Label Text="Recent Litter Reports"
                        Style="{StaticResource SectionHeader}" />
 
@@ -137,47 +261,64 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                <!-- Teams Discovery -->
-                <Label Text="Teams"
+                <!-- ═══ DISCOVER ═══ -->
+                <Label Text="Discover"
                        Style="{StaticResource SectionHeader}" />
 
-                <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
-                    <Grid ColumnDefinitions="*, Auto" Padding="10,10">
-                        <VerticalStackLayout Grid.Column="0" Spacing="4">
-                            <Label Text="Find a Team"
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="6" Margin="5,3" Padding="0">
+                    <!-- Teams card -->
+                    <Border Grid.Column="0" Style="{x:StaticResource RoundBorder}" Padding="12,14">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BrowseTeamsCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                            <Image WidthRequest="28" HeightRequest="28" HorizontalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                     Glyph="{StaticResource IconAccountMultiple}"
+                                                     Size="28"
+                                                     Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Teams"
                                    FontFamily="LexendSemibold"
-                                   FontSize="Small" />
-                            <Label Text="Join a cleanup team near you and make a bigger impact together."
+                                   FontSize="Small"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Join a cleanup crew"
                                    FontSize="Micro"
+                                   HorizontalTextAlignment="Center"
                                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                         </VerticalStackLayout>
-                        <Button Grid.Column="1"
-                                Text="Browse"
-                                Command="{Binding BrowseTeamsCommand}"
-                                Style="{StaticResource SecondarySmallButton}" />
-                    </Grid>
-                </Border>
+                    </Border>
 
-                <!-- Communities Discovery -->
-                <Label Text="Communities"
-                       Style="{StaticResource SectionHeader}" />
-
-                <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
-                    <Grid ColumnDefinitions="*, Auto" Padding="10,10">
-                        <VerticalStackLayout Grid.Column="0" Spacing="4">
-                            <Label Text="Explore Communities"
+                    <!-- Communities card -->
+                    <Border Grid.Column="1" Style="{x:StaticResource RoundBorder}" Padding="12,14">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BrowseCommunitiesCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                            <Image WidthRequest="28" HeightRequest="28" HorizontalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                     Glyph="{StaticResource IconAccountGroup}"
+                                                     Size="28"
+                                                     Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Communities"
                                    FontFamily="LexendSemibold"
-                                   FontSize="Small" />
-                            <Label Text="Discover local cleanup communities and see their impact."
+                                   FontSize="Small"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Explore local efforts"
                                    FontSize="Micro"
+                                   HorizontalTextAlignment="Center"
                                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                         </VerticalStackLayout>
-                        <Button Grid.Column="1"
-                                Text="Browse"
-                                Command="{Binding BrowseCommunitiesCommand}"
-                                Style="{StaticResource SecondarySmallButton}" />
-                    </Grid>
-                </Border>
+                    </Border>
+                </Grid>
+
+                <!-- Bottom spacing -->
+                <BoxView HeightRequest="10" Color="Transparent" />
 
             </VerticalStackLayout>
         </ScrollView>

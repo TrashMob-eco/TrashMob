@@ -12,15 +12,26 @@ using TrashMobMobile.Services;
 public partial class HomeFeedViewModel(
     IMobEventManager mobEventManager,
     ILitterReportManager litterReportManager,
+    IStatsRestService statsRestService,
     INotificationService notificationService,
     IUserManager userManager) : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly ILitterReportManager litterReportManager = litterReportManager;
+    private readonly IStatsRestService statsRestService = statsRestService;
     private readonly IUserManager userManager = userManager;
 
     [ObservableProperty]
     private string welcomeMessage = string.Empty;
+
+    [ObservableProperty]
+    private string userInitials = string.Empty;
+
+    [ObservableProperty]
+    private string locationSummary = string.Empty;
+
+    [ObservableProperty]
+    private StatisticsViewModel personalStats = new();
 
     [ObservableProperty]
     private bool areEventsFound;
@@ -45,12 +56,15 @@ public partial class HomeFeedViewModel(
         await ExecuteAsync(async () =>
         {
             var user = userManager.CurrentUser;
-            WelcomeMessage = $"Welcome, {user.UserName}!";
+            WelcomeMessage = $"Hi, {user.UserName}";
+            UserInitials = GetInitials(user.UserName);
+            LocationSummary = BuildLocationSummary(user);
 
             var tasks = new (string Name, Func<Task> Action)[]
             {
                 ("RefreshUpcomingEvents", RefreshUpcomingEvents),
                 ("RefreshNearbyLitterReports", RefreshNearbyLitterReports),
+                ("RefreshPersonalStats", RefreshPersonalStats),
             };
 
             var errors = new List<string>();
@@ -104,6 +118,12 @@ public partial class HomeFeedViewModel(
     private async Task BrowseCommunities()
     {
         await Shell.Current.GoToAsync(nameof(BrowseCommunitiesPage));
+    }
+
+    [RelayCommand]
+    private async Task OpenSettings()
+    {
+        await Shell.Current.GoToAsync(nameof(SetUserLocationPreferencePage));
     }
 
     [RelayCommand]
@@ -189,6 +209,42 @@ public partial class HomeFeedViewModel(
 
         AreLitterReportsFound = NearbyLitterReports.Count > 0;
         AreNoLitterReportsFound = !AreLitterReportsFound;
+    }
+
+    private async Task RefreshPersonalStats()
+    {
+        var user = userManager.CurrentUser;
+        var stats = await statsRestService.GetUserStatsAsync(user.Id);
+
+        PersonalStats = new StatisticsViewModel
+        {
+            TotalEvents = stats.TotalEvents,
+            TotalBags = stats.TotalBags,
+            TotalHours = stats.TotalHours,
+            TotalWeightInPounds = stats.TotalWeightInPounds,
+            TotalLitterReportsSubmitted = stats.TotalLitterReportsSubmitted,
+        };
+    }
+
+    private static string GetInitials(string? userName)
+    {
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            return "?";
+        }
+
+        var parts = userName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length >= 2
+            ? $"{parts[0][0]}{parts[^1][0]}".ToUpperInvariant()
+            : $"{parts[0][0]}".ToUpperInvariant();
+    }
+
+    private static string BuildLocationSummary(User user)
+    {
+        var parts = new List<string>();
+        if (!string.IsNullOrEmpty(user.City)) parts.Add(user.City);
+        if (!string.IsNullOrEmpty(user.Region)) parts.Add(user.Region);
+        return parts.Count > 0 ? string.Join(", ", parts) : string.Empty;
     }
 
     private static double? GetMaxDistanceKm(User user)

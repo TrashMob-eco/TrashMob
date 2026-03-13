@@ -47,6 +47,7 @@ public class ProfileViewModelTests
 
         // Assert
         Assert.Equal("TestUser", sut.UserName);
+        Assert.Equal("T", sut.UserInitials);
         Assert.Equal("test@example.com", sut.UserEmail);
         Assert.Contains("Member since", sut.MemberSince);
     }

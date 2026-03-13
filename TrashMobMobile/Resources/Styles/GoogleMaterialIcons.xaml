@@ -160,7 +160,7 @@
     <!-- <x:String x:Key="IconBedOutline">&#xf0099;</x:String> -->
     <!-- <x:String x:Key="IconBell">&#xf009a;</x:String> -->
     <!-- <x:String x:Key="IconBellOff">&#xf009b;</x:String> -->
-    <!-- <x:String x:Key="IconBellOutline">&#xf009c;</x:String> -->
+    <x:String x:Key="IconBellOutline">&#xf009c;</x:String>
     <!-- <x:String x:Key="IconBellPlus">&#xf009d;</x:String> -->
     <!-- <x:String x:Key="IconBellRing">&#xf009e;</x:String> -->
     <!-- <x:String x:Key="IconBellRingOutline">&#xf009f;</x:String> -->
@@ -1173,7 +1173,7 @@
     <!-- <x:String x:Key="IconServerPlus">&#xf0490;</x:String> -->
     <!-- <x:String x:Key="IconServerRemove">&#xf0491;</x:String> -->
     <!-- <x:String x:Key="IconServerSecurity">&#xf0492;</x:String> -->
-    <!-- <x:String x:Key="IconCog">&#xf0493;</x:String> -->
+    <x:String x:Key="IconCog">&#xf0493;</x:String>
     <!-- <x:String x:Key="IconCogBox">&#xf0494;</x:String> -->
     <!-- <x:String x:Key="IconShapePlus">&#xf0495;</x:String> -->
     <!-- <x:String x:Key="IconShare">&#xf0496;</x:String> -->
