@@ -137,7 +137,7 @@ namespace TrashMob.Controllers.V2
             if (imageCount == 0)
             {
                 return Problem(
-                    detail: $"Litter report must have at least one image. Received 0 images for report {litterReport.Id}.",
+                    detail: "Litter report must have at least one image.",
                     statusCode: StatusCodes.Status400BadRequest,
                     title: "Validation failed");
             }
