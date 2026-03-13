@@ -154,9 +154,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
         await ExecuteAsync(async () =>
         {
             LitterReport.LitterReportStatusId = CleanedLitterReportStatus;
-            var tempLitterReport = LitterReport;
-            tempLitterReport.LitterImages.Clear();
-            await litterReportManager.UpdateLitterReportAsync(tempLitterReport);
+            await litterReportManager.UpdateLitterReportAsync(LitterReport);
             await Navigation.PopAsync();
         }, "An error occurred while updating the status of this litter report. Please try again.");
     }

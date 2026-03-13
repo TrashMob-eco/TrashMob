@@ -38,10 +38,11 @@ namespace TrashMob.Shared.Managers.LitterReport
             {
                 if (litterReport.LitterImages is null || litterReport.LitterImages.Count == 0)
                 {
+                    logger.LogWarning("UpdateAsync returning null: LitterImages is null or empty for report {Id}", litterReport.Id);
                     return null;
                 }
 
-                logger.LogInformation("Updating litter report");
+                logger.LogInformation("Updating litter report {Id} with {ImageCount} images", litterReport.Id, litterReport.LitterImages.Count);
 
                 var existingInstance = Repo.Get(l => l.Id == litterReport.Id, withNoTracking: false)
                     .Include(l => l.LitterImages)
@@ -49,6 +50,7 @@ namespace TrashMob.Shared.Managers.LitterReport
 
                 if (existingInstance is null)
                 {
+                    logger.LogWarning("UpdateAsync returning null: existing instance not found for report {Id}", litterReport.Id);
                     return null;
                 }
 

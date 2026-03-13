@@ -130,9 +130,13 @@ namespace TrashMob.Controllers.V2
         public async Task<IActionResult> UpdateLitterReport(LitterReportDto litterReport,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation("V2 UpdateLitterReport Id={Id}", litterReport.Id);
+            logger.LogInformation("V2 UpdateLitterReport Id={Id}, ImageCount={ImageCount}",
+                litterReport.Id, litterReport.Images?.Count ?? -1);
 
             var entity = litterReport.ToEntity();
+
+            logger.LogInformation("V2 UpdateLitterReport entity LitterImageCount={LitterImageCount}",
+                entity.LitterImages?.Count ?? -1);
 
             if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin))
             {
