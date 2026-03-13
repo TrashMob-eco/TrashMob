@@ -36,6 +36,11 @@ namespace TrashMob.Controllers.V2
         IAuthorizationService authorizationService,
         ILogger<LitterReportsV2Controller> logger) : ControllerBase
     {
+        private static readonly System.Text.Json.JsonSerializerOptions ManualDeserializeOptions = new()
+        {
+            PropertyNameCaseInsensitive = true,
+        };
+
         private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
 
         /// <summary>
@@ -116,8 +121,8 @@ namespace TrashMob.Controllers.V2
 
         /// <summary>
         /// Updates an existing litter report. Only the owner or admin can update.
+        /// Reads and deserializes the request body manually to bypass model binding.
         /// </summary>
-        /// <param name="litterReport">The litter report to update.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns the updated litter report.</response>
         /// <response code="403">User is not authorized.</response>
@@ -127,23 +132,34 @@ namespace TrashMob.Controllers.V2
         [ProducesResponseType(typeof(LitterReportDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateLitterReport(LitterReportDto litterReport,
-            CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateLitterReport(CancellationToken cancellationToken)
         {
+            // Bypass ASP.NET Core model binding: read and deserialize body manually
+            HttpContext.Request.Body.Position = 0;
+            using var reader = new System.IO.StreamReader(HttpContext.Request.Body);
+            var rawBody = await reader.ReadToEndAsync(cancellationToken);
+
+            logger.LogInformation("V2 UpdateLitterReport RawBodyLength={Length}, RawBody={RawBody}",
+                rawBody.Length, rawBody);
+
+            var litterReport = System.Text.Json.JsonSerializer.Deserialize<LitterReportDto>(rawBody, ManualDeserializeOptions);
+
+            if (litterReport is null)
+            {
+                return Problem(
+                    detail: "Failed to deserialize litter report from request body.",
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Deserialization failed");
+            }
+
             var imageCount = litterReport.Images?.Count ?? 0;
             logger.LogInformation("V2 UpdateLitterReport Id={Id}, ImageCount={ImageCount}, Name={Name}",
                 litterReport.Id, imageCount, litterReport.Name);
 
             if (imageCount == 0)
             {
-                // Log raw body for diagnostics
-                HttpContext.Request.Body.Position = 0;
-                using var reader = new System.IO.StreamReader(HttpContext.Request.Body);
-                var rawBody = await reader.ReadToEndAsync(cancellationToken);
-                logger.LogWarning("V2 UpdateLitterReport 0 images. RawBody={RawBody}", rawBody);
-
                 return Problem(
-                    detail: $"Litter report must have at least one image. Received 0 images for report {litterReport.Id}.",
+                    detail: $"Litter report must have at least one image. Received 0 images for report {litterReport.Id}. RawBody length: {rawBody.Length}",
                     statusCode: StatusCodes.Status400BadRequest,
                     title: "Validation failed");
             }
