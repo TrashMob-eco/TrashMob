@@ -121,15 +121,9 @@ public partial class HomeFeedViewModel(
     }
 
     [RelayCommand]
-    private async Task OpenProfile()
+    private async Task OpenSettings()
     {
-        await Shell.Current.GoToAsync("//ProfilePage");
-    }
-
-    [RelayCommand]
-    private async Task ViewImpact()
-    {
-        await Shell.Current.GoToAsync("//ImpactPage");
+        await Shell.Current.GoToAsync(nameof(SetUserLocationPreferencePage));
     }
 
     [RelayCommand]

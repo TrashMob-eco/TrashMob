@@ -25,6 +25,9 @@ public partial class ProfileViewModel(
     private string userName = string.Empty;
 
     [ObservableProperty]
+    private string userInitials = string.Empty;
+
+    [ObservableProperty]
     private string userEmail = string.Empty;
 
     [ObservableProperty]
@@ -77,6 +80,7 @@ public partial class ProfileViewModel(
         {
             var user = userManager.CurrentUser;
             UserName = user.UserName ?? string.Empty;
+            UserInitials = GetInitials(user.UserName);
             UserEmail = user.Email ?? string.Empty;
             MemberSince = user.MemberSince.HasValue
                 ? $"Member since {user.MemberSince.Value:MMMM yyyy}"
@@ -306,5 +310,18 @@ public partial class ProfileViewModel(
 
         AreTeamsFound = MyTeams.Count > 0;
         AreNoTeamsFound = !AreTeamsFound;
+    }
+
+    private static string GetInitials(string? userName)
+    {
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            return "?";
+        }
+
+        var parts = userName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length >= 2
+            ? $"{parts[0][0]}{parts[^1][0]}".ToUpperInvariant()
+            : $"{parts[0][0]}".ToUpperInvariant();
     }
 }

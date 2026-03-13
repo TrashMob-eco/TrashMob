@@ -36,7 +36,7 @@
                                HorizontalOptions="Center"
                                VerticalOptions="Center" />
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding OpenProfileCommand}" />
+                            <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
                         </Border.GestureRecognizers>
                     </Border>
 
@@ -69,7 +69,7 @@
 
                     <!-- Settings / profile -->
                     <ImageButton Grid.Column="3"
-                                 Command="{Binding OpenProfileCommand}"
+                                 Command="{Binding OpenSettingsCommand}"
                                  WidthRequest="32" HeightRequest="32"
                                  Padding="4"
                                  BackgroundColor="Transparent"
@@ -89,10 +89,7 @@
                         StrokeShape="RoundRectangle 12"
                         StrokeThickness="0"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ViewImpactCommand}" />
-                    </Border.GestureRecognizers>
-                    <Grid ColumnDefinitions="*, *, *, Auto" ColumnSpacing="4">
+                    <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="4">
 
                         <!-- Events stat -->
                         <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="0">
@@ -120,8 +117,21 @@
                                    HorizontalTextAlignment="Center" />
                         </VerticalStackLayout>
 
-                        <!-- Hours stat -->
+                        <!-- Weight stat -->
                         <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="0">
+                            <Label Text="{Binding PersonalStats.TotalWeightInPounds, StringFormat='{0:N0}'}"
+                                   TextColor="White"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="20"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Lbs"
+                                   TextColor="#FFFFFFCC"
+                                   FontSize="11"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+
+                        <!-- Hours stat -->
+                        <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" Spacing="0">
                             <Label Text="{Binding PersonalStats.TotalHours}"
                                    TextColor="White"
                                    FontFamily="LexendSemibold"
@@ -133,15 +143,6 @@
                                    HorizontalTextAlignment="Center" />
                         </VerticalStackLayout>
 
-                        <!-- Chevron to Impact page -->
-                        <Image Grid.Column="3" WidthRequest="16" HeightRequest="16" VerticalOptions="Center">
-                            <Image.Source>
-                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
-                                                 Glyph="{StaticResource IconChevronRight}"
-                                                 Size="16"
-                                                 Color="#FFFFFFAA" />
-                            </Image.Source>
-                        </Image>
                     </Grid>
                 </Border>
 
