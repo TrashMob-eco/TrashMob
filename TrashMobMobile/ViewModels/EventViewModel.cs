@@ -3,6 +3,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
+using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 
 public partial class EventViewModel : ObservableObject
@@ -144,9 +145,9 @@ public partial class EventViewModel : ObservableObject
 
     public string EventVisibilityText => EventVisibilityId switch
     {
-        (int)EventVisibilityEnum.TeamOnly => "Team Only",
-        (int)EventVisibilityEnum.Private => "Private",
-        _ => "Public",
+        (int)EventVisibilityEnum.TeamOnly => UIConstants.VisibilityTeamOnly,
+        (int)EventVisibilityEnum.Private => UIConstants.VisibilityPrivate,
+        _ => UIConstants.VisibilityPublic,
     };
 
     public Event ToEvent()

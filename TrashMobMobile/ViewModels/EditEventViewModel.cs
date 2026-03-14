@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Sentry;
 using TrashMob.Models;
 using TrashMob.Models.Extensions;
+using TrashMobMobile.Config;
 using TrashMobMobile.Controls;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
@@ -68,11 +69,11 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private bool isTeamPickerVisible;
 
-    public ObservableCollection<string> VisibilityOptions { get; set; } = ["Public", "Team Only", "Private"];
+    public ObservableCollection<string> VisibilityOptions { get; set; } = [UIConstants.VisibilityPublic, UIConstants.VisibilityTeamOnly, UIConstants.VisibilityPrivate];
 
     public ObservableCollection<string> TeamNames { get; set; } = [];
 
-    private string selectedVisibility = "Public";
+    private string selectedVisibility = UIConstants.VisibilityPublic;
 
     public string SelectedVisibility
     {
@@ -87,16 +88,16 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
                 selectedVisibility = value;
                 OnPropertyChanged();
 
-                IsTeamPickerVisible = value == "Team Only";
+                IsTeamPickerVisible = value == UIConstants.VisibilityTeamOnly;
 
                 EventViewModel.EventVisibilityId = value switch
                 {
-                    "Team Only" => (int)EventVisibilityEnum.TeamOnly,
-                    "Private" => (int)EventVisibilityEnum.Private,
+                    UIConstants.VisibilityTeamOnly => (int)EventVisibilityEnum.TeamOnly,
+                    UIConstants.VisibilityPrivate => (int)EventVisibilityEnum.Private,
                     _ => (int)EventVisibilityEnum.Public,
                 };
 
-                if (value != "Team Only")
+                if (value != UIConstants.VisibilityTeamOnly)
                 {
                     EventViewModel.TeamId = null;
                     SelectedTeam = string.Empty;
@@ -243,9 +244,9 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             // Set initial visibility selection from loaded event
             SelectedVisibility = MobEvent.EventVisibilityId switch
             {
-                (int)EventVisibilityEnum.TeamOnly => "Team Only",
-                (int)EventVisibilityEnum.Private => "Private",
-                _ => "Public",
+                (int)EventVisibilityEnum.TeamOnly => UIConstants.VisibilityTeamOnly,
+                (int)EventVisibilityEnum.Private => UIConstants.VisibilityPrivate,
+                _ => UIConstants.VisibilityPublic,
             };
 
             if (MobEvent.TeamId != null)

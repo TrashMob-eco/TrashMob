@@ -142,6 +142,44 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    private async Task TakePhoto()
+    {
+        if (!MediaPicker.Default.IsCaptureSupported)
+        {
+            return;
+        }
+
+        var photo = await MediaPicker.Default.CapturePhotoAsync();
+
+        if (photo != null)
+        {
+            LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+
+            using (var sourceStream = await photo.OpenReadAsync())
+            using (var localFileStream = File.OpenWrite(LocalFilePath))
+            {
+                await sourceStream.CopyToAsync(localFileStream);
+            }
+
+            await ImageCompressor.CompressAsync(LocalFilePath);
+
+            await AddImageToCollection();
+            ValidateReport();
+        }
+    }
+
+    [RelayCommand]
+    private void DeleteLitterImage(LitterImageViewModel? litterImageViewModel)
+    {
+        if (litterImageViewModel != null)
+        {
+            LitterImageViewModels.Remove(litterImageViewModel);
+        }
+
+        ValidateReport();
+    }
+
+    [RelayCommand]
     private async Task SaveLitterReport()
     {
         await ExecuteAsync(async () =>

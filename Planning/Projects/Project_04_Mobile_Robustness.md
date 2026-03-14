@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1-2, 6 Complete; Phases 3-5 Substantial) |
+| **Status** | In Progress (Phases 1-2, 6 Complete; Phases 3-5 Substantial; Phase 7 In Progress) |
 | **Priority** | Critical |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -97,6 +97,21 @@ Mobile app quality directly impacts user retention and app store visibility. A c
 - [ ] Create troubleshooting guide for common errors
 - [ ] Write runbook for investigating Sentry errors
 - [ ] Update developer onboarding documentation
+
+### Phase 7 - Code Health & Infrastructure ✅
+
+Audit-driven cleanup to remove dead code, fix inconsistent error handling, and harden the codebase before the next round of feature work.
+
+- [x] Audit mobile app for dead code, antipatterns, and error handling inconsistencies
+- [x] Delete dead code: `SocialMediaShareViewModel`, `BehaviorAttachment.cs`, unused SVG assets
+- [x] Remove duplicate `INotificationService` fields (MainViewModel, CancelEventViewModel, CreateEventViewModel)
+- [x] Fix silent error handling in `ExploreViewModel` filter handlers (log + notify user)
+- [x] Fix silent error handling in `SearchEventsViewModel` handlers (log + notify user)
+- [x] Fix silent error handling in `MainViewModel.PerformNavigation` (log + notify user)
+- [x] Sanitize `BaseViewModel.ExecuteAsync` error messages (user-friendly text, not raw exception details)
+- [x] Extract duplicated photo handling from `CreateLitterReportPage`/`EditLitterReportPage` code-behind into ViewModel
+- [x] Create `UIConstants` class for hardcoded filter/visibility strings
+- [x] Add `CancellationToken` support to `BaseViewModel.ExecuteAsync`
 
 ### Phase 6 - App Store Presence ✅
 
@@ -472,7 +487,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 23, 2026
+**Last Updated:** March 14, 2026
 **Owner:** Mobile Product Lead + MAUI Developers
-**Status:** In Progress (Phases 1-2 Complete, Phases 3-4 Substantial, Phase 5 Partial, Phase 6 Complete — 203 ViewModel tests, Appium UI tests, extensive UX improvements across 15+ PRs, Entra auth switch, app stores updated with new screenshots and content)
-**Next Review:** Ongoing — remaining items are quality/ops improvements (2 open bugs: #1466, #1459)
+**Status:** In Progress (Phases 1-2 Complete, Phases 3-4 Substantial, Phase 5 Partial, Phase 6 Complete, Phase 7 In Progress — 203 ViewModel tests, Appium UI tests, extensive UX improvements across 15+ PRs, Entra auth switch, app stores updated with new screenshots and content; code health audit underway)
+**Next Review:** Ongoing — remaining items are quality/ops improvements (2 open bugs: #1466, #1459) + Phase 7 code health cleanup

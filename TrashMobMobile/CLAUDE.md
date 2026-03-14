@@ -49,7 +49,8 @@ All ViewModels extend `BaseViewModel` which provides:
 - **`IsBusy`** — Bindable loading state
 - **`IsError`** — Bindable error state
 - **`Navigation`** — Set by Page code-behind for programmatic navigation
-- **`ExecuteAsync(operation, errorMessage)`** — Wraps async operations with error handling, Sentry capture, and connectivity checks
+- **`NotificationService`** — Public property exposing `INotificationService` from the constructor. Use this in child ViewModels — **never store a duplicate private field**
+- **`ExecuteAsync(operation, errorMessage, cancellationToken?)`** — Wraps async operations with error handling, Sentry capture, connectivity checks, and optional cancellation support
 
 ### Standard ViewModel Template
 
@@ -123,13 +124,16 @@ public partial class ThingViewModel(
 - **Don't forget `partial`** — Without it, `[ObservableProperty]` and `[RelayCommand]` silently do nothing
 - **Don't use `async void`** except in `OnNavigatedTo` — Use `[RelayCommand]` + `async Task` instead
 - **Don't catch exceptions manually** — Use `ExecuteAsync()` which handles Sentry + user notification
+- **Don't store duplicate service references** — `BaseViewModel` exposes `NotificationService` as a public property. Use it directly instead of storing a private `INotificationService` field in child ViewModels
+- **Don't silently swallow errors** — Every `catch` block must notify the user (via `NotificationService.NotifyError()`) and report to Sentry. If you must use `async void` (e.g., property-setter-triggered handlers), wrap the body in try/catch with user notification
+- **Don't hardcode UI-facing strings** — Use constants from `Config.UIConstants` (filter labels, visibility text, etc.)
 
 ## Page Pattern
 
 ### Standard Page Template
 
 ```csharp
-// Code-behind
+// Code-behind — keep thin, no business logic
 [QueryProperty(nameof(ThingId), nameof(ThingId))]
 public partial class ThingPage : ContentPage
 {
@@ -162,6 +166,16 @@ public partial class ThingPage : ContentPage
 - Set **`viewModel.Navigation = Navigation`** so ViewModel can navigate
 - Call **`viewModel.Init()`** in `OnNavigatedTo` (not constructor — navigation params aren't set yet)
 - All pages must be `partial class` for XAML code generation
+- **Pages should be thin** — no business logic in code-behind. Only platform-specific UI tasks (e.g., map initialization) belong in code-behind
+- **Use XAML `Command` bindings**, not `Clicked` event handlers in code-behind. Define commands as `[RelayCommand]` methods on the ViewModel and bind in XAML:
+  ```xml
+  <!-- Direct binding -->
+  <Button Command="{Binding SaveCommand}" />
+
+  <!-- From within a DataTemplate (reach parent ViewModel) -->
+  <ImageButton Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ParentViewModel}}, Path=DeleteItemCommand}"
+               CommandParameter="{Binding}" />
+  ```
 
 ## Adding a New Screen (Step-by-Step)
 
@@ -275,13 +289,40 @@ Services are registered in `MauiProgram.cs`:
 builder.Services.AddSingleton<IFeatureService, FeatureRestService>();
 ```
 
+## UI Constants
+
+UI-facing string constants (filter labels, visibility options, status text) live in `Config/UIConstants.cs`. Always use these instead of hardcoded strings:
+
+```csharp
+using TrashMobMobile.Config;
+
+// Good
+SelectedFilter = UIConstants.EventFilterUpcoming;
+
+// Bad
+SelectedFilter = "Upcoming";
+```
+
+Available constants: `EventFilterUpcoming`, `EventFilterCompleted`, `LitterFilterNew`, `LitterFilterAssigned`, `LitterFilterCleaned`, `VisibilityPublic`, `VisibilityTeamOnly`, `VisibilityPrivate`.
+
+When adding new UI-facing strings, add them to `UIConstants` rather than hardcoding.
+
 ## Error Handling
 
 - **All async operations** should use `BaseViewModel.ExecuteAsync()` — it catches exceptions, reports to Sentry, shows user-friendly notifications, and manages `IsBusy`/`IsError` state
 - **Network errors** are detected with `Connectivity.Current.NetworkAccess` and show a specific "No internet" message
 - **Timeout errors** (`TaskCanceledException`) show a specific "Request timed out" message
-- **Other errors** show the custom error message passed to `ExecuteAsync()`
+- **User cancellation** (`OperationCanceledException` when `CancellationToken` is cancelled) is handled silently — no error shown
+- **Other errors** show the custom `errorMessage` passed to `ExecuteAsync()` — **never expose raw exception messages** (`ex.Message`) to users
 - **Never swallow exceptions** — always let `ExecuteAsync` handle them for consistent Sentry reporting
+- **`async void` catch blocks** — When `async void` is unavoidable (e.g., property setter triggers), always wrap in try/catch with `SentrySdk.CaptureException(ex)` and `await NotificationService.NotifyError(...)`. Never leave a catch block empty or with only `Debug.WriteLine`
+- **CancellationToken** — Pass `CancellationToken` through `ExecuteAsync` for operations that support user cancellation:
+  ```csharp
+  await ExecuteAsync(async () =>
+  {
+      await service.LongRunningAsync(cancellationToken);
+  }, "Operation failed.", cancellationToken);
+  ```
 
 ## Testing
 
@@ -322,4 +363,4 @@ Test files are in `TrashMob.Shared.Tests/` alongside backend tests (the mobile V
 - [Project 4 - Mobile Robustness](../Planning/Projects/Project_04_Mobile_Robustness.md) — Stabilization roadmap
 - [Project 38 - Mobile Feature Parity](../Planning/Projects/Project_38_Mobile_Feature_Parity.md) — Feature parity tracker
 
-**Last Updated:** February 15, 2026
+**Last Updated:** March 14, 2026

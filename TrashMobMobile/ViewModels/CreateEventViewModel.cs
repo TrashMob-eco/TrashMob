@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using Color = Microsoft.Maui.Graphics.Color;
 using Sentry;
 using TrashMob.Models;
+using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 using TrashMobMobile.Pages.CreateEvent;
@@ -26,7 +27,6 @@ public partial class CreateEventViewModel : BaseViewModel
     private readonly IEventLitterReportManager eventLitterReportManager;
     private readonly IUserManager userManager;
     private readonly ITeamManager teamManager;
-    private readonly INotificationService notificationService;
     private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
     public ICommand PreviousCommand { get; set; } = null!;
@@ -59,13 +59,13 @@ public partial class CreateEventViewModel : BaseViewModel
     [ObservableProperty]
     private bool isTeamPickerVisible;
 
-    public ObservableCollection<string> VisibilityOptions { get; set; } = ["Public", "Team Only", "Private"];
+    public ObservableCollection<string> VisibilityOptions { get; set; } = [UIConstants.VisibilityPublic, UIConstants.VisibilityTeamOnly, UIConstants.VisibilityPrivate];
 
     public ObservableCollection<string> TeamNames { get; set; } = [];
 
     private List<Team> UserTeams { get; set; } = [];
 
-    private string selectedVisibility = "Public";
+    private string selectedVisibility = UIConstants.VisibilityPublic;
 
     public string SelectedVisibility
     {
@@ -80,16 +80,16 @@ public partial class CreateEventViewModel : BaseViewModel
                 selectedVisibility = value;
                 OnPropertyChanged();
 
-                IsTeamPickerVisible = value == "Team Only";
+                IsTeamPickerVisible = value == UIConstants.VisibilityTeamOnly;
 
                 EventViewModel.EventVisibilityId = value switch
                 {
-                    "Team Only" => (int)EventVisibilityEnum.TeamOnly,
-                    "Private" => (int)EventVisibilityEnum.Private,
+                    UIConstants.VisibilityTeamOnly => (int)EventVisibilityEnum.TeamOnly,
+                    UIConstants.VisibilityPrivate => (int)EventVisibilityEnum.Private,
                     _ => (int)EventVisibilityEnum.Public,
                 };
 
-                if (value != "Team Only")
+                if (value != UIConstants.VisibilityTeamOnly)
                 {
                     EventViewModel.TeamId = null;
                     SelectedTeam = string.Empty;
@@ -154,7 +154,6 @@ public partial class CreateEventViewModel : BaseViewModel
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
-        this.notificationService = notificationService;
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
         this.litterReportManager = litterReportManager;
         this.eventLitterReportManager = eventLitterReportRestService;
@@ -430,6 +429,7 @@ public partial class CreateEventViewModel : BaseViewModel
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError("Failed to open partner details. Please try again.");
         }
     }
 
@@ -578,7 +578,7 @@ public partial class CreateEventViewModel : BaseViewModel
                 });
             }
 
-            await notificationService.Notify("Event has been saved.");
+            await NotificationService.Notify("Event has been saved.");
 
             return true;
         }, "An error has occurred while saving the event. Please wait and try again in a moment.");

@@ -47,7 +47,7 @@
                             Text="Please add between 1 and 5 images of the litter to your report." />
 
                         <Button
-                            Clicked="TakePhoto_Clicked"
+                            Command="{Binding TakePhotoCommand}"
                             IsEnabled="{Binding CanAddImages}"
                             Style="{StaticResource SecondarySmallButton}"
                             Text="Add Litter Image"
@@ -74,7 +74,8 @@
                                                    Text="{Binding Address.DisplayAddress}" />
                                             <ImageButton Grid.Column="2"
                                                        Margin="5"
-                                                       Clicked="DeleteLitterImage_Clicked"
+                                                       Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:CreateLitterReportViewModel}}, Path=DeleteLitterImageCommand}"
+                                                       CommandParameter="{Binding}"
                                                        HeightRequest="40"
                                                        WidthRequest="40"
                                                        VerticalOptions="Center">

@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
 using Sentry;
+using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -15,7 +16,7 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
     private readonly IUserManager userManager = userManager;
 
     [ObservableProperty]
-    private string reportStatus = "New";
+    private string reportStatus = UIConstants.LitterFilterNew;
 
     private LitterImageViewModel? selectedLitterImage;
     private LitterReportViewModel? selectedLitterReport;

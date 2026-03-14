@@ -146,6 +146,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError("Failed to open event. Please try again.");
         }
     }
 
@@ -255,6 +256,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError("Failed to load more events. Please try again.");
         }
         finally
         {
@@ -276,6 +278,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError("Failed to update date range. Please try again.");
         }
         finally
         {
@@ -297,6 +300,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError("Failed to update date range. Please try again.");
         }
         finally
         {

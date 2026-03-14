@@ -123,7 +123,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ProfileViewModel>();
         builder.Services.AddTransient<SearchEventsViewModel>();
         builder.Services.AddTransient<SearchLitterReportsViewModel>();
-        builder.Services.AddTransient<SocialMediaShareViewModel>();
+
         builder.Services.AddTransient<UserLocationPreferenceViewModel>();
         builder.Services.AddTransient<AchievementsViewModel>();
         builder.Services.AddTransient<BrowseCommunitiesViewModel>();
