@@ -152,15 +152,13 @@ All lookup types consolidated into `LookupsV2Controller`. The controller now cov
 - [x] **Invitation statuses** - `InvitationStatusesController` → added to `LookupsV2Controller`
 - [x] **Social media account types** - `SocialMediaAccountTypesController` → added to `LookupsV2Controller`
 
-### Phase 2c - User & Route Endpoints
+### Phase 2c - User & Route Endpoints ✅ COMPLETE
 
-Mobile-relevant user endpoints not yet covered by v2:
-
-- [ ] **User routes** - `UserRoutesController` (`/api/users/me/routes`): retrieve user's GPS route history — important for mobile route review
-- [ ] **Route metadata** - `RouteMetadataController` (`/api/routes`): update route privacy, notes, trim settings — mobile route editing
-- [ ] **User feedback** - `UserFeedbackController` (`/api/feedback`): anonymous feedback submission — both web and mobile
-- [ ] **User invites** - `UserInvitesController` (`/api/invites`): refer friends (rate-limited 50/month) — both web and mobile
-- [ ] **Image upload** - `ImageController` (`/api/image`): event lead photo upload — web-centric but could benefit mobile
+- [x] **User routes** - Already covered by `EventAttendeeRoutesV2Controller` (`GET by-user/{userId}`)
+- [x] **Route metadata** - Already covered by `EventAttendeeRoutesV2Controller` (`PUT {routeId}`, `PUT {routeId}/trim-time`, `PUT {routeId}/restore-time`)
+- [x] **User feedback** - `UserFeedbackV2Controller`: submit (anonymous allowed), admin CRUD with status management, DTO-only responses
+- [x] **User invites** - `EmailInvitesV2Controller`: batches, quota, rate-limited send (10/batch, 50/month), DTO-only responses
+- [x] **Image upload** - `ImageV2Controller`: event image upload/delete with event lead authorization
 
 ### Phase 2d - Partner Management (Web Admin)
 
