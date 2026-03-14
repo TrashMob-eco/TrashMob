@@ -1,6 +1,8 @@
 namespace TrashMob.Controllers.V2
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
@@ -29,6 +31,22 @@ namespace TrashMob.Controllers.V2
         ILogger<JobOpportunitiesV2Controller> logger) : ControllerBase
     {
         private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
+
+        /// <summary>
+        /// Gets all job opportunities.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A list of all job opportunities.</returns>
+        /// <response code="200">Returns all job opportunities.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<JobOpportunityDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 GetAllJobOpportunities");
+
+            var results = await jobOpportunityManager.GetAsync(cancellationToken);
+            return Ok(results.Select(j => j.ToV2Dto()));
+        }
 
         /// <summary>
         /// Gets a job opportunity by its identifier.

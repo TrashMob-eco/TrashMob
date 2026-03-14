@@ -8,7 +8,7 @@ export const SiteAdminLitterReports = () => {
     const { data: litterReports, isLoading } = useQuery({
         queryKey: GetLitterReports().key,
         queryFn: GetLitterReports().service,
-        select: (res) => res.data,
+        select: (res) => res.data.items,
     });
 
     const len = litterReports?.length ?? 0;

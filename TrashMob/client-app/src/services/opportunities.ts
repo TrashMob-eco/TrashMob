@@ -6,7 +6,7 @@ export const GetAllJobOpportunities = () => ({
     key: ['/jobopportunities'],
     service: async () =>
         ApiService('protected').fetchData<GetAllJobOpportunities_Response>({
-            url: '/jobopportunities',
+            url: '/v2/jobopportunities',
             method: 'get',
         }),
 });

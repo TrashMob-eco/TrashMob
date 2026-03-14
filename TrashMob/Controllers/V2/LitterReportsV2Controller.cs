@@ -89,6 +89,36 @@ namespace TrashMob.Controllers.V2
         }
 
         /// <summary>
+        /// Gets all new litter reports (status = new).
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the new litter reports.</response>
+        [HttpGet("new")]
+        [ProducesResponseType(typeof(IEnumerable<LitterReportDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetNewLitterReports(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 GetNewLitterReports");
+
+            var result = await litterReportManager.GetNewLitterReportsAsync(cancellationToken);
+            return Ok(result.Select(r => r.ToV2Dto()));
+        }
+
+        /// <summary>
+        /// Gets all non-cancelled litter reports.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the non-cancelled litter reports.</response>
+        [HttpGet("notcancelled")]
+        [ProducesResponseType(typeof(IEnumerable<LitterReportDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetNotCancelledLitterReports(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 GetNotCancelledLitterReports");
+
+            var result = await litterReportManager.GetNotCancelledLitterReportsAsync(cancellationToken);
+            return Ok(result.Select(r => r.ToV2Dto()));
+        }
+
+        /// <summary>
         /// Adds a new litter report.
         /// </summary>
         /// <param name="litterReport">The litter report to add.</param>

@@ -1,13 +1,13 @@
 import LitterReportData from '@/components/Models/LitterReportData';
+import { PagedResponse } from '@/lib/api-errors';
 import { ApiService } from '.';
 
-// No v2 equivalent for filtered list (new/notcancelled) — stays on v1
-export type GetLitterReports_Response = LitterReportData[];
+export type GetLitterReports_Response = PagedResponse<LitterReportData>;
 export const GetLitterReports = () => ({
     key: ['/litterreport', 'list'],
     service: async () =>
         ApiService('public').fetchData<GetLitterReports_Response>({
-            url: '/litterreport',
+            url: '/v2/litterreports?pageSize=100',
             method: 'get',
         }),
 });
@@ -23,24 +23,22 @@ export const GetLitterReport = (params: GetLitterReport_Params) => ({
         }),
 });
 
-// No v2 equivalent for status-filtered endpoints — stays on v1
 export type GetNewLitterReports_Response = LitterReportData[];
 export const GetNewLitterReports = () => ({
     key: ['/litterreport', 'new'],
     service: async () =>
         ApiService('public').fetchData<GetNewLitterReports_Response>({
-            url: '/litterreport/new',
+            url: '/v2/litterreports/new',
             method: 'get',
         }),
 });
 
-// No v2 equivalent for status-filtered endpoints — stays on v1
 export type GetNotCancelledLitterReports_Response = LitterReportData[];
 export const GetNotCancelledLitterReports = () => ({
     key: ['/litterreport', 'notcancelled'],
     service: async () =>
         ApiService('public').fetchData<GetNotCancelledLitterReports_Response>({
-            url: '/litterreport/notcancelled',
+            url: '/v2/litterreports/notcancelled',
             method: 'get',
         }),
 });

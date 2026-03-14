@@ -11,13 +11,14 @@ import { ApiService } from '.';
 export type GetMaps_Response = string;
 export const GetMaps = () => ({
     key: ['/maps'],
-    service: async () => ApiService('public').fetchData<GetMaps_Response>({ url: `/maps`, method: 'get' }),
+    service: async () => ApiService('public').fetchData<GetMaps_Response>({ url: `/v2/maps`, method: 'get' }),
 });
 
 export type GetGoogleMapApiKey_Response = string;
 export const GetGoogleMapApiKey = () => ({
     key: ['/maps/googlemapkey'],
-    service: async () => ApiService('public').fetchData<GetMaps_Response>({ url: `/maps/googlemapkey`, method: 'get' }),
+    service: async () =>
+        ApiService('public').fetchData<GetMaps_Response>({ url: `/v2/maps/googlemapkey`, method: 'get' }),
 });
 
 export type GeographicEntityType =
@@ -39,7 +40,7 @@ export const SearchAddress = () => ({
     service: async (params: SearchAddress_Params) => {
         const entityTypeParam = params.entityType ? `&entityType=${params.entityType.join(',')}` : '';
         return ApiService('public').fetchData<SearchAddress_Response>({
-            url: `/maps/search?query=${encodeURIComponent(params.query)}${entityTypeParam}`,
+            url: `/v2/maps/search?query=${encodeURIComponent(params.query)}${entityTypeParam}`,
             method: 'get',
         });
     },
@@ -51,7 +52,7 @@ export const ReverseGeocode = () => ({
     key: ['ReverseGeocode'],
     service: async (params: ReverseGeocode_Params) =>
         ApiService('public').fetchData<ReverseGeocode_Response>({
-            url: `/maps/reversegeocode?latitude=${params.lat}&longitude=${params.long}`,
+            url: `/v2/maps/reversegeocode?latitude=${params.lat}&longitude=${params.long}`,
             method: 'get',
         }),
 });
@@ -70,7 +71,7 @@ export const AzureMapSearchAddress = () => ({
         // Redirect to the secure proxy endpoint (ignoring azureKey)
         const entityTypeParam = params.entityType ? `&entityType=${params.entityType.join(',')}` : '';
         return ApiService('public').fetchData<AzureMapSearchAddress_Response>({
-            url: `/maps/search?query=${encodeURIComponent(params.query)}${entityTypeParam}`,
+            url: `/v2/maps/search?query=${encodeURIComponent(params.query)}${entityTypeParam}`,
             method: 'get',
         });
     },
@@ -86,7 +87,7 @@ export const AzureMapSearchAddressReverse = () => ({
     service: async (params: AzureMapSearchAddressReverse_Params) => {
         // Redirect to the secure proxy endpoint (ignoring azureKey)
         return ApiService('public').fetchData<AzureMapSearchAddressReverse_Response>({
-            url: `/maps/reversegeocode?latitude=${params.lat}&longitude=${params.long}`,
+            url: `/v2/maps/reversegeocode?latitude=${params.lat}&longitude=${params.long}`,
             method: 'get',
         });
     },

@@ -124,7 +124,7 @@ export const ProcessUnsubscribe = () => ({
     key: ['/newsletter-preferences', 'unsubscribe'],
     service: async (body: ProcessUnsubscribe_Body) =>
         ApiService('public').fetchData<ProcessUnsubscribe_Response, ProcessUnsubscribe_Body>({
-            url: '/newsletter-preferences/unsubscribe',
+            url: '/v2/newsletter-preferences/unsubscribe',
             method: 'post',
             data: body,
         }),

@@ -145,5 +145,57 @@ namespace TrashMob.Controllers.V2
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Processes an unsubscribe request using a token (no authentication required).
+        /// Used for one-click unsubscribe from email links.
+        /// </summary>
+        /// <param name="request">The unsubscribe request containing the token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Unsubscribe successful.</response>
+        /// <response code="400">Token is missing or invalid.</response>
+        [AllowAnonymous]
+        [HttpPost("unsubscribe")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ProcessUnsubscribe(
+            [FromBody] UnsubscribeRequestDto request, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 ProcessUnsubscribe");
+
+            if (string.IsNullOrWhiteSpace(request?.Token))
+            {
+                return Problem(detail: "Token is required.", statusCode: StatusCodes.Status400BadRequest, title: "Invalid request");
+            }
+
+            var result = await preferenceManager.ProcessUnsubscribeTokenAsync(request.Token, cancellationToken);
+
+            if (!result.Success)
+            {
+                return Problem(detail: result.ErrorMessage, statusCode: StatusCodes.Status400BadRequest, title: "Unsubscribe failed");
+            }
+
+            return Ok(new
+            {
+                success = true,
+                email = result.Email,
+                allCategories = result.AllCategories,
+                categoryName = result.CategoryName,
+                message = result.AllCategories
+                    ? "You have been unsubscribed from all newsletters."
+                    : $"You have been unsubscribed from {result.CategoryName} newsletters."
+            });
+        }
+    }
+
+    /// <summary>
+    /// Request model for token-based unsubscribe in V2 API.
+    /// </summary>
+    public class UnsubscribeRequestDto
+    {
+        /// <summary>
+        /// Gets or sets the unsubscribe token.
+        /// </summary>
+        public string Token { get; set; } = string.Empty;
     }
 }

@@ -15,7 +15,7 @@ export const GetSponsoredAdoptions = (params: GetSponsoredAdoptions_Params) => (
     key: ['/communities/', params.partnerId, '/sponsored-adoptions'],
     service: async () =>
         ApiService('protected').fetchData<GetSponsoredAdoptions_Response>({
-            url: `/communities/${params.partnerId}/sponsored-adoptions`,
+            url: `/v2/communities/${params.partnerId}/sponsored-adoptions`,
             method: 'get',
         }),
 });
@@ -26,7 +26,7 @@ export const GetSponsoredAdoption = (params: GetSponsoredAdoption_Params) => ({
     key: ['/communities/', params.partnerId, '/sponsored-adoptions/', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetSponsoredAdoption_Response>({
-            url: `/communities/${params.partnerId}/sponsored-adoptions/${params.id}`,
+            url: `/v2/communities/${params.partnerId}/sponsored-adoptions/${params.id}`,
             method: 'get',
         }),
 });
@@ -38,7 +38,7 @@ export const CreateSponsoredAdoption = () => ({
     key: ['/communities/sponsored-adoptions', 'create'],
     service: async (params: CreateSponsoredAdoption_Params, body: CreateSponsoredAdoption_Body) =>
         ApiService('protected').fetchData<CreateSponsoredAdoption_Response, CreateSponsoredAdoption_Body>({
-            url: `/communities/${params.partnerId}/sponsored-adoptions`,
+            url: `/v2/communities/${params.partnerId}/sponsored-adoptions`,
             method: 'post',
             data: body,
         }),
@@ -51,7 +51,7 @@ export const UpdateSponsoredAdoption = () => ({
     key: ['/communities/sponsored-adoptions', 'update'],
     service: async (params: UpdateSponsoredAdoption_Params, body: UpdateSponsoredAdoption_Body) =>
         ApiService('protected').fetchData<UpdateSponsoredAdoption_Response, UpdateSponsoredAdoption_Body>({
-            url: `/communities/${params.partnerId}/sponsored-adoptions/${params.id}`,
+            url: `/v2/communities/${params.partnerId}/sponsored-adoptions/${params.id}`,
             method: 'put',
             data: body,
         }),
@@ -67,7 +67,7 @@ export const GetSponsoredAdoptionCompliance = (params: GetSponsoredAdoptionCompl
     key: ['/communities/', params.partnerId, '/sponsored-adoptions/compliance'],
     service: async () =>
         ApiService('protected').fetchData<GetSponsoredAdoptionCompliance_Response>({
-            url: `/communities/${params.partnerId}/sponsored-adoptions/compliance`,
+            url: `/v2/communities/${params.partnerId}/sponsored-adoptions/compliance`,
             method: 'get',
         }),
 });
@@ -82,7 +82,7 @@ export const GetAdoptionCleanupLogs = (params: GetAdoptionCleanupLogs_Params) =>
     key: ['/sponsors/', params.sponsorId, '/adoptions/', params.adoptionId, '/reports'],
     service: async () =>
         ApiService('protected').fetchData<GetAdoptionCleanupLogs_Response>({
-            url: `/sponsors/${params.sponsorId}/adoptions/${params.adoptionId}/reports`,
+            url: `/v2/sponsors/${params.sponsorId}/adoptions/${params.adoptionId}/reports`,
             method: 'get',
         }),
 });

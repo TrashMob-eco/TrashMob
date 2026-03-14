@@ -90,8 +90,23 @@ namespace TrashMob.Models.Poco.V2
         public bool IsActive { get; set; }
 
         /// <summary>
+        /// Gets or sets the identifier of the user who created this area.
+        /// </summary>
+        public Guid CreatedByUserId { get; set; }
+
+        /// <summary>
         /// Gets or sets when the area was created.
         /// </summary>
         public DateTimeOffset? CreatedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the user who last updated this area.
+        /// </summary>
+        public Guid LastUpdatedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the area was last updated.
+        /// </summary>
+        public DateTimeOffset? LastUpdatedDate { get; set; }
     }
 }

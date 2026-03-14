@@ -19,6 +19,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     {
         private readonly Mock<IEventPartnerLocationServiceManager> serviceManager = new();
         private readonly Mock<IKeyedManager<Event>> eventManager = new();
+        private readonly Mock<IPartnerLocationManager> partnerLocationManager = new();
         private readonly Mock<IAuthorizationService> authorizationService = new();
         private readonly Mock<ILogger<EventPartnerLocationServicesV2Controller>> logger = new();
         private readonly EventPartnerLocationServicesV2Controller controller;
@@ -26,7 +27,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         public EventPartnerLocationServicesV2ControllerTests()
         {
             controller = new EventPartnerLocationServicesV2Controller(
-                serviceManager.Object, eventManager.Object, authorizationService.Object, logger.Object);
+                serviceManager.Object, eventManager.Object, partnerLocationManager.Object, authorizationService.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),

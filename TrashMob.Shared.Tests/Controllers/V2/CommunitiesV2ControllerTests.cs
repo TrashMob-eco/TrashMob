@@ -4,6 +4,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -12,18 +13,27 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using TrashMob.Models;
     using TrashMob.Models.Poco;
     using TrashMob.Models.Poco.V2;
+    using TrashMob.Shared.Managers.Areas;
     using TrashMob.Shared.Managers.Interfaces;
     using Xunit;
 
     public class CommunitiesV2ControllerTests
     {
         private readonly Mock<ICommunityManager> communityManager = new();
+        private readonly Mock<IImageManager> imageManager = new();
+        private readonly Mock<INominatimService> nominatimService = new();
+        private readonly Mock<IAuthorizationService> authorizationService = new();
         private readonly Mock<ILogger<CommunitiesV2Controller>> logger = new();
         private readonly CommunitiesV2Controller controller;
 
         public CommunitiesV2ControllerTests()
         {
-            controller = new CommunitiesV2Controller(communityManager.Object, logger.Object);
+            controller = new CommunitiesV2Controller(
+                communityManager.Object,
+                imageManager.Object,
+                nominatimService.Object,
+                authorizationService.Object,
+                logger.Object);
         }
 
         [Fact]

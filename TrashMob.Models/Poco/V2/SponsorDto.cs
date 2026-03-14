@@ -50,8 +50,23 @@ namespace TrashMob.Models.Poco.V2
         public bool ShowOnPublicMap { get; set; }
 
         /// <summary>
+        /// Gets or sets the identifier of the user who created this sponsor.
+        /// </summary>
+        public Guid CreatedByUserId { get; set; }
+
+        /// <summary>
         /// Gets or sets when the sponsor was created.
         /// </summary>
         public DateTimeOffset? CreatedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the user who last updated this sponsor.
+        /// </summary>
+        public Guid LastUpdatedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the sponsor was last updated.
+        /// </summary>
+        public DateTimeOffset? LastUpdatedDate { get; set; }
     }
 }

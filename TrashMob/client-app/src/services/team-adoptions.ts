@@ -14,7 +14,7 @@ export const GetTeamAdoptions = (params: GetTeamAdoptions_Params) => ({
     key: ['/teams/', params.teamId, '/adoptions'],
     service: async () =>
         ApiService('protected').fetchData<GetTeamAdoptions_Response>({
-            url: `/teams/${params.teamId}/adoptions`,
+            url: `/v2/teams/${params.teamId}/adoptions`,
             method: 'get',
         }),
 });
@@ -29,7 +29,7 @@ export const SubmitAdoption = () => ({
     key: ['/teams/adoptions', 'submit'],
     service: async (params: SubmitAdoption_Params, body: SubmitAdoption_Body) =>
         ApiService('protected').fetchData<SubmitAdoption_Response, SubmitAdoption_Body>({
-            url: `/teams/${params.teamId}/adoptions`,
+            url: `/v2/teams/${params.teamId}/adoptions`,
             method: 'post',
             data: body,
         }),
@@ -45,7 +45,7 @@ export const GetPendingApplications = (params: GetPendingApplications_Params) =>
     key: ['/communities/', params.partnerId, '/adoptions/pending'],
     service: async () =>
         ApiService('protected').fetchData<GetPendingApplications_Response>({
-            url: `/communities/${params.partnerId}/adoptions/pending`,
+            url: `/v2/communities/${params.partnerId}/adoptions/pending`,
             method: 'get',
         }),
 });
@@ -56,7 +56,7 @@ export const GetApprovedAdoptions = (params: GetApprovedAdoptions_Params) => ({
     key: ['/communities/', params.partnerId, '/adoptions/approved'],
     service: async () =>
         ApiService('protected').fetchData<GetApprovedAdoptions_Response>({
-            url: `/communities/${params.partnerId}/adoptions/approved`,
+            url: `/v2/communities/${params.partnerId}/adoptions/approved`,
             method: 'get',
         }),
 });
@@ -67,7 +67,7 @@ export const ApproveAdoption = () => ({
     key: ['/communities/adoptions', 'approve'],
     service: async (params: ApproveAdoption_Params) =>
         ApiService('protected').fetchData<ApproveAdoption_Response>({
-            url: `/communities/${params.partnerId}/adoptions/${params.adoptionId}/approve`,
+            url: `/v2/communities/${params.partnerId}/adoptions/${params.adoptionId}/approve`,
             method: 'post',
         }),
 });
@@ -79,7 +79,7 @@ export const RejectAdoption = () => ({
     key: ['/communities/adoptions', 'reject'],
     service: async (params: RejectAdoption_Params, body: RejectAdoption_Body) =>
         ApiService('protected').fetchData<RejectAdoption_Response, RejectAdoption_Body>({
-            url: `/communities/${params.partnerId}/adoptions/${params.adoptionId}/reject`,
+            url: `/v2/communities/${params.partnerId}/adoptions/${params.adoptionId}/reject`,
             method: 'post',
             data: body,
         }),
@@ -95,7 +95,7 @@ export const GetDelinquentAdoptions = (params: GetDelinquentAdoptions_Params) =>
     key: ['/communities/', params.partnerId, '/adoptions/delinquent'],
     service: async () =>
         ApiService('protected').fetchData<GetDelinquentAdoptions_Response>({
-            url: `/communities/${params.partnerId}/adoptions/delinquent`,
+            url: `/v2/communities/${params.partnerId}/adoptions/delinquent`,
             method: 'get',
         }),
 });
@@ -106,7 +106,7 @@ export const GetComplianceStats = (params: GetComplianceStats_Params) => ({
     key: ['/communities/', params.partnerId, '/adoptions/stats'],
     service: async () =>
         ApiService('protected').fetchData<GetComplianceStats_Response>({
-            url: `/communities/${params.partnerId}/adoptions/stats`,
+            url: `/v2/communities/${params.partnerId}/adoptions/stats`,
             method: 'get',
         }),
 });
@@ -116,7 +116,7 @@ export const ExportAdoptions = (params: ExportAdoptions_Params) => ({
     key: ['/communities/', params.partnerId, '/adoptions/export'],
     service: async () =>
         ApiService('protected').fetchData<Blob>({
-            url: `/communities/${params.partnerId}/adoptions/export`,
+            url: `/v2/communities/${params.partnerId}/adoptions/export`,
             method: 'get',
             responseType: 'blob',
         }),

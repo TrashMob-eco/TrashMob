@@ -32,7 +32,10 @@ namespace TrashMob.Models.Extensions.V2
                 SafetyRequirements = entity.SafetyRequirements,
                 AllowCoAdoption = entity.AllowCoAdoption,
                 IsActive = entity.IsActive,
+                CreatedByUserId = entity.CreatedByUserId,
                 CreatedDate = entity.CreatedDate,
+                LastUpdatedByUserId = entity.LastUpdatedByUserId,
+                LastUpdatedDate = entity.LastUpdatedDate,
             };
         }
 
@@ -59,6 +62,10 @@ namespace TrashMob.Models.Extensions.V2
                 SafetyRequirements = dto.SafetyRequirements,
                 AllowCoAdoption = dto.AllowCoAdoption,
                 IsActive = dto.IsActive,
+                CreatedByUserId = dto.CreatedByUserId,
+                CreatedDate = dto.CreatedDate,
+                LastUpdatedByUserId = dto.LastUpdatedByUserId,
+                LastUpdatedDate = dto.LastUpdatedDate,
             };
         }
 
@@ -322,7 +329,10 @@ namespace TrashMob.Models.Extensions.V2
                 PartnerId = entity.PartnerId,
                 IsActive = entity.IsActive,
                 ShowOnPublicMap = entity.ShowOnPublicMap,
+                CreatedByUserId = entity.CreatedByUserId,
                 CreatedDate = entity.CreatedDate,
+                LastUpdatedByUserId = entity.LastUpdatedByUserId,
+                LastUpdatedDate = entity.LastUpdatedDate,
             };
         }
 
@@ -341,6 +351,10 @@ namespace TrashMob.Models.Extensions.V2
                 PartnerId = dto.PartnerId,
                 IsActive = dto.IsActive,
                 ShowOnPublicMap = dto.ShowOnPublicMap,
+                CreatedByUserId = dto.CreatedByUserId,
+                CreatedDate = dto.CreatedDate,
+                LastUpdatedByUserId = dto.LastUpdatedByUserId,
+                LastUpdatedDate = dto.LastUpdatedDate,
             };
         }
 

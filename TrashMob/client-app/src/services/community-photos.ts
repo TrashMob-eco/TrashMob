@@ -15,7 +15,7 @@ export const GetCommunityPhotos = (params: GetCommunityPhotos_Params) => ({
     key: ['/communities', params.slug, 'photos'],
     service: async () =>
         ApiService('public').fetchData<GetCommunityPhotos_Response>({
-            url: `/communities/${params.slug}/photos`,
+            url: `/v2/communities/${params.slug}/photos`,
             method: 'get',
         }),
 });
@@ -32,7 +32,7 @@ export const UploadCommunityPhoto = () => ({
         const formData = new FormData();
         formData.append('formFile', file);
         return ApiService('protected').fetchData<UploadCommunityPhoto_Response>({
-            url: `/communities/${params.slug}/photos`,
+            url: `/v2/communities/${params.slug}/photos`,
             method: 'post',
             data: formData,
             headers: {
@@ -52,7 +52,7 @@ export const UpdateCommunityPhotoCaption = () => ({
     key: ['/communities/photos', 'update'],
     service: async (params: UpdateCommunityPhoto_Params, caption: string) =>
         ApiService('protected').fetchData<UpdateCommunityPhoto_Response, string>({
-            url: `/communities/${params.slug}/photos/${params.photoId}`,
+            url: `/v2/communities/${params.slug}/photos/${params.photoId}`,
             method: 'put',
             data: caption,
         }),
@@ -68,7 +68,7 @@ export const DeleteCommunityPhoto = () => ({
     key: ['/communities/photos', 'delete'],
     service: async (params: DeleteCommunityPhoto_Params) =>
         ApiService('protected').fetchData<DeleteCommunityPhoto_Response>({
-            url: `/communities/${params.slug}/photos/${params.photoId}`,
+            url: `/v2/communities/${params.slug}/photos/${params.photoId}`,
             method: 'delete',
         }),
 });

@@ -77,6 +77,61 @@ namespace TrashMob.Controllers.V2
         }
 
         /// <summary>
+        /// Gets pickup locations by user ID.
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the pickup locations for the user.</response>
+        [HttpGet("by-user/{userId}")]
+        [ProducesResponseType(typeof(IReadOnlyList<PickupLocationDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetByUser(Guid userId, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 GetPickupLocationsByUser User={UserId}", userId);
+
+            var entities = await pickupLocationManager.GetByUserAsync(userId, cancellationToken);
+            var dtos = entities.Select(e => e.ToV2Dto()).ToList();
+
+            return Ok(dtos);
+        }
+
+        /// <summary>
+        /// Marks a pickup location as picked up.
+        /// </summary>
+        /// <param name="id">The pickup location ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="204">Pickup location marked as picked up.</response>
+        /// <response code="403">Not authorized.</response>
+        [HttpPost("{id}/mark-picked-up")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> MarkAsPickedUp(Guid id, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 MarkAsPickedUp Id={Id}", id);
+
+            var pickupLocation = await pickupLocationManager.GetAsync(id, cancellationToken);
+            if (pickupLocation is null)
+            {
+                return NotFound();
+            }
+
+            if (!await IsAuthorizedAsync(pickupLocation, AuthorizationPolicyConstants.UserIsEventLead))
+            {
+                var mobEvent = await eventManager.GetAsync(pickupLocation.EventId, cancellationToken);
+                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+                {
+                    return Forbid();
+                }
+            }
+
+            await pickupLocationManager.MarkAsPickedUpAsync(id, UserId, cancellationToken);
+
+            return NoContent();
+        }
+
+        /// <summary>
         /// Adds a new pickup location.
         /// </summary>
         /// <param name="dto">The pickup location data.</param>

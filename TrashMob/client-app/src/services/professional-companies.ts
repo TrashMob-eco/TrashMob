@@ -13,7 +13,7 @@ export const GetProfessionalCompanies = (params: GetProfessionalCompanies_Params
     key: ['/communities/', params.partnerId, '/professional-companies'],
     service: async () =>
         ApiService('protected').fetchData<GetProfessionalCompanies_Response>({
-            url: `/communities/${params.partnerId}/professional-companies`,
+            url: `/v2/communities/${params.partnerId}/professional-companies`,
             method: 'get',
         }),
 });
@@ -24,7 +24,7 @@ export const GetProfessionalCompany = (params: GetProfessionalCompany_Params) =>
     key: ['/communities/', params.partnerId, '/professional-companies/', params.companyId],
     service: async () =>
         ApiService('protected').fetchData<GetProfessionalCompany_Response>({
-            url: `/communities/${params.partnerId}/professional-companies/${params.companyId}`,
+            url: `/v2/communities/${params.partnerId}/professional-companies/${params.companyId}`,
             method: 'get',
         }),
 });
@@ -36,7 +36,7 @@ export const CreateProfessionalCompany = () => ({
     key: ['/communities/professional-companies', 'create'],
     service: async (params: CreateProfessionalCompany_Params, body: CreateProfessionalCompany_Body) =>
         ApiService('protected').fetchData<CreateProfessionalCompany_Response, CreateProfessionalCompany_Body>({
-            url: `/communities/${params.partnerId}/professional-companies`,
+            url: `/v2/communities/${params.partnerId}/professional-companies`,
             method: 'post',
             data: body,
         }),
@@ -49,7 +49,7 @@ export const UpdateProfessionalCompany = () => ({
     key: ['/communities/professional-companies', 'update'],
     service: async (params: UpdateProfessionalCompany_Params, body: UpdateProfessionalCompany_Body) =>
         ApiService('protected').fetchData<UpdateProfessionalCompany_Response, UpdateProfessionalCompany_Body>({
-            url: `/communities/${params.partnerId}/professional-companies/${params.companyId}`,
+            url: `/v2/communities/${params.partnerId}/professional-companies/${params.companyId}`,
             method: 'put',
             data: body,
         }),
@@ -71,7 +71,7 @@ export const GetCompanyUsers = (params: GetCompanyUsers_Params) => ({
     key: ['/communities/', params.partnerId, '/professional-companies/', params.companyId, '/users'],
     service: async () =>
         ApiService('protected').fetchData<GetCompanyUsers_Response>({
-            url: `/communities/${params.partnerId}/professional-companies/${params.companyId}/users`,
+            url: `/v2/communities/${params.partnerId}/professional-companies/${params.companyId}/users`,
             method: 'get',
         }),
 });
@@ -87,7 +87,7 @@ export const AssignCompanyUser = () => ({
     key: ['/communities/professional-companies/users', 'assign'],
     service: async (params: AssignCompanyUser_Params, body: AssignCompanyUser_Body) =>
         ApiService('protected').fetchData<AssignCompanyUser_Response, AssignCompanyUser_Body>({
-            url: `/communities/${params.partnerId}/professional-companies/${params.companyId}/users`,
+            url: `/v2/communities/${params.partnerId}/professional-companies/${params.companyId}/users`,
             method: 'post',
             data: body,
         }),
@@ -99,7 +99,7 @@ export const RemoveCompanyUser = () => ({
     key: ['/communities/professional-companies/users', 'remove'],
     service: async (params: RemoveCompanyUser_Params) =>
         ApiService('protected').fetchData<RemoveCompanyUser_Response>({
-            url: `/communities/${params.partnerId}/professional-companies/${params.companyId}/users/${params.userId}`,
+            url: `/v2/communities/${params.partnerId}/professional-companies/${params.companyId}/users/${params.userId}`,
             method: 'delete',
         }),
 });
