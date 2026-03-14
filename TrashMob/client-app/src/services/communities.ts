@@ -26,7 +26,7 @@ export const GetCommunities = (params?: GetCommunities_Params) => ({
         if (params?.radiusMiles !== undefined) queryParams.append('radiusMiles', params.radiusMiles.toString());
         const queryString = queryParams.toString();
         return ApiService('public').fetchData<GetCommunities_Response>({
-            url: `/communities${queryString ? `?${queryString}` : ''}`,
+            url: `/v2/communities${queryString ? `?${queryString}` : ''}`,
             method: 'get',
         });
     },
@@ -38,7 +38,7 @@ export const GetCommunityBySlug = (params: GetCommunityBySlug_Params) => ({
     key: ['/communities/', params.slug],
     service: async () =>
         ApiService('public').fetchData<GetCommunityBySlug_Response>({
-            url: `/communities/${params.slug}`,
+            url: `/v2/communities/${params.slug}`,
             method: 'get',
         }),
 });
@@ -68,7 +68,7 @@ export const GetCommunityEvents = (params: GetCommunityEvents_Params) => ({
     service: async () => {
         const queryParams = params.upcomingOnly !== undefined ? `?upcomingOnly=${params.upcomingOnly}` : '';
         return ApiService('public').fetchData<GetCommunityEvents_Response>({
-            url: `/communities/${params.slug}/events${queryParams}`,
+            url: `/v2/communities/${params.slug}/events${queryParams}`,
             method: 'get',
         });
     },
@@ -81,7 +81,7 @@ export const GetCommunityTeams = (params: GetCommunityTeams_Params) => ({
     service: async () => {
         const queryParams = params.radiusMiles !== undefined ? `?radiusMiles=${params.radiusMiles}` : '';
         return ApiService('public').fetchData<GetCommunityTeams_Response>({
-            url: `/communities/${params.slug}/teams${queryParams}`,
+            url: `/v2/communities/${params.slug}/teams${queryParams}`,
             method: 'get',
         });
     },
@@ -104,7 +104,7 @@ export const GetCommunityStats = (params: GetCommunityStats_Params) => ({
     key: ['/communities/', params.slug, '/stats'],
     service: async () =>
         ApiService('public').fetchData<GetCommunityStats_Response>({
-            url: `/communities/${params.slug}/stats`,
+            url: `/v2/communities/${params.slug}/stats`,
             method: 'get',
         }),
 });

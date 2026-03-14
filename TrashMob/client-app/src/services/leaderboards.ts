@@ -31,7 +31,7 @@ export const GetLeaderboard = (params?: GetLeaderboard_Params) => ({
         if (params?.limit !== undefined) queryParams.append('limit', params.limit.toString());
         const queryString = queryParams.toString();
         return ApiService('public').fetchData<GetLeaderboard_Response>({
-            url: `/leaderboards${queryString ? `?${queryString}` : ''}`,
+            url: `/v2/leaderboards${queryString ? `?${queryString}` : ''}`,
             method: 'get',
         });
     },
@@ -50,7 +50,7 @@ export const GetMyRank = (params?: GetMyRank_Params) => ({
         if (params?.timeRange) queryParams.append('timeRange', params.timeRange);
         const queryString = queryParams.toString();
         return ApiService('protected').fetchData<GetMyRank_Response>({
-            url: `/leaderboards/my-rank${queryString ? `?${queryString}` : ''}`,
+            url: `/v2/leaderboards/my-rank${queryString ? `?${queryString}` : ''}`,
             method: 'get',
         });
     },
@@ -89,7 +89,7 @@ export const GetTeamLeaderboard = (params?: GetTeamLeaderboard_Params) => ({
         if (params?.limit !== undefined) queryParams.append('limit', params.limit.toString());
         const queryString = queryParams.toString();
         return ApiService('public').fetchData<GetTeamLeaderboard_Response>({
-            url: `/leaderboards/teams${queryString ? `?${queryString}` : ''}`,
+            url: `/v2/leaderboards/teams${queryString ? `?${queryString}` : ''}`,
             method: 'get',
         });
     },
@@ -109,7 +109,7 @@ export const GetTeamRank = (params: GetTeamRank_Params) => ({
         if (params.timeRange) queryParams.append('timeRange', params.timeRange);
         const queryString = queryParams.toString();
         return ApiService('public').fetchData<GetTeamRank_Response>({
-            url: `/leaderboards/teams/${params.teamId}/rank${queryString ? `?${queryString}` : ''}`,
+            url: `/v2/leaderboards/teams/${params.teamId}/rank${queryString ? `?${queryString}` : ''}`,
             method: 'get',
         });
     },
