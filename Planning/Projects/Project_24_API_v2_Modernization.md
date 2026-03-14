@@ -160,21 +160,20 @@ All lookup types consolidated into `LookupsV2Controller`. The controller now cov
 - [x] **User invites** - `EmailInvitesV2Controller`: batches, quota, rate-limited send (10/batch, 50/month), DTO-only responses
 - [x] **Image upload** - `ImageV2Controller`: event image upload/delete with event lead authorization
 
-### Phase 2d - Partner Management (Web Admin)
+### Phase 2d - Partner Management (Web Admin) ✅ COMPLETE
 
-Partner organization management — 11 v1 controllers, all web-only admin/portal features. Lower priority since these are not mobile-facing.
+All partner management endpoints migrated to v2 with DTO-only responses. 9 new controllers, 9 DTOs, consolidated mapping file.
 
-- [ ] **Partner locations** - `PartnerLocationsController`: CRUD partner office/service locations
-- [ ] **Partner location contacts** - `PartnerLocationContactsController`: contacts at specific locations
-- [ ] **Partner location services** - `PartnerLocationServicesController`: services offered at partner locations
-- [ ] **Partner location event services** - `PartnerLocationEventServicesController`: services provided at events
-- [ ] **Partner contacts** - `PartnerContactsController`: organizational contacts
-- [ ] **Partner admins** - `PartnerAdminsController`: assign/view partner admin users
-- [ ] **Partner admin invitations** - `PartnerAdminInvitationsController`: invite partner admins
-- [ ] **Partner requests** - `PartnerRequestsController`: public partner suggestion + admin approval
-- [ ] **Partner documents** - `PartnerDocumentsController`: file upload/download (25MB max)
-- [ ] **Partner document admin** - `PartnerDocumentAdminController`: site admin cross-partner doc view
-- [ ] **Partner social media** - `PartnerSocialMediaAccountsController`: partner social media accounts
+- [x] **Partner locations** - `PartnerLocationsV2Controller`: CRUD + nearby search with PartnerLocationDto
+- [x] **Partner location contacts** - `PartnerLocationContactsV2Controller`: CRUD with PartnerLocationContactDto
+- [x] **Partner location services** - `PartnerLocationServicesV2Controller`: CRUD (composite key) with PartnerLocationServiceDto
+- [x] **Partner location event services** - Already covered by `EventPartnerLocationServicesV2Controller` (Phase 2a)
+- [x] **Partner contacts** - `PartnerContactsV2Controller`: CRUD with PartnerContactDto
+- [x] **Partner admins** - `PartnerAdminsV2Controller`: admin listing, my partners, add admin with PartnerAdminDto
+- [x] **Partner admin invitations** - `PartnerAdminInvitationsV2Controller`: invite/accept/decline/resend with PartnerAdminInvitationDto
+- [x] **Partner requests** - `PartnerRequestsV2Controller`: submit/approve/deny with PartnerRequestDto
+- [x] **Partner documents** - `PartnerDocumentsV2Controller`: CRUD + upload/download + admin view with PartnerDocumentDto (combines PartnerDocumentAdminController)
+- [x] **Partner social media** - `PartnerSocialMediaAccountsV2Controller`: CRUD with PartnerSocialMediaAccountDto
 
 ### Phase 2e - Community & Adoption Management (Web Admin)
 
