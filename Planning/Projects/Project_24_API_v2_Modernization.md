@@ -253,11 +253,194 @@ Infrastructure, auth, config, and webhook endpoints. These may not all need v2 e
 
 ### Phase 3 - Client Migration
 
-Migrate web and mobile apps to use v2 endpoints. V1 endpoints still running.
+Migrate web and mobile clients to use v2 endpoints. V1 endpoints remain running throughout.
 
-- [ ] **Migrate React app** - Replace manual v1 service files with v2 endpoint calls, one page at a time
-- [ ] **Migrate MAUI mobile app** - Replace remaining v1 service calls with v2 endpoints, one screen at a time
+**MAUI mobile app:** Already fully migrated to v2 (all 24 service files use `/api/v2.0/` via centralized `Settings.ApiBaseUrl`). No work needed.
+
+**React web app:** All 48 service files currently call v1 endpoints (`/api/...`). The base URL is set in `client-app/src/config/services.config.ts` (`VITE_API_URL || '/api'`). Migration requires three types of changes per service file:
+
+1. **URL path updates** — v2 routes may differ (nested resources, consolidated lookups, renamed segments)
+2. **TypeScript model updates** — v2 DTOs have different shapes than v1 entities (field renames, omissions, flattened nav properties, type changes)
+3. **Component updates** — any page referencing changed fields must be updated to match new model shapes
+4. **Error response handling** — v2 returns RFC 9457 Problem Details (`{ type, status, title, detail, instance, correlationId }`) instead of v1's inconsistent formats (plain strings, empty bodies, generic messages)
+
+**Key v2 response shape changes across the board:**
+- **PII separation**: `UserDto` (GET) excludes Email, DateOfBirth, ObjectId, IsSiteAdmin; `UserWriteDto` (POST/PUT) includes writable PII
+- **No navigation properties**: v2 DTOs are flat — no nested `EventStatus`, `EventType`, `User`, `Team` objects
+- **Flattened user info**: `TeamMemberDto`, `EventAttendeeDto` include `UserName`, `GivenName`, `ProfilePhotoUrl` as top-level fields (from User nav)
+- **Boolean conversions**: `EventVisibilityId` (numeric) → `IsEventPublic` (boolean)
+- **Image handling**: `LitterReportDto` includes `Images` array of `LitterImageDto` (field rename: `AzureBlobURL` → `ImageUrl`)
+- **Paginated responses**: Collection endpoints return `PagedResponse<T>` with `{ items, pagination }` wrapper instead of raw arrays
+- **Date type changes**: Some `DateTimeOffset?` → `DateTimeOffset` (with `MinValue` default) or `DateOnly`
+- **Error responses**: Problem Details format — error message in `.detail` field, not `.message`. Includes `correlationId` for debugging.
+
+#### Phase 3-prereq - Error Handling & Shared Infrastructure
+
+Must be completed before any service file migration. Sets up shared utilities that all sub-phases depend on.
+
+- [ ] **`ProblemDetails` TypeScript type** — add to `components/Models/` or `lib/`: `{ type?, status?, title?, detail?, instance?, traceId?, correlationId? }`
+- [ ] **`getErrorMessage()` utility** — add to `lib/`: extracts error message from both v2 Problem Details (`.response.data.detail`) and v1 formats (`.response.data.message`, `.message`), with fallback
+- [ ] **Axios response error interceptor** — add to `services/index.ts`: normalize error objects so `error.message` contains the Problem Details `detail` field when present (backward-compatible — v1 errors still work)
+- [ ] **`PagedResponse<T>` TypeScript type** — add to `components/Models/` or `lib/`: `{ items: T[], pagination: { page, pageSize, totalCount, totalPages, hasNext, hasPrevious } }`
+- [ ] **Update existing `onError` callbacks** — replace direct `error.message` / `error.response?.data?.message` access with `getErrorMessage()` in: `InviteFriendsCard.tsx`, `useEditEventPageMutations.ts`, `event-attendee-table.tsx`, `EventRouteTimeTrimDialog.tsx`, `eventsummary/$eventId/index.tsx`, `MyDependentsCard.tsx`
+- [ ] Run `npm run lint` and `npm run build` to verify no regressions
+
+**Phase 3-prereq totals:** 0 service files migrated, ~6 utility/component changes. **Critical prerequisite** — without this, every sub-phase would need ad-hoc error handling.
+
+#### Phase 3a - Core User Experience (highest traffic)
+
+Service files for the main user-facing flows. Must be correct before flipping the base URL.
+
+- [ ] `users.ts` — 9 endpoints → `UsersV2Controller` routes
+  - **Model changes:** `UserData` → split into `UserDto` (reads, no Email/DateOfBirth/IsSiteAdmin) + `UserWriteDto` (writes, includes PII). Frontend `UserData` class needs refactoring or adapter layer. Pages displaying email/admin status must use auth context or separate endpoint.
+- [ ] `events.ts` — 23 endpoints → `EventsV2Controller`, `EventAttendeesV2Controller`, `EventSummaryV2Controller`, `LookupsV2Controller` routes
+  - **Model changes:** `EventData.eventVisibilityId` (int) → `EventDto.isEventPublic` (bool). `EventData.teamId` removed from DTO. `EventAttendeeData` gains `userName`, `givenName`, `profilePhotoUrl` (flattened from User nav). `EventSummaryData` loses navigation properties. Collection endpoints return `PagedResponse<EventDto>` instead of arrays.
+- [ ] `event-routes.ts` — 9 endpoints → `EventRoutesV2Controller`, `EventAttendeeRoutesV2Controller` routes
+  - **Model changes:** Route DTOs are structurally similar but use `DateTimeOffset` (not nullable). Nested under `/events/{eventId}/routes` and `/events/{eventId}/attendees/{userId}/routes`.
+- [ ] `event-attendee-metrics.ts` — 11 endpoints → `EventAttendeeMetricsV2Controller` routes
+  - **Model changes:** Metrics DTOs structurally similar. Nested under `/events/{eventId}/attendees/{userId}/metrics`.
+- [ ] `event-photos.ts` — photo upload/delete → `EventPhotosV2Controller` routes
+  - **Model changes:** Photo DTOs gain moderation status fields. Nested under `/events/{eventId}/photos`.
+- [ ] `event-litter-reports.ts` — event-linked litter reports → `EventLitterReportsV2Controller` routes
+  - **Model changes:** Uses `LitterReportDto` with `Images` array (not `LitterImages`). Nested under `/events/{eventId}/litterreports`.
+- [ ] `dependents.ts` — 9 endpoints → `DependentsV2Controller`, `EventDependentsV2Controller`, `DependentWaiversV2Controller` routes
+  - **Model changes:** `DependentDto.DateOfBirth` is `DateOnly` (not `DateTimeOffset`). Waiver DTOs are flat.
+- [ ] `dependent-invitations.ts` — 5 endpoints → `DependentInvitationsV2Controller` routes
+  - **Model changes:** Invitation DTOs are structurally similar with status enum changes.
+
+**Phase 3a totals:** 8 service files, ~66 endpoints. **High model impact** — `UserData` and `EventData` are the most widely referenced frontend models.
+
+#### Phase 3b - Teams & Community (public-facing)
+
+- [ ] `teams.ts` — 29 endpoints → `TeamsV2Controller`, `TeamMembersV2Controller`, `TeamEventsV2Controller` routes
+  - **Model changes:** `TeamData` loses all nav collections (Members, JoinRequests, Photos, Adoptions). `TeamMemberData` gains flattened `UserName`, `GivenName`, `ProfilePhotoUrl`. Member/event endpoints nested under `/teams/{teamId}/members` and `/teams/{teamId}/events`.
+- [ ] `communities.ts` — 15 endpoints → `CommunitiesV2Controller` routes
+  - **Model changes:** Community DTOs are flat — no nested Partner/Contact objects. Dashboard and stats have dedicated DTO shapes.
+- [ ] `community-photos.ts` — community photo management → `CommunitiesV2Controller` photo routes
+  - **Model changes:** Photo DTOs gain moderation fields, nested under community routes.
+- [ ] `community-prospects.ts` — community prospect management → `CommunityProspectsV2Controller` routes
+  - **Model changes:** New `CommunityProspectDto` + `ProspectActivityDto` — these are new DTOs not present in v1.
+- [ ] `stats.ts` — 2 endpoints → `StatsV2Controller` routes
+  - **Model changes:** Minimal — stats DTOs are structurally similar to v1 `Stats` model.
+- [ ] `leaderboards.ts` — 5 endpoints → `LeaderboardsV2Controller` routes
+  - **Model changes:** Leaderboard DTOs may include rank position fields not in v1.
+- [ ] `achievements.ts` — 5 endpoints → `AchievementsV2Controller` routes
+  - **Model changes:** Achievement DTOs structurally similar.
+
+**Phase 3b totals:** 7 service files, ~56 endpoints. **Medium model impact** — `TeamData` nav property removal affects team detail pages.
+
+#### Phase 3c - Litter Reports, Waivers & Locations
+
+- [ ] `litter-report.ts` — 10 endpoints → `LitterReportsV2Controller` routes
+  - **Model changes:** `LitterReportData` → `LitterReportDto`: `LitterImages` → `Images` (field rename), image objects use `ImageUrl` instead of `AzureBlobURL`. Only non-cancelled images included. JSON property names use camelCase via `[JsonPropertyName]`.
+- [ ] `locations.ts` — 26 endpoints → `PickupLocationsV2Controller`, `PartnerLocationsV2Controller`, `PartnerLocationServicesV2Controller`, `EventPartnerLocationServicesV2Controller` routes
+  - **Model changes:** Location DTOs are flat — no nested Partner/Service navigation. Partner location endpoints split across multiple v2 controllers.
+- [ ] `waivers.ts` — waiver lookup → `WaiversV2Controller` routes
+  - **Model changes:** Waiver DTOs are flat with version tracking fields.
+- [ ] `user-waivers.ts` — 9 endpoints → `WaiversV2Controller` user waiver routes
+  - **Model changes:** User waiver DTOs include waiver metadata inline (no separate lookup needed).
+- [ ] `maps.ts` — address geocoding → `MapsV2Controller` routes
+  - **Model changes:** Minimal — geocoding response is structurally similar.
+
+**Phase 3c totals:** 5 service files, ~45 endpoints. **Medium model impact** — litter report image field rename affects image display components.
+
+#### Phase 3d - Partners & Invitations
+
+- [ ] `partners.ts` — 14 endpoints → `PartnersV2Controller`, `PartnerRequestsV2Controller` routes
+  - **Model changes:** Partner DTOs are flat — no nested PartnerType, PartnerStatus nav objects. Status/type resolved to name strings. Paginated responses.
+- [ ] `invitations.ts` — 9 endpoints → `PartnerAdminInvitationsV2Controller` routes
+  - **Model changes:** Invitation DTOs include flattened inviter/invitee info.
+- [ ] `admin.ts` — 4 endpoints → `AdminV2Controller`, `PartnerAdminsV2Controller` routes
+  - **Model changes:** Admin DTOs are flat with user info flattened.
+- [ ] `email-invites.ts` — 13 endpoints → `EmailInvitesV2Controller`, `CommunityInvitesV2Controller`, `TeamInvitesV2Controller` routes
+  - **Model changes:** Invite DTOs include rate limit metadata (quota remaining, batch limits).
+- [ ] `social-media.ts` — partner social media → `PartnerSocialMediaAccountsV2Controller` routes
+  - **Model changes:** Minimal structural changes.
+- [ ] `documents.ts` — partner documents → `PartnerDocumentsV2Controller` routes
+  - **Model changes:** Document DTOs combine admin and partner views into single DTO with role-based field visibility.
+
+**Phase 3d totals:** 6 service files, ~40 endpoints. **Low-medium model impact** — mostly admin pages with limited component reuse.
+
+#### Phase 3e - Adoptions & Sponsorships
+
+- [ ] `adoptable-areas.ts` — 24 endpoints → `AdoptableAreasV2Controller`, `AreaGenerationV2Controller`, `StagedAreasV2Controller` routes
+  - **Model changes:** `AdoptableAreaDto`, `AreaGenerationBatchDto`, `StagedAdoptableAreaDto` — new v2 DTOs. GeoJSON geometry fields may differ from v1 entity.
+- [ ] `team-adoptions.ts` — 9 endpoints → `TeamAdoptionsV2Controller`, `CommunityAdoptionsV2Controller` routes
+  - **Model changes:** `TeamAdoptionDto` — flat, no nested Team/Area nav properties.
+- [ ] `sponsored-adoptions.ts` — 6 endpoints → `CommunitySponsoredAdoptionsV2Controller`, `SponsorReportsV2Controller` routes
+  - **Model changes:** `SponsoredAdoptionDto` — flat, sponsor info inline.
+- [ ] `sponsors.ts` — 6 endpoints → `CommunitySponsorsV2Controller` routes
+  - **Model changes:** `SponsorDto` — flat, no nested Company nav.
+- [ ] `professional-companies.ts` — 7 endpoints → `CommunityProfessionalCompaniesV2Controller` routes
+  - **Model changes:** `ProfessionalCompanyDto` + `ProfessionalCompanyUserDto` — new DTOs.
+- [ ] `professional-company-portal.ts` — professional portal → `ProfessionalCompanyPortalV2Controller`, `ProfessionalCleanupLogsV2Controller` routes
+  - **Model changes:** Cleanup log DTOs are new v2 shapes.
+- [ ] `sponsor-portal.ts` — sponsor portal → `SponsorPortalV2Controller` routes
+  - **Model changes:** CSV export endpoint returns file download (same as v1).
+
+**Phase 3e totals:** 7 service files, ~52 endpoints. **Medium model impact** — adoption/sponsor DTOs are mostly new, limited existing frontend model overlap.
+
+#### Phase 3f - CRM, Fundraising & Admin
+
+- [ ] `contacts.ts` — 16 endpoints → `ContactsV2Controller`, `ContactNotesV2Controller`, `ContactTagsV2Controller`, `DonationsV2Controller`, `FundraisingAppealsV2Controller`, `FundraisingAnalyticsV2Controller` routes
+  - **Model changes:** CRM DTOs are largely new (added in Phase 2h). Frontend models may already align if CRM UI was built against v2-era DTOs.
+- [ ] `grants.ts` — 10 endpoints → `GrantsV2Controller`, `GrantTasksV2Controller` routes
+  - **Model changes:** Grant DTOs include status filter support. Task DTOs nested under `/grants/{grantId}/tasks`.
+- [ ] `waiver-admin.ts` — 14 endpoints → `WaiverAdminV2Controller`, `CommunityWaiverAdminV2Controller`, `WaiverComplianceV2Controller` routes
+  - **Model changes:** Compliance DTOs are new (summary, filtered list, expiring, CSV export). Admin waiver DTOs are flat.
+- [ ] `photo-moderation.ts` — 7 endpoints → `PhotoModerationV2Controller`, `PhotoFlagV2Controller` routes
+  - **Model changes:** Moderation queue DTOs include photo metadata + flag reason inline.
+- [ ] `newsletters.ts` — newsletter admin → `NewslettersAdminV2Controller` routes
+  - **Model changes:** `NewsletterDto` includes flattened `CategoryName` and 7 stat counters (TotalRecipients, Delivered, Opens, Clicks, Bounces, SpamReports, Unsubscribes). Separate `CreateNewsletterDto`/`UpdateNewsletterDto`/`ScheduleNewsletterDto` for writes.
+- [ ] `cms.ts` — 7 endpoints → `CmsV2Controller` routes
+  - **Model changes:** CMS proxy responses pass through from Strapi — minimal DTO changes.
+- [ ] `opportunities.ts` — 5 endpoints → `JobOpportunitiesV2Controller` routes
+  - **Model changes:** `JobOpportunityDto` — flat, structurally similar to v1 but with explicit `IsActive` field.
+- [ ] `job-opportunities.ts` — (if separate from opportunities.ts) → `JobOpportunitiesV2Controller` routes
+
+**Phase 3f totals:** 7–8 service files, ~59 endpoints. **Low model impact** — mostly admin-only pages with newer DTOs.
+
+#### Phase 3g - Infrastructure & Base URL Switch
+
+- [ ] `config.ts` — client config → `ConfigV2Controller` routes
+  - **Model changes:** Config response shape unchanged (App Insights key + Entra settings).
+- [ ] `services.ts` — service type lookup → `LookupsV2Controller` routes
+  - **Model changes:** Lookup responses now from consolidated `LookupsV2Controller` with 24h cache headers.
+- [ ] `contact.ts` — contact request → `ContactRequestV2Controller` routes
+  - **Model changes:** Contact request DTO structurally similar.
+- [ ] `feedback.ts` — user feedback → `UserFeedbackV2Controller` routes
+  - **Model changes:** Feedback DTOs include status management fields for admin.
+- [ ] `message.ts` — message request → `MessageRequestV2Controller` routes
+  - **Model changes:** Broadcast message DTO structurally similar.
+- [ ] `index.ts` — **Switch `BASE_URL` from `/api` to `/api/v2.0`** (final step after all service files updated)
+- [ ] Update `vite.config.ts` proxy to forward `/api/v2.0` requests
+- [ ] **Smoke test all pages** after base URL switch
+
+**Phase 3g totals:** 5 service files + base URL switch + smoke test. **Low model impact** — infrastructure endpoints with minimal shape changes.
+
+#### Phase 3h - Verification & Cleanup
+
 - [ ] **Verify v1 traffic drops to zero** via Application Insights
+- [x] **MAUI mobile app** — already fully on v2, no work needed ✅
+- [ ] Run full `npm run lint` and `npm run build` after all migrations
+- [ ] Remove any dead v1-only code paths in service files
+- [ ] **Remove unused TypeScript model fields** that were only needed for v1 entity shapes (e.g., navigation property types)
+- [ ] **Update TypeScript model classes** in `components/Models/` to match v2 DTO shapes as canonical types
+- [ ] **Verify paginated response handling** — all list pages must unwrap `PagedResponse<T>.items` instead of consuming raw arrays
+
+### Non-React Clients — Impact Assessment ✅
+
+Audited all other solution components for v1 API dependencies. **None require changes:**
+
+| Component | Communication | Impact |
+|---|---|---|
+| TrashMobDailyJobs | Direct DB via managers/repositories + raw SQL | None |
+| TrashMobHourlyJobs | Direct DB via managers/repositories | None |
+| TrashMob.AuthExtension | Standalone CIAM webhook (Entra External ID age gate) — no TrashMob API calls | None |
+| Strapi CMS | Standalone Node.js CMS — no TrashMob API calls | None |
+| TrashMob.Shared | External HTTP only (Azure Maps, Nominatim, SendGrid) | None |
+| TrashMobMobile | Already on `/api/v2.0/` | Already done |
+| Deploy (Bicep) | Infrastructure-only, no hardcoded API versions | None |
 
 ### Phase 4 - Advanced Features
 
@@ -631,15 +814,17 @@ public class CorrelationIdMiddleware(
 
 ---
 
-**Last Updated:** March 13, 2026
+**Last Updated:** March 14, 2026
 **Owner:** Engineering Team
-**Status:** In Progress — Phase 1 complete; Phase 2a complete (30 v2 controllers); Phases 2b–2i, 3, 4 remaining
-**Next Review:** Phase 2b–2c (lookups + user/route endpoints) prioritization
+**Status:** In Progress — Phases 1–2 complete (72+ v2 controllers, 100+ DTOs, 72+ test suites); Phase 3 (React frontend migration) starting; Phase 4 remaining
+**Next Review:** Phase 3-prereq (error handling & shared infrastructure)
 
 ---
 
 ## Changelog
 
+- **2026-03-14:** Added Phase 3-prereq (Problem Details error handling, PagedResponse types, Axios interceptor). Added non-React client impact assessment (all clear — background jobs, AuthExtension, Strapi, Deploy all unaffected). Updated status to reflect Phase 2 fully complete.
+- **2026-03-14:** Phase 3 sub-phases updated with v2 DTO response shape changes per sub-phase — documents field renames, PII separation, navigation property removal, paginated response wrappers, boolean conversions, and TypeScript model impact for each service file group. Added cleanup tasks to Phase 3h for unused model fields and paginated response handling.
 - **2026-03-13:** Major status update — audited actual codebase against project plan. Phase 1 foundation complete. Phase 2 restructured into sub-phases (2a–2i) based on actual state: 2a (30 core v2 controllers, 64 DTOs, 21 mapping files, 30+ test suites) fully complete; 2b–2i categorize ~60 remaining v1 controllers by type (lookups, user/route, partner admin, community admin, team/sponsor portals, site admin, CRM/fundraising, infrastructure/webhooks). Removed client generation pipeline (NSwag/Kiota) from scope — manual service classes sufficient for single-consumer API. Updated status from "Not Started" to "In Progress".
 - **2026-03-08:** Major revision — fixed misleading status markers (were showing checkmarks for unstarted items); documented prior work from Project 6; added "Current State" inventory; incorporated learnings from PR #2490; added server-side filtering strategy section; restructured rollout plan with per-step risk analysis and validation criteria; moved response compression to "already done"; moved sparse fieldsets and OData to out-of-scope; added per-endpoint typed filter approach
 - **2026-01-31:** Added v2 DTO layer requirement with manual mapping (MCP server reuse)
