@@ -428,6 +428,20 @@ Service files for the main user-facing flows. Must be correct before flipping th
 - [ ] **Update TypeScript model classes** in `components/Models/` to match v2 DTO shapes as canonical types
 - [ ] **Verify paginated response handling** — all list pages must unwrap `PagedResponse<T>.items` instead of consuming raw arrays
 
+### Non-React Clients — Impact Assessment ✅
+
+Audited all other solution components for v1 API dependencies. **None require changes:**
+
+| Component | Communication | Impact |
+|---|---|---|
+| TrashMobDailyJobs | Direct DB via managers/repositories + raw SQL | None |
+| TrashMobHourlyJobs | Direct DB via managers/repositories | None |
+| TrashMob.AuthExtension | Standalone CIAM webhook (Entra External ID age gate) — no TrashMob API calls | None |
+| Strapi CMS | Standalone Node.js CMS — no TrashMob API calls | None |
+| TrashMob.Shared | External HTTP only (Azure Maps, Nominatim, SendGrid) | None |
+| TrashMobMobile | Already on `/api/v2.0/` | Already done |
+| Deploy (Bicep) | Infrastructure-only, no hardcoded API versions | None |
+
 ### Phase 4 - Advanced Features
 
 Only after v2 is stable and clients are migrated.
@@ -802,13 +816,14 @@ public class CorrelationIdMiddleware(
 
 **Last Updated:** March 14, 2026
 **Owner:** Engineering Team
-**Status:** In Progress — Phase 1 complete; Phase 2a complete (30 v2 controllers); Phases 2b–2i, 3, 4 remaining
-**Next Review:** Phase 2b–2c (lookups + user/route endpoints) prioritization
+**Status:** In Progress — Phases 1–2 complete (72+ v2 controllers, 100+ DTOs, 72+ test suites); Phase 3 (React frontend migration) starting; Phase 4 remaining
+**Next Review:** Phase 3-prereq (error handling & shared infrastructure)
 
 ---
 
 ## Changelog
 
+- **2026-03-14:** Added Phase 3-prereq (Problem Details error handling, PagedResponse types, Axios interceptor). Added non-React client impact assessment (all clear — background jobs, AuthExtension, Strapi, Deploy all unaffected). Updated status to reflect Phase 2 fully complete.
 - **2026-03-14:** Phase 3 sub-phases updated with v2 DTO response shape changes per sub-phase — documents field renames, PII separation, navigation property removal, paginated response wrappers, boolean conversions, and TypeScript model impact for each service file group. Added cleanup tasks to Phase 3h for unused model fields and paginated response handling.
 - **2026-03-13:** Major status update — audited actual codebase against project plan. Phase 1 foundation complete. Phase 2 restructured into sub-phases (2a–2i) based on actual state: 2a (30 core v2 controllers, 64 DTOs, 21 mapping files, 30+ test suites) fully complete; 2b–2i categorize ~60 remaining v1 controllers by type (lookups, user/route, partner admin, community admin, team/sponsor portals, site admin, CRM/fundraising, infrastructure/webhooks). Removed client generation pipeline (NSwag/Kiota) from scope — manual service classes sufficient for single-consumer API. Updated status from "Not Started" to "In Progress".
 - **2026-03-08:** Major revision — fixed misleading status markers (were showing checkmarks for unstarted items); documented prior work from Project 6; added "Current State" inventory; incorporated learnings from PR #2490; added server-side filtering strategy section; restructured rollout plan with per-step risk analysis and validation criteria; moved response compression to "already done"; moved sparse fieldsets and OData to out-of-scope; added per-endpoint typed filter approach
