@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phase 1 complete; Phase 2a complete — 30 v2 controllers, 64 DTOs, 30+ test suites; Phases 2b–2i, 3, 4 remaining) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Very Large |
@@ -12,7 +12,7 @@
 
 ## Business Rationale
 
-Create a modern, scalable, and developer-friendly API layer (v2) that improves reliability, debuggability, and reduces manual code maintenance. Current v1 APIs lack pagination, consistent error handling, and require significant manual client code in both React (49 service files) and mobile (95 service files) apps. Auto-generated clients will accelerate development and reduce bugs.
+Create a modern, scalable, and developer-friendly API layer (v2) that improves reliability, debuggability, and reduces manual code maintenance. Current v1 APIs lack pagination, consistent error handling, and return raw entities. V2 endpoints provide lean DTOs, server-side pagination/filtering, and standardized error responses.
 
 ---
 
@@ -68,8 +68,6 @@ The goals were valid and are fully covered by this project.
 ### Core Improvements
 - Implement pagination on all collection endpoints (offset-based default)
 - Standardized error responses (RFC 9457 Problem Details)
-- Auto-generate TypeScript clients for React app (NSwag)
-- Auto-generate .NET clients for MAUI mobile app (Kiota)
 - Comprehensive OpenAPI 3.1 documentation with v1 + v2 docs
 - Correlation IDs for distributed tracing
 - Server-side filtering to reduce network traffic (especially mobile)
@@ -86,38 +84,172 @@ The goals were valid and are fully covered by this project.
 
 ## Scope
 
-### Phase 1 - Foundation
+### Phase 1 - Foundation ✅
 
 Infrastructure that all v2 endpoints will use. No v1 endpoints are modified.
 
-- [ ] **API versioning** - Install `Asp.Versioning.Mvc` + `Asp.Versioning.Mvc.ApiExplorer`; configure default v1; add `[ApiVersion("1.0")]` to `BaseController`; add v2 Swagger doc alongside v1
-- [ ] **Problem Details middleware** - Global exception handler returning RFC 9457 responses with correlation IDs; replace manual error responses
-- [ ] **Correlation ID middleware** - Generate/propagate `X-Correlation-ID` header; integrate with OpenTelemetry and structured logging
-- [ ] **Pagination framework** - `PagedRequest` (page, pageSize, sort) and `PagedResponse<T>` (items, pagination metadata); reusable extension method on `IQueryable<T>`
-- [ ] **Server-side filtering framework** - Standard `IFilterable<T>` pattern with per-endpoint filter classes (see Filtering Strategy below)
-- [ ] **V2 DTO layer** - Create `TrashMob.Models/Poco/V2/` with DTOs decoupled from entities; manual mapping extension methods; reusable for MCP server
-- [ ] **OpenAPI 3.1 dual-doc** - v1 (existing endpoints, unchanged) + v2 (new endpoints) side by side in Swagger UI
-- [ ] **Client generation pipeline** - NSwag for TypeScript (Fetch template), Kiota for .NET; GitHub Actions workflow triggered by V2 controller changes
+- [x] **API versioning** - `Asp.Versioning.Mvc` + `Asp.Versioning.Mvc.ApiExplorer` installed; default v1; `UrlSegmentApiVersionReader`; v2 Swagger doc alongside v1 (`Program.cs`)
+- [x] **Problem Details middleware** - `GlobalExceptionHandlerMiddleware` returns RFC 9457 responses with correlation IDs; maps exception types to HTTP status codes (ArgumentException→400, KeyNotFoundException→404, etc.)
+- [x] **Correlation ID middleware** - `CorrelationIdMiddleware` generates/propagates `X-Correlation-ID` header; integrates with OpenTelemetry tags and structured logging scopes
+- [x] **Pagination framework** - `QueryParameters` (page, pageSize, sort; max 100, default 25) and `PagedResponse<T>` (items + `PaginationMetadata`); `QueryableExtensions.ToPagedAsync()` in `TrashMob.Shared/Extensions/`
+- [x] **Server-side filtering framework** - Per-endpoint `QueryParameters` subclasses (`EventQueryParameters`, `LitterReportQueryParameters`, `TeamQueryParameters`, `UserQueryParameters`, `PartnerQueryParameters`); manager methods return `IQueryable<T>` for composable filtering
+- [x] **V2 DTO layer** - 64 DTOs in `TrashMob.Models/Poco/V2/`; 21 mapping extension files in `TrashMob.Models/Extensions/V2/`; bidirectional `ToV2Dto()`/`ToEntity()` pattern; read/write DTO separation (`UserDto` vs `UserWriteDto`)
+- [x] **OpenAPI 3.1 dual-doc** - v1 + v2 side by side in Swagger UI (`/swagger/v1/swagger.json`, `/swagger/v2/swagger.json`)
 
-### Phase 2 - Core Endpoints
+> **Note:** Auto-generated client libraries (NSwag/Kiota) have been removed from scope. The mobile app already calls v2 endpoints directly via manual service classes, and the web app will migrate to v2 endpoints the same way. The overhead of maintaining a client generation pipeline is not justified for a single-consumer API.
 
-New v2 controllers alongside existing v1 controllers. V1 remains untouched.
+### Phase 2a - Core Endpoints ✅ (complete — 30 controllers, 64 DTOs, 30+ test suites)
 
-- [ ] **Events v2** - Pilot endpoint; paginated list, filtered by status/city/region/date range; `EventDto` response
-- [ ] **Users v2** - Paginated list; `UserDto` (no PII leaks, minor privacy masking built into DTO)
-- [ ] **Partners/Communities v2** - Paginated list; community dashboard aggregates
-- [ ] **EventAttendees v2** - Filtered by event; paginated
-- [ ] **EventSummaries/Stats v2** - Aggregate stats (optimized query); filtered summaries
-- [ ] **LitterReports v2** - Paginated with geospatial filtering
-- [ ] **Generate and commit TypeScript client** (NSwag)
-- [ ] **Generate and commit .NET MAUI client** (Kiota)
+New v2 controllers alongside existing v1 controllers. V1 remains untouched. All controllers use `[ApiVersion("2.0")]`, primary constructors, `[EnableCors]`, and DTO-only request/response patterns. Tests in `TrashMob.Shared.Tests/Controllers/V2/`.
+
+**Core Resources:**
+- [x] **Events v2** - `EventsV2Controller`: paginated list with `EventQueryParameters` (status, type, city, region, country, date range); user events; location queries; POST-based filtered pagination
+- [x] **Users v2** - `UsersV2Controller`: paginated list with `UserQueryParameters`; `UserDto` (PII-safe) / `UserWriteDto` (PII included); server-managed field preservation on PUT; impact stats; photo upload
+- [x] **Partners v2** - `PartnersV2Controller`: paginated active partners with `PartnerQueryParameters`
+- [x] **Communities v2** - `CommunitiesV2Controller`: community listing and detail
+- [x] **Teams v2** - `TeamsV2Controller`: paginated with `TeamQueryParameters`; my teams; name availability check; team lead auth
+- [x] **LitterReports v2** - `LitterReportsV2Controller`: paginated with `LitterReportQueryParameters`; user reports; location queries; image upload/retrieval
+- [x] **Stats v2** - `StatsV2Controller`: platform and user statistics
+
+**Nested Resources:**
+- [x] **EventAttendees v2** - `EventAttendeesV2Controller`: paginated attendees per event; count; register/unregister; lead promotion/demotion; waiver status check
+- [x] **EventSummary v2** - `EventSummaryV2Controller`: post-event metrics CRUD
+- [x] **EventAttendeeMetrics v2** - `EventAttendeeMetricsV2Controller`: individual attendee metrics (bags, weight, duration)
+- [x] **EventPhotos v2** - `EventPhotosV2Controller`: event photo listing, upload, deletion
+- [x] **EventRoutes v2** - `EventRoutesV2Controller`: GPS route data per event
+- [x] **EventAttendeeRoutes v2** - `EventAttendeeRoutesV2Controller`: individual attendee GPS routes
+- [x] **EventLitterReports v2** - `EventLitterReportsV2Controller`: litter reports linked to events
+- [x] **EventPartnerLocationServices v2** - `EventPartnerLocationServicesV2Controller`: partner services at events
+- [x] **EventDependents v2** - `EventDependentsV2Controller`: minor dependents at events
+- [x] **TeamMembers v2** - `TeamMembersV2Controller`: member listing, join, remove, promote/demote leads
+- [x] **TeamEvents v2** - `TeamEventsV2Controller`: events associated with teams
+
+**Dependents & Minors:**
+- [x] **Dependents v2** - `DependentsV2Controller`: CRUD for parent-managed dependents (owner-only auth)
+- [x] **DependentInvitations v2** - `DependentInvitationsV2Controller`: invitation system for minor account linking
+- [x] **DependentWaivers v2** - `DependentWaiversV2Controller`: waiver management for dependents
+
+**Platform Features:**
+- [x] **Waivers v2** - `WaiversV2Controller`: required/signed waivers; accept/reject; minor-specific; event waivers; all versions
+- [x] **Leaderboards v2** - `LeaderboardsV2Controller`: rankings by type (Events, Bags, Weight, Hours); user and team rankings
+- [x] **Achievements v2** - `AchievementsV2Controller`: user achievements and achievement definitions
+- [x] **Maps v2** - `MapsV2Controller`: event and litter report map data
+- [x] **Lookups v2** - `LookupsV2Controller`: event types, event statuses, partner types
+- [x] **PickupLocations v2** - `PickupLocationsV2Controller`: cleanup location management
+- [x] **NewsletterPreferences v2** - `NewsletterPreferencesV2Controller`: category subscriptions
+- [x] **ContactRequest v2** - `ContactRequestV2Controller`: contact form submissions
+- [x] **AppVersion v2** - `AppVersionV2Controller`: mobile app version checking
+
+### Phase 2b - Remaining Lookup Endpoints
+
+The `LookupsV2Controller` currently covers event types, event statuses, and partner types. These additional lookup tables used by v1 still need v2 coverage:
+
+- [ ] **Weight units** - `WeightUnitsController` → add to `LookupsV2Controller` (needed for event summary metrics on mobile)
+- [ ] **Service types** - `ServiceTypesController` → add to `LookupsV2Controller` (partner service categorization)
+- [ ] **Invitation statuses** - `InvitationStatusesController` → add to `LookupsV2Controller` (partner admin)
+- [ ] **Partner request statuses** - `PartnerRequestStatusesController` → add to `LookupsV2Controller` (partner admin)
+- [ ] **Partner statuses** - `PartnerStatusesController` → add to `LookupsV2Controller` (partner admin)
+- [ ] **Social media account types** - `SocialMediaAccountTypesController` → add to `LookupsV2Controller` (partner profiles)
+- [ ] **Event partner location service statuses** - `EventPartnerLocationServiceStatusesController` → add to `LookupsV2Controller` (partner service workflow)
+
+### Phase 2c - User & Route Endpoints
+
+Mobile-relevant user endpoints not yet covered by v2:
+
+- [ ] **User routes** - `UserRoutesController` (`/api/users/me/routes`): retrieve user's GPS route history — important for mobile route review
+- [ ] **Route metadata** - `RouteMetadataController` (`/api/routes`): update route privacy, notes, trim settings — mobile route editing
+- [ ] **User feedback** - `UserFeedbackController` (`/api/feedback`): anonymous feedback submission — both web and mobile
+- [ ] **User invites** - `UserInvitesController` (`/api/invites`): refer friends (rate-limited 50/month) — both web and mobile
+- [ ] **Image upload** - `ImageController` (`/api/image`): event lead photo upload — web-centric but could benefit mobile
+
+### Phase 2d - Partner Management (Web Admin)
+
+Partner organization management — 11 v1 controllers, all web-only admin/portal features. Lower priority since these are not mobile-facing.
+
+- [ ] **Partner locations** - `PartnerLocationsController`: CRUD partner office/service locations
+- [ ] **Partner location contacts** - `PartnerLocationContactsController`: contacts at specific locations
+- [ ] **Partner location services** - `PartnerLocationServicesController`: services offered at partner locations
+- [ ] **Partner location event services** - `PartnerLocationEventServicesController`: services provided at events
+- [ ] **Partner contacts** - `PartnerContactsController`: organizational contacts
+- [ ] **Partner admins** - `PartnerAdminsController`: assign/view partner admin users
+- [ ] **Partner admin invitations** - `PartnerAdminInvitationsController`: invite partner admins
+- [ ] **Partner requests** - `PartnerRequestsController`: public partner suggestion + admin approval
+- [ ] **Partner documents** - `PartnerDocumentsController`: file upload/download (25MB max)
+- [ ] **Partner document admin** - `PartnerDocumentAdminController`: site admin cross-partner doc view
+- [ ] **Partner social media** - `PartnerSocialMediaAccountsController`: partner social media accounts
+
+### Phase 2e - Community & Adoption Management (Web Admin)
+
+Community administration and area adoption features — 10 v1 controllers, all community admin/site admin features.
+
+- [ ] **Adoptable areas** - `AdoptableAreasController`: manage adoptable cleanup areas per community
+- [ ] **Area generation** - `AreaGenerationController`: AI-powered area generation for adoption zones
+- [ ] **Staged areas** - `StagedAreasController`: review AI-generated areas before approval
+- [ ] **Community adoptions** - `CommunityAdoptionsController`: view/manage pending adoption applications
+- [ ] **Adoption events** - `AdoptionEventsController`: link events to team adoptions
+- [ ] **Community sponsored adoptions** - `CommunitySponsoredAdoptionsController`: sponsored cleanup adoptions
+- [ ] **Community sponsors** - `CommunitySponsorsController`: sponsor organizations per community
+- [ ] **Community invites** - `CommunityInvitesController`: bulk email invites for communities
+- [ ] **Community professional companies** - `CommunityProfessionalCompaniesController`: professional cleaning companies
+- [ ] **Community prospects** - `CommunityProspectsController`: CRM pipeline for prospecting new community partnerships (site admin only)
+
+### Phase 2f - Team Administration & Portals (Web Admin)
+
+Team admin, sponsor portals, and professional company portals — 7 v1 controllers.
+
+- [ ] **Team admin** - `TeamAdminController`: site admin team management
+- [ ] **Team adoptions** - `TeamAdoptionsController`: team adoption applications
+- [ ] **Team invites** - `TeamInvitesController`: team lead bulk email invites
+- [ ] **Sponsor portal** - `SponsorPortalController`: sponsors view adoptions + cleanup logs
+- [ ] **Sponsor reports** - `SponsorReportsController`: reports on sponsored adoptions
+- [ ] **Professional cleanup logs** - `ProfessionalCleanupLogsController`: professional company cleanup logging
+- [ ] **Professional company portal** - `ProfessionalCompanyPortalController`: professional company listing
+
+### Phase 2g - Admin & Moderation (Site Admin)
+
+Site-wide administration and content moderation — 5 v1 controllers. All require site admin privileges. Web-only.
+
+- [ ] **Admin** - `AdminController`: partner request approval/denial
+- [ ] **Waiver admin** - `WaiverAdminController`: manage waiver versions
+- [ ] **Waiver compliance** - `WaiverComplianceController`: compliance dashboard + reports
+- [ ] **Photo moderation** - `PhotoModerationController`: photo review queue + user flagging
+- [ ] **Message requests** - `MessageRequestController`: broadcast messages to users
+
+### Phase 2h - CRM & Fundraising (Site Admin)
+
+Fundraising and donor relationship management — 10 v1 controllers. All site admin only. Web-only.
+
+- [ ] **Contacts** - `ContactsController`: CRM contact management (search, filter by type/tag)
+- [ ] **Contact notes** - `ContactNotesController`: notes on fundraising contacts
+- [ ] **Contact tags** - `ContactTagsController`: tag-based contact organization
+- [ ] **Donations** - `DonationsController`: donation log management
+- [ ] **Pledges** - `PledgesController`: pledge/commitment tracking
+- [ ] **Grants** - `GrantsController`: grant discovery + management
+- [ ] **Grant tasks** - `GrantTasksController`: grant application task tracking
+- [ ] **Fundraising appeals** - `FundraisingAppealsController`: send appeal emails
+- [ ] **Fundraising analytics** - `FundraisingAnalyticsController`: engagement scoring for donors
+- [ ] **CMS proxy** - `CmsController`: Strapi CMS content proxy
+
+### Phase 2i - Infrastructure & Webhook Endpoints
+
+Infrastructure, auth, config, and webhook endpoints. These may not all need v2 equivalents — evaluate case by case.
+
+- [ ] **Newsletter webhooks** - `NewsletterWebhooksController`: SendGrid webhook receiver (tracking)
+- [ ] **Newsletters** - `NewslettersController`: admin newsletter creation/sending
+- [ ] **Privo webhooks** - `PrivoWebhooksController`: Privo consent webhook receiver
+- [ ] **Authentication** - `AuthenticationController`: validates new user creation
+- [ ] **Secrets** - `SecretsController`: retrieves config secrets by name
+- [ ] **Config** - `ConfigController`: client-side config (App Insights, Entra settings)
+- [ ] **Email invites** - `EmailInvitesController`: admin bulk email invite batches
+- [ ] **Job opportunities** - `JobOpportunityController`: job listings (GET public, PUT admin)
+- [ ] **Route simulation** - `RouteSimulationController`: dev/QA fake GPS route generator (non-prod only)
 
 ### Phase 3 - Client Migration
 
-Migrate web and mobile apps to use v2 endpoints and generated clients. V1 endpoints still running.
+Migrate web and mobile apps to use v2 endpoints. V1 endpoints still running.
 
-- [ ] **Migrate React app** - Replace 49 manual service files with generated client, one page at a time
-- [ ] **Migrate MAUI mobile app** - Replace 95 manual service files with generated client, one screen at a time
+- [ ] **Migrate React app** - Replace manual v1 service files with v2 endpoint calls, one page at a time
+- [ ] **Migrate MAUI mobile app** - Replace remaining v1 service calls with v2 endpoints, one screen at a time
 - [ ] **Verify v1 traffic drops to zero** via Application Insights
 
 ### Phase 4 - Advanced Features
@@ -210,72 +342,63 @@ The biggest network savings for mobile come from:
 
 The key principle: **v1 endpoints are never modified or removed.** All v2 work is purely additive until Phase 3 client migration, which is incremental (one page/screen at a time).
 
-### Step 1 - Infrastructure (No user-facing changes)
+### Step 1 - Infrastructure ✅
 
-1. Install `Asp.Versioning.Mvc` + `Asp.Versioning.Mvc.ApiExplorer` NuGet packages
-2. Configure API versioning with default v1 (all existing controllers automatically stay on v1)
-3. Add `[ApiVersion("1.0")]` to `BaseController` — this is a no-op since it matches the default
-4. Add Problem Details global exception handler (replaces generic 500s; improves v1 too)
-5. Add Correlation ID middleware (applies to all requests; improves v1 too)
-6. Create `PagedResponse<T>`, `QueryParameters`, `IQueryable` extensions in `TrashMob.Shared`
-7. Create v2 DTO folder structure and first DTO (`EventDto`) with mapping extension
-8. Add v2 Swagger doc alongside v1 in Swagger UI
-9. Set up NSwag + Kiota in GitHub Actions (generates from v2 Swagger spec)
+1. ✅ Installed `Asp.Versioning.Mvc` + `Asp.Versioning.Mvc.ApiExplorer` NuGet packages
+2. ✅ Configured API versioning with default v1 and `UrlSegmentApiVersionReader`
+3. ✅ Added `[ApiVersion("1.0")]` to `BaseController`
+4. ✅ Added `GlobalExceptionHandlerMiddleware` (Problem Details with correlation IDs)
+5. ✅ Added `CorrelationIdMiddleware` (generates/propagates `X-Correlation-ID`, OpenTelemetry integration)
+6. ✅ Created `PagedResponse<T>`, `QueryParameters`, `QueryableExtensions.ToPagedAsync()` in `TrashMob.Shared`
+7. ✅ Created v2 DTO layer (64 DTOs in `TrashMob.Models/Poco/V2/`, 21 mapping files in `TrashMob.Models/Extensions/V2/`)
+8. ✅ Added v2 Swagger doc alongside v1 in Swagger UI
+**Validation:** 727+ backend tests passing. Swagger UI shows both v1 and v2 docs. All existing v1 API calls from web and mobile work unchanged.
 
-**Risk:** Low. Steps 1-3 add versioning infrastructure without changing any existing routes. Steps 4-5 improve error handling for all requests (beneficial side effect). Steps 6-9 are new code with no impact on existing functionality.
+### Step 2 - Core v2 Endpoints ✅ (Complete — 30 controllers)
 
-**Validation:** Run full test suite (442 backend tests). Verify Swagger UI shows both v1 and v2 docs. Verify all existing API calls from web and mobile still work unchanged.
+All core and nested resource controllers implemented with pagination, filtering, DTOs, auth, and test coverage. See Phase 2a above for full list.
 
-### Step 2 - Pilot Endpoint (Events v2)
+**Validation:** 30+ v2 controller test suites. Mobile app (MAUI) migrated to v2 endpoints. Response sizes reduced via lean DTOs and server-side pagination.
 
-1. Create `EventsV2Controller` with `[ApiVersion("2.0")]` and `[Route("api/v{version:apiVersion}/events")]`
-2. Implement `GET /api/v2/events` with pagination + filtering → returns `PagedResponse<EventDto>`
-3. Implement `GET /api/v2/events/{id}` → returns `EventDto`
-4. Generate TypeScript client from v2 spec
-5. Generate .NET client from v2 spec
-6. Migrate **one** React page (e.g., Events list) to use generated v2 client
-7. Migrate **one** MAUI screen (e.g., Events list) to use generated v2 client
-8. Validate both work correctly in dev environment
+### Step 3 - Remaining v2 Endpoints (Phases 2b–2h)
 
-**Risk:** Low. New controller at new route. Existing `EventsController` at `/api/events` is untouched. One page/screen migrated as proof of concept — easy to revert.
+Categorized by priority:
 
-**Validation:** Existing web and mobile apps still use v1 and work normally. New v2 page/screen works with generated client. Compare response sizes between v1 (full entity) and v2 (DTO with pagination).
+1. **High priority (mobile-relevant):** Phase 2b (lookup consolidation) + Phase 2c (user routes, feedback, invites)
+2. **Medium priority (web admin):** Phase 2d (partner management) + Phase 2e (community/adoption) + Phase 2f (team admin/portals)
+3. **Low priority (site admin):** Phase 2g (admin/moderation) + Phase 2h (CRM/fundraising)
+4. **Evaluate individually:** Phase 2i (infrastructure/webhooks — many may not need v2 equivalents)
 
-### Step 3 - Remaining v2 Endpoints
+**Risk:** Low. Same proven v2 controller pattern. V1 remains untouched. Many of these are web-only admin features that may not justify v2 migration if the web app continues using v1.
 
-1. Create v2 controllers for: Users, Partners/Communities, EventAttendees, EventSummaries/Stats, LitterReports, Teams
-2. Each with appropriate per-endpoint filters
-3. Regenerate TypeScript and .NET clients after each batch
-4. Write integration tests for v2 endpoints
-
-**Risk:** Low. Same pattern as Step 2, repeated. V1 still untouched.
-
-### Step 4 - Web Migration (Incremental)
+### Step 4 - Web Migration (Phase 3, Incremental)
 
 1. Migrate React pages one at a time to use generated v2 TypeScript client
-2. Replace manual service files as each page migrates
+2. Replace 49 manual service files as each page migrates
 3. Each migration is a separate PR — easy to review and revert
 4. Track v1 vs v2 traffic in Application Insights
 
-**Risk:** Medium. This is where users start seeing v2 responses. Mitigated by incremental approach (one page per PR) and the fact that v1 endpoints remain as fallback.
+**Risk:** Medium. This is where web users start seeing v2 responses. Mitigated by incremental approach (one page per PR) and the fact that v1 endpoints remain as fallback.
 
-### Step 5 - Mobile Migration (Incremental)
+### Step 5 - Mobile Migration (Phase 3, Incremental)
 
 1. Migrate MAUI screens one at a time to use generated .NET client
-2. Replace manual RestService files as each screen migrates
+2. Replace 95 manual RestService files as each screen migrates
 3. Test on both Android and iOS
 4. Monitor Sentry for any new crash patterns
 
-**Risk:** Medium. Same as Step 4 but for mobile. App store release cycle adds latency. Mitigated by keeping v1 endpoints alive.
+**Note:** MAUI app already uses many v2 endpoints directly. This step covers migrating the remaining v1 calls.
 
-### Step 6 - Advanced Features
+**Risk:** Medium. App store release cycle adds latency. Mitigated by keeping v1 endpoints alive.
+
+### Step 6 - Advanced Features (Phase 4)
 
 1. Implement ETags (biggest mobile benefit — eliminates redundant transfers)
 2. Apply rate limiting middleware (thresholds: 100/300/600 per min)
 3. Bulk operations where needed (e.g., batch event creation for community programs)
 4. Webhook infrastructure (event created/updated notifications)
 
-**Risk:** Low-Medium. These are additive features on v2 endpoints. ETags are purely additive. Rate limiting needs careful threshold tuning.
+**Risk:** Low-Medium. Additive features on v2 endpoints. ETags are purely additive. Rate limiting needs careful threshold tuning.
 
 ### Step 7 - Stabilization & v1 Deprecation
 
@@ -292,15 +415,14 @@ The key principle: **v1 endpoints are never modified or removed.** All v2 work i
 
 ### Quantitative
 - API response times <= 200ms (p95)
-- Auto-generated clients reduce manual API code by 70% (49 web + 95 mobile service files)
 - Error resolution time decreased by 50% (via correlation IDs + Problem Details)
 - Mobile network traffic reduced by 80%+ on list endpoints (pagination + DTOs)
 - Zero breaking changes to v1 endpoints during entire transition
 
 ### Qualitative
-- Developer onboarding time reduced (generated clients + better docs)
+- Developer onboarding time reduced (better docs + consistent patterns)
 - Improved API consumer satisfaction
-- Faster feature development (add endpoint -> regenerate client -> done)
+- Faster feature development (consistent v2 endpoint patterns)
 
 ---
 
@@ -449,46 +571,12 @@ public class CorrelationIdMiddleware(
 }
 ```
 
-### Client Generation CI/CD (GitHub Actions)
-
-```yaml
-name: Generate API Clients
-on:
-  push:
-    paths:
-      - 'TrashMob/Controllers/V2/**'
-      - 'TrashMob.Models/Poco/V2/**'
-jobs:
-  generate-clients:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Generate OpenAPI JSON
-        run: |
-          dotnet swagger tofile --output openapi-v2.json \
-            TrashMob/bin/Release/net10.0/TrashMob.dll v2
-      - name: Generate TypeScript Client
-        run: |
-          npx nswag openapi2tsclient \
-            /input:openapi-v2.json \
-            /output:TrashMob/client-app/src/api/generated/v2-client.ts \
-            /template:Fetch
-      - name: Generate .NET Client
-        run: |
-          dotnet tool install --global Microsoft.Kiota
-          kiota generate \
-            --openapi openapi-v2.json \
-            --output TrashMobMobile/Generated/ApiClient \
-            --language CSharp \
-            --class-name TrashMobApiClient
-```
-
 ---
 
 ## Decisions
 
-1. **Client generation tools?**
-   **Decision:** NSwag for TypeScript (React), Kiota for .NET (MAUI)
+1. **~~Client generation tools?~~**
+   **Decision:** Removed from scope. Manual service classes are sufficient for a single-consumer API. Both web and mobile call v2 endpoints directly.
 
 2. **Query filtering syntax?**
    **Decision:** Typed filter classes per endpoint (not OData). Simpler, type-safe, no parser complexity.
@@ -531,20 +619,21 @@ jobs:
 ## Related Documents
 
 - **[Project 6 - Backend Standards](./Project_06_Backend_Standards.md)** - Foundation work (code modernization, auth, tests)
-- **[Project 5 - Deployment](./Project_05_Deployment_Pipelines.md)** - CI/CD pipeline for client generation
+- **[Project 5 - Deployment](./Project_05_Deployment_Pipelines.md)** - CI/CD pipeline
 - **PR #2490** (closed) - Community contribution that motivated timeline review
 
 ---
 
-**Last Updated:** March 8, 2026
+**Last Updated:** March 13, 2026
 **Owner:** Engineering Team
-**Status:** Not Started
-**Next Review:** Before Phase 1 kickoff
+**Status:** In Progress — Phase 1 complete; Phase 2a complete (30 v2 controllers); Phases 2b–2i, 3, 4 remaining
+**Next Review:** Phase 2b–2c (lookups + user/route endpoints) prioritization
 
 ---
 
 ## Changelog
 
+- **2026-03-13:** Major status update — audited actual codebase against project plan. Phase 1 foundation complete. Phase 2 restructured into sub-phases (2a–2i) based on actual state: 2a (30 core v2 controllers, 64 DTOs, 21 mapping files, 30+ test suites) fully complete; 2b–2i categorize ~60 remaining v1 controllers by type (lookups, user/route, partner admin, community admin, team/sponsor portals, site admin, CRM/fundraising, infrastructure/webhooks). Removed client generation pipeline (NSwag/Kiota) from scope — manual service classes sufficient for single-consumer API. Updated status from "Not Started" to "In Progress".
 - **2026-03-08:** Major revision — fixed misleading status markers (were showing checkmarks for unstarted items); documented prior work from Project 6; added "Current State" inventory; incorporated learnings from PR #2490; added server-side filtering strategy section; restructured rollout plan with per-step risk analysis and validation criteria; moved response compression to "already done"; moved sparse fieldsets and OData to out-of-scope; added per-endpoint typed filter approach
 - **2026-01-31:** Added v2 DTO layer requirement with manual mapping (MCP server reuse)
 - **2026-01-31:** Removed week-based schedule from rollout plan (agile approach)
