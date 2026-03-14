@@ -7,6 +7,7 @@ import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProcessUnsubscribe } from '@/services/newsletters';
+import { getErrorMessage } from '@/lib/api-errors';
 
 export const UnsubscribePage: FC = () => {
     const [searchParams] = useSearchParams();
@@ -106,10 +107,8 @@ export const UnsubscribePage: FC = () => {
         }
 
         // Error
-        const errorMessage =
-            unsubscribeMutation.data?.data?.errorMessage ||
-            (unsubscribeMutation.error as Error)?.message ||
-            'An unexpected error occurred.';
+        const errorMessage = unsubscribeMutation.data?.data?.errorMessage ||
+            getErrorMessage(unsubscribeMutation.error);
 
         return (
             <Card className='max-w-md mx-auto'>

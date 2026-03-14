@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Services } from '../config/services.config';
 import { getApiConfig, getMsalClientInstance, validateToken } from '../store/AuthStore';
+import { getErrorMessage } from '../lib/api-errors';
 
 const PublicService = axios.create({
     timeout: Services.TIMEOUT,
@@ -11,6 +12,18 @@ const ProtectedService = axios.create({
     timeout: Services.TIMEOUT,
     baseURL: Services.BASE_URL,
 });
+// Normalize API error responses so error.message contains the best available message.
+// Handles v2 Problem Details (detail field), v1 custom messages, and plain string bodies.
+const normalizeErrorResponse = (error: unknown) => {
+    if (error instanceof axios.AxiosError) {
+        error.message = getErrorMessage(error, error.message);
+    }
+    return Promise.reject(error);
+};
+
+PublicService.interceptors.response.use(undefined, normalizeErrorResponse);
+ProtectedService.interceptors.response.use(undefined, normalizeErrorResponse);
+
 ProtectedService.interceptors.request.use(
     async (config) => {
         const processedConfig = config;
