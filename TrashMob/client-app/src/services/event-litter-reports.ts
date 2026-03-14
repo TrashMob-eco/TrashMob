@@ -7,7 +7,7 @@ export const GetEventLitterReports = (params: GetEventLitterReports_Params) => (
     key: ['/eventlitterreports', params.eventId],
     service: async () =>
         ApiService('protected').fetchData<GetEventLitterReports_Response>({
-            url: `/eventlitterreports/${params.eventId}`,
+            url: `/v2/eventlitterreports/by-event/${params.eventId}`,
             method: 'get',
         }),
 });
@@ -21,7 +21,7 @@ export const AddEventLitterReport = () => ({
     key: ['/eventlitterreports', 'add'],
     service: async (params: AddEventLitterReport_Params) =>
         ApiService('protected').fetchData<void>({
-            url: '/eventlitterreports',
+            url: '/v2/eventlitterreports',
             method: 'post',
             data: {
                 eventId: params.eventId,
@@ -36,7 +36,7 @@ export const DeleteEventLitterReport = (params: DeleteEventLitterReport_Params) 
     key: ['/eventlitterreports', 'delete', params.eventId, params.litterReportId],
     service: async () =>
         ApiService('protected').fetchData<void>({
-            url: `/eventlitterreports/${params.eventId}/${params.litterReportId}`,
+            url: `/v2/eventlitterreports/${params.eventId}/${params.litterReportId}`,
             method: 'delete',
         }),
 });

@@ -17,7 +17,7 @@ export const GetEventTypes = () => ({
     key: ['/eventtypes'],
     service: async () =>
         ApiService('public').fetchData<GetEventTypes_Response>({
-            url: '/eventtypes',
+            url: '/v2/lookups/event-types',
             method: 'get',
         }),
 });
@@ -36,7 +36,7 @@ export const GetFilteredEvents = (params: GetFilteredEvents_Params) => ({
     key: ['/events/filteredevents', params],
     service: () => {
         return ApiService('public').fetchData<GetFilteredEvents_Response>({
-            url: '/events/filteredevents',
+            url: '/v2/events/pagedfilteredevents',
             method: 'post',
             data: params,
         });
@@ -48,7 +48,7 @@ export const GetAllEvents = () => ({
     key: ['/events'],
     service: async () =>
         ApiService('protected').fetchData<GetAllEvents_Response>({
-            url: '/events',
+            url: '/v2/events',
             method: 'get',
         }),
 });
@@ -89,7 +89,7 @@ export const GetAllEventsBeingAttendedByUser = (params: GetAllEventsBeingAttende
     key: ['/events/eventsuserisattending/', params],
     service: async () =>
         ApiService('protected').fetchData<GetAllEventsBeingAttendedByUser_Response>({
-            url: `/events/eventsuserisattending/${params.userId}`,
+            url: `/v2/events/eventsuserisattending/${params.userId}`,
             method: 'get',
         }),
 });
@@ -116,7 +116,7 @@ export const GetEventById = (params: GetEventById_Params) => ({
     key: ['/Events/', params],
     service: async () =>
         ApiService('public').fetchData<GetEventById_Response>({
-            url: `/Events/${params.eventId}`,
+            url: `/v2/events/${params.eventId}`,
             method: 'get',
         }),
 });
@@ -127,7 +127,7 @@ export const CreateEvent = () => ({
     key: ['/Events', 'create'],
     service: async (body: CreateEvent_Body) =>
         ApiService('protected').fetchData<CreateEvent_Response, CreateEvent_Body>({
-            url: '/Events',
+            url: '/v2/events',
             method: 'post',
             data: body,
         }),
@@ -139,7 +139,7 @@ export const UpdateEvent = () => ({
     key: ['/Events', 'update'],
     service: async (body: UpdateEvent_Body) =>
         ApiService('protected').fetchData<UpdateEvent_Response, UpdateEvent_Body>({
-            url: '/Events',
+            url: '/v2/events',
             method: 'put',
             data: body,
         }),
@@ -151,7 +151,7 @@ export const DeleteEvent = () => ({
     key: ['/Events', 'delete'],
     service: async (body: DeleteEvent_Body) =>
         ApiService('protected').fetchData<DeleteEvent_Response, DeleteEvent_Body>({
-            url: '/Events',
+            url: '/v2/events',
             method: 'delete',
             data: body,
         }),
@@ -163,7 +163,7 @@ export const GetEventSummaryById = (params: GetEventSummaryById_Params) => ({
     key: ['/eventsummaries/', params],
     service: async () =>
         ApiService('public').fetchData<GetEventSummaryById_Response>({
-            url: `/eventsummaries/${params.eventId}`,
+            url: `/v2/events/${params.eventId}/summary`,
             method: 'get',
         }),
 });
@@ -174,7 +174,7 @@ export const CreateEventSummary = () => ({
     key: ['/eventsummaries', 'create'],
     service: async (body: CreateEventSummary_Body) =>
         ApiService('protected').fetchData<CreateEventSummary_Response, CreateEventSummary_Body>({
-            url: '/eventsummaries',
+            url: `/v2/events/${body.eventId}/summary`,
             method: 'post',
             data: body,
         }),
@@ -186,7 +186,7 @@ export const UpdateEventSummary = () => ({
     key: ['/eventsummaries', 'update'],
     service: async (body: UpdateEventSummary_Body) =>
         ApiService('protected').fetchData<UpdateEventSummary_Response, UpdateEventSummary_Body>({
-            url: '/eventsummaries',
+            url: `/v2/events/${body.eventId}/summary`,
             method: 'put',
             data: body,
         }),
@@ -198,7 +198,7 @@ export const GetEventAttendees = (params: GetEventAttendees_Params) => ({
     key: ['/eventattendees', params.eventId],
     service: async () =>
         ApiService('protected').fetchData<GetEventAttendees_Response>({
-            url: `/eventattendees/${params.eventId}`,
+            url: `/v2/events/${params.eventId}/attendees`,
             method: 'get',
         }),
 });
@@ -209,7 +209,7 @@ export const AddEventAttendee = () => ({
     key: ['/EventAttendees', 'add'],
     service: async (body: AddEventAttendee_Body) =>
         ApiService('protected').fetchData<AddEventAttendee_Response, AddEventAttendee_Body>({
-            url: '/EventAttendees',
+            url: `/v2/events/${body.eventId}/attendees`,
             method: 'post',
             data: body,
         }),
@@ -221,7 +221,7 @@ export const DeleteEventAttendee = () => ({
     key: ['/EventAttendees/', 'delete'],
     service: async (params: DeleteEventAttendee_Params) =>
         ApiService('protected').fetchData<DeleteEventAttendee_Response>({
-            url: `/EventAttendees/${params.eventId}/${params.userId}`,
+            url: `/v2/events/${params.eventId}/attendees/${params.userId}`,
             method: 'delete',
         }),
 });
@@ -232,7 +232,7 @@ export const GetUserEvents = (params: GetUserEvents_Params) => ({
     key: ['/events/userevents/', params, '/false'],
     service: async () =>
         ApiService('protected').fetchData<GetUserEvents_Response>({
-            url: `/events/userevents/${params.userId}/false`,
+            url: `/v2/events/userevents/${params.userId}/false`,
             method: 'get',
         }),
 });
@@ -244,7 +244,7 @@ export const GetEventLeads = (params: GetEventLeads_Params) => ({
     key: ['/eventattendees', params.eventId, 'leads'],
     service: async () =>
         ApiService('protected').fetchData<GetEventLeads_Response>({
-            url: `/eventattendees/${params.eventId}/leads`,
+            url: `/v2/events/${params.eventId}/attendees/leads`,
             method: 'get',
         }),
 });
@@ -255,7 +255,7 @@ export const PromoteToLead = () => ({
     key: ['/eventattendees', 'promote'],
     service: async (params: PromoteToLead_Params) =>
         ApiService('protected').fetchData<PromoteToLead_Response>({
-            url: `/eventattendees/${params.eventId}/${params.userId}/promote`,
+            url: `/v2/events/${params.eventId}/attendees/${params.userId}/promote`,
             method: 'put',
         }),
 });
@@ -266,7 +266,7 @@ export const DemoteFromLead = () => ({
     key: ['/eventattendees', 'demote'],
     service: async (params: DemoteFromLead_Params) =>
         ApiService('protected').fetchData<DemoteFromLead_Response>({
-            url: `/eventattendees/${params.eventId}/${params.userId}/demote`,
+            url: `/v2/events/${params.eventId}/attendees/${params.userId}/demote`,
             method: 'put',
         }),
 });
@@ -280,7 +280,7 @@ export const VerifyAttendeeWaiverStatus = (params: VerifyAttendeeWaiverStatus_Pa
     key: ['/eventattendees', params.eventId, 'attendees', params.userId, 'waiver-status'],
     service: async () =>
         ApiService('protected').fetchData<VerifyAttendeeWaiverStatus_Response>({
-            url: `/eventattendees/${params.eventId}/attendees/${params.userId}/waiver-status`,
+            url: `/v2/events/${params.eventId}/attendees/${params.userId}/waiver-status`,
             method: 'get',
         }),
 });
