@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 1 complete; Phase 2a complete — 30 v2 controllers, 64 DTOs, 30+ test suites; Phases 2b–2i, 3, 4 remaining) |
+| **Status** | In Progress (Phases 1, 2a–2e complete — 40+ v2 controllers, 75+ DTOs, 40+ test suites; Phases 2f–2i, 3, 4 remaining) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Very Large |
@@ -179,16 +179,18 @@ All partner management endpoints migrated to v2 with DTO-only responses. 9 new c
 
 Community administration and area adoption features — 10 v1 controllers, all community admin/site admin features.
 
-- [ ] **Adoptable areas** - `AdoptableAreasController`: manage adoptable cleanup areas per community
-- [ ] **Area generation** - `AreaGenerationController`: AI-powered area generation for adoption zones
-- [ ] **Staged areas** - `StagedAreasController`: review AI-generated areas before approval
-- [ ] **Community adoptions** - `CommunityAdoptionsController`: view/manage pending adoption applications
-- [ ] **Adoption events** - `AdoptionEventsController`: link events to team adoptions
-- [ ] **Community sponsored adoptions** - `CommunitySponsoredAdoptionsController`: sponsored cleanup adoptions
-- [ ] **Community sponsors** - `CommunitySponsorsController`: sponsor organizations per community
-- [ ] **Community invites** - `CommunityInvitesController`: bulk email invites for communities
-- [ ] **Community professional companies** - `CommunityProfessionalCompaniesController`: professional cleaning companies
-- [ ] **Community prospects** - `CommunityProspectsController`: CRM pipeline for prospecting new community partnerships (site admin only)
+- [x] **Adoptable areas** - `AdoptableAreasV2Controller`: 11 endpoints, `AdoptableAreaDto` DTO ✅
+- [x] **Area generation** - `AreaGenerationV2Controller`: 5 endpoints, `AreaGenerationBatchDto` DTO ✅
+- [x] **Staged areas** - `StagedAreasV2Controller`: 7 endpoints, `StagedAdoptableAreaDto` DTO ✅
+- [x] **Community adoptions** - `CommunityAdoptionsV2Controller`: 7 endpoints, `TeamAdoptionDto` DTO ✅
+- [x] **Adoption events** - `AdoptionEventsV2Controller`: 3 endpoints, `TeamAdoptionEventDto` DTO ✅
+- [x] **Community sponsored adoptions** - `CommunitySponsoredAdoptionsV2Controller`: 5 endpoints, `SponsoredAdoptionDto` DTO ✅
+- [x] **Community sponsors** - `CommunitySponsorsV2Controller`: 6 endpoints, `SponsorDto` DTO ✅
+- [x] **Community invites** - `CommunityInvitesV2Controller`: 3 endpoints ✅
+- [x] **Community professional companies** - `CommunityProfessionalCompaniesV2Controller`: 7 endpoints, `ProfessionalCompanyDto` + `ProfessionalCompanyUserDto` DTOs ✅
+- [x] **Community prospects** - `CommunityProspectsV2Controller`: 18 endpoints, `CommunityProspectDto` + `ProspectActivityDto` DTOs ✅
+
+**Phase 2e totals:** 10 controllers, 72 endpoints, 11 DTOs, 1 mapping file, 38 tests
 
 ### Phase 2f - Team Administration & Portals (Web Admin)
 
