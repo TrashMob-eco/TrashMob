@@ -253,11 +253,104 @@ Infrastructure, auth, config, and webhook endpoints. These may not all need v2 e
 
 ### Phase 3 - Client Migration
 
-Migrate web and mobile apps to use v2 endpoints. V1 endpoints still running.
+Migrate web and mobile clients to use v2 endpoints. V1 endpoints remain running throughout.
 
-- [ ] **Migrate React app** - Replace manual v1 service files with v2 endpoint calls, one page at a time
-- [ ] **Migrate MAUI mobile app** - Replace remaining v1 service calls with v2 endpoints, one screen at a time
+**MAUI mobile app:** Already fully migrated to v2 (all 24 service files use `/api/v2.0/` via centralized `Settings.ApiBaseUrl`). No work needed.
+
+**React web app:** All 48 service files currently call v1 endpoints (`/api/...`). The base URL is set in `client-app/src/config/services.config.ts` (`VITE_API_URL || '/api'`). Migration approach: update each service file's URL paths to match v2 controller routes, then flip `BASE_URL` to `/api/v2.0`. Some v2 routes changed structure (e.g., nested resources), so each file needs individual review.
+
+#### Phase 3a - Core User Experience (highest traffic)
+
+Service files for the main user-facing flows. Must be correct before flipping the base URL.
+
+- [ ] `users.ts` — 9 endpoints → `UsersV2Controller` routes
+- [ ] `events.ts` — 23 endpoints → `EventsV2Controller`, `EventAttendeesV2Controller`, `EventSummaryV2Controller`, `LookupsV2Controller` routes
+- [ ] `event-routes.ts` — 9 endpoints → `EventRoutesV2Controller`, `EventAttendeeRoutesV2Controller` routes
+- [ ] `event-attendee-metrics.ts` — 11 endpoints → `EventAttendeeMetricsV2Controller` routes
+- [ ] `event-photos.ts` — photo upload/delete → `EventPhotosV2Controller` routes
+- [ ] `event-litter-reports.ts` — event-linked litter reports → `EventLitterReportsV2Controller` routes
+- [ ] `dependents.ts` — 9 endpoints → `DependentsV2Controller`, `EventDependentsV2Controller`, `DependentWaiversV2Controller` routes
+- [ ] `dependent-invitations.ts` — 5 endpoints → `DependentInvitationsV2Controller` routes
+
+**Phase 3a totals:** 8 service files, ~66 endpoints
+
+#### Phase 3b - Teams & Community (public-facing)
+
+- [ ] `teams.ts` — 29 endpoints → `TeamsV2Controller`, `TeamMembersV2Controller`, `TeamEventsV2Controller` routes
+- [ ] `communities.ts` — 15 endpoints → `CommunitiesV2Controller` routes
+- [ ] `community-photos.ts` — community photo management → `CommunitiesV2Controller` photo routes
+- [ ] `community-prospects.ts` — community prospect management → `CommunityProspectsV2Controller` routes
+- [ ] `stats.ts` — 2 endpoints → `StatsV2Controller` routes
+- [ ] `leaderboards.ts` — 5 endpoints → `LeaderboardsV2Controller` routes
+- [ ] `achievements.ts` — 5 endpoints → `AchievementsV2Controller` routes
+
+**Phase 3b totals:** 7 service files, ~56 endpoints
+
+#### Phase 3c - Litter Reports, Waivers & Locations
+
+- [ ] `litter-report.ts` — 10 endpoints → `LitterReportsV2Controller` routes
+- [ ] `locations.ts` — 26 endpoints → `PickupLocationsV2Controller`, `PartnerLocationsV2Controller`, `PartnerLocationServicesV2Controller`, `EventPartnerLocationServicesV2Controller` routes
+- [ ] `waivers.ts` — waiver lookup → `WaiversV2Controller` routes
+- [ ] `user-waivers.ts` — 9 endpoints → `WaiversV2Controller` user waiver routes
+- [ ] `maps.ts` — address geocoding → `MapsV2Controller` routes
+
+**Phase 3c totals:** 5 service files, ~45 endpoints
+
+#### Phase 3d - Partners & Invitations
+
+- [ ] `partners.ts` — 14 endpoints → `PartnersV2Controller`, `PartnerRequestsV2Controller` routes
+- [ ] `invitations.ts` — 9 endpoints → `PartnerAdminInvitationsV2Controller` routes
+- [ ] `admin.ts` — 4 endpoints → `AdminV2Controller`, `PartnerAdminsV2Controller` routes
+- [ ] `email-invites.ts` — 13 endpoints → `EmailInvitesV2Controller`, `CommunityInvitesV2Controller`, `TeamInvitesV2Controller` routes
+- [ ] `social-media.ts` — partner social media → `PartnerSocialMediaAccountsV2Controller` routes
+- [ ] `documents.ts` — partner documents → `PartnerDocumentsV2Controller` routes
+
+**Phase 3d totals:** 6 service files, ~40 endpoints
+
+#### Phase 3e - Adoptions & Sponsorships
+
+- [ ] `adoptable-areas.ts` — 24 endpoints → `AdoptableAreasV2Controller`, `AreaGenerationV2Controller`, `StagedAreasV2Controller` routes
+- [ ] `team-adoptions.ts` — 9 endpoints → `TeamAdoptionsV2Controller`, `CommunityAdoptionsV2Controller` routes
+- [ ] `sponsored-adoptions.ts` — 6 endpoints → `CommunitySponsoredAdoptionsV2Controller`, `SponsorReportsV2Controller` routes
+- [ ] `sponsors.ts` — 6 endpoints → `CommunitySponsorsV2Controller` routes
+- [ ] `professional-companies.ts` — 7 endpoints → `CommunityProfessionalCompaniesV2Controller` routes
+- [ ] `professional-company-portal.ts` — professional portal → `ProfessionalCompanyPortalV2Controller`, `ProfessionalCleanupLogsV2Controller` routes
+- [ ] `sponsor-portal.ts` — sponsor portal → `SponsorPortalV2Controller` routes
+
+**Phase 3e totals:** 7 service files, ~52 endpoints
+
+#### Phase 3f - CRM, Fundraising & Admin
+
+- [ ] `contacts.ts` — 16 endpoints → `ContactsV2Controller`, `ContactNotesV2Controller`, `ContactTagsV2Controller`, `DonationsV2Controller`, `FundraisingAppealsV2Controller`, `FundraisingAnalyticsV2Controller` routes
+- [ ] `grants.ts` — 10 endpoints → `GrantsV2Controller`, `GrantTasksV2Controller` routes
+- [ ] `waiver-admin.ts` — 14 endpoints → `WaiverAdminV2Controller`, `CommunityWaiverAdminV2Controller`, `WaiverComplianceV2Controller` routes
+- [ ] `photo-moderation.ts` — 7 endpoints → `PhotoModerationV2Controller`, `PhotoFlagV2Controller` routes
+- [ ] `newsletters.ts` — newsletter admin → `NewslettersAdminV2Controller` routes
+- [ ] `cms.ts` — 7 endpoints → `CmsV2Controller` routes
+- [ ] `opportunities.ts` — 5 endpoints → `JobOpportunitiesV2Controller` routes
+- [ ] `job-opportunities.ts` — (if separate from opportunities.ts) → `JobOpportunitiesV2Controller` routes
+
+**Phase 3f totals:** 7–8 service files, ~59 endpoints
+
+#### Phase 3g - Infrastructure & Base URL Switch
+
+- [ ] `config.ts` — client config → `ConfigV2Controller` routes
+- [ ] `services.ts` — service type lookup → `LookupsV2Controller` routes
+- [ ] `contact.ts` — contact request → `ContactRequestV2Controller` routes
+- [ ] `feedback.ts` — user feedback → `UserFeedbackV2Controller` routes
+- [ ] `message.ts` — message request → `MessageRequestV2Controller` routes
+- [ ] `index.ts` — **Switch `BASE_URL` from `/api` to `/api/v2.0`** (final step after all service files updated)
+- [ ] Update `vite.config.ts` proxy to forward `/api/v2.0` requests
+- [ ] **Smoke test all pages** after base URL switch
+
+**Phase 3g totals:** 5 service files + base URL switch + smoke test
+
+#### Phase 3h - Verification & Cleanup
+
 - [ ] **Verify v1 traffic drops to zero** via Application Insights
+- [x] **MAUI mobile app** — already fully on v2, no work needed ✅
+- [ ] Run full `npm run lint` and `npm run build` after all migrations
+- [ ] Remove any dead v1-only code paths in service files
 
 ### Phase 4 - Advanced Features
 
