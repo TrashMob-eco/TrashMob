@@ -25,7 +25,6 @@ public partial class MainViewModel(IAuthService authService,
     private readonly ILitterReportManager litterReportManager = litterReportManager;
     private readonly IStatsRestService statsRestService = statsRestService;
     private readonly IUserRestService userRestService = userRestService;
-    private readonly INotificationService notificationService = notificationService;
     private readonly IUserManager userManager = userManager;
     private readonly IWaiverManager waiverManager = waiverManager;
 
@@ -89,6 +88,7 @@ public partial class MainViewModel(IAuthService authService,
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError("Failed to open event. Please try again.");
         }
     }
 
@@ -160,7 +160,7 @@ public partial class MainViewModel(IAuthService authService,
 
         foreach (var litterReport in litterReports.OrderBy(l => l.CreatedDate))
         {
-            var vm = litterReport.ToLitterReportViewModel(notificationService);
+            var vm = litterReport.ToLitterReportViewModel(NotificationService);
             LitterReports.Add(vm);
 
             foreach (var litterImageViewModel in vm.LitterImageViewModels.Where(i => i.Address.Location != null))

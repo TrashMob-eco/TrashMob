@@ -181,7 +181,10 @@ npm start
 - Use **`[ObservableProperty]`** for bindable properties, **`[RelayCommand]`** for commands
 - Use **primary constructors** for ViewModels: `public partial class XxxViewModel(...) : BaseViewModel(notificationService)`
 - Initialize ViewModel data in **`OnNavigatedTo`**, not in the constructor
-- Error handling via `BaseViewModel.ExecuteAsync()` which wraps Sentry capture
+- Error handling via `BaseViewModel.ExecuteAsync()` which wraps Sentry capture — never expose raw `ex.Message` to users
+- Use `NotificationService` (base class property) — don't store duplicate `INotificationService` fields in child ViewModels
+- Use XAML `Command` bindings with `[RelayCommand]` — don't put `Clicked` event handlers in code-behind
+- Use `Config.UIConstants` for UI-facing strings — don't hardcode filter labels, status text, or visibility options
 
 See component-level CLAUDE.md files for detailed patterns: `TrashMob/CLAUDE.md`, `TrashMobMobile/CLAUDE.md`
 

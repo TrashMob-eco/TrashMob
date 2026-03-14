@@ -12,7 +12,6 @@ public partial class CancelEventViewModel(IMobEventManager mobEventManager,
     : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
-    private readonly INotificationService notificationService = notificationService;
     private readonly IUserManager userManager = userManager;
 
     [ObservableProperty]
@@ -39,7 +38,7 @@ public partial class CancelEventViewModel(IMobEventManager mobEventManager,
             };
 
             await mobEventManager.DeleteEventAsync(cancellationRequest);
-            await notificationService.Notify("The event has been cancelled.");
+            await NotificationService.Notify("The event has been cancelled.");
             await Navigation.PopAsync();
         }, "An error has occurred while cancelling the event. Please wait and try again in a moment.");
     }

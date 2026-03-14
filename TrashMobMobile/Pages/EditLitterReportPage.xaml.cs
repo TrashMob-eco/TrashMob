@@ -1,9 +1,6 @@
 namespace TrashMobMobile.Pages;
 
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
 using Microsoft.Maui.Maps;
-using TrashMobMobile.Services;
 
 [QueryProperty(nameof(LitterReportId), nameof(LitterReportId))]
 public partial class EditLitterReportPage : ContentPage
@@ -32,41 +29,5 @@ public partial class EditLitterReportPage : ContentPage
             litterReportLocationMap.InitialMapSpanAndroid = mapSpan;
             litterReportLocationMap.MoveToRegion(mapSpan);
         }
-    }
-
-    private async void TakePhoto_Clicked(object sender, EventArgs e)
-    {
-        if (MediaPicker.Default.IsCaptureSupported)
-        {
-            var photo = await MediaPicker.Default.CapturePhotoAsync();
-
-            if (photo != null)
-            {
-                viewModel.LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
-
-                using (var sourceStream = await photo.OpenReadAsync())
-                using (var localFileStream = File.OpenWrite(viewModel.LocalFilePath))
-                {
-                    await sourceStream.CopyToAsync(localFileStream);
-                }
-
-                await ImageCompressor.CompressAsync(viewModel.LocalFilePath);
-
-                await viewModel.AddImageToCollection();
-                viewModel.ValidateReport();
-            }
-        }
-    }
-
-    private void DeleteLitterImage_Clicked(object sender, EventArgs e)
-    {
-        var litterImageViewModel = (sender as BindableObject)?.BindingContext as LitterImageViewModel;
-
-        if (litterImageViewModel != null)
-        {
-            viewModel.LitterImageViewModels.Remove(litterImageViewModel);
-        }
-
-        viewModel.ValidateReport();
     }
 }

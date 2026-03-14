@@ -8,6 +8,7 @@ using Microsoft.Maui.Maps;
 using Sentry;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
+using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -42,7 +43,7 @@ public partial class ExploreViewModel(
     private bool areNoItemsFound;
 
     // Event filter selection — bound via RadioButtonGroup.SelectedValue
-    private string eventFilterSelection = "Upcoming";
+    private string eventFilterSelection = UIConstants.EventFilterUpcoming;
 
     public string EventFilterSelection
     {
@@ -58,9 +59,9 @@ public partial class ExploreViewModel(
         }
     }
 
-    public bool IsUpcomingSelected => EventFilterSelection == "Upcoming";
+    public bool IsUpcomingSelected => EventFilterSelection == UIConstants.EventFilterUpcoming;
 
-    public bool IsCompletedSelected => EventFilterSelection == "Completed";
+    public bool IsCompletedSelected => EventFilterSelection == UIConstants.EventFilterCompleted;
 
     public ObservableCollection<string> UpcomingDateRanges { get; } = [];
 
@@ -101,7 +102,7 @@ public partial class ExploreViewModel(
     }
 
     // Litter report filter selection — bound via RadioButtonGroup.SelectedValue
-    private string litterFilterSelection = "New";
+    private string litterFilterSelection = UIConstants.LitterFilterNew;
 
     public string LitterFilterSelection
     {
@@ -152,10 +153,10 @@ public partial class ExploreViewModel(
         {
             IsMapSelected = true;
             IsListSelected = false;
-            eventFilterSelection = "Upcoming";
+            eventFilterSelection = UIConstants.EventFilterUpcoming;
             OnPropertyChanged(nameof(EventFilterSelection));
             OnPropertyChanged(nameof(IsUpcomingSelected));
-            litterFilterSelection = "New";
+            litterFilterSelection = UIConstants.LitterFilterNew;
             OnPropertyChanged(nameof(LitterFilterSelection));
 
             UserLocation = userManager.CurrentUser.GetAddress();
@@ -309,6 +310,7 @@ public partial class ExploreViewModel(
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError("Failed to apply event filter. Please try again.");
         }
         finally
         {
@@ -327,6 +329,7 @@ public partial class ExploreViewModel(
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError("Failed to update date range. Please try again.");
         }
         finally
         {
@@ -345,6 +348,7 @@ public partial class ExploreViewModel(
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError("Failed to apply litter report filter. Please try again.");
         }
         finally
         {
@@ -363,6 +367,7 @@ public partial class ExploreViewModel(
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError("Failed to update date range. Please try again.");
         }
         finally
         {
@@ -428,8 +433,8 @@ public partial class ExploreViewModel(
 
         filter.LitterReportStatusId = LitterFilterSelection switch
         {
-            "Assigned" => (int)LitterReportStatusEnum.Assigned,
-            "Cleaned" => (int)LitterReportStatusEnum.Cleaned,
+            UIConstants.LitterFilterAssigned => (int)LitterReportStatusEnum.Assigned,
+            UIConstants.LitterFilterCleaned => (int)LitterReportStatusEnum.Cleaned,
             _ => (int)LitterReportStatusEnum.New,
         };
 

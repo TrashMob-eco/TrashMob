@@ -45,9 +45,9 @@
         {
             return mobEvent.EventVisibilityId switch
             {
-                (int)EventVisibilityEnum.TeamOnly => "Team Only",
-                (int)EventVisibilityEnum.Private => "Private",
-                _ => "Public",
+                (int)EventVisibilityEnum.TeamOnly => Config.UIConstants.VisibilityTeamOnly,
+                (int)EventVisibilityEnum.Private => Config.UIConstants.VisibilityPrivate,
+                _ => Config.UIConstants.VisibilityPublic,
             };
         }
 

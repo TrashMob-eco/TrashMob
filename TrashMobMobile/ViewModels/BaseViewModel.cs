@@ -1,4 +1,4 @@
-﻿namespace TrashMobMobile.ViewModels;
+namespace TrashMobMobile.ViewModels;
 
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -16,7 +16,7 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
 
     public INotificationService NotificationService { get; } = notificationService;
 
-    protected async Task ExecuteAsync(Func<Task> operation, string errorMessage)
+    protected async Task ExecuteAsync(Func<Task> operation, string errorMessage, CancellationToken cancellationToken = default)
     {
         IsBusy = true;
         IsError = false;
@@ -37,7 +37,11 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
             Debug.WriteLine($"[ExecuteAsync] HTTP error: {ex.StatusCode} - {ex.Message}\n{ex}");
             SentrySdk.CaptureException(ex);
             IsError = true;
-            await NotificationService.NotifyError(string.IsNullOrEmpty(ex.Message) ? errorMessage : ex.Message);
+            await NotificationService.NotifyError(errorMessage);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            Debug.WriteLine("[ExecuteAsync] Operation cancelled by user.");
         }
         catch (TaskCanceledException ex)
         {
@@ -51,7 +55,7 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
             Debug.WriteLine($"[ExecuteAsync] Unhandled {ex.GetType().Name}: {ex.Message}\n{ex}");
             SentrySdk.CaptureException(ex);
             IsError = true;
-            await NotificationService.NotifyError($"{errorMessage} ({ex.GetType().Name}: {ex.Message})");
+            await NotificationService.NotifyError(errorMessage);
         }
         finally
         {
@@ -59,7 +63,7 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
         }
     }
 
-    protected async Task<T?> ExecuteAsync<T>(Func<Task<T>> operation, string errorMessage)
+    protected async Task<T?> ExecuteAsync<T>(Func<Task<T>> operation, string errorMessage, CancellationToken cancellationToken = default)
     {
         IsBusy = true;
         IsError = false;
@@ -81,7 +85,12 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
             Debug.WriteLine($"[ExecuteAsync<T>] HTTP error: {ex.StatusCode} - {ex.Message}\n{ex}");
             SentrySdk.CaptureException(ex);
             IsError = true;
-            await NotificationService.NotifyError(string.IsNullOrEmpty(ex.Message) ? errorMessage : ex.Message);
+            await NotificationService.NotifyError(errorMessage);
+            return default;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            Debug.WriteLine("[ExecuteAsync<T>] Operation cancelled by user.");
             return default;
         }
         catch (TaskCanceledException ex)
@@ -97,7 +106,7 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
             Debug.WriteLine($"[ExecuteAsync<T>] Unhandled {ex.GetType().Name}: {ex.Message}\n{ex}");
             SentrySdk.CaptureException(ex);
             IsError = true;
-            await NotificationService.NotifyError($"{errorMessage} ({ex.GetType().Name}: {ex.Message})");
+            await NotificationService.NotifyError(errorMessage);
             return default;
         }
         finally

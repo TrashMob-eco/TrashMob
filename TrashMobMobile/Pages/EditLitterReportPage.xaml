@@ -34,7 +34,7 @@
                         </VerticalStackLayout>
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
                             <Button Grid.Column="0"
-                                    Clicked="TakePhoto_Clicked"
+                                    Command="{Binding TakePhotoCommand}"
                                     Style="{StaticResource PrimarySmallButton}"
                                     IsEnabled="{Binding CanAddImages}"
                                     Text="Add Litter Image"
@@ -93,7 +93,8 @@
                                                    Text="{Binding Address.DisplayAddress}" />
                                             <ImageButton Grid.Column="2"
                                                        Margin="5"
-                                                       Clicked="DeleteLitterImage_Clicked"
+                                                       Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:EditLitterReportViewModel}}, Path=DeleteLitterImageCommand}"
+                                                       CommandParameter="{Binding}"
                                                        HeightRequest="40"
                                                        WidthRequest="40"
                                                        VerticalOptions="Center">
