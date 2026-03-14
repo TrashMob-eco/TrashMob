@@ -54,11 +54,10 @@ export const InviteFriendsCard = () => {
                 description: 'Your invitations have been sent successfully.',
             });
         },
-        onError: (error: { response?: { data?: { message?: string } } }) => {
-            const message = error.response?.data?.message || 'Failed to send invites. Please try again.';
+        onError: (error: Error) => {
             toast({
                 title: 'Error',
-                description: message,
+                description: error.message || 'Failed to send invites. Please try again.',
                 variant: 'destructive',
             });
         },

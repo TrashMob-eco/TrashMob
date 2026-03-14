@@ -246,6 +246,28 @@ class ThingData {
 - [ ] Use **`useMutation`** with `onSuccess` for toast notifications and query invalidation
 - [ ] Add route in `App.tsx` with lazy import
 - [ ] Handle loading and error states
+- [ ] Use **`getErrorMessage()`** from `@/lib/api-errors` in `onError` callbacks (handles both v1 and v2 error formats)
+- [ ] Run **`npm run check`** before committing (runs both ESLint + Prettier to match CI)
+
+### API Error Handling
+
+The Axios interceptor in `services/index.ts` normalizes API errors so `error.message` always contains the best available message (v2 Problem Details `.detail`, v1 `.message`, or fallback). For custom error extraction, use `getErrorMessage()`:
+
+```typescript
+import { getErrorMessage } from '@/lib/api-errors';
+
+onError: (error: Error) => {
+    toast({ variant: 'destructive', title: 'Error', description: error.message });
+},
+```
+
+### CI Matching
+
+**IMPORTANT:** CI runs both ESLint and Prettier. Running only `npm run lint` locally will miss Prettier formatting issues. Always run:
+
+```bash
+npm run check      # Runs: eslint . --fix && prettier . --write
+```
 
 ## Authentication
 
