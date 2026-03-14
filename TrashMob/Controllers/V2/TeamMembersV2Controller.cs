@@ -135,6 +135,49 @@ namespace TrashMob.Controllers.V2
         }
 
         /// <summary>
+        /// Adds a user to a team. Only team leads can add members directly.
+        /// </summary>
+        /// <param name="teamId">The team ID.</param>
+        /// <param name="userId">The user ID to add.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="201">Member added to the team.</response>
+        /// <response code="400">User is already a member.</response>
+        /// <response code="403">User is not a team lead.</response>
+        /// <response code="404">Team not found or inactive.</response>
+        [HttpPost("{userId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(TeamMemberDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AddMember(Guid teamId, Guid userId, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 AddMember Team={TeamId}, TargetUser={TargetUserId}, AddedBy={UserId}", teamId, userId, UserId);
+
+            var team = await teamManager.GetAsync(teamId, cancellationToken);
+            if (team is null || !team.IsActive)
+            {
+                return NotFound();
+            }
+
+            var isLead = await teamMemberManager.IsTeamLeadAsync(teamId, UserId, cancellationToken);
+            if (!isLead)
+            {
+                return Forbid();
+            }
+
+            var existingMember = await teamMemberManager.GetByTeamAndUserAsync(teamId, userId, cancellationToken);
+            if (existingMember is not null)
+            {
+                return BadRequest("User is already a member of this team.");
+            }
+
+            var member = await teamMemberManager.AddMemberAsync(teamId, userId, isTeamLead: false, UserId, cancellationToken);
+            return CreatedAtAction(nameof(GetMembers), new { teamId }, member.ToV2Dto());
+        }
+
+        /// <summary>
         /// Removes a member from a team. Team leads can remove any member, or a member can leave.
         /// </summary>
         /// <param name="teamId">The team ID.</param>

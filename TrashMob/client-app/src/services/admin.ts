@@ -8,7 +8,7 @@ export const GetAdminEmailTemplates = () => ({
     key: ['/admin/emailtemplates'],
     service: async () =>
         ApiService('protected').fetchData<GetAdminEmailTemplates_Response>({
-            url: '/admin/emailtemplates',
+            url: '/v2/admin/emailTemplates',
             method: 'get',
         }),
 });
@@ -19,7 +19,7 @@ export const GetPartnerAdminsByPartnerId = (params: GetPartnerAdminsByPartnerId_
     key: ['/partneradmins/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerAdminsByPartnerId_Response>({
-            url: `/partneradmins/${params.partnerId}`,
+            url: `/v2/partner-admins/${params.partnerId}`,
             method: 'get',
         }),
 });
@@ -33,7 +33,7 @@ export const DeletePartnerAdminsByPartnerIAndUserId = () => ({
     key: ['/partneradmins/', 'delete by partnerId and userId'],
     service: async (params: DeletePartnerAdminsByPartnerAndUserId_Params) =>
         ApiService('protected').fetchData<DeletePartnerAdminsByPartnerAndUserId_Response>({
-            url: `/partneradmins/${params.partnerId}/${params.userId}`,
+            url: `/v2/partner-admins/${params.partnerId}/${params.userId}`,
             method: 'delete',
         }),
 });
@@ -44,7 +44,7 @@ export const GetPartnerAdminsForUser = (params: GetPartnerAdminsForUser_Params) 
     key: ['/partneradmins/getpartnersforuser/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerAdminsForUser_Response>({
-            url: `/partneradmins/getpartnersforuser/${params.userId}`,
+            url: `/v2/partner-admins/partners-for-user/${params.userId}`,
             method: 'get',
         }),
 });

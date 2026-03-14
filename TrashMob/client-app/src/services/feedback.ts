@@ -34,7 +34,7 @@ export const SubmitFeedback = () => ({
     key: ['/feedback', 'submit'],
     service: async (body: SubmitFeedback_Body) =>
         ApiService('public').fetchData<SubmitFeedback_Response, SubmitFeedback_Body>({
-            url: '/feedback',
+            url: '/v2/feedback',
             method: 'post',
             data: body,
         }),
@@ -47,7 +47,7 @@ export const GetAllFeedback = (params?: GetAllFeedback_Params) => ({
     key: ['/feedback', params],
     service: async () =>
         ApiService('protected').fetchData<GetAllFeedback_Response>({
-            url: params?.status ? `/feedback?status=${params.status}` : '/feedback',
+            url: params?.status ? `/v2/feedback?status=${params.status}` : '/v2/feedback',
             method: 'get',
         }),
 });
@@ -59,7 +59,7 @@ export const GetFeedback = (params: GetFeedback_Params) => ({
     key: ['/feedback', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetFeedback_Response>({
-            url: `/feedback/${params.id}`,
+            url: `/v2/feedback/${params.id}`,
             method: 'get',
         }),
 });
@@ -72,7 +72,7 @@ export const UpdateFeedback = () => ({
     key: ['/feedback', 'update'],
     service: async (params: UpdateFeedback_Params, body: UpdateFeedback_Body) =>
         ApiService('protected').fetchData<UpdateFeedback_Response, UpdateFeedback_Body>({
-            url: `/feedback/${params.id}`,
+            url: `/v2/feedback/${params.id}`,
             method: 'put',
             data: body,
         }),
@@ -85,7 +85,7 @@ export const DeleteFeedback = () => ({
     key: ['/feedback', 'delete'],
     service: async (params: DeleteFeedback_Params) =>
         ApiService('protected').fetchData<DeleteFeedback_Response>({
-            url: `/feedback/${params.id}`,
+            url: `/v2/feedback/${params.id}`,
             method: 'delete',
         }),
 });

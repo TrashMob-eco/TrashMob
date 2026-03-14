@@ -10,7 +10,7 @@ export const GetInvitationStatuses = () => ({
     key: ['/invitationStatuses'],
     service: async () =>
         ApiService('public').fetchData<GetInvitationStatuses_Response>({
-            url: '/invitationStatuses',
+            url: '/v2/lookups/invitation-statuses',
             method: 'get',
         }),
 });
@@ -23,7 +23,7 @@ export const GetPartnerAdminInvitationsByPartnerId = (params: GetPartnerAdminInv
     key: ['/partneradmininvitations/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerAdminInvitationsByPartnerId_Response>({
-            url: `/partneradmininvitations/${params.partnerId}`,
+            url: `/v2/partner-admin-invitations/${params.partnerId}`,
             method: 'get',
         }),
 });
@@ -34,7 +34,7 @@ export const ResendPartnerAdminInvitation = () => ({
     key: ['/partneradmininvitations/resend/', 'resend Invitation'],
     service: async (params: ResendPartnerAdminInvitation_Params) =>
         ApiService('protected').fetchData<ResendPartnerAdminInvitation_Response>({
-            url: `/partneradmininvitations/resend/${params.invitationId}`,
+            url: `/v2/partner-admin-invitations/${params.invitationId}/resend`,
             method: 'post',
         }),
 });
@@ -49,7 +49,7 @@ export const GetPartnerAdminInvitationsByGetByPartnerId = (
     key: ['/partneradmininvitations/getbypartner/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerAdminInvitationsByGetByPartnerId_Response>({
-            url: `/partneradmininvitations/getbypartner/${params.partnerId}`,
+            url: `/v2/partner-admin-invitations/${params.partnerId}`,
             method: 'get',
         }),
 });
@@ -60,7 +60,7 @@ export const CreatePartnerAdminInvitation = () => ({
     key: ['/partneradmininvitations/', 'create'],
     service: async (body: CreatePartnerAdminInvitation_Body) =>
         ApiService('protected').fetchData<CreatePartnerAdminInvitation_Response>({
-            url: '/partneradmininvitations',
+            url: '/v2/partner-admin-invitations',
             method: 'post',
             data: body,
         }),
@@ -72,7 +72,7 @@ export const DeletePartnerAdminInvitation = () => ({
     key: ['/partneradmininvitations/', 'delete by invitationId'],
     service: async (params: DeletePartnerAdminInvitation_Params) =>
         ApiService('protected').fetchData<DeletePartnerAdminInvitation_Response>({
-            url: `/partneradmininvitations/${params.invitationId}`,
+            url: `/v2/partner-admin-invitations/${params.invitationId}`,
             method: 'delete',
         }),
 });
@@ -83,7 +83,7 @@ export const GetPartnerAdminInvitationsByUser = (params: GetPartnerAdminInvitati
     key: ['/partnerAdminInvitations/getbyuser/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerAdminInvitationsByUser_Response>({
-            url: `/partnerAdminInvitations/getbyuser/${params.userId}`,
+            url: `/v2/partner-admin-invitations/by-user/${params.userId}`,
             method: 'get',
         }),
 });
@@ -94,7 +94,7 @@ export const AcceptPartnerAdminInvitation = () => ({
     key: ['/partneradmininvitations/accept/', 'by invitationId'],
     service: async (params: AcceptPartnerAdminInvitation_Params) =>
         ApiService('protected').fetchData<AcceptPartnerAdminInvitation_Response>({
-            url: `/partneradmininvitations/accept/${params.invitationId}`,
+            url: `/v2/partner-admin-invitations/${params.invitationId}/accept`,
             method: 'post',
         }),
 });
@@ -105,7 +105,7 @@ export const DeclinePartnerAdminInvitation = () => ({
     key: ['/partneradmininvitations/decline/', 'by invitationId'],
     service: async (params: DeclinePartnerAdminInvitation_Params) =>
         ApiService('protected').fetchData<DeclinePartnerAdminInvitation_Response>({
-            url: `/partneradmininvitations/decline/${params.invitationId}`,
+            url: `/v2/partner-admin-invitations/${params.invitationId}/decline`,
             method: 'post',
         }),
 });

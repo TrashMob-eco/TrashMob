@@ -6,6 +6,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -19,12 +20,13 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     public class PartnersV2ControllerTests
     {
         private readonly Mock<IPartnerManager> partnerManager = new();
+        private readonly Mock<IAuthorizationService> authorizationService = new();
         private readonly Mock<ILogger<PartnersV2Controller>> logger = new();
         private readonly PartnersV2Controller controller;
 
         public PartnersV2ControllerTests()
         {
-            controller = new PartnersV2Controller(partnerManager.Object, logger.Object);
+            controller = new PartnersV2Controller(partnerManager.Object, authorizationService.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),

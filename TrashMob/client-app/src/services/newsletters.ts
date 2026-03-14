@@ -58,10 +58,10 @@ export interface NewsletterTemplate {
 // Get all newsletter categories (public)
 export type GetNewsletterCategories_Response = NewsletterCategory[];
 export const GetNewsletterCategories = () => ({
-    key: ['/newsletter-preferences/categories'],
+    key: ['/v2/newsletter-preferences/categories'],
     service: async () =>
         ApiService('public').fetchData<GetNewsletterCategories_Response>({
-            url: '/newsletter-preferences/categories',
+            url: '/v2/newsletter-preferences/categories',
             method: 'get',
         }),
 });
@@ -69,10 +69,10 @@ export const GetNewsletterCategories = () => ({
 // Get current user's newsletter preferences
 export type GetMyNewsletterPreferences_Response = UserNewsletterPreference[];
 export const GetMyNewsletterPreferences = () => ({
-    key: ['/newsletter-preferences'],
+    key: ['/v2/newsletter-preferences'],
     service: async () =>
         ApiService('protected').fetchData<GetMyNewsletterPreferences_Response>({
-            url: '/newsletter-preferences',
+            url: '/v2/newsletter-preferences',
             method: 'get',
         }),
 });
@@ -89,10 +89,10 @@ export type UpdateNewsletterPreference_Response = {
     unsubscribedDate?: string;
 };
 export const UpdateNewsletterPreference = () => ({
-    key: ['/newsletter-preferences', 'update'],
+    key: ['/v2/newsletter-preferences', 'update'],
     service: async (body: UpdateNewsletterPreference_Body) =>
         ApiService('protected').fetchData<UpdateNewsletterPreference_Response, UpdateNewsletterPreference_Body>({
-            url: '/newsletter-preferences',
+            url: '/v2/newsletter-preferences',
             method: 'put',
             data: body,
         }),
@@ -101,14 +101,15 @@ export const UpdateNewsletterPreference = () => ({
 // Unsubscribe from all newsletters
 export type UnsubscribeAllNewsletters_Response = { message: string };
 export const UnsubscribeAllNewsletters = () => ({
-    key: ['/newsletter-preferences', 'unsubscribe-all'],
+    key: ['/v2/newsletter-preferences', 'unsubscribe-all'],
     service: async () =>
         ApiService('protected').fetchData<UnsubscribeAllNewsletters_Response>({
-            url: '/newsletter-preferences/unsubscribe-all',
+            url: '/v2/newsletter-preferences/unsubscribe-all',
             method: 'post',
         }),
 });
 
+// No v2 equivalent — stays on v1
 // Process token-based unsubscribe (public - no auth required)
 export type ProcessUnsubscribe_Body = { token: string };
 export type ProcessUnsubscribe_Response = {
@@ -135,10 +136,10 @@ export const ProcessUnsubscribe = () => ({
 export type GetNewsletters_Params = { status?: string };
 export type GetNewsletters_Response = Newsletter[];
 export const GetNewsletters = (params?: GetNewsletters_Params) => ({
-    key: ['/admin/newsletters', params],
+    key: ['/v2/admin/newsletters', params],
     service: async () =>
         ApiService('protected').fetchData<GetNewsletters_Response>({
-            url: params?.status ? `/admin/newsletters?status=${params.status}` : '/admin/newsletters',
+            url: params?.status ? `/v2/admin/newsletters?status=${params.status}` : '/v2/admin/newsletters',
             method: 'get',
         }),
 });
@@ -147,10 +148,10 @@ export const GetNewsletters = (params?: GetNewsletters_Params) => ({
 export type GetNewsletter_Params = { id: string };
 export type GetNewsletter_Response = Newsletter;
 export const GetNewsletter = (params: GetNewsletter_Params) => ({
-    key: ['/admin/newsletters', params.id],
+    key: ['/v2/admin/newsletters', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetNewsletter_Response>({
-            url: `/admin/newsletters/${params.id}`,
+            url: `/v2/admin/newsletters/${params.id}`,
             method: 'get',
         }),
 });
@@ -167,10 +168,10 @@ export type CreateNewsletter_Body = {
 };
 export type CreateNewsletter_Response = Newsletter;
 export const CreateNewsletter = () => ({
-    key: ['/admin/newsletters', 'create'],
+    key: ['/v2/admin/newsletters', 'create'],
     service: async (body: CreateNewsletter_Body) =>
         ApiService('protected').fetchData<CreateNewsletter_Response, CreateNewsletter_Body>({
-            url: '/admin/newsletters',
+            url: '/v2/admin/newsletters',
             method: 'post',
             data: body,
         }),
@@ -189,10 +190,10 @@ export type UpdateNewsletter_Body = {
 };
 export type UpdateNewsletter_Response = Newsletter;
 export const UpdateNewsletter = () => ({
-    key: ['/admin/newsletters', 'update'],
+    key: ['/v2/admin/newsletters', 'update'],
     service: async (params: UpdateNewsletter_Params, body: UpdateNewsletter_Body) =>
         ApiService('protected').fetchData<UpdateNewsletter_Response, UpdateNewsletter_Body>({
-            url: `/admin/newsletters/${params.id}`,
+            url: `/v2/admin/newsletters/${params.id}`,
             method: 'put',
             data: body,
         }),
@@ -203,10 +204,10 @@ export type ScheduleNewsletter_Params = { id: string };
 export type ScheduleNewsletter_Body = { scheduledDate: string };
 export type ScheduleNewsletter_Response = Newsletter;
 export const ScheduleNewsletter = () => ({
-    key: ['/admin/newsletters', 'schedule'],
+    key: ['/v2/admin/newsletters', 'schedule'],
     service: async (params: ScheduleNewsletter_Params, body: ScheduleNewsletter_Body) =>
         ApiService('protected').fetchData<ScheduleNewsletter_Response, ScheduleNewsletter_Body>({
-            url: `/admin/newsletters/${params.id}/schedule`,
+            url: `/v2/admin/newsletters/${params.id}/schedule`,
             method: 'post',
             data: body,
         }),
@@ -216,10 +217,10 @@ export const ScheduleNewsletter = () => ({
 export type SendNewsletter_Params = { id: string };
 export type SendNewsletter_Response = { message: string; newsletter: Newsletter };
 export const SendNewsletter = () => ({
-    key: ['/admin/newsletters', 'send'],
+    key: ['/v2/admin/newsletters', 'send'],
     service: async (params: SendNewsletter_Params) =>
         ApiService('protected').fetchData<SendNewsletter_Response>({
-            url: `/admin/newsletters/${params.id}/send`,
+            url: `/v2/admin/newsletters/${params.id}/send`,
             method: 'post',
         }),
 });
@@ -228,10 +229,10 @@ export const SendNewsletter = () => ({
 export type DeleteNewsletter_Params = { id: string };
 export type DeleteNewsletter_Response = { message: string };
 export const DeleteNewsletter = () => ({
-    key: ['/admin/newsletters', 'delete'],
+    key: ['/v2/admin/newsletters', 'delete'],
     service: async (params: DeleteNewsletter_Params) =>
         ApiService('protected').fetchData<DeleteNewsletter_Response>({
-            url: `/admin/newsletters/${params.id}`,
+            url: `/v2/admin/newsletters/${params.id}`,
             method: 'delete',
         }),
 });
@@ -239,10 +240,10 @@ export const DeleteNewsletter = () => ({
 // Get newsletter templates (admin only)
 export type GetNewsletterTemplates_Response = NewsletterTemplate[];
 export const GetNewsletterTemplates = () => ({
-    key: ['/admin/newsletters/templates'],
+    key: ['/v2/admin/newsletters/templates'],
     service: async () =>
         ApiService('protected').fetchData<GetNewsletterTemplates_Response>({
-            url: '/admin/newsletters/templates',
+            url: '/v2/admin/newsletters/templates',
             method: 'get',
         }),
 });
@@ -252,10 +253,10 @@ export type SendTestEmail_Params = { id: string };
 export type SendTestEmail_Body = { emails: string[] };
 export type SendTestEmail_Response = { message: string };
 export const SendTestEmail = () => ({
-    key: ['/admin/newsletters', 'test'],
+    key: ['/v2/admin/newsletters', 'test'],
     service: async (params: SendTestEmail_Params, body: SendTestEmail_Body) =>
         ApiService('protected').fetchData<SendTestEmail_Response, SendTestEmail_Body>({
-            url: `/admin/newsletters/${params.id}/test`,
+            url: `/v2/admin/newsletters/${params.id}/test`,
             method: 'post',
             data: body,
         }),

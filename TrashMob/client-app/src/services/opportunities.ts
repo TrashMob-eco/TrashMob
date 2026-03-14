@@ -16,7 +16,7 @@ export const GetJobOpportunityById = (id: string) => ({
     key: ['/jobopportunities', id],
     service: async () =>
         ApiService('protected').fetchData<GetJobOpportunityById_Response>({
-            url: `/jobopportunities/${id}`,
+            url: `/v2/jobopportunities/${id}`,
             method: 'get',
         }),
 });
@@ -27,7 +27,7 @@ export const CreateJobOpportunity = () => ({
     key: ['/jobopportunities', 'create'],
     service: async (body: CreateJobOpportunity_Body) =>
         ApiService('protected').fetchData<CreateJobOpportunity_Response, CreateJobOpportunity_Body>({
-            url: '/jobopportunities',
+            url: '/v2/jobopportunities',
             method: 'post',
             data: body,
         }),
@@ -39,7 +39,7 @@ export const UpdateJobOpportunity = () => ({
     key: ['/jobopportunities', 'update'],
     service: async (body: UpdateJobOpportunity_Body) =>
         ApiService('protected').fetchData<CreateJobOpportunity_Response, UpdateJobOpportunity_Body>({
-            url: '/jobopportunities',
+            url: `/v2/jobopportunities/${body.id}`,
             method: 'put',
             data: body,
         }),
@@ -51,7 +51,7 @@ export const DeleteJobOpportunityById = () => ({
     key: ['/jobopportunities/', 'delete'],
     service: async (params: DeleteJobOpportunityById_Params) =>
         ApiService('protected').fetchData<DeleteJobOpportunityById_Response>({
-            url: `/jobopportunities/${params.id}`,
+            url: `/v2/jobopportunities/${params.id}`,
             method: 'delete',
         }),
 });

@@ -9,7 +9,7 @@ export const CreateMessageRequest = () => ({
     key: ['/messagerequest/'],
     service: async (body: CreateMessageRequest_Body) =>
         ApiService('protected').fetchData<CreateMessageRequest_Response, CreateMessageRequest_Body>({
-            url: '/messagerequest/',
+            url: '/v2/messagerequest/',
             method: 'post',
             data: body,
         }),

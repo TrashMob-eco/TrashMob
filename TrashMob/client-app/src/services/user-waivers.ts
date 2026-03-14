@@ -15,7 +15,9 @@ export type GetRequiredWaivers_Response = WaiverVersionData[];
 export const GetRequiredWaivers = (params?: GetRequiredWaivers_Params) => ({
     key: ['/waivers/required', params],
     service: async () => {
-        const url = params?.communityId ? `/waivers/required?communityId=${params.communityId}` : '/waivers/required';
+        const url = params?.communityId
+            ? `/v2/waivers/required?communityId=${params.communityId}`
+            : '/v2/waivers/required';
         return ApiService('protected').fetchData<GetRequiredWaivers_Response>({
             url,
             method: 'get',
@@ -32,7 +34,7 @@ export const GetRequiredWaiversForEvent = (params: GetRequiredWaiversForEvent_Pa
     key: ['/waivers/required/event', params],
     service: async () =>
         ApiService('protected').fetchData<GetRequiredWaiversForEvent_Response>({
-            url: `/waivers/required/event/${params.eventId}`,
+            url: `/v2/waivers/required/event/${params.eventId}`,
             method: 'get',
         }),
 });
@@ -45,7 +47,7 @@ export const GetMyWaivers = () => ({
     key: ['/waivers/my'],
     service: async () =>
         ApiService('protected').fetchData<GetMyWaivers_Response>({
-            url: '/waivers/my',
+            url: '/v2/waivers/my',
             method: 'get',
         }),
 });
@@ -59,7 +61,7 @@ export const GetUserWaiver = (params: GetUserWaiver_Params) => ({
     key: ['/waivers', params.userWaiverId],
     service: async () =>
         ApiService('protected').fetchData<GetUserWaiver_Response>({
-            url: `/waivers/${params.userWaiverId}`,
+            url: `/v2/waivers/${params.userWaiverId}`,
             method: 'get',
         }),
 });
@@ -73,7 +75,7 @@ export const AcceptWaiver = () => ({
     key: ['/waivers/accept'],
     service: async (body: AcceptWaiver_Body) =>
         ApiService('protected').fetchData<AcceptWaiver_Response, AcceptWaiver_Body>({
-            url: '/waivers/accept',
+            url: '/v2/waivers/accept',
             method: 'post',
             data: body,
         }),
@@ -88,7 +90,7 @@ export const CheckWaiversForEvent = (params: CheckWaiversForEvent_Params) => ({
     key: ['/waivers/check/event', params],
     service: async () =>
         ApiService('protected').fetchData<CheckWaiversForEvent_Response>({
-            url: `/waivers/check/event/${params.eventId}`,
+            url: `/v2/waivers/check/event/${params.eventId}`,
             method: 'get',
         }),
 });
@@ -97,7 +99,7 @@ export const CheckWaiversForEvent = (params: CheckWaiversForEvent_Params) => ({
  * Gets the download URL for a signed waiver PDF.
  */
 export const getWaiverDownloadUrl = (userWaiverId: string): string => {
-    return `/api/waivers/${userWaiverId}/download`;
+    return `/api/v2/waivers/${userWaiverId}/download`;
 };
 
 /**
@@ -127,7 +129,7 @@ export const UploadPaperWaiver = () => ({
             formData.append('GuardianRelationship', body.guardianRelationship);
         }
         return ApiService('protected').fetchData<UploadPaperWaiver_Response>({
-            url: '/waivers/upload-paper',
+            url: '/v2/waivers/upload-paper',
             method: 'post',
             data: formData,
         });
@@ -143,7 +145,7 @@ export const GetEventAttendeeWaiverStatus = (params: GetEventAttendeeWaiverStatu
     key: ['/waivers/event', params.eventId, 'attendees'],
     service: async () =>
         ApiService('protected').fetchData<GetEventAttendeeWaiverStatus_Response>({
-            url: `/waivers/event/${params.eventId}/attendees`,
+            url: `/v2/waivers/event/${params.eventId}/attendees`,
             method: 'get',
         }),
 });

@@ -66,7 +66,7 @@ export const GetPendingPhotos = (params?: GetPendingPhotos_Params) => ({
     key: ['/admin/photos/pending', params],
     service: async () =>
         ApiService('protected').fetchData<GetPendingPhotos_Response>({
-            url: `/admin/photos/pending?page=${params?.page ?? 1}&pageSize=${params?.pageSize ?? 50}`,
+            url: `/v2/admin/photos/pending?page=${params?.page ?? 1}&pageSize=${params?.pageSize ?? 50}`,
             method: 'get',
         }),
 });
@@ -78,7 +78,7 @@ export const GetFlaggedPhotos = (params?: GetFlaggedPhotos_Params) => ({
     key: ['/admin/photos/flagged', params],
     service: async () =>
         ApiService('protected').fetchData<GetFlaggedPhotos_Response>({
-            url: `/admin/photos/flagged?page=${params?.page ?? 1}&pageSize=${params?.pageSize ?? 50}`,
+            url: `/v2/admin/photos/flagged?page=${params?.page ?? 1}&pageSize=${params?.pageSize ?? 50}`,
             method: 'get',
         }),
 });
@@ -90,7 +90,7 @@ export const GetModeratedPhotos = (params?: GetModeratedPhotos_Params) => ({
     key: ['/admin/photos/moderated', params],
     service: async () =>
         ApiService('protected').fetchData<GetModeratedPhotos_Response>({
-            url: `/admin/photos/moderated?page=${params?.page ?? 1}&pageSize=${params?.pageSize ?? 50}`,
+            url: `/v2/admin/photos/moderated?page=${params?.page ?? 1}&pageSize=${params?.pageSize ?? 50}`,
             method: 'get',
         }),
 });
@@ -102,7 +102,7 @@ export const ApprovePhoto = () => ({
     key: ['/admin/photos', 'approve'],
     service: async (params: ApprovePhoto_Params) =>
         ApiService('protected').fetchData<ApprovePhoto_Response>({
-            url: `/admin/photos/${params.photoType}/${params.id}/approve`,
+            url: `/v2/admin/photos/${params.photoType}/${params.id}/approve`,
             method: 'post',
         }),
 });
@@ -115,7 +115,7 @@ export const RejectPhoto = () => ({
     key: ['/admin/photos', 'reject'],
     service: async (params: RejectPhoto_Params, body: RejectPhoto_Body) =>
         ApiService('protected').fetchData<RejectPhoto_Response, RejectPhoto_Body>({
-            url: `/admin/photos/${params.photoType}/${params.id}/reject`,
+            url: `/v2/admin/photos/${params.photoType}/${params.id}/reject`,
             method: 'post',
             data: body,
         }),
@@ -128,7 +128,7 @@ export const DismissFlag = () => ({
     key: ['/admin/photos', 'dismiss'],
     service: async (params: DismissFlag_Params) =>
         ApiService('protected').fetchData<DismissFlag_Response>({
-            url: `/admin/photos/${params.photoType}/${params.id}/dismiss`,
+            url: `/v2/admin/photos/${params.photoType}/${params.id}/dismiss`,
             method: 'post',
         }),
 });
@@ -141,7 +141,7 @@ export const FlagPhoto = () => ({
     key: ['/photos', 'flag'],
     service: async (params: FlagPhoto_Params, body: FlagPhoto_Body) =>
         ApiService('protected').fetchData<FlagPhoto_Response, FlagPhoto_Body>({
-            url: `/photos/${params.photoType}/${params.id}/flag`,
+            url: `/v2/photos/${params.photoType}/${params.id}/flag`,
             method: 'post',
             data: body,
         }),

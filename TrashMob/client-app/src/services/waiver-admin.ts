@@ -20,7 +20,7 @@ export const GetAllWaiverVersions = () => ({
     key: ['/admin/waivers'],
     service: async () =>
         ApiService('protected').fetchData<GetAllWaiverVersions_Response>({
-            url: '/admin/waivers',
+            url: '/v2/admin/waivers',
             method: 'get',
         }),
 });
@@ -30,7 +30,7 @@ export const GetActiveWaiverVersions = () => ({
     key: ['/admin/waivers/active'],
     service: async () =>
         ApiService('protected').fetchData<GetActiveWaiverVersions_Response>({
-            url: '/admin/waivers/active',
+            url: '/v2/admin/waivers/active',
             method: 'get',
         }),
 });
@@ -41,7 +41,7 @@ export const GetWaiverVersionById = (params: GetWaiverVersionById_Params) => ({
     key: ['/admin/waivers', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetWaiverVersionById_Response>({
-            url: `/admin/waivers/${params.id}`,
+            url: `/v2/admin/waivers/${params.id}`,
             method: 'get',
         }),
 });
@@ -52,7 +52,7 @@ export const CreateWaiverVersion = () => ({
     key: ['/admin/waivers', 'create'],
     service: async (body: CreateWaiverVersion_Body) =>
         ApiService('protected').fetchData<CreateWaiverVersion_Response, CreateWaiverVersion_Body>({
-            url: '/admin/waivers',
+            url: '/v2/admin/waivers',
             method: 'post',
             data: body,
         }),
@@ -65,7 +65,7 @@ export const UpdateWaiverVersion = () => ({
     key: ['/admin/waivers', 'update'],
     service: async (params: UpdateWaiverVersion_Params & { body: UpdateWaiverVersion_Body }) =>
         ApiService('protected').fetchData<UpdateWaiverVersion_Response, UpdateWaiverVersion_Body>({
-            url: `/admin/waivers/${params.id}`,
+            url: `/v2/admin/waivers/${params.id}`,
             method: 'put',
             data: params.body,
         }),
@@ -77,7 +77,7 @@ export const DeactivateWaiverVersion = () => ({
     key: ['/admin/waivers', 'deactivate'],
     service: async (params: DeactivateWaiverVersion_Params) =>
         ApiService('protected').fetchData<DeactivateWaiverVersion_Response>({
-            url: `/admin/waivers/${params.id}`,
+            url: `/v2/admin/waivers/${params.id}`,
             method: 'delete',
         }),
 });
@@ -92,7 +92,7 @@ export const GetCommunityWaivers = (params: GetCommunityWaivers_Params) => ({
     key: ['/admin/communities', params.communityId, 'waivers'],
     service: async () =>
         ApiService('protected').fetchData<GetCommunityWaivers_Response>({
-            url: `/admin/communities/${params.communityId}/waivers`,
+            url: `/v2/admin/communities/${params.communityId}/waivers`,
             method: 'get',
         }),
 });
@@ -104,7 +104,7 @@ export const AssignWaiverToCommunity = () => ({
     key: ['/admin/communities/waivers', 'assign'],
     service: async (params: AssignWaiverToCommunity_Params & { body: AssignWaiverToCommunity_Body }) =>
         ApiService('protected').fetchData<AssignWaiverToCommunity_Response, AssignWaiverToCommunity_Body>({
-            url: `/admin/communities/${params.communityId}/waivers`,
+            url: `/v2/admin/communities/${params.communityId}/waivers`,
             method: 'post',
             data: params.body,
         }),
@@ -116,7 +116,7 @@ export const RemoveWaiverFromCommunity = () => ({
     key: ['/admin/communities/waivers', 'remove'],
     service: async (params: RemoveWaiverFromCommunity_Params) =>
         ApiService('protected').fetchData<RemoveWaiverFromCommunity_Response>({
-            url: `/admin/communities/${params.communityId}/waivers/${params.waiverId}`,
+            url: `/v2/admin/communities/${params.communityId}/waivers/${params.waiverId}`,
             method: 'delete',
         }),
 });
@@ -133,7 +133,7 @@ export const GetComplianceSummary = () => ({
     key: ['/admin/waivers/compliance/summary'],
     service: async () =>
         ApiService('protected').fetchData<GetComplianceSummary_Response>({
-            url: '/admin/waivers/compliance/summary',
+            url: '/v2/admin/waivers/compliance/summary',
             method: 'get',
         }),
 });
@@ -147,7 +147,7 @@ export const GetUserWaivers = () => ({
     key: ['/admin/waivers/compliance/waivers'],
     service: async (body: GetUserWaivers_Body) =>
         ApiService('protected').fetchData<GetUserWaivers_Response, GetUserWaivers_Body>({
-            url: '/admin/waivers/compliance/waivers',
+            url: '/v2/admin/waivers/compliance/waivers',
             method: 'post',
             data: body,
         }),
@@ -162,7 +162,7 @@ export const GetUsersWithExpiringWaivers = (params?: GetUsersWithExpiringWaivers
     key: ['/admin/waivers/compliance/expiring', params?.days ?? 30],
     service: async () =>
         ApiService('protected').fetchData<GetUsersWithExpiringWaivers_Response>({
-            url: `/admin/waivers/compliance/expiring${params?.days ? `?days=${params.days}` : ''}`,
+            url: `/v2/admin/waivers/compliance/expiring${params?.days ? `?days=${params.days}` : ''}`,
             method: 'get',
         }),
 });
@@ -175,7 +175,7 @@ export const ExportWaivers = () => ({
     key: ['/admin/waivers/compliance/export'],
     service: async (body: ExportWaivers_Body) =>
         ApiService('protected').fetchData<Blob, ExportWaivers_Body>({
-            url: '/admin/waivers/compliance/export',
+            url: '/v2/admin/waivers/compliance/export',
             method: 'post',
             data: body,
             responseType: 'blob',
@@ -191,7 +191,7 @@ export const GetUserWaiverDetails = (params: GetUserWaiverDetails_Params) => ({
     key: ['/admin/waivers/compliance/waivers', params.userWaiverId],
     service: async () =>
         ApiService('protected').fetchData<GetUserWaiverDetails_Response>({
-            url: `/admin/waivers/compliance/waivers/${params.userWaiverId}`,
+            url: `/v2/admin/waivers/compliance/waivers/${params.userWaiverId}`,
             method: 'get',
         }),
 });

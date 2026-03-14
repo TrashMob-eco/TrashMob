@@ -103,6 +103,23 @@ namespace TrashMob.Controllers.V2
         }
 
         /// <summary>
+        /// Gets all teams that the current user leads.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the teams the user leads.</response>
+        [HttpGet("my/leading")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(IEnumerable<TeamDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetTeamsILead(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 GetTeamsILead User={UserId}", UserId);
+
+            var teams = await teamManager.GetTeamsUserLeadsAsync(UserId, cancellationToken);
+            return Ok(teams.Select(t => t.ToV2Dto()));
+        }
+
+        /// <summary>
         /// Creates a new team. The creator becomes the first team lead.
         /// </summary>
         /// <param name="team">The team to create.</param>

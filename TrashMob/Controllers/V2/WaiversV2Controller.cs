@@ -14,6 +14,7 @@ namespace TrashMob.Controllers.V2
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models.Extensions.V2;
     using TrashMob.Models.Poco.V2;
+    using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
@@ -30,6 +31,8 @@ namespace TrashMob.Controllers.V2
         IUserWaiverManager userWaiverManager,
         IWaiverDocumentManager waiverDocumentManager,
         IUserManager userManager,
+        IWaiverManager waiverManager,
+        IEventAttendeeManager eventAttendeeManager,
         ILogger<WaiversV2Controller> logger) : ControllerBase
     {
         private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
@@ -146,6 +149,237 @@ namespace TrashMob.Controllers.V2
             }
 
             return CreatedAtAction(nameof(GetMyWaivers), userWaiver.ToV2Dto());
+        }
+
+        /// <summary>
+        /// Gets waivers required for a specific event.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the waiver versions required for the event.</response>
+        [HttpGet("required/event/{eventId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(IReadOnlyList<WaiverVersionDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetRequiredWaiversForEvent(
+            Guid eventId,
+            CancellationToken cancellationToken = default)
+        {
+            logger.LogInformation("V2 GetRequiredWaiversForEvent EventId={EventId}", eventId);
+
+            var result = await userWaiverManager
+                .GetRequiredWaiversForEventAsync(UserId, eventId, cancellationToken);
+            var dtos = result.Select(w => w.ToV2Dto()).ToList();
+
+            return Ok(dtos);
+        }
+
+        /// <summary>
+        /// Gets a specific user waiver by ID.
+        /// </summary>
+        /// <param name="userWaiverId">The user waiver ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the user waiver details.</response>
+        /// <response code="403">User does not own this waiver.</response>
+        /// <response code="404">Waiver not found.</response>
+        [HttpGet("{userWaiverId:guid}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(UserWaiverDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUserWaiver(
+            Guid userWaiverId,
+            CancellationToken cancellationToken = default)
+        {
+            logger.LogInformation("V2 GetUserWaiver UserWaiverId={UserWaiverId}", userWaiverId);
+
+            var waiver = await userWaiverManager
+                .GetUserWaiverWithDetailsAsync(userWaiverId, cancellationToken);
+
+            if (waiver is null)
+            {
+                return NotFound();
+            }
+
+            // Only allow users to see their own waivers
+            if (waiver.UserId != UserId)
+            {
+                return Forbid();
+            }
+
+            return Ok(waiver.ToV2Dto());
+        }
+
+        /// <summary>
+        /// Checks if the current user has valid waivers for an event.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns whether the user has valid waivers.</response>
+        [HttpGet("check/event/{eventId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(WaiverCheckResultDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CheckWaiversForEvent(
+            Guid eventId,
+            CancellationToken cancellationToken = default)
+        {
+            logger.LogInformation("V2 CheckWaiversForEvent EventId={EventId}", eventId);
+
+            var hasValidWaiver = await userWaiverManager
+                .HasValidWaiverForEventAsync(UserId, eventId, cancellationToken);
+
+            return Ok(new WaiverCheckResultDto { HasValidWaiver = hasValidWaiver });
+        }
+
+        /// <summary>
+        /// Uploads a paper waiver on behalf of a user.
+        /// Can be used by event leads for their event attendees, or by admins for any user.
+        /// </summary>
+        /// <param name="request">The paper waiver upload request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="201">Paper waiver uploaded successfully.</response>
+        /// <response code="400">Validation error.</response>
+        /// <response code="403">User is not authorized to upload paper waivers.</response>
+        [HttpPost("upload-paper")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(UserWaiverDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> UploadPaperWaiver(
+            [FromForm] PaperWaiverUploadApiRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            logger.LogInformation("V2 UploadPaperWaiver");
+
+            if (request is null)
+            {
+                return BadRequest("Request is required.");
+            }
+
+            if (request.FormFile is null || request.FormFile.Length == 0)
+            {
+                return BadRequest("File is required.");
+            }
+
+            if (request.UserId == Guid.Empty)
+            {
+                return BadRequest("User ID is required.");
+            }
+
+            if (request.WaiverVersionId == Guid.Empty)
+            {
+                return BadRequest("Waiver version ID is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.SignerName))
+            {
+                return BadRequest("Signer name is required.");
+            }
+
+            // Check authorization
+            var isAdmin = User.IsInRole("Admin");
+            var isEventLead = false;
+
+            if (request.EventId.HasValue)
+            {
+                isEventLead = await eventAttendeeManager
+                    .IsEventLeadAsync(request.EventId.Value, UserId, cancellationToken);
+            }
+
+            // Event leads can only upload for their events, admins can upload for anyone
+            if (!isAdmin && !isEventLead)
+            {
+                return Forbid();
+            }
+
+            var uploadRequest = new PaperWaiverUploadRequest
+            {
+                FormFile = request.FormFile,
+                UserId = request.UserId,
+                WaiverVersionId = request.WaiverVersionId,
+                SignerName = request.SignerName,
+                DateSigned = request.DateSigned,
+                EventId = request.EventId,
+                IsMinor = request.IsMinor,
+                GuardianName = request.GuardianName,
+                GuardianRelationship = request.GuardianRelationship,
+            };
+
+            var result = await userWaiverManager
+                .UploadPaperWaiverAsync(uploadRequest, UserId, cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return CreatedAtAction(nameof(GetUserWaiver), new { userWaiverId = result.Data.Id }, result.Data.ToV2Dto());
+        }
+
+        /// <summary>
+        /// Gets waiver status for all attendees of an event.
+        /// Only accessible by event leads or admins.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the list of attendee waiver statuses.</response>
+        /// <response code="403">User is not an event lead or admin.</response>
+        [HttpGet("event/{eventId}/attendees")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(IEnumerable<AttendeeWaiverStatus>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetEventAttendeeWaiverStatus(
+            Guid eventId,
+            CancellationToken cancellationToken = default)
+        {
+            logger.LogInformation("V2 GetEventAttendeeWaiverStatus EventId={EventId}", eventId);
+
+            // Check if user is event lead or admin
+            var isAdmin = User.IsInRole("Admin");
+            var isEventLead = await eventAttendeeManager
+                .IsEventLeadAsync(eventId, UserId, cancellationToken);
+
+            if (!isAdmin && !isEventLead)
+            {
+                return Forbid();
+            }
+
+            var result = await userWaiverManager
+                .GetEventAttendeeWaiverStatusAsync(eventId, cancellationToken);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Gets a waiver by name.
+        /// </summary>
+        /// <param name="name">The name of the waiver.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the waiver.</response>
+        /// <response code="404">Waiver not found.</response>
+        [HttpGet("by-name/{name}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(Waiver), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetWaiverByName(
+            string name,
+            CancellationToken cancellationToken = default)
+        {
+            logger.LogInformation("V2 GetWaiverByName Name={Name}", name);
+
+            var waiver = await waiverManager.GetByNameAsync(name, cancellationToken);
+
+            if (waiver is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(waiver);
         }
 
         private string GetClientIpAddress()

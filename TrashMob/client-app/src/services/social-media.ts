@@ -9,7 +9,7 @@ export const GetSocialMediaAccountTypes = () => ({
     key: ['/socialMediaAccounttypes'],
     service: async () =>
         ApiService('public').fetchData<GetSocialMediaAccountTypes_Response>({
-            url: '/socialMediaAccounttypes',
+            url: '/v2/lookups/social-media-account-types',
             method: 'get',
         }),
 });
@@ -22,7 +22,7 @@ export const GetPartnerSocialMediaAccountsByPartnerId = (params: GetPartnerSocia
     key: ['/partnersocialmediaaccounts/getbypartner/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerSocialMediaAccountsByPartnerId_Response>({
-            url: `/partnersocialmediaaccounts/getbypartner/${params.partnerId}`,
+            url: `/v2/partner-social-media-accounts/by-partner/${params.partnerId}`,
             method: 'get',
         }),
 });
@@ -33,7 +33,7 @@ export const GetPartnerSocialMediaAccount = (params: GetPartnerSocialMediaAccoun
     key: ['/partnersocialmediaaccounts/', params.partnerAccountId],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerSocialMediaAccount_Response>({
-            url: `/partnersocialmediaaccounts/${params.partnerAccountId}`,
+            url: `/v2/partner-social-media-accounts/${params.partnerAccountId}`,
             method: 'get',
         }),
 });
@@ -46,7 +46,7 @@ export const CreatePartnerSocialMediaAccount = () => ({
         ApiService('protected').fetchData<
             CreatePartnerSocialMediaAccount_Response,
             CreatePartnerSocialMediaAccount_Body
-        >({ url: '/partnersocialmediaaccounts', method: 'post', data: body }),
+        >({ url: '/v2/partner-social-media-accounts', method: 'post', data: body }),
 });
 
 export type UpdatePartnerSocialMediaAccount_Body = PartnerSocialMediaAccountData;
@@ -57,7 +57,7 @@ export const UpdatePartnerSocialMediaAccount = () => ({
         ApiService('protected').fetchData<
             UpdatePartnerSocialMediaAccount_Response,
             UpdatePartnerSocialMediaAccount_Body
-        >({ url: '/partnersocialmediaaccounts', method: 'put', data: body }),
+        >({ url: '/v2/partner-social-media-accounts', method: 'put', data: body }),
 });
 
 export type DeletePartnerSocialMediaAccountById_Params = { accountId: string };
@@ -66,7 +66,7 @@ export const DeletePartnerSocialMediaAccountById = () => ({
     key: ['/partnersocialmediaaccounts/', 'delete'],
     service: async (params: DeletePartnerSocialMediaAccountById_Params) =>
         ApiService('protected').fetchData<DeletePartnerSocialMediaAccountById_Response>({
-            url: `/partnersocialmediaaccounts/${params.accountId}`,
+            url: `/v2/partner-social-media-accounts/${params.accountId}`,
             method: 'delete',
         }),
 });

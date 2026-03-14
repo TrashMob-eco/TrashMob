@@ -20,7 +20,7 @@ export const GetContacts = (params?: GetContacts_Params) => {
         key: ['/contacts', params?.search, params?.contactType, params?.tagId],
         service: async () =>
             ApiService('protected').fetchData<GetContacts_Response>({
-                url: `/contacts${query}`,
+                url: `/v2/contacts${query}`,
                 method: 'get',
             }),
     };
@@ -32,7 +32,7 @@ export const GetContactById = (params: GetContactById_Params) => ({
     key: ['/contacts', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetContactById_Response>({
-            url: `/contacts/${params.id}`,
+            url: `/v2/contacts/${params.id}`,
             method: 'get',
         }),
 });
@@ -43,7 +43,7 @@ export const CreateContact = () => ({
     key: ['/contacts', 'create'],
     service: async (body: CreateContact_Body) =>
         ApiService('protected').fetchData<CreateContact_Response, CreateContact_Body>({
-            url: '/contacts',
+            url: '/v2/contacts',
             method: 'post',
             data: body,
         }),
@@ -55,7 +55,7 @@ export const UpdateContact = () => ({
     key: ['/contacts', 'update'],
     service: async (body: UpdateContact_Body) =>
         ApiService('protected').fetchData<UpdateContact_Response, UpdateContact_Body>({
-            url: '/contacts',
+            url: '/v2/contacts',
             method: 'put',
             data: body,
         }),
@@ -66,7 +66,7 @@ export const DeleteContact = () => ({
     key: ['/contacts', 'delete'],
     service: async (params: DeleteContact_Params) =>
         ApiService('protected').fetchData<unknown>({
-            url: `/contacts/${params.id}`,
+            url: `/v2/contacts/${params.id}`,
             method: 'delete',
         }),
 });
@@ -78,7 +78,7 @@ export const GetContactTagIds = (params: GetContactTagIds_Params) => ({
     key: ['/contacts', params.contactId, 'tags'],
     service: async () =>
         ApiService('protected').fetchData<string[]>({
-            url: `/contacts/${params.contactId}/tags`,
+            url: `/v2/contacts/${params.contactId}/tags`,
             method: 'get',
         }),
 });
@@ -89,7 +89,7 @@ export const UpdateContactTags = (params: UpdateContactTags_Params) => ({
     key: ['/contacts', params.contactId, 'tags', 'update'],
     service: async (body: UpdateContactTags_Body) =>
         ApiService('protected').fetchData<unknown, UpdateContactTags_Body>({
-            url: `/contacts/${params.contactId}/tags`,
+            url: `/v2/contacts/${params.contactId}/tags`,
             method: 'put',
             data: body,
         }),
@@ -103,7 +103,7 @@ export const GetContactNotes = (params: GetContactNotes_Params) => ({
     key: ['/contactnotes', params.contactId],
     service: async () =>
         ApiService('protected').fetchData<GetContactNotes_Response>({
-            url: `/contactnotes/bycontact/${params.contactId}`,
+            url: `/v2/contactnotes/bycontact/${params.contactId}`,
             method: 'get',
         }),
 });
@@ -114,7 +114,7 @@ export const CreateContactNote = () => ({
     key: ['/contactnotes', 'create'],
     service: async (body: CreateContactNote_Body) =>
         ApiService('protected').fetchData<CreateContactNote_Response, CreateContactNote_Body>({
-            url: '/contactnotes',
+            url: '/v2/contactnotes',
             method: 'post',
             data: body,
         }),
@@ -126,7 +126,7 @@ export const UpdateContactNote = () => ({
     key: ['/contactnotes', 'update'],
     service: async (body: UpdateContactNote_Body) =>
         ApiService('protected').fetchData<UpdateContactNote_Response, UpdateContactNote_Body>({
-            url: '/contactnotes',
+            url: '/v2/contactnotes',
             method: 'put',
             data: body,
         }),
@@ -137,7 +137,7 @@ export const DeleteContactNote = () => ({
     key: ['/contactnotes', 'delete'],
     service: async (params: DeleteContactNote_Params) =>
         ApiService('protected').fetchData<unknown>({
-            url: `/contactnotes/${params.id}`,
+            url: `/v2/contactnotes/${params.id}`,
             method: 'delete',
         }),
 });
@@ -149,7 +149,7 @@ export const GetContactTags = () => ({
     key: ['/contacttags'],
     service: async () =>
         ApiService('protected').fetchData<GetContactTags_Response>({
-            url: '/contacttags',
+            url: '/v2/contacttags',
             method: 'get',
         }),
 });
@@ -160,7 +160,7 @@ export const CreateContactTag = () => ({
     key: ['/contacttags', 'create'],
     service: async (body: CreateContactTag_Body) =>
         ApiService('protected').fetchData<CreateContactTag_Response, CreateContactTag_Body>({
-            url: '/contacttags',
+            url: '/v2/contacttags',
             method: 'post',
             data: body,
         }),
@@ -172,7 +172,7 @@ export const UpdateContactTag = () => ({
     key: ['/contacttags', 'update'],
     service: async (body: UpdateContactTag_Body) =>
         ApiService('protected').fetchData<UpdateContactTag_Response, UpdateContactTag_Body>({
-            url: '/contacttags',
+            url: '/v2/contacttags',
             method: 'put',
             data: body,
         }),
@@ -183,7 +183,7 @@ export const DeleteContactTag = () => ({
     key: ['/contacttags', 'delete'],
     service: async (params: DeleteContactTag_Params) =>
         ApiService('protected').fetchData<unknown>({
-            url: `/contacttags/${params.id}`,
+            url: `/v2/contacttags/${params.id}`,
             method: 'delete',
         }),
 });
@@ -195,7 +195,7 @@ export const GetDonations = () => ({
     key: ['/donations'],
     service: async () =>
         ApiService('protected').fetchData<GetDonations_Response>({
-            url: '/donations',
+            url: '/v2/donations',
             method: 'get',
         }),
 });
@@ -206,7 +206,7 @@ export const GetDonationById = (params: GetDonationById_Params) => ({
     key: ['/donations', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetDonationById_Response>({
-            url: `/donations/${params.id}`,
+            url: `/v2/donations/${params.id}`,
             method: 'get',
         }),
 });
@@ -217,7 +217,7 @@ export const GetDonationsByContact = (params: GetDonationsByContact_Params) => (
     key: ['/donations', 'bycontact', params.contactId],
     service: async () =>
         ApiService('protected').fetchData<GetDonationsByContact_Response>({
-            url: `/donations/bycontact/${params.contactId}`,
+            url: `/v2/donations/bycontact/${params.contactId}`,
             method: 'get',
         }),
 });
@@ -228,7 +228,7 @@ export const CreateDonation = () => ({
     key: ['/donations', 'create'],
     service: async (body: CreateDonation_Body) =>
         ApiService('protected').fetchData<CreateDonation_Response, CreateDonation_Body>({
-            url: '/donations',
+            url: '/v2/donations',
             method: 'post',
             data: body,
         }),
@@ -240,7 +240,7 @@ export const UpdateDonation = () => ({
     key: ['/donations', 'update'],
     service: async (body: UpdateDonation_Body) =>
         ApiService('protected').fetchData<UpdateDonation_Response, UpdateDonation_Body>({
-            url: '/donations',
+            url: '/v2/donations',
             method: 'put',
             data: body,
         }),
@@ -251,7 +251,7 @@ export const DeleteDonation = () => ({
     key: ['/donations', 'delete'],
     service: async (params: DeleteDonation_Params) =>
         ApiService('protected').fetchData<unknown>({
-            url: `/donations/${params.id}`,
+            url: `/v2/donations/${params.id}`,
             method: 'delete',
         }),
 });
@@ -263,7 +263,7 @@ export const SendDonationThankYou = () => ({
     key: ['/donations', 'send-thankyou'],
     service: async (params: SendDonationThankYou_Params) =>
         ApiService('protected').fetchData<unknown>({
-            url: `/donations/${params.donationId}/send-thankyou`,
+            url: `/v2/donations/${params.donationId}/send-thankyou`,
             method: 'post',
         }),
 });
@@ -273,7 +273,7 @@ export const SendDonationReceipt = () => ({
     key: ['/donations', 'send-receipt'],
     service: async (params: SendDonationReceipt_Params) =>
         ApiService('protected').fetchData<unknown>({
-            url: `/donations/${params.donationId}/send-receipt`,
+            url: `/v2/donations/${params.donationId}/send-receipt`,
             method: 'post',
         }),
 });
@@ -285,7 +285,7 @@ export const SendAppeal = () => ({
     key: ['/fundraising-appeals', 'send'],
     service: async (body: SendAppeal_Body) =>
         ApiService('protected').fetchData<unknown, SendAppeal_Body>({
-            url: '/fundraising-appeals/send',
+            url: '/v2/fundraising-appeals/send',
             method: 'post',
             data: body,
         }),
@@ -297,7 +297,7 @@ export const SendBulkAppeal = () => ({
     key: ['/fundraising-appeals', 'send-bulk'],
     service: async (body: SendBulkAppeal_Body) =>
         ApiService('protected').fetchData<BulkAppealResult, SendBulkAppeal_Body>({
-            url: '/fundraising-appeals/send-bulk',
+            url: '/v2/fundraising-appeals/send-bulk',
             method: 'post',
             data: body,
         }),
@@ -310,7 +310,7 @@ export const GetPledges = () => ({
     key: ['/pledges'],
     service: async () =>
         ApiService('protected').fetchData<GetPledges_Response>({
-            url: '/pledges',
+            url: '/v2/pledges',
             method: 'get',
         }),
 });
@@ -321,7 +321,7 @@ export const GetPledgeById = (params: GetPledgeById_Params) => ({
     key: ['/pledges', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetPledgeById_Response>({
-            url: `/pledges/${params.id}`,
+            url: `/v2/pledges/${params.id}`,
             method: 'get',
         }),
 });
@@ -332,7 +332,7 @@ export const GetPledgesByContact = (params: GetPledgesByContact_Params) => ({
     key: ['/pledges', 'bycontact', params.contactId],
     service: async () =>
         ApiService('protected').fetchData<GetPledgesByContact_Response>({
-            url: `/pledges/bycontact/${params.contactId}`,
+            url: `/v2/pledges/bycontact/${params.contactId}`,
             method: 'get',
         }),
 });
@@ -343,7 +343,7 @@ export const CreatePledge = () => ({
     key: ['/pledges', 'create'],
     service: async (body: CreatePledge_Body) =>
         ApiService('protected').fetchData<CreatePledge_Response, CreatePledge_Body>({
-            url: '/pledges',
+            url: '/v2/pledges',
             method: 'post',
             data: body,
         }),
@@ -355,7 +355,7 @@ export const UpdatePledge = () => ({
     key: ['/pledges', 'update'],
     service: async (body: UpdatePledge_Body) =>
         ApiService('protected').fetchData<UpdatePledge_Response, UpdatePledge_Body>({
-            url: '/pledges',
+            url: '/v2/pledges',
             method: 'put',
             data: body,
         }),
@@ -366,7 +366,7 @@ export const DeletePledge = () => ({
     key: ['/pledges', 'delete'],
     service: async (params: DeletePledge_Params) =>
         ApiService('protected').fetchData<unknown>({
-            url: `/pledges/${params.id}`,
+            url: `/v2/pledges/${params.id}`,
             method: 'delete',
         }),
 });
@@ -445,7 +445,7 @@ export const GetEngagementScores = () => ({
     key: ['/fundraising-analytics', 'engagement-scores'],
     service: async () =>
         ApiService('protected').fetchData<GetEngagementScores_Response>({
-            url: '/fundraising-analytics/engagement-scores',
+            url: '/v2/fundraising-analytics/engagement-scores',
             method: 'get',
         }),
 });
@@ -456,7 +456,7 @@ export const GetContactEngagementScore = (params: GetContactEngagementScore_Para
     key: ['/fundraising-analytics', 'engagement-scores', params.contactId],
     service: async () =>
         ApiService('protected').fetchData<GetContactEngagementScore_Response>({
-            url: `/fundraising-analytics/engagement-scores/${params.contactId}`,
+            url: `/v2/fundraising-analytics/engagement-scores/${params.contactId}`,
             method: 'get',
         }),
 });
@@ -466,7 +466,7 @@ export const GetFundraisingDashboard = () => ({
     key: ['/fundraising-analytics', 'dashboard'],
     service: async () =>
         ApiService('protected').fetchData<GetFundraisingDashboard_Response>({
-            url: '/fundraising-analytics/dashboard',
+            url: '/v2/fundraising-analytics/dashboard',
             method: 'get',
         }),
 });
@@ -476,7 +476,7 @@ export const GetVolunteerPipeline = () => ({
     key: ['/fundraising-analytics', 'volunteer-pipeline'],
     service: async () =>
         ApiService('protected').fetchData<GetVolunteerPipeline_Response>({
-            url: '/fundraising-analytics/volunteer-pipeline',
+            url: '/v2/fundraising-analytics/volunteer-pipeline',
             method: 'get',
         }),
 });
@@ -486,7 +486,7 @@ export const GetLybuntContacts = () => ({
     key: ['/fundraising-analytics', 'lybunt'],
     service: async () =>
         ApiService('protected').fetchData<GetLybuntContacts_Response>({
-            url: '/fundraising-analytics/lybunt',
+            url: '/v2/fundraising-analytics/lybunt',
             method: 'get',
         }),
 });
@@ -495,7 +495,7 @@ export const ExportDonorReport = () => ({
     key: ['/fundraising-analytics', 'export', 'donors'],
     service: async () =>
         ApiService('protected').fetchData<Blob>({
-            url: '/fundraising-analytics/export/donors',
+            url: '/v2/fundraising-analytics/export/donors',
             method: 'get',
             responseType: 'blob',
         }),
@@ -505,7 +505,7 @@ export const ExportFundraisingSummary = () => ({
     key: ['/fundraising-analytics', 'export', 'summary'],
     service: async () =>
         ApiService('protected').fetchData<Blob>({
-            url: '/fundraising-analytics/export/summary',
+            url: '/v2/fundraising-analytics/export/summary',
             method: 'get',
             responseType: 'blob',
         }),

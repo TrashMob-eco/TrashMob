@@ -1,6 +1,7 @@
 namespace TrashMob.Controllers.V2
 {
     using System;
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
@@ -32,6 +33,7 @@ namespace TrashMob.Controllers.V2
         IUserManager userManager,
         IEventAttendeeMetricsManager metricsManager,
         IImageManager imageManager,
+        IUserDataExportManager exportManager,
         ILogger<UsersV2Controller> logger) : ControllerBase
     {
         private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
@@ -279,6 +281,130 @@ namespace TrashMob.Controllers.V2
 
             var updatedUser = await userManager.UpdateAsync(user, cancellationToken);
             return Ok(updatedUser.ToV2Dto());
+        }
+
+        /// <summary>
+        /// Verifies the uniqueness of a username for a given user ID.
+        /// Returns 200 OK if the username is available or already belongs to the specified user.
+        /// Returns 409 Conflict if the username is taken by a different user.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <param name="userName">The username to check.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Username is available or belongs to the specified user.</response>
+        /// <response code="409">Username is taken by another user.</response>
+        [HttpGet("verifyunique/{userId}/{userName}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> VerifyUnique(Guid userId, string userName, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 VerifyUnique User={UserId}, UserName={UserName}", userId, userName);
+
+            var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken);
+
+            if (user is null)
+            {
+                return Ok();
+            }
+
+            if (user.Id != userId)
+            {
+                return Conflict();
+            }
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Exports all personal data for a user as a JSON file download.
+        /// Users can only export their own data unless they are a site admin.
+        /// Rate limited to one export per 24 hours.
+        /// </summary>
+        /// <param name="id">The ID of the user whose data to export.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns a JSON file containing the user's data.</response>
+        /// <response code="403">User is not authorized to export this data.</response>
+        /// <response code="404">User not found.</response>
+        /// <response code="429">Export rate limit exceeded (once per 24 hours).</response>
+        [HttpGet("{id}/export")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+        public async Task<IActionResult> ExportUserData(Guid id, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 ExportUserData User={UserId}", id);
+
+            var currentUser = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken);
+
+            if (currentUser is null)
+            {
+                return NotFound();
+            }
+
+            if (id != UserId && !currentUser.IsSiteAdmin)
+            {
+                return Forbid();
+            }
+
+            // Rate limit: once per 24 hours
+            if (currentUser.LastDataExportRequestedDate.HasValue &&
+                currentUser.LastDataExportRequestedDate.Value > DateTimeOffset.UtcNow.AddHours(-24))
+            {
+                return StatusCode(StatusCodes.Status429TooManyRequests,
+                    "Data export is limited to once per 24 hours.");
+            }
+
+            // Update rate limit timestamp before streaming (can't change status after body starts)
+            currentUser.LastDataExportRequestedDate = DateTimeOffset.UtcNow;
+            await userManager.UpdateAsync(currentUser, cancellationToken);
+
+            var timestamp = DateTimeOffset.UtcNow.ToString("yyyyMMdd-HHmmss");
+            var ms = new MemoryStream();
+            await exportManager.WriteExportToStreamAsync(id, ms, cancellationToken);
+            ms.Position = 0;
+
+            return File(ms, "application/json", $"trashmob-data-export-{timestamp}.json");
+        }
+
+        /// <summary>
+        /// Deletes a user by their ID.
+        /// Users can only delete themselves unless they are a site admin.
+        /// </summary>
+        /// <param name="id">The ID of the user to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="204">User successfully deleted.</response>
+        /// <response code="403">User is not authorized to delete this account.</response>
+        /// <response code="404">User not found.</response>
+        [HttpDelete("{id}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 DeleteUser User={UserId}", id);
+
+            // Users can only delete themselves unless they are a site admin
+            var currentUser = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken);
+
+            if (currentUser is null)
+            {
+                return NotFound();
+            }
+
+            if (id != UserId && !currentUser.IsSiteAdmin)
+            {
+                return Forbid();
+            }
+
+            await userManager.DeleteAsync(id, cancellationToken);
+
+            return NoContent();
         }
     }
 }

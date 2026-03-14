@@ -1,12 +1,13 @@
 import { ApiService } from '.';
+import { PagedResponse } from '../lib/api-errors';
 import UserData from '../components/Models/UserData';
 
-export type GetAllUsers_Response = UserData[];
+export type GetAllUsers_Response = PagedResponse<UserData>;
 export const GetAllUsers = () => ({
     key: ['/users', 'all users'],
     service: async () =>
         ApiService('protected').fetchData<GetAllUsers_Response>({
-            url: '/v2/users',
+            url: '/v2/users?pageSize=100',
             method: 'get',
         }),
 });
@@ -61,7 +62,7 @@ export const VerifyUniqueUserName = (params: VerifyUniqueUserName_Params) => ({
     key: ['/users/verifyunique', params],
     service: async () =>
         ApiService('protected').fetchData<unknown>({
-            url: `/users/verifyunique/${params.userId}/${encodeURIComponent(params.userName)}`,
+            url: `/v2/users/verifyunique/${params.userId}/${encodeURIComponent(params.userName)}`,
             method: 'get',
             validateStatus: (status: number) => status === 200 || status === 409,
         }),
@@ -89,7 +90,7 @@ export const ExportUserData = (params: ExportUserData_Params) => ({
     key: ['/users/export', params.userId],
     service: async () =>
         ApiService('protected').fetchData<Blob>({
-            url: `/users/${params.userId}/export`,
+            url: `/v2/users/${params.userId}/export`,
             method: 'get',
             responseType: 'blob',
         }),
@@ -101,7 +102,7 @@ export const DeleteUserById = () => ({
     key: ['/users/', 'delete'],
     service: async (params: DeleteUserById_Params) =>
         ApiService('protected').fetchData<DeleteUserById_Response>({
-            url: `/users/${params.id}`,
+            url: `/v2/users/${params.id}`,
             method: 'delete',
         }),
 });

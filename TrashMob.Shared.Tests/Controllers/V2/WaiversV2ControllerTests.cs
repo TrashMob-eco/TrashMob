@@ -21,6 +21,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         private readonly Mock<IUserWaiverManager> waiverManager = new();
         private readonly Mock<IWaiverDocumentManager> documentManager = new();
         private readonly Mock<IUserManager> userManager = new();
+        private readonly Mock<IWaiverManager> waiverMgr = new();
+        private readonly Mock<IEventAttendeeManager> eventAttendeeManager = new();
         private readonly Mock<ILogger<WaiversV2Controller>> logger = new();
         private readonly WaiversV2Controller controller;
         private readonly Guid userId = Guid.NewGuid();
@@ -28,7 +30,8 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         public WaiversV2ControllerTests()
         {
             controller = new WaiversV2Controller(
-                waiverManager.Object, documentManager.Object, userManager.Object, logger.Object);
+                waiverManager.Object, documentManager.Object, userManager.Object,
+                waiverMgr.Object, eventAttendeeManager.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),
