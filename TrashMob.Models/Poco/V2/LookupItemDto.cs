@@ -26,4 +26,9 @@ public class LookupItemDto
     /// Gets or sets the display order for sorting.
     /// </summary>
     public int DisplayOrder { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether this lookup item is active.
+    /// </summary>
+    public bool IsActive { get; set; } = true;
 }

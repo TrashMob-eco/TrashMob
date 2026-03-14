@@ -55,9 +55,19 @@ namespace TrashMob.Models.Poco.V2
         public string Notes { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the identifier of the user who created the summary.
+        /// </summary>
+        public Guid CreatedByUserId { get; set; }
+
+        /// <summary>
         /// Gets or sets when the summary was created.
         /// </summary>
         public DateTimeOffset CreatedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the user who last updated the summary.
+        /// </summary>
+        public Guid LastUpdatedByUserId { get; set; }
 
         /// <summary>
         /// Gets or sets when the summary was last updated.

@@ -95,6 +95,11 @@ namespace TrashMob.Models.Poco.V2
         public bool IsEventPublic { get; set; }
 
         /// <summary>
+        /// Gets or sets the event visibility identifier (maps to EventVisibilityEnum).
+        /// </summary>
+        public int EventVisibilityId { get; set; }
+
+        /// <summary>
         /// Gets or sets the identifier of the user who created the event.
         /// </summary>
         public Guid CreatedByUserId { get; set; }
@@ -105,8 +110,28 @@ namespace TrashMob.Models.Poco.V2
         public DateTimeOffset CreatedDate { get; set; }
 
         /// <summary>
+        /// Gets or sets the identifier of the user who last updated the event.
+        /// </summary>
+        public Guid LastUpdatedByUserId { get; set; }
+
+        /// <summary>
         /// Gets or sets when the event was last updated.
         /// </summary>
         public DateTimeOffset LastUpdatedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the optional team identifier associated with this event.
+        /// </summary>
+        public Guid? TeamId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the username of the event creator.
+        /// </summary>
+        public string CreatedByUserName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets whether the current user is attending this event (contextual, may be null).
+        /// </summary>
+        public bool? IsAttending { get; set; }
     }
 }

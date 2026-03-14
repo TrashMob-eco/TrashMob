@@ -5,7 +5,7 @@ namespace TrashMob.Models.Poco.V2
     using System;
 
     /// <summary>
-    /// V2 API representation of a user. Excludes PII (email, date of birth, identity provider fields).
+    /// V2 API representation of a user. Includes fields needed by the frontend for auth and profile display.
     /// </summary>
     public class UserDto
     {
@@ -83,5 +83,30 @@ namespace TrashMob.Models.Poco.V2
         /// Gets or sets the travel distance limit for finding local events.
         /// </summary>
         public int TravelLimitForLocalEvents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's email address.
+        /// </summary>
+        public string Email { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets whether the user is a site administrator.
+        /// </summary>
+        public bool IsSiteAdmin { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date when the user agreed to the TrashMob waiver.
+        /// </summary>
+        public DateTimeOffset? DateAgreedToTrashMobWaiver { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version of the TrashMob waiver the user agreed to.
+        /// </summary>
+        public string TrashMobWaiverVersion { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the user's date of birth.
+        /// </summary>
+        public DateTimeOffset? DateOfBirth { get; set; }
     }
 }

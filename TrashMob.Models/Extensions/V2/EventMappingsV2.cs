@@ -36,9 +36,13 @@ namespace TrashMob.Models.Extensions.V2
                 Longitude = entity.Longitude,
                 MaxNumberOfParticipants = entity.MaxNumberOfParticipants,
                 IsEventPublic = entity.EventVisibilityId == (int)EventVisibilityEnum.Public,
+                EventVisibilityId = entity.EventVisibilityId,
                 CreatedByUserId = entity.CreatedByUserId,
                 CreatedDate = entity.CreatedDate.GetValueOrDefault(),
+                LastUpdatedByUserId = entity.LastUpdatedByUserId,
                 LastUpdatedDate = entity.LastUpdatedDate.GetValueOrDefault(),
+                TeamId = entity.TeamId,
+                CreatedByUserName = entity.CreatedByUser?.UserName ?? string.Empty,
             };
         }
         /// <summary>
@@ -64,8 +68,9 @@ namespace TrashMob.Models.Extensions.V2
                 Latitude = dto.Latitude,
                 Longitude = dto.Longitude,
                 MaxNumberOfParticipants = dto.MaxNumberOfParticipants,
-                EventVisibilityId = dto.IsEventPublic ? (int)EventVisibilityEnum.Public : (int)EventVisibilityEnum.Private,
+                EventVisibilityId = dto.EventVisibilityId != 0 ? dto.EventVisibilityId : (dto.IsEventPublic ? (int)EventVisibilityEnum.Public : (int)EventVisibilityEnum.Private),
                 CreatedByUserId = dto.CreatedByUserId,
+                TeamId = dto.TeamId,
             };
         }
 

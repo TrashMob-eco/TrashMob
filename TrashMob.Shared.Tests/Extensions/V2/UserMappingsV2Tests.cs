@@ -26,6 +26,11 @@ namespace TrashMob.Shared.Tests.Extensions.V2
                 ProfilePhotoUrl = "https://example.com/photo.jpg",
                 MemberSince = new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 IsMinor = false,
+                Email = "test@example.com",
+                IsSiteAdmin = true,
+                DateAgreedToTrashMobWaiver = new DateTimeOffset(2025, 6, 1, 0, 0, 0, TimeSpan.Zero),
+                TrashMobWaiverVersion = "1.0",
+                DateOfBirth = new DateTimeOffset(1990, 1, 1, 0, 0, 0, TimeSpan.Zero),
             };
 
             var dto = entity.ToV2Dto();
@@ -44,6 +49,11 @@ namespace TrashMob.Shared.Tests.Extensions.V2
             Assert.Equal(entity.ProfilePhotoUrl, dto.ProfilePhotoUrl);
             Assert.Equal(entity.MemberSince, dto.MemberSince);
             Assert.Equal(entity.IsMinor, dto.IsMinor);
+            Assert.Equal(entity.Email, dto.Email);
+            Assert.Equal(entity.IsSiteAdmin, dto.IsSiteAdmin);
+            Assert.Equal(entity.DateAgreedToTrashMobWaiver, dto.DateAgreedToTrashMobWaiver);
+            Assert.Equal(entity.TrashMobWaiverVersion, dto.TrashMobWaiverVersion);
+            Assert.Equal(entity.DateOfBirth, dto.DateOfBirth);
         }
 
         [Fact]
@@ -60,25 +70,31 @@ namespace TrashMob.Shared.Tests.Extensions.V2
         }
 
         [Fact]
-        public void ToV2Dto_DoesNotExposePiiFields()
+        public void ToV2Dto_MapsAuthAndProfileFields()
         {
             var entity = new User
             {
-                Email = "secret@example.com",
+                Email = "test@example.com",
                 ObjectId = Guid.NewGuid(),
                 NameIdentifier = "secret-identifier",
                 DateOfBirth = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 IsSiteAdmin = true,
+                DateAgreedToTrashMobWaiver = new DateTimeOffset(2025, 6, 1, 0, 0, 0, TimeSpan.Zero),
+                TrashMobWaiverVersion = "1.0",
             };
 
             var dto = entity.ToV2Dto();
 
+            Assert.Equal("test@example.com", dto.Email);
+            Assert.True(dto.IsSiteAdmin);
+            Assert.Equal(entity.DateOfBirth, dto.DateOfBirth);
+            Assert.Equal(entity.DateAgreedToTrashMobWaiver, dto.DateAgreedToTrashMobWaiver);
+            Assert.Equal("1.0", dto.TrashMobWaiverVersion);
+
+            // Identity provider fields are still excluded from UserDto
             var dtoType = dto.GetType();
-            Assert.Null(dtoType.GetProperty("Email"));
             Assert.Null(dtoType.GetProperty("ObjectId"));
             Assert.Null(dtoType.GetProperty("NameIdentifier"));
-            Assert.Null(dtoType.GetProperty("DateOfBirth"));
-            Assert.Null(dtoType.GetProperty("IsSiteAdmin"));
         }
 
         [Fact]
@@ -114,6 +130,11 @@ namespace TrashMob.Shared.Tests.Extensions.V2
                 MemberSince = new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 IsMinor = false,
                 TravelLimitForLocalEvents = 15,
+                Email = "test@example.com",
+                IsSiteAdmin = true,
+                DateAgreedToTrashMobWaiver = new DateTimeOffset(2025, 6, 1, 0, 0, 0, TimeSpan.Zero),
+                TrashMobWaiverVersion = "1.0",
+                DateOfBirth = new DateTimeOffset(1990, 1, 1, 0, 0, 0, TimeSpan.Zero),
             };
 
             var entity = dto.ToEntity();
@@ -133,6 +154,11 @@ namespace TrashMob.Shared.Tests.Extensions.V2
             Assert.Equal(dto.MemberSince, entity.MemberSince);
             Assert.Equal(dto.IsMinor, entity.IsMinor);
             Assert.Equal(dto.TravelLimitForLocalEvents, entity.TravelLimitForLocalEvents);
+            Assert.Equal(dto.Email, entity.Email);
+            Assert.Equal(dto.IsSiteAdmin, entity.IsSiteAdmin);
+            Assert.Equal(dto.DateAgreedToTrashMobWaiver, entity.DateAgreedToTrashMobWaiver);
+            Assert.Equal(dto.TrashMobWaiverVersion, entity.TrashMobWaiverVersion);
+            Assert.Equal(dto.DateOfBirth, entity.DateOfBirth);
         }
 
         [Fact]
@@ -255,6 +281,11 @@ namespace TrashMob.Shared.Tests.Extensions.V2
                 MemberSince = new DateTimeOffset(2026, 2, 1, 0, 0, 0, TimeSpan.Zero),
                 IsMinor = false,
                 TravelLimitForLocalEvents = 10,
+                Email = "roundtrip@example.com",
+                IsSiteAdmin = true,
+                DateAgreedToTrashMobWaiver = new DateTimeOffset(2026, 1, 15, 0, 0, 0, TimeSpan.Zero),
+                TrashMobWaiverVersion = "2.0",
+                DateOfBirth = new DateTimeOffset(1985, 5, 10, 0, 0, 0, TimeSpan.Zero),
             };
 
             var roundTripped = entity.ToV2Dto().ToEntity();
@@ -274,6 +305,11 @@ namespace TrashMob.Shared.Tests.Extensions.V2
             Assert.Equal(entity.MemberSince, roundTripped.MemberSince);
             Assert.Equal(entity.IsMinor, roundTripped.IsMinor);
             Assert.Equal(entity.TravelLimitForLocalEvents, roundTripped.TravelLimitForLocalEvents);
+            Assert.Equal(entity.Email, roundTripped.Email);
+            Assert.Equal(entity.IsSiteAdmin, roundTripped.IsSiteAdmin);
+            Assert.Equal(entity.DateAgreedToTrashMobWaiver, roundTripped.DateAgreedToTrashMobWaiver);
+            Assert.Equal(entity.TrashMobWaiverVersion, roundTripped.TrashMobWaiverVersion);
+            Assert.Equal(entity.DateOfBirth, roundTripped.DateOfBirth);
         }
     }
 }
