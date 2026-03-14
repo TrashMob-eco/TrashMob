@@ -134,23 +134,23 @@ New v2 controllers alongside existing v1 controllers. V1 remains untouched. All 
 - [x] **Leaderboards v2** - `LeaderboardsV2Controller`: rankings by type (Events, Bags, Weight, Hours); user and team rankings
 - [x] **Achievements v2** - `AchievementsV2Controller`: user achievements and achievement definitions
 - [x] **Maps v2** - `MapsV2Controller`: event and litter report map data
-- [x] **Lookups v2** - `LookupsV2Controller`: event types, event statuses, partner types
+- [x] **Lookups v2** - `LookupsV2Controller`: event types, service types, partner service statuses
 - [x] **PickupLocations v2** - `PickupLocationsV2Controller`: cleanup location management
 - [x] **NewsletterPreferences v2** - `NewsletterPreferencesV2Controller`: category subscriptions
 - [x] **ContactRequest v2** - `ContactRequestV2Controller`: contact form submissions
 - [x] **AppVersion v2** - `AppVersionV2Controller`: mobile app version checking
 
-### Phase 2b - Remaining Lookup Endpoints
+### Phase 2b - Remaining Lookup Endpoints ✅ COMPLETE
 
-The `LookupsV2Controller` currently covers event types, event statuses, and partner types. These additional lookup tables used by v1 still need v2 coverage:
+All lookup types consolidated into `LookupsV2Controller`. The controller now covers all 10 lookup types with cached endpoints (24h ResponseCache):
 
-- [ ] **Weight units** - `WeightUnitsController` → add to `LookupsV2Controller` (needed for event summary metrics on mobile)
-- [ ] **Service types** - `ServiceTypesController` → add to `LookupsV2Controller` (partner service categorization)
-- [ ] **Invitation statuses** - `InvitationStatusesController` → add to `LookupsV2Controller` (partner admin)
-- [ ] **Partner request statuses** - `PartnerRequestStatusesController` → add to `LookupsV2Controller` (partner admin)
-- [ ] **Partner statuses** - `PartnerStatusesController` → add to `LookupsV2Controller` (partner admin)
-- [ ] **Social media account types** - `SocialMediaAccountTypesController` → add to `LookupsV2Controller` (partner profiles)
-- [ ] **Event partner location service statuses** - `EventPartnerLocationServiceStatusesController` → add to `LookupsV2Controller` (partner service workflow)
+- [x] **Event statuses** - `EventStatusesController` → added to `LookupsV2Controller`
+- [x] **Partner types** - `PartnerTypesController` → added to `LookupsV2Controller`
+- [x] **Partner statuses** - `PartnerStatusesController` → added to `LookupsV2Controller`
+- [x] **Partner request statuses** - `PartnerRequestStatusesController` → added to `LookupsV2Controller`
+- [x] **Weight units** - `WeightUnitsController` → added to `LookupsV2Controller`
+- [x] **Invitation statuses** - `InvitationStatusesController` → added to `LookupsV2Controller`
+- [x] **Social media account types** - `SocialMediaAccountTypesController` → added to `LookupsV2Controller`
 
 ### Phase 2c - User & Route Endpoints
 
