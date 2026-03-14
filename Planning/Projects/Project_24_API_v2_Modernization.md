@@ -262,6 +262,7 @@ Migrate web and mobile clients to use v2 endpoints. V1 endpoints remain running 
 1. **URL path updates** — v2 routes may differ (nested resources, consolidated lookups, renamed segments)
 2. **TypeScript model updates** — v2 DTOs have different shapes than v1 entities (field renames, omissions, flattened nav properties, type changes)
 3. **Component updates** — any page referencing changed fields must be updated to match new model shapes
+4. **Error response handling** — v2 returns RFC 9457 Problem Details (`{ type, status, title, detail, instance, correlationId }`) instead of v1's inconsistent formats (plain strings, empty bodies, generic messages)
 
 **Key v2 response shape changes across the board:**
 - **PII separation**: `UserDto` (GET) excludes Email, DateOfBirth, ObjectId, IsSiteAdmin; `UserWriteDto` (POST/PUT) includes writable PII
@@ -271,6 +272,20 @@ Migrate web and mobile clients to use v2 endpoints. V1 endpoints remain running 
 - **Image handling**: `LitterReportDto` includes `Images` array of `LitterImageDto` (field rename: `AzureBlobURL` → `ImageUrl`)
 - **Paginated responses**: Collection endpoints return `PagedResponse<T>` with `{ items, pagination }` wrapper instead of raw arrays
 - **Date type changes**: Some `DateTimeOffset?` → `DateTimeOffset` (with `MinValue` default) or `DateOnly`
+- **Error responses**: Problem Details format — error message in `.detail` field, not `.message`. Includes `correlationId` for debugging.
+
+#### Phase 3-prereq - Error Handling & Shared Infrastructure
+
+Must be completed before any service file migration. Sets up shared utilities that all sub-phases depend on.
+
+- [ ] **`ProblemDetails` TypeScript type** — add to `components/Models/` or `lib/`: `{ type?, status?, title?, detail?, instance?, traceId?, correlationId? }`
+- [ ] **`getErrorMessage()` utility** — add to `lib/`: extracts error message from both v2 Problem Details (`.response.data.detail`) and v1 formats (`.response.data.message`, `.message`), with fallback
+- [ ] **Axios response error interceptor** — add to `services/index.ts`: normalize error objects so `error.message` contains the Problem Details `detail` field when present (backward-compatible — v1 errors still work)
+- [ ] **`PagedResponse<T>` TypeScript type** — add to `components/Models/` or `lib/`: `{ items: T[], pagination: { page, pageSize, totalCount, totalPages, hasNext, hasPrevious } }`
+- [ ] **Update existing `onError` callbacks** — replace direct `error.message` / `error.response?.data?.message` access with `getErrorMessage()` in: `InviteFriendsCard.tsx`, `useEditEventPageMutations.ts`, `event-attendee-table.tsx`, `EventRouteTimeTrimDialog.tsx`, `eventsummary/$eventId/index.tsx`, `MyDependentsCard.tsx`
+- [ ] Run `npm run lint` and `npm run build` to verify no regressions
+
+**Phase 3-prereq totals:** 0 service files migrated, ~6 utility/component changes. **Critical prerequisite** — without this, every sub-phase would need ad-hoc error handling.
 
 #### Phase 3a - Core User Experience (highest traffic)
 
