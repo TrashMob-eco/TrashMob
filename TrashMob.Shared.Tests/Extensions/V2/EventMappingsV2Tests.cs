@@ -10,6 +10,8 @@ namespace TrashMob.Shared.Tests.Extensions.V2
         [Fact]
         public void ToV2Dto_MapsAllProperties()
         {
+            var teamId = Guid.NewGuid();
+            var lastUpdatedByUserId = Guid.NewGuid();
             var entity = new Event
             {
                 Id = Guid.NewGuid(),
@@ -31,7 +33,10 @@ namespace TrashMob.Shared.Tests.Extensions.V2
                 EventVisibilityId = (int)EventVisibilityEnum.Public,
                 CreatedByUserId = Guid.NewGuid(),
                 CreatedDate = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
+                LastUpdatedByUserId = lastUpdatedByUserId,
                 LastUpdatedDate = new DateTimeOffset(2026, 3, 1, 0, 0, 0, TimeSpan.Zero),
+                TeamId = teamId,
+                CreatedByUser = new User { UserName = "creator" },
             };
 
             var dto = entity.ToV2Dto();
@@ -53,9 +58,13 @@ namespace TrashMob.Shared.Tests.Extensions.V2
             Assert.Equal(entity.Longitude, dto.Longitude);
             Assert.Equal(entity.MaxNumberOfParticipants, dto.MaxNumberOfParticipants);
             Assert.True(dto.IsEventPublic);
+            Assert.Equal((int)EventVisibilityEnum.Public, dto.EventVisibilityId);
             Assert.Equal(entity.CreatedByUserId, dto.CreatedByUserId);
             Assert.Equal(entity.CreatedDate, dto.CreatedDate);
+            Assert.Equal(lastUpdatedByUserId, dto.LastUpdatedByUserId);
             Assert.Equal(entity.LastUpdatedDate, dto.LastUpdatedDate);
+            Assert.Equal(teamId, dto.TeamId);
+            Assert.Equal("creator", dto.CreatedByUserName);
         }
 
         [Fact]

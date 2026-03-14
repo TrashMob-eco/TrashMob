@@ -18,6 +18,7 @@ namespace TrashMob.Models.Extensions.V2
                 Name = entity.Name ?? string.Empty,
                 Description = entity.Description ?? string.Empty,
                 DisplayOrder = entity.DisplayOrder ?? 0,
+                IsActive = entity.IsActive ?? true,
             };
         }
 
@@ -33,7 +34,7 @@ namespace TrashMob.Models.Extensions.V2
                 Name = dto.Name,
                 Description = dto.Description,
                 DisplayOrder = dto.DisplayOrder,
-                IsActive = true,
+                IsActive = dto.IsActive,
             };
         }
 
@@ -49,7 +50,7 @@ namespace TrashMob.Models.Extensions.V2
                 Name = dto.Name,
                 Description = dto.Description,
                 DisplayOrder = dto.DisplayOrder,
-                IsActive = true,
+                IsActive = dto.IsActive,
             };
         }
 
@@ -65,7 +66,7 @@ namespace TrashMob.Models.Extensions.V2
                 Name = dto.Name,
                 Description = dto.Description,
                 DisplayOrder = dto.DisplayOrder,
-                IsActive = true,
+                IsActive = dto.IsActive,
             };
         }
     }

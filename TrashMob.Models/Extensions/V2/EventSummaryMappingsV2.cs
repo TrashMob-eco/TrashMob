@@ -25,7 +25,9 @@ namespace TrashMob.Models.Extensions.V2
                 PickedWeightUnitId = entity.PickedWeightUnitId,
                 IsFromRouteData = entity.IsFromRouteData,
                 Notes = entity.Notes ?? string.Empty,
+                CreatedByUserId = entity.CreatedByUserId,
                 CreatedDate = entity.CreatedDate.GetValueOrDefault(),
+                LastUpdatedByUserId = entity.LastUpdatedByUserId,
                 LastUpdatedDate = entity.LastUpdatedDate.GetValueOrDefault(),
             };
         }
@@ -45,6 +47,8 @@ namespace TrashMob.Models.Extensions.V2
                 PickedWeightUnitId = dto.PickedWeightUnitId,
                 IsFromRouteData = dto.IsFromRouteData,
                 Notes = dto.Notes,
+                CreatedByUserId = dto.CreatedByUserId,
+                LastUpdatedByUserId = dto.LastUpdatedByUserId,
             };
         }
     }

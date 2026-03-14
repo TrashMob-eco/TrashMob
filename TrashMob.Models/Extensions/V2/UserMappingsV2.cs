@@ -8,10 +8,10 @@ namespace TrashMob.Models.Extensions.V2
     public static class UserMappingsV2
     {
         /// <summary>
-        /// Maps a User entity to a V2 UserDto, excluding PII fields.
+        /// Maps a User entity to a V2 UserDto including all fields needed by the frontend.
         /// </summary>
         /// <param name="entity">The User entity to map.</param>
-        /// <returns>A UserDto containing only public-safe properties.</returns>
+        /// <returns>A UserDto containing user properties.</returns>
         public static UserDto ToV2Dto(this User entity)
         {
             return new UserDto
@@ -31,13 +31,16 @@ namespace TrashMob.Models.Extensions.V2
                 MemberSince = entity.MemberSince,
                 IsMinor = entity.IsMinor,
                 TravelLimitForLocalEvents = entity.TravelLimitForLocalEvents,
+                Email = entity.Email,
+                IsSiteAdmin = entity.IsSiteAdmin,
+                DateAgreedToTrashMobWaiver = entity.DateAgreedToTrashMobWaiver,
+                TrashMobWaiverVersion = entity.TrashMobWaiverVersion,
+                DateOfBirth = entity.DateOfBirth,
             };
         }
 
         /// <summary>
         /// Maps a V2 <see cref="UserDto"/> back to a <see cref="User"/> entity.
-        /// PII fields (Email, DateOfBirth) are not available in UserDto
-        /// and will not be populated on the returned entity.
         /// </summary>
         public static User ToEntity(this UserDto dto)
         {
@@ -58,6 +61,11 @@ namespace TrashMob.Models.Extensions.V2
                 MemberSince = dto.MemberSince,
                 IsMinor = dto.IsMinor,
                 TravelLimitForLocalEvents = dto.TravelLimitForLocalEvents,
+                Email = dto.Email,
+                IsSiteAdmin = dto.IsSiteAdmin,
+                DateAgreedToTrashMobWaiver = dto.DateAgreedToTrashMobWaiver,
+                TrashMobWaiverVersion = dto.TrashMobWaiverVersion,
+                DateOfBirth = dto.DateOfBirth,
             };
         }
 

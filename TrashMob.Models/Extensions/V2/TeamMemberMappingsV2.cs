@@ -25,6 +25,10 @@ namespace TrashMob.Models.Extensions.V2
                 ProfilePhotoUrl = entity.User?.ProfilePhotoUrl ?? string.Empty,
                 IsTeamLead = entity.IsTeamLead,
                 JoinedDate = entity.JoinedDate,
+                CreatedByUserId = entity.CreatedByUserId,
+                CreatedDate = entity.CreatedDate.GetValueOrDefault(),
+                LastUpdatedByUserId = entity.LastUpdatedByUserId,
+                LastUpdatedDate = entity.LastUpdatedDate.GetValueOrDefault(),
             };
         }
 
@@ -40,6 +44,8 @@ namespace TrashMob.Models.Extensions.V2
                 UserId = dto.UserId,
                 IsTeamLead = dto.IsTeamLead,
                 JoinedDate = dto.JoinedDate,
+                CreatedByUserId = dto.CreatedByUserId,
+                LastUpdatedByUserId = dto.LastUpdatedByUserId,
                 User = new User
                 {
                     Id = dto.UserId,

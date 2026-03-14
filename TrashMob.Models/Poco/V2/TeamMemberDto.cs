@@ -48,5 +48,25 @@ namespace TrashMob.Models.Poco.V2
         /// Gets or sets the date the member joined the team.
         /// </summary>
         public DateTimeOffset JoinedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the user who created this membership.
+        /// </summary>
+        public Guid CreatedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when this membership was created.
+        /// </summary>
+        public DateTimeOffset CreatedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the user who last updated this membership.
+        /// </summary>
+        public Guid LastUpdatedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when this membership was last updated.
+        /// </summary>
+        public DateTimeOffset LastUpdatedDate { get; set; }
     }
 }
