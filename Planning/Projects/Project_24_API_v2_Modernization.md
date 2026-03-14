@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1, 2a–2g complete — 54+ v2 controllers, 84+ DTOs, 54+ test suites; Phases 2h–2i, 3, 4 remaining) |
+| **Status** | In Progress (Phases 1, 2a–2h complete — 64+ v2 controllers, 93+ DTOs, 64+ test suites; Phase 2i, 3, 4 remaining) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Very Large |
@@ -222,16 +222,18 @@ Site-wide administration and content moderation — 5 v1 controllers. All requir
 
 Fundraising and donor relationship management — 10 v1 controllers. All site admin only. Web-only.
 
-- [ ] **Contacts** - `ContactsController`: CRM contact management (search, filter by type/tag)
-- [ ] **Contact notes** - `ContactNotesController`: notes on fundraising contacts
-- [ ] **Contact tags** - `ContactTagsController`: tag-based contact organization
-- [ ] **Donations** - `DonationsController`: donation log management
-- [ ] **Pledges** - `PledgesController`: pledge/commitment tracking
-- [ ] **Grants** - `GrantsController`: grant discovery + management
-- [ ] **Grant tasks** - `GrantTasksController`: grant application task tracking
-- [ ] **Fundraising appeals** - `FundraisingAppealsController`: send appeal emails
-- [ ] **Fundraising analytics** - `FundraisingAnalyticsController`: engagement scoring for donors
-- [ ] **CMS proxy** - `CmsController`: Strapi CMS content proxy
+- [x] **Contacts** - `ContactsV2Controller`: 7 endpoints (CRUD + search/filter + tag management) ✅
+- [x] **Contact notes** - `ContactNotesV2Controller`: 4 endpoints (CRUD by contact) ✅
+- [x] **Contact tags** - `ContactTagsV2Controller`: 4 endpoints (CRUD) ✅
+- [x] **Donations** - `DonationsV2Controller`: 8 endpoints (CRUD + by contact + thank-you/receipt emails) ✅
+- [x] **Pledges** - `PledgesV2Controller`: 6 endpoints (CRUD + by contact) ✅
+- [x] **Grants** - `GrantsV2Controller`: 6 endpoints (CRUD + status filter + AI discovery) ✅
+- [x] **Grant tasks** - `GrantTasksV2Controller`: 4 endpoints (CRUD by grant) ✅
+- [x] **Fundraising appeals** - `FundraisingAppealsV2Controller`: 2 endpoints (single + bulk appeal) ✅
+- [x] **Fundraising analytics** - `FundraisingAnalyticsV2Controller`: 7 endpoints (scores, dashboard, pipeline, LYBUNT, CSV exports) ✅
+- [x] **CMS proxy** - `CmsV2Controller`: 8 endpoints (Strapi proxy + RSS feed + admin URL) ✅
+
+**Phase 2h totals:** 10 controllers, 56 endpoints, 9 DTOs, 1 mapping file, 35 tests
 
 ### Phase 2i - Infrastructure & Webhook Endpoints
 
