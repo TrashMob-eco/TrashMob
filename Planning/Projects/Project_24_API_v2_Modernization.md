@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1, 2a–2f complete — 47+ v2 controllers, 77+ DTOs, 47+ test suites; Phases 2g–2i, 3, 4 remaining) |
+| **Status** | In Progress (Phases 1, 2a–2g complete — 54+ v2 controllers, 84+ DTOs, 54+ test suites; Phases 2h–2i, 3, 4 remaining) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Very Large |
@@ -210,11 +210,13 @@ Team admin, sponsor portals, and professional company portals — 7 v1 controlle
 
 Site-wide administration and content moderation — 5 v1 controllers. All require site admin privileges. Web-only.
 
-- [ ] **Admin** - `AdminController`: partner request approval/denial
-- [ ] **Waiver admin** - `WaiverAdminController`: manage waiver versions
-- [ ] **Waiver compliance** - `WaiverComplianceController`: compliance dashboard + reports
-- [ ] **Photo moderation** - `PhotoModerationController`: photo review queue + user flagging
-- [ ] **Message requests** - `MessageRequestController`: broadcast messages to users
+- [x] **Admin** - `AdminV2Controller`: 2 endpoints (update partner request, email templates) ✅
+- [x] **Waiver admin** - `WaiverAdminV2Controller` + `CommunityWaiverAdminV2Controller`: 9 endpoints (CRUD + community assignments) ✅
+- [x] **Waiver compliance** - `WaiverComplianceV2Controller`: 5 endpoints (summary, filtered list, expiring, CSV export, details) ✅
+- [x] **Photo moderation** - `PhotoModerationV2Controller` + `PhotoFlagV2Controller`: 7 endpoints (pending/flagged/moderated queues, approve/reject/dismiss, user flagging) ✅
+- [x] **Message requests** - `MessageRequestV2Controller`: 1 endpoint (send broadcast) ✅
+
+**Phase 2g totals:** 7 controllers, 24 endpoints, 7 DTOs, 1 mapping file, 29 tests
 
 ### Phase 2h - CRM & Fundraising (Site Admin)
 
