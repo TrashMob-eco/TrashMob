@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1, 2a–2h complete — 64+ v2 controllers, 93+ DTOs, 64+ test suites; Phase 2i, 3, 4 remaining) |
+| **Status** | In Progress (Phases 1, 2a–2i complete — 72+ v2 controllers, 100+ DTOs, 72+ test suites; Phases 3, 4 remaining) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Very Large |
@@ -239,15 +239,17 @@ Fundraising and donor relationship management — 10 v1 controllers. All site ad
 
 Infrastructure, auth, config, and webhook endpoints. These may not all need v2 equivalents — evaluate case by case.
 
-- [ ] **Newsletter webhooks** - `NewsletterWebhooksController`: SendGrid webhook receiver (tracking)
-- [ ] **Newsletters** - `NewslettersController`: admin newsletter creation/sending
-- [ ] **Privo webhooks** - `PrivoWebhooksController`: Privo consent webhook receiver
-- [ ] **Authentication** - `AuthenticationController`: validates new user creation
-- [ ] **Secrets** - `SecretsController`: retrieves config secrets by name
-- [ ] **Config** - `ConfigController`: client-side config (App Insights, Entra settings)
-- [ ] **Email invites** - `EmailInvitesController`: admin bulk email invite batches
-- [ ] **Job opportunities** - `JobOpportunityController`: job listings (GET public, PUT admin)
-- [ ] **Route simulation** - `RouteSimulationController`: dev/QA fake GPS route generator (non-prod only)
+- [x] **Newsletter webhooks** - `NewsletterWebhooksV2Controller`: SendGrid webhook receiver (tracking) ✅
+- [x] **Newsletters** - `NewslettersAdminV2Controller`: 9 endpoints (CRUD + schedule/send/test/templates) ✅
+- [x] **Privo webhooks** - `PrivoWebhooksV2Controller`: Privo consent webhook receiver ✅
+- [x] **Authentication** - `AuthenticationV2Controller`: 5 endpoints (validate/signup/update/delete user) ✅
+- [x] **Secrets** - `SecretsV2Controller`: retrieves config secrets by name ✅
+- [x] **Config** - `ConfigV2Controller`: client-side config (App Insights, Entra settings) ✅
+- [x] **Email invites** - `EmailInvitesV2Controller`: already existed (user-facing with rate limiting) ✅
+- [x] **Job opportunities** - `JobOpportunitiesV2Controller`: 4 endpoints (GET public, CRUD admin) ✅
+- [x] **Route simulation** - `RouteSimulationV2Controller`: dev/QA fake GPS route generator (non-prod only) ✅
+
+**Phase 2i totals:** 8 controllers (1 pre-existing), 22 endpoints, 7 DTOs, 2 mapping files, 27 tests
 
 ### Phase 3 - Client Migration
 
