@@ -196,13 +196,15 @@ Community administration and area adoption features — 10 v1 controllers, all c
 
 Team admin, sponsor portals, and professional company portals — 7 v1 controllers.
 
-- [ ] **Team admin** - `TeamAdminController`: site admin team management
-- [ ] **Team adoptions** - `TeamAdoptionsController`: team adoption applications
-- [ ] **Team invites** - `TeamInvitesController`: team lead bulk email invites
-- [ ] **Sponsor portal** - `SponsorPortalController`: sponsors view adoptions + cleanup logs
-- [ ] **Sponsor reports** - `SponsorReportsController`: reports on sponsored adoptions
-- [ ] **Professional cleanup logs** - `ProfessionalCleanupLogsController`: professional company cleanup logging
-- [ ] **Professional company portal** - `ProfessionalCompanyPortalController`: professional company listing
+- [x] **Team admin** - `TeamAdminV2Controller`: 3 endpoints (get all, delete, reactivate) ✅
+- [x] **Team adoptions** - `TeamAdoptionsV2Controller`: 3 endpoints (list, submit application, active) ✅
+- [x] **Team invites** - `TeamInvitesV2Controller`: 3 endpoints (batches, batch detail, create batch) ✅
+- [x] **Sponsor portal** - `SponsorPortalV2Controller`: 3 endpoints (my sponsors, cleanup logs, CSV export) ✅
+- [x] **Sponsor reports** - `SponsorReportsV2Controller`: 2 endpoints (adoptions, adoption reports) ✅
+- [x] **Professional cleanup logs** - `ProfessionalCleanupLogsV2Controller`: 3 endpoints (logs, log cleanup, assignments) ✅
+- [x] **Professional company portal** - `ProfessionalCompanyPortalV2Controller`: 1 endpoint (my companies) ✅
+
+**Phase 2f totals:** 7 controllers, 18 endpoints, 2 DTOs, 1 mapping file, 30 tests
 
 ### Phase 2g - Admin & Moderation (Site Admin)
 
