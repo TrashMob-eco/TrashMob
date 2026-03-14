@@ -16,7 +16,7 @@ export const GetAchievementTypes = () => ({
     key: ['/achievements/types'],
     service: async () =>
         ApiService('public').fetchData<GetAchievementTypes_Response>({
-            url: '/achievements/types',
+            url: '/v2/achievements/types',
             method: 'get',
         }),
 });
@@ -30,7 +30,7 @@ export const GetMyAchievements = () => ({
     key: ['/achievements/my'],
     service: async () =>
         ApiService('protected').fetchData<GetMyAchievements_Response>({
-            url: '/achievements/my',
+            url: '/v2/achievements/my',
             method: 'get',
         }),
 });
@@ -43,7 +43,7 @@ export const GetUserAchievements = (params: GetUserAchievements_Params) => ({
     key: ['/achievements/user', params.userId],
     service: async () =>
         ApiService('public').fetchData<GetUserAchievements_Response>({
-            url: `/achievements/user/${params.userId}`,
+            url: `/v2/achievements/user/${params.userId}`,
             method: 'get',
         }),
 });
@@ -57,7 +57,7 @@ export const GetUnreadAchievements = () => ({
     key: ['/achievements/my/unread'],
     service: async () =>
         ApiService('protected').fetchData<GetUnreadAchievements_Response>({
-            url: '/achievements/my/unread',
+            url: '/v2/achievements/my/unread',
             method: 'get',
         }),
 });
@@ -70,7 +70,7 @@ export const MarkAchievementsRead = (params: MarkAchievementsRead_Params) => ({
     key: ['/achievements/my/mark-read'],
     service: async () =>
         ApiService('protected').fetchData<MarkAchievementsRead_Response>({
-            url: '/achievements/my/mark-read',
+            url: '/v2/achievements/my/mark-read',
             method: 'post',
             data: params.achievementTypeIds,
         }),

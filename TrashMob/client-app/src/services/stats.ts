@@ -6,7 +6,7 @@ export const GetStats = () => ({
     key: ['/stats'],
     service: async () =>
         ApiService('public')
-            .fetchData<GetStats_Response>({ url: '/stats', method: 'get' })
+            .fetchData<GetStats_Response>({ url: '/v2/stats', method: 'get' })
             .then((res) => res.data),
 });
 
@@ -16,7 +16,7 @@ export const GetStatsForUser = (params: GetStatsForUser_Params) => ({
     key: ['/stats/', params],
     service: async () =>
         ApiService('protected').fetchData<GetStats_Response>({
-            url: `/stats/${params.userId}`,
+            url: `/v2/stats/${params.userId}`,
             method: 'get',
         }),
 });

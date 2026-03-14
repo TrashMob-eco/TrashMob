@@ -61,7 +61,7 @@ export const GetPublicTeams = (params?: GetPublicTeams_Params) => ({
         if (params?.radiusMiles !== undefined) queryParams.append('radiusMiles', params.radiusMiles.toString());
         const queryString = queryParams.toString();
         return ApiService('public').fetchData<GetPublicTeams_Response>({
-            url: `/teams${queryString ? `?${queryString}` : ''}`,
+            url: `/v2/teams${queryString ? `?${queryString}` : ''}`,
             method: 'get',
         });
     },
@@ -73,7 +73,7 @@ export const GetTeamById = (params: GetTeamById_Params) => ({
     key: ['/teams/', params.teamId],
     service: async () =>
         ApiService('public').fetchData<GetTeamById_Response>({
-            url: `/teams/${params.teamId}`,
+            url: `/v2/teams/${params.teamId}`,
             method: 'get',
         }),
 });
@@ -83,7 +83,7 @@ export const GetMyTeams = () => ({
     key: ['/teams/my'],
     service: async () =>
         ApiService('protected').fetchData<GetMyTeams_Response>({
-            url: '/teams/my',
+            url: '/v2/teams/my',
             method: 'get',
         }),
 });
@@ -106,7 +106,7 @@ export const CheckTeamName = (params: CheckTeamName_Params) => ({
         const queryParams = new URLSearchParams({ name: params.name });
         if (params.excludeTeamId) queryParams.append('excludeTeamId', params.excludeTeamId);
         return ApiService('public').fetchData<CheckTeamName_Response>({
-            url: `/teams/check-name?${queryParams.toString()}`,
+            url: `/v2/teams/check-name?${queryParams.toString()}`,
             method: 'get',
         });
     },
@@ -118,7 +118,7 @@ export const CreateTeam = () => ({
     key: ['/teams', 'create'],
     service: async (body: CreateTeam_Body) =>
         ApiService('protected').fetchData<CreateTeam_Response, CreateTeam_Body>({
-            url: '/teams',
+            url: '/v2/teams',
             method: 'post',
             data: body,
         }),
@@ -130,7 +130,7 @@ export const UpdateTeam = () => ({
     key: ['/teams', 'update'],
     service: async (body: UpdateTeam_Body) =>
         ApiService('protected').fetchData<UpdateTeam_Response, UpdateTeam_Body>({
-            url: `/teams/${body.id}`,
+            url: `/v2/teams/${body.id}`,
             method: 'put',
             data: body,
         }),
@@ -142,7 +142,7 @@ export const DeactivateTeam = () => ({
     key: ['/teams', 'deactivate'],
     service: async (params: DeactivateTeam_Params) =>
         ApiService('protected').fetchData<DeactivateTeam_Response>({
-            url: `/teams/${params.teamId}`,
+            url: `/v2/teams/${params.teamId}`,
             method: 'delete',
         }),
 });
@@ -157,7 +157,7 @@ export const GetTeamMembers = (params: GetTeamMembers_Params) => ({
     key: ['/teams/', params.teamId, '/members'],
     service: async () =>
         ApiService('public').fetchData<GetTeamMembers_Response>({
-            url: `/teams/${params.teamId}/members`,
+            url: `/v2/teams/${params.teamId}/members`,
             method: 'get',
         }),
 });
@@ -168,7 +168,7 @@ export const GetTeamLeads = (params: GetTeamLeads_Params) => ({
     key: ['/teams/', params.teamId, '/members/leads'],
     service: async () =>
         ApiService('public').fetchData<GetTeamLeads_Response>({
-            url: `/teams/${params.teamId}/members/leads`,
+            url: `/v2/teams/${params.teamId}/members/leads`,
             method: 'get',
         }),
 });
@@ -179,7 +179,7 @@ export const JoinTeam = () => ({
     key: ['/teams/members', 'join'],
     service: async (params: JoinTeam_Params) =>
         ApiService('protected').fetchData<JoinTeam_Response>({
-            url: `/teams/${params.teamId}/members/join`,
+            url: `/v2/teams/${params.teamId}/members/join`,
             method: 'post',
         }),
 });
@@ -201,7 +201,7 @@ export const RemoveTeamMember = () => ({
     key: ['/teams/members', 'remove'],
     service: async (params: RemoveTeamMember_Params) =>
         ApiService('protected').fetchData<RemoveTeamMember_Response>({
-            url: `/teams/${params.teamId}/members/${params.userId}`,
+            url: `/v2/teams/${params.teamId}/members/${params.userId}`,
             method: 'delete',
         }),
 });
@@ -212,7 +212,7 @@ export const PromoteToTeamLead = () => ({
     key: ['/teams/members', 'promote'],
     service: async (params: PromoteToTeamLead_Params) =>
         ApiService('protected').fetchData<PromoteToTeamLead_Response>({
-            url: `/teams/${params.teamId}/members/${params.userId}/promote`,
+            url: `/v2/teams/${params.teamId}/members/${params.userId}/promote`,
             method: 'put',
         }),
 });
@@ -223,7 +223,7 @@ export const DemoteFromTeamLead = () => ({
     key: ['/teams/members', 'demote'],
     service: async (params: DemoteFromTeamLead_Params) =>
         ApiService('protected').fetchData<DemoteFromTeamLead_Response>({
-            url: `/teams/${params.teamId}/members/${params.userId}/demote`,
+            url: `/v2/teams/${params.teamId}/members/${params.userId}/demote`,
             method: 'put',
         }),
 });
@@ -249,7 +249,7 @@ export const GetTeamUpcomingEvents = (params: GetTeamUpcomingEvents_Params) => (
     key: ['/teams/', params.teamId, '/events/upcoming'],
     service: async () =>
         ApiService('public').fetchData<GetTeamUpcomingEvents_Response>({
-            url: `/teams/${params.teamId}/events/upcoming`,
+            url: `/v2/teams/${params.teamId}/events/upcoming`,
             method: 'get',
         }),
 });
@@ -260,7 +260,7 @@ export const GetTeamPastEvents = (params: GetTeamPastEvents_Params) => ({
     key: ['/teams/', params.teamId, '/events/past'],
     service: async () =>
         ApiService('public').fetchData<GetTeamPastEvents_Response>({
-            url: `/teams/${params.teamId}/events/past`,
+            url: `/v2/teams/${params.teamId}/events/past`,
             method: 'get',
         }),
 });
@@ -271,7 +271,7 @@ export const LinkEventToTeam = () => ({
     key: ['/teams/events', 'link'],
     service: async (params: LinkEventToTeam_Params) =>
         ApiService('protected').fetchData<LinkEventToTeam_Response>({
-            url: `/teams/${params.teamId}/events/${params.eventId}`,
+            url: `/v2/teams/${params.teamId}/events/${params.eventId}`,
             method: 'post',
         }),
 });
@@ -282,7 +282,7 @@ export const UnlinkEventFromTeam = () => ({
     key: ['/teams/events', 'unlink'],
     service: async (params: UnlinkEventFromTeam_Params) =>
         ApiService('protected').fetchData<UnlinkEventFromTeam_Response>({
-            url: `/teams/${params.teamId}/events/${params.eventId}`,
+            url: `/v2/teams/${params.teamId}/events/${params.eventId}`,
             method: 'delete',
         }),
 });

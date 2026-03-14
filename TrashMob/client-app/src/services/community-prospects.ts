@@ -25,7 +25,7 @@ export const GetCommunityProspects = (params?: GetCommunityProspects_Params) => 
         key: ['/communityprospects', params?.stage, params?.search],
         service: async () =>
             ApiService('protected').fetchData<GetCommunityProspects_Response>({
-                url: `/communityprospects${query}`,
+                url: `/v2/community-prospects${query}`,
                 method: 'get',
             }),
     };
@@ -37,7 +37,7 @@ export const GetCommunityProspectById = (params: GetCommunityProspectById_Params
     key: ['/communityprospects', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetCommunityProspectById_Response>({
-            url: `/communityprospects/${params.id}`,
+            url: `/v2/community-prospects/${params.id}`,
             method: 'get',
         }),
 });
@@ -48,7 +48,7 @@ export const CreateCommunityProspect = () => ({
     key: ['/communityprospects', 'create'],
     service: async (body: CreateCommunityProspect_Body) =>
         ApiService('protected').fetchData<CreateCommunityProspect_Response, CreateCommunityProspect_Body>({
-            url: '/communityprospects',
+            url: '/v2/community-prospects',
             method: 'post',
             data: body,
         }),
@@ -60,7 +60,7 @@ export const UpdateCommunityProspect = () => ({
     key: ['/communityprospects', 'update'],
     service: async (body: UpdateCommunityProspect_Body) =>
         ApiService('protected').fetchData<UpdateCommunityProspect_Response, UpdateCommunityProspect_Body>({
-            url: '/communityprospects',
+            url: '/v2/community-prospects',
             method: 'put',
             data: body,
         }),
@@ -72,7 +72,7 @@ export const DeleteCommunityProspect = () => ({
     key: ['/communityprospects', 'delete'],
     service: async (params: DeleteCommunityProspect_Params) =>
         ApiService('protected').fetchData<DeleteCommunityProspect_Response>({
-            url: `/communityprospects/${params.id}`,
+            url: `/v2/community-prospects/${params.id}`,
             method: 'delete',
         }),
 });
@@ -83,7 +83,7 @@ export const UpdateProspectPipelineStage = () => ({
     key: ['/communityprospects', 'updateStage'],
     service: async (params: UpdateProspectPipelineStage_Params) =>
         ApiService('protected').fetchData<UpdateProspectPipelineStage_Response>({
-            url: `/communityprospects/${params.id}/stage`,
+            url: `/v2/community-prospects/${params.id}/stage`,
             method: 'put',
             data: { stage: params.stage },
         }),
@@ -95,7 +95,7 @@ export const GetProspectActivities = (params: GetProspectActivities_Params) => (
     key: ['/communityprospects', params.id, 'activities'],
     service: async () =>
         ApiService('protected').fetchData<GetProspectActivities_Response>({
-            url: `/communityprospects/${params.id}/activities`,
+            url: `/v2/community-prospects/${params.id}/activities`,
             method: 'get',
         }),
 });
@@ -107,7 +107,7 @@ export const CreateProspectActivity = (params: CreateProspectActivity_Params) =>
     key: ['/communityprospects', params.id, 'activities', 'create'],
     service: async (body: CreateProspectActivity_Body) =>
         ApiService('protected').fetchData<CreateProspectActivity_Response, CreateProspectActivity_Body>({
-            url: `/communityprospects/${params.id}/activities`,
+            url: `/v2/community-prospects/${params.id}/activities`,
             method: 'post',
             data: body,
         }),
@@ -127,7 +127,7 @@ export const DiscoverProspects = () => ({
     key: ['/communityprospects', 'discover'],
     service: async (body: DiscoverProspects_Body) =>
         ApiService('protected').fetchData<DiscoverProspects_Response, DiscoverProspects_Body>({
-            url: '/communityprospects/discover',
+            url: '/v2/community-prospects/discover',
             method: 'post',
             data: body,
         }),
@@ -139,7 +139,7 @@ export const GetProspectScoreBreakdown = (params: GetProspectScoreBreakdown_Para
     key: ['/communityprospects', params.id, 'score'],
     service: async () =>
         ApiService('protected').fetchData<GetProspectScoreBreakdown_Response>({
-            url: `/communityprospects/${params.id}/score`,
+            url: `/v2/community-prospects/${params.id}/score`,
             method: 'get',
         }),
 });
@@ -149,7 +149,7 @@ export const RescoreAllProspects = () => ({
     key: ['/communityprospects', 'rescore'],
     service: async () =>
         ApiService('protected').fetchData<RescoreAllProspects_Response>({
-            url: '/communityprospects/rescore',
+            url: '/v2/community-prospects/rescore',
             method: 'post',
         }),
 });
@@ -159,7 +159,7 @@ export const GetGeographicGaps = () => ({
     key: ['/communityprospects', 'gaps'],
     service: async () =>
         ApiService('protected').fetchData<GetGeographicGaps_Response>({
-            url: '/communityprospects/gaps',
+            url: '/v2/community-prospects/gaps',
             method: 'get',
         }),
 });
@@ -171,7 +171,7 @@ export const ImportProspectsCsv = () => ({
         const formData = new FormData();
         formData.append('file', file);
         return ApiService('protected').fetchData<ImportProspectsCsv_Response>({
-            url: '/communityprospects/import',
+            url: '/v2/community-prospects/import',
             method: 'post',
             data: formData,
         });
@@ -186,7 +186,7 @@ export const PreviewOutreach = (params: PreviewOutreach_Params) => ({
     key: ['/communityprospects', params.id, 'outreach', 'preview'],
     service: async () =>
         ApiService('protected').fetchData<PreviewOutreach_Response>({
-            url: `/communityprospects/${params.id}/outreach/preview`,
+            url: `/v2/community-prospects/${params.id}/outreach/preview`,
             method: 'post',
         }),
 });
@@ -197,7 +197,7 @@ export const SendOutreach = () => ({
     key: ['/communityprospects', 'outreach', 'send'],
     service: async (params: SendOutreach_Params) =>
         ApiService('protected').fetchData<SendOutreach_Response>({
-            url: `/communityprospects/${params.id}/outreach`,
+            url: `/v2/community-prospects/${params.id}/outreach`,
             method: 'post',
         }),
 });
@@ -208,7 +208,7 @@ export const GetOutreachHistory = (params: GetOutreachHistory_Params) => ({
     key: ['/communityprospects', params.id, 'outreach', 'history'],
     service: async () =>
         ApiService('protected').fetchData<GetOutreachHistory_Response>({
-            url: `/communityprospects/${params.id}/outreach/history`,
+            url: `/v2/community-prospects/${params.id}/outreach/history`,
             method: 'get',
         }),
 });
@@ -219,7 +219,7 @@ export const SendBatchOutreach = () => ({
     key: ['/communityprospects', 'outreach', 'batch'],
     service: async (body: SendBatchOutreach_Body) =>
         ApiService('protected').fetchData<SendBatchOutreach_Response, SendBatchOutreach_Body>({
-            url: '/communityprospects/outreach/batch',
+            url: '/v2/community-prospects/outreach/batch',
             method: 'post',
             data: body,
         }),
@@ -230,7 +230,7 @@ export const GetOutreachSettings = () => ({
     key: ['/communityprospects', 'outreach', 'settings'],
     service: async () =>
         ApiService('protected').fetchData<GetOutreachSettings_Response>({
-            url: '/communityprospects/outreach/settings',
+            url: '/v2/community-prospects/outreach/settings',
             method: 'get',
         }),
 });
@@ -242,7 +242,7 @@ export const GetPipelineAnalytics = () => ({
     key: ['/communityprospects', 'analytics'],
     service: async () =>
         ApiService('protected').fetchData<GetPipelineAnalytics_Response>({
-            url: '/communityprospects/analytics',
+            url: '/v2/community-prospects/analytics',
             method: 'get',
         }),
 });
@@ -257,7 +257,7 @@ export const ConvertProspectToPartner = () => ({
     key: ['/communityprospects', 'convert'],
     service: async (params: ConvertProspectToPartner_Params) =>
         ApiService('protected').fetchData<ConvertProspectToPartner_Response>({
-            url: `/communityprospects/${params.id}/convert`,
+            url: `/v2/community-prospects/${params.id}/convert`,
             method: 'post',
             data: {
                 prospectId: params.id,
