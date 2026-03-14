@@ -107,8 +107,7 @@ export const UnsubscribePage: FC = () => {
         }
 
         // Error
-        const errorMessage = unsubscribeMutation.data?.data?.errorMessage ||
-            getErrorMessage(unsubscribeMutation.error);
+        const errorMessage = unsubscribeMutation.data?.data?.errorMessage || getErrorMessage(unsubscribeMutation.error);
 
         return (
             <Card className='max-w-md mx-auto'>
