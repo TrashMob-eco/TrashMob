@@ -16,7 +16,7 @@ export const GetHaulingPartnerLocation = (params: GetHaulingPartnerLocation_Para
     key: ['/eventpartnerlocationservices/gethaulingpartnerlocation/', params],
     service: async () =>
         ApiService('protected').fetchData<GetHaulingPartnerLocation_Response>({
-            url: `/eventpartnerlocationservices/gethaulingpartnerlocation/${params.eventId}`,
+            url: `/v2/eventpartnerlocationservices/hauling/${params.eventId}`,
             method: 'get',
         }),
 });
@@ -27,7 +27,7 @@ export const GetEventPartnerLocationServices = (params: GetEventPartnerLocationS
     key: ['/eventpartnerlocationservices', params],
     service: async () =>
         ApiService('protected').fetchData<GetEventPartnerLocationServices_Response>({
-            url: `/eventpartnerlocationservices/${params.eventId}`,
+            url: `/v2/eventpartnerlocationservices/${params.eventId}`,
             method: 'get',
         }),
 });
@@ -43,12 +43,12 @@ export const GetEventPartnerLocationServicesByLocationId = (
     key: ['/eventpartnerlocationservices', params || 'by location id'],
     service: async () =>
         ApiService('protected').fetchData<GetEventPartnerLocationServicesByLocationId_Response>({
-            url: `/eventpartnerlocationservices/${params?.eventId}/${params?.locationId}`,
+            url: `/v2/eventpartnerlocationservices/${params?.eventId}/${params?.locationId}`,
             method: 'get',
         }),
     serviceAsync: async (asyncParams: GetEventPartnerLocationServicesByLocationId_Params) =>
         ApiService('protected').fetchData<GetEventPartnerLocationServicesByLocationId_Response>({
-            url: `/eventpartnerlocationservices/${asyncParams.eventId}/${asyncParams.locationId}`,
+            url: `/v2/eventpartnerlocationservices/${asyncParams.eventId}/${asyncParams.locationId}`,
             method: 'get',
         }),
 });
@@ -58,7 +58,7 @@ export const GetEventPartnerLocationServiceStatuses = () => ({
     key: ['/eventpartnerlocationservicestatuses'],
     service: async () =>
         ApiService('public').fetchData<GetEventPartnerLocationServiceStatuses_Response>({
-            url: '/eventpartnerlocationservicestatuses',
+            url: '/v2/lookups/partner-service-statuses',
             method: 'get',
         }),
 });
@@ -71,7 +71,7 @@ export const CreateEventPartnerLocationService = () => ({
         ApiService('protected').fetchData<
             CreateEventPartnerLocationService_Response,
             CreateEventPartnerLocationService_Body
-        >({ url: '/eventpartnerlocationservices', method: 'post', data: body }),
+        >({ url: '/v2/eventpartnerlocationservices', method: 'post', data: body }),
 });
 
 export type DeleteEventPartnerLocationService_Params = {
@@ -84,7 +84,7 @@ export const DeleteEventPartnerLocationService = () => ({
     key: ['/eventpartnerlocationservices', 'delete'],
     service: async (params: DeleteEventPartnerLocationService_Params) =>
         ApiService('protected').fetchData<DeleteEventPartnerLocationService_Response>({
-            url: `/eventpartnerlocationservices/${params.eventId}/${params.partnerLocationId}/${params.serviceTypeId}`,
+            url: `/v2/eventpartnerlocationservices/${params.eventId}/${params.partnerLocationId}/${params.serviceTypeId}`,
             method: 'delete',
         }),
 });
@@ -95,11 +95,12 @@ export const GetEventPickupLocations = (params: GetEventPickupLocations_Params) 
     key: ['/pickuplocations/getbyevent/', params],
     service: async () =>
         ApiService('protected').fetchData<GetEventPickupLocations_Response>({
-            url: `/pickuplocations/getbyevent/${params.eventId}`,
+            url: `/v2/pickuplocations/by-event/${params.eventId}`,
             method: 'get',
         }),
 });
 
+// No v2 equivalent — stays on v1
 export type GetEventPickupLocationsByUser_Params = { userId: string };
 export type GetEventPickupLocationsByUser_Response = PickupLocationData[];
 export const GetEventPickupLocationsByUser = (params: GetEventPickupLocationsByUser_Params) => ({
@@ -117,7 +118,7 @@ export const GetEventPickupLocationById = (params: GetEventPickupLocationById_Pa
     key: ['/pickuplocations/', params],
     service: async () =>
         ApiService('protected').fetchData<GetEventPickupLocationById_Response>({
-            url: `/pickuplocations/${params.locationId}`,
+            url: `/v2/pickuplocations/${params.locationId}`,
             method: 'get',
         }),
 });
@@ -128,7 +129,7 @@ export const DeleteEventPickupLocationById = () => ({
     key: ['/pickuplocations/', 'delete'],
     service: async (params: DeleteEventPickupLocationById_Params) =>
         ApiService('protected').fetchData<DeleteEventPickupLocationById_Params>({
-            url: `/pickuplocations/${params.locationId}`,
+            url: `/v2/pickuplocations/${params.locationId}`,
             method: 'delete',
         }),
 });
@@ -139,7 +140,7 @@ export const SubmitEventPickupLocations = () => ({
     key: ['/pickuplocations/submit/'],
     service: async (params: SubmitEventPickupLocations_Params) =>
         ApiService('protected').fetchData<SubmitEventPickupLocations_Response>({
-            url: `/pickuplocations/submit/${params.eventId}`,
+            url: `/v2/pickuplocations/submit/${params.eventId}`,
             method: 'post',
         }),
 });
@@ -150,7 +151,7 @@ export const CreateEventPickupLocation = () => ({
     key: ['/pickuplocations', 'create'],
     service: async (body: CreateEventPickupLocation_Body) =>
         ApiService('protected').fetchData<CreateEventPickupLocation_Response, CreateEventPickupLocation_Body>({
-            url: '/pickuplocations',
+            url: '/v2/pickuplocations',
             method: 'post',
             data: body,
         }),
@@ -162,7 +163,7 @@ export const UpdateEventPickupLocation = () => ({
     key: ['/pickuplocations', 'update'],
     service: async (body: UpdateEventPickupLocation_Body) =>
         ApiService('protected').fetchData<UpdateEventPickupLocation_Response, UpdateEventPickupLocation_Body>({
-            url: '/pickuplocations',
+            url: `/v2/pickuplocations/${body.id}`,
             method: 'put',
             data: body,
         }),
@@ -174,7 +175,7 @@ export const GetPartnerLocations = (params: GetPartnerLocations_Params) => ({
     key: ['/partnerlocations/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerLocations_Response>({
-            url: `/partnerlocations/${params.locationId}`,
+            url: `/v2/partner-locations/${params.locationId}`,
             method: 'get',
         }),
 });
@@ -185,7 +186,7 @@ export const CreatePartnerLocations = () => ({
     key: ['/partnerlocations', 'create'],
     service: async (body: CreatePartnerLocations_Body) =>
         ApiService('protected').fetchData<CreatePartnerLocations_Response, CreatePartnerLocations_Body>({
-            url: '/partnerlocations',
+            url: '/v2/partner-locations',
             method: 'post',
             data: body,
         }),
@@ -197,7 +198,7 @@ export const UpdatePartnerLocations = () => ({
     key: ['/partnerlocations', 'update'],
     service: async (body: UpdatePartnerLocations_Body) =>
         ApiService('protected').fetchData<UpdatePartnerLocations_Response, UpdatePartnerLocations_Body>({
-            url: '/partnerlocations',
+            url: '/v2/partner-locations',
             method: 'put',
             data: body,
         }),
@@ -209,7 +210,7 @@ export const DeletePartnerLocation = () => ({
     key: ['/partnerlocations', 'delete'],
     service: async (params: DeletePartnerLocation_Params) =>
         ApiService('protected').fetchData<DeletePartnerLocation_Response>({
-            url: `/partnerlocations/${params.locationId}`,
+            url: `/v2/partner-locations/${params.locationId}`,
             method: 'delete',
         }),
 });
@@ -220,7 +221,7 @@ export const GetLocationsByPartner = (params: GetLocationsByPartner_Params) => (
     key: ['/partnerlocations/getbypartner/', params],
     service: async () =>
         ApiService('protected').fetchData<GetLocationsByPartner_Response>({
-            url: `/partnerlocations/getbypartner/${params.partnerId}`,
+            url: `/v2/partner-locations/by-partner/${params.partnerId}`,
             method: 'get',
         }),
 });
@@ -233,7 +234,7 @@ export const GetPartnerLocationsServicesByLocationId = (params: GetPartnerLocati
     key: ['/partnerlocationservices/getbypartnerlocation/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerLocationsServicesByLocationId_Response>({
-            url: `/partnerlocationservices/getbypartnerlocation/${params.locationId}`,
+            url: `/v2/partner-location-services/by-location/${params.locationId}`,
             method: 'get',
         }),
 });
@@ -249,7 +250,7 @@ export const GetPartnerLocationServiceByLocationIdAndServiceType = (
     key: ['/partnerlocationservices/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerLocationServiceByLocationIdAndServiceType_Response>({
-            url: `/partnerlocationservices/${params.locationId}/${params.serviceTypeId}`,
+            url: `/v2/partner-location-services/${params.locationId}/${params.serviceTypeId}`,
             method: 'get',
         }),
 });
@@ -263,7 +264,7 @@ export const DeletePartnerLocationServiceByLocationIdAndServiceType = () => ({
     key: ['/partnerlocationservices/', 'delete by location id and service type id'],
     service: async (params: DeletePartnerLocationServiceByLocationIdAndServiceType_Params) =>
         ApiService('protected').fetchData<DeletePartnerLocationServiceByLocationIdAndServiceType_Response>({
-            url: `/partnerlocationservices/${params.locationId}/${params.serviceTypeId}`,
+            url: `/v2/partner-location-services/${params.locationId}/${params.serviceTypeId}`,
             method: 'delete',
         }),
 });
@@ -274,7 +275,7 @@ export const CreateLocationService = () => ({
     key: ['/partnerlocationservices', 'create'],
     service: async (body: CreateLocationService_Body) =>
         ApiService('protected').fetchData<CreateLocationService_Response, CreateLocationService_Body>({
-            url: '/partnerlocationservices',
+            url: '/v2/partner-location-services',
             method: 'post',
             data: body,
         }),
@@ -286,12 +287,13 @@ export const UpdateLocationService = () => ({
     key: ['/partnerlocationservices', 'update'],
     service: async (body: UpdateLocationService_Body) =>
         ApiService('protected').fetchData<UpdateLocationService_Response, UpdateLocationService_Body>({
-            url: '/partnerlocationservices',
+            url: '/v2/partner-location-services',
             method: 'put',
             data: body,
         }),
 });
 
+// No v2 equivalent — stays on v1
 export type GetPartnerLocationEventServicesByLocationId_Params = {
     locationId: string;
 };
@@ -307,6 +309,7 @@ export const GetPartnerLocationEventServicesByLocationId = (
         }),
 });
 
+// No v2 equivalent — stays on v1
 export type GetPartnerLocationEventServicesByUserId_Params = { userId: string };
 export type GetPartnerLocationEventServicesByUserId_Response = DisplayPartnerLocationEventData[];
 export const GetPartnerLocationEventServicesByUserId = (params: GetPartnerLocationEventServicesByUserId_Params) => ({
@@ -318,6 +321,7 @@ export const GetPartnerLocationEventServicesByUserId = (params: GetPartnerLocati
         }),
 });
 
+// No v2 equivalent for accept/decline route pattern — stays on v1
 export type UpdateEventPartnerLocationServices_Params = {
     acceptDecline: 'accept' | 'decline';
     eventId: string;
@@ -334,6 +338,7 @@ export const UpdateEventPartnerLocationServices = () => ({
         }),
 });
 
+// No v2 equivalent — stays on v1
 export type PickupLocationMarkAsPickedUp_Params = { locationId: string };
 export type PickupLocationMarkAsPickedUp_Response = unknown;
 export const PickupLocationMarkAsPickedUp = () => ({
@@ -370,7 +375,7 @@ export const GetNearbyPartners = (params: GetNearbyPartners_Params) => ({
     key: ['/partnerlocations/nearby', params],
     service: async () =>
         ApiService('public').fetchData<GetNearbyPartners_Response>({
-            url: `/partnerlocations/nearby?latitude=${params.latitude}&longitude=${params.longitude}${params.radiusMiles ? `&radiusMiles=${params.radiusMiles}` : ''}`,
+            url: `/v2/partner-locations/nearby?latitude=${params.latitude}&longitude=${params.longitude}${params.radiusMiles ? `&radiusMiles=${params.radiusMiles}` : ''}`,
             method: 'get',
         }),
 });

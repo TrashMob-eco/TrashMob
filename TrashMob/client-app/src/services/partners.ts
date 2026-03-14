@@ -18,6 +18,7 @@
 // partnersocialmediaaccounts
 
 import { ApiService } from '.';
+import { PagedResponse } from '../lib/api-errors';
 import DisplayPartnershipData from '../components/Models/DisplayPartnershipData';
 import PartnerData from '../components/Models/PartnerData';
 import PartnerRequestData from '../components/Models/PartnerRequestData';
@@ -30,7 +31,7 @@ export const GetPartnerTypes = () => ({
     key: ['/partnerTypes'],
     service: async () =>
         ApiService('public').fetchData<GetPartnerTypes_Response>({
-            url: '/partnerTypes',
+            url: '/v2/lookups/partner-types',
             method: 'get',
         }),
 });
@@ -40,7 +41,7 @@ export const GetPartnerStatuses = () => ({
     key: ['/partnerStatuses'],
     service: async () =>
         ApiService('public').fetchData<GetPartnerTypes_Response>({
-            url: '/partnerStatuses',
+            url: '/v2/lookups/partner-statuses',
             method: 'get',
         }),
 });
@@ -50,7 +51,7 @@ export const GetPartnerRequestStatuses = () => ({
     key: ['/partnerrequeststatuses'],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerRequestStatuses_Response>({
-            url: '/partnerrequeststatuses',
+            url: '/v2/lookups/partner-request-statuses',
             method: 'get',
         }),
 });
@@ -60,7 +61,7 @@ export const GetPartnerRequests = () => ({
     key: ['/partnerrequests'],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerRequests_Response>({
-            url: '/partnerrequests',
+            url: '/v2/partner-requests',
             method: 'get',
         }),
 });
@@ -71,7 +72,7 @@ export const GetPartnerRequestById = (params: GetPartnerRequestById_Params) => (
     key: ['/partnerrequests', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerRequestById_Response>({
-            url: `/partnerrequests/${params.id}`,
+            url: `/v2/partner-requests/${params.id}`,
             method: 'get',
         }),
 });
@@ -82,7 +83,7 @@ export const GetPartnerRequestByUserId = (params: GetPartnerRequestByUserId_Para
     key: ['/partnerrequests/byuserid/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerRequestByUserId_Response>({
-            url: `/partnerrequests/byuserid/${params.userId}`,
+            url: `/v2/partner-requests/by-user/${params.userId}`,
             method: 'get',
         }),
 });
@@ -93,7 +94,7 @@ export const CreatePartnerRequest = () => ({
     key: ['/PartnerRequests', 'create'],
     service: async (body: CreatePartnerRequest_Body) =>
         ApiService('protected').fetchData<CreatePartnerRequest_Response, CreatePartnerRequest_Body>({
-            url: '/PartnerRequests',
+            url: '/v2/partner-requests',
             method: 'post',
             data: body,
         }),
@@ -105,7 +106,7 @@ export const ApprovePartnerRequest = () => ({
     key: ['/partnerrequests/approve/'],
     service: async (params: ApprovePartnerRequest_Params) =>
         ApiService('protected').fetchData<ApprovePartnerRequest_Response>({
-            url: `/partnerrequests/approve/${params.id}`,
+            url: `/v2/partner-requests/${params.id}/approve`,
             method: 'put',
         }),
 });
@@ -116,17 +117,17 @@ export const DenyPartnerRequest = () => ({
     key: ['/partnerrequests/deny/'],
     service: async (params: DenyPartnerRequest_Params) =>
         ApiService('protected').fetchData<DenyPartnerRequest_Response>({
-            url: `/partnerrequests/deny/${params.id}`,
+            url: `/v2/partner-requests/${params.id}/deny`,
             method: 'put',
         }),
 });
 
-export type GetPartners_Response = PartnerData[];
+export type GetPartners_Response = PagedResponse<PartnerData>;
 export const GetPartners = () => ({
     key: ['/partners'],
     service: async () =>
         ApiService('protected').fetchData<GetPartners_Response>({
-            url: '/partners',
+            url: '/v2/partners?pageSize=100',
             method: 'get',
         }),
 });
@@ -137,7 +138,7 @@ export const GetPartnerById = (params: GetPartnerById_Params) => ({
     key: ['/partners/', params.partnerId],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerById_Response>({
-            url: `/partners/${params.partnerId}`,
+            url: `/v2/partners/${params.partnerId}`,
             method: 'get',
         }),
 });
@@ -148,7 +149,7 @@ export const DeletePartnerById = () => ({
     key: ['/partners', 'delete'],
     service: async (params: DeletePartnerById_Params) =>
         ApiService('protected').fetchData<DeletePartnerById_Response>({
-            url: `/partners/${params.id}`,
+            url: `/v2/partners/${params.id}`,
             method: 'delete',
         }),
 });
@@ -159,7 +160,7 @@ export const UpdatePartner = () => ({
     key: ['/Partners', 'update'],
     service: async (body: UpdatePartner_Body) =>
         ApiService('protected').fetchData<UpdatePartner_Response, UpdatePartner_Body>({
-            url: '/Partners',
+            url: '/v2/partners',
             method: 'put',
             data: body,
         }),
@@ -171,7 +172,7 @@ export const GetMyPartners = () => ({
     key: ['/partneradmins/my'],
     service: async () =>
         ApiService('protected').fetchData<GetMyPartners_Response>({
-            url: '/partneradmins/my',
+            url: '/v2/partner-admins/my',
             method: 'get',
         }),
 });

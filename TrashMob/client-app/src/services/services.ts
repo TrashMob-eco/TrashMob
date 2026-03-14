@@ -6,7 +6,7 @@ export const GetServiceTypes = () => ({
     key: ['/servicetypes'],
     service: async () =>
         ApiService('public').fetchData<GetServiceTypes_Response>({
-            url: '/servicetypes',
+            url: '/v2/lookups/service-types',
             method: 'get',
         }),
 });

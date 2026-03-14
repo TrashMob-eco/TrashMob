@@ -12,7 +12,7 @@ export const GetGrants = (params?: GetGrants_Params) => {
         key: ['/grants', params?.status],
         service: async () =>
             ApiService('protected').fetchData<GetGrants_Response>({
-                url: `/grants${query}`,
+                url: `/v2/grants${query}`,
                 method: 'get',
             }),
     };
@@ -24,7 +24,7 @@ export const GetGrantById = (params: GetGrantById_Params) => ({
     key: ['/grants', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetGrantById_Response>({
-            url: `/grants/${params.id}`,
+            url: `/v2/grants/${params.id}`,
             method: 'get',
         }),
 });
@@ -35,7 +35,7 @@ export const CreateGrant = () => ({
     key: ['/grants', 'create'],
     service: async (body: CreateGrant_Body) =>
         ApiService('protected').fetchData<CreateGrant_Response, CreateGrant_Body>({
-            url: '/grants',
+            url: '/v2/grants',
             method: 'post',
             data: body,
         }),
@@ -47,7 +47,7 @@ export const UpdateGrant = () => ({
     key: ['/grants', 'update'],
     service: async (body: UpdateGrant_Body) =>
         ApiService('protected').fetchData<UpdateGrant_Response, UpdateGrant_Body>({
-            url: '/grants',
+            url: '/v2/grants',
             method: 'put',
             data: body,
         }),
@@ -58,7 +58,7 @@ export const DeleteGrant = () => ({
     key: ['/grants', 'delete'],
     service: async (params: DeleteGrant_Params) =>
         ApiService('protected').fetchData<unknown>({
-            url: `/grants/${params.id}`,
+            url: `/v2/grants/${params.id}`,
             method: 'delete',
         }),
 });
@@ -93,7 +93,7 @@ export const DiscoverGrants = () => ({
     key: ['/grants', 'discover'],
     service: async (body: DiscoverGrants_Body) =>
         ApiService('protected').fetchData<DiscoverGrants_Response, DiscoverGrants_Body>({
-            url: '/grants/discover',
+            url: '/v2/grants/discover',
             method: 'post',
             data: body,
         }),
@@ -107,7 +107,7 @@ export const GetGrantTasks = (params: GetGrantTasks_Params) => ({
     key: ['/granttasks', params.grantId],
     service: async () =>
         ApiService('protected').fetchData<GetGrantTasks_Response>({
-            url: `/granttasks/bygrant/${params.grantId}`,
+            url: `/v2/granttasks/bygrant/${params.grantId}`,
             method: 'get',
         }),
 });
@@ -118,7 +118,7 @@ export const CreateGrantTask = () => ({
     key: ['/granttasks', 'create'],
     service: async (body: CreateGrantTask_Body) =>
         ApiService('protected').fetchData<CreateGrantTask_Response, CreateGrantTask_Body>({
-            url: '/granttasks',
+            url: '/v2/granttasks',
             method: 'post',
             data: body,
         }),
@@ -130,7 +130,7 @@ export const UpdateGrantTask = () => ({
     key: ['/granttasks', 'update'],
     service: async (body: UpdateGrantTask_Body) =>
         ApiService('protected').fetchData<UpdateGrantTask_Response, UpdateGrantTask_Body>({
-            url: '/granttasks',
+            url: '/v2/granttasks',
             method: 'put',
             data: body,
         }),
@@ -141,7 +141,7 @@ export const DeleteGrantTask = () => ({
     key: ['/granttasks', 'delete'],
     service: async (params: DeleteGrantTask_Params) =>
         ApiService('protected').fetchData<unknown>({
-            url: `/granttasks/${params.id}`,
+            url: `/v2/granttasks/${params.id}`,
             method: 'delete',
         }),
 });

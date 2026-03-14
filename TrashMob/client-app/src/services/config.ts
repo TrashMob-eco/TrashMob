@@ -28,7 +28,7 @@ export async function getAppConfig(): Promise<AppConfig> {
 
     // Fetch config from backend
     // Use VITE_API_URL if set (for local dev against remote backend), otherwise /api (proxied)
-    const configUrl = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/config` : '/api/config';
+    const configUrl = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/v2/config` : '/api/v2/config';
     configPromise = fetch(configUrl)
         .then((response) => {
             if (!response.ok) {

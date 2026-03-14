@@ -48,7 +48,7 @@ export const SiteAdminPartners = () => {
     const { data: partners } = useQuery({
         queryKey: GetPartners().key,
         queryFn: GetPartners().service,
-        select: (res) => res.data,
+        select: (res) => res.data.items,
     });
 
     const deletePartnerById = useMutation({

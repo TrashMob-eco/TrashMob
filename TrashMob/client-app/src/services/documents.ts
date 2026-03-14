@@ -7,7 +7,7 @@ export const GetPartnerDocumentsByPartnerId = (params: GetPartnerDocumentsByPart
     key: ['/partnerdocuments/getbypartner/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerDocumentsByPartnerId_Response>({
-            url: `/partnerdocuments/getbypartner/${params.partnerId}`,
+            url: `/v2/partner-documents/by-partner/${params.partnerId}`,
             method: 'get',
         }),
 });
@@ -18,7 +18,7 @@ export const GetPartnerDocumentsByDocumentId = (params: GetPartnerDocumentsByDoc
     key: ['/partnerdocuments/', params.documentId],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerDocumentsByDocumentId_Response>({
-            url: `/partnerdocuments/${params.documentId}`,
+            url: `/v2/partner-documents/${params.documentId}`,
             method: 'get',
         }),
 });
@@ -29,7 +29,7 @@ export const CreatePartnerDocument = () => ({
     key: ['/partnerdocuments', 'create'],
     service: async (body: CreatePartnerDocument_Body) =>
         ApiService('protected').fetchData<CreatePartnerDocument_Response, CreatePartnerDocument_Body>({
-            url: '/partnerdocuments',
+            url: '/v2/partner-documents',
             method: 'post',
             data: body,
         }),
@@ -41,7 +41,7 @@ export const UpdatePartnerDocument = () => ({
     key: ['/partnerdocuments', 'update'],
     service: async (body: UpdatePartnerDocument_Body) =>
         ApiService('protected').fetchData<UpdatePartnerDocument_Response, UpdatePartnerDocument_Body>({
-            url: '/partnerdocuments',
+            url: '/v2/partner-documents',
             method: 'put',
             data: body,
         }),
@@ -65,7 +65,7 @@ export const UploadPartnerDocument = () => ({
         if (params.expirationDate) formData.append('expirationDate', params.expirationDate);
         formData.append('formFile', params.file);
         return ApiService('protected').fetchData<UploadPartnerDocument_Response>({
-            url: '/partnerdocuments/upload',
+            url: '/v2/partner-documents/upload',
             method: 'post',
             data: formData,
             headers: { 'Content-Type': 'multipart/form-data' },
@@ -79,7 +79,7 @@ export const DownloadPartnerDocument = (params: DownloadPartnerDocument_Params) 
     key: ['/partnerdocuments', params.documentId, 'download'],
     service: async () =>
         ApiService('protected').fetchData<DownloadPartnerDocument_Response>({
-            url: `/partnerdocuments/${params.documentId}/download`,
+            url: `/v2/partner-documents/${params.documentId}/download`,
             method: 'get',
         }),
 });
@@ -90,7 +90,7 @@ export const GetPartnerStorageUsage = (params: GetPartnerStorageUsage_Params) =>
     key: ['/partnerdocuments/storageusage/', params.partnerId],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerStorageUsage_Response>({
-            url: `/partnerdocuments/storageusage/${params.partnerId}`,
+            url: `/v2/partner-documents/storage-usage/${params.partnerId}`,
             method: 'get',
         }),
 });
@@ -101,7 +101,7 @@ export const GetAllPartnerDocuments = () => ({
     key: ['/admin/partnerdocuments'],
     service: async () =>
         ApiService('protected').fetchData<GetAllPartnerDocuments_Response>({
-            url: '/admin/partnerdocuments',
+            url: '/v2/partner-documents/admin/all',
             method: 'get',
         }),
 });
@@ -112,7 +112,7 @@ export const DeletePartnerDocumentByDocuemntId = () => ({
     key: ['/partnerdocuments/', 'delete by documentId'],
     service: async (params: DeletePartnerDocumentByDocuemntId_Params) =>
         ApiService('protected').fetchData<DeletePartnerDocumentByDocuemntId_Response>({
-            url: `/partnerdocuments/${params.documentId}`,
+            url: `/v2/partner-documents/${params.documentId}`,
             method: 'delete',
         }),
 });

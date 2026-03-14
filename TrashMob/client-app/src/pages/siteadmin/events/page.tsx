@@ -8,7 +8,7 @@ export const SiteAdminEvents = () => {
     const { data: events } = useQuery({
         queryKey: GetAllEvents().key,
         queryFn: GetAllEvents().service,
-        select: (res) => res.data,
+        select: (res) => res.data.items,
     });
 
     const len = (events || []).length;

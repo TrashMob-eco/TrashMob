@@ -51,7 +51,7 @@ export const GetAdminInviteBatches = () => ({
     key: ['/admin/invites/batches'],
     service: async () =>
         ApiService('protected').fetchData<GetAdminInviteBatches_Response>({
-            url: '/admin/invites/batches',
+            url: '/v2/admin/invites/batches',
             method: 'get',
         }),
 });
@@ -62,7 +62,7 @@ export const GetAdminInviteBatchDetails = (params: GetAdminInviteBatchDetails_Pa
     key: ['/admin/invites/batches', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetAdminInviteBatchDetails_Response>({
-            url: `/admin/invites/batches/${params.id}`,
+            url: `/v2/admin/invites/batches/${params.id}`,
             method: 'get',
         }),
 });
@@ -73,7 +73,7 @@ export const CreateAdminInviteBatch = () => ({
     key: ['/admin/invites/batch', 'create'],
     service: async (body: CreateAdminInviteBatch_Body) =>
         ApiService('protected').fetchData<CreateAdminInviteBatch_Response, CreateAdminInviteBatch_Body>({
-            url: '/admin/invites/batch',
+            url: '/v2/admin/invites/batch',
             method: 'post',
             data: body,
         }),
@@ -89,7 +89,7 @@ export const GetCommunityInviteBatches = (params: GetCommunityInviteBatches_Para
     key: ['/communities', params.communityId, 'invites/batches'],
     service: async () =>
         ApiService('protected').fetchData<GetCommunityInviteBatches_Response>({
-            url: `/communities/${params.communityId}/invites/batches`,
+            url: `/v2/communities/${params.communityId}/invites/batches`,
             method: 'get',
         }),
 });
@@ -100,7 +100,7 @@ export const GetCommunityInviteBatchDetails = (params: GetCommunityInviteBatchDe
     key: ['/communities', params.communityId, 'invites/batches', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetCommunityInviteBatchDetails_Response>({
-            url: `/communities/${params.communityId}/invites/batches/${params.id}`,
+            url: `/v2/communities/${params.communityId}/invites/batches/${params.id}`,
             method: 'get',
         }),
 });
@@ -112,7 +112,7 @@ export const CreateCommunityInviteBatch = (params: CreateCommunityInviteBatch_Pa
     key: ['/communities', params.communityId, 'invites/batch', 'create'],
     service: async (body: CreateCommunityInviteBatch_Body) =>
         ApiService('protected').fetchData<CreateCommunityInviteBatch_Response, CreateCommunityInviteBatch_Body>({
-            url: `/communities/${params.communityId}/invites/batch`,
+            url: `/v2/communities/${params.communityId}/invites/batch`,
             method: 'post',
             data: body,
         }),
@@ -128,7 +128,7 @@ export const GetTeamInviteBatches = (params: GetTeamInviteBatches_Params) => ({
     key: ['/teams', params.teamId, 'invites/batches'],
     service: async () =>
         ApiService('protected').fetchData<GetTeamInviteBatches_Response>({
-            url: `/teams/${params.teamId}/invites/batches`,
+            url: `/v2/teams/${params.teamId}/invites/batches`,
             method: 'get',
         }),
 });
@@ -139,7 +139,7 @@ export const GetTeamInviteBatchDetails = (params: GetTeamInviteBatchDetails_Para
     key: ['/teams', params.teamId, 'invites/batches', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetTeamInviteBatchDetails_Response>({
-            url: `/teams/${params.teamId}/invites/batches/${params.id}`,
+            url: `/v2/teams/${params.teamId}/invites/batches/${params.id}`,
             method: 'get',
         }),
 });
@@ -151,7 +151,7 @@ export const CreateTeamInviteBatch = (params: CreateTeamInviteBatch_Params) => (
     key: ['/teams', params.teamId, 'invites/batch', 'create'],
     service: async (body: CreateTeamInviteBatch_Body) =>
         ApiService('protected').fetchData<CreateTeamInviteBatch_Response, CreateTeamInviteBatch_Body>({
-            url: `/teams/${params.teamId}/invites/batch`,
+            url: `/v2/teams/${params.teamId}/invites/batch`,
             method: 'post',
             data: body,
         }),
@@ -173,7 +173,7 @@ export const GetUserInviteBatches = () => ({
     key: ['/invites/batches'],
     service: async () =>
         ApiService('protected').fetchData<GetUserInviteBatches_Response>({
-            url: '/invites/batches',
+            url: '/v2/invites/batches',
             method: 'get',
         }),
 });
@@ -184,7 +184,7 @@ export const GetUserInviteBatchDetails = (params: GetUserInviteBatchDetails_Para
     key: ['/invites/batches', params.id],
     service: async () =>
         ApiService('protected').fetchData<GetUserInviteBatchDetails_Response>({
-            url: `/invites/batches/${params.id}`,
+            url: `/v2/invites/batches/${params.id}`,
             method: 'get',
         }),
 });
@@ -194,7 +194,7 @@ export const GetUserInviteQuota = () => ({
     key: ['/invites/quota'],
     service: async () =>
         ApiService('protected').fetchData<GetUserInviteQuota_Response>({
-            url: '/invites/quota',
+            url: '/v2/invites/quota',
             method: 'get',
         }),
 });
@@ -205,7 +205,7 @@ export const CreateUserInviteBatch = () => ({
     key: ['/invites/batch', 'create'],
     service: async (body: CreateUserInviteBatch_Body) =>
         ApiService('protected').fetchData<CreateUserInviteBatch_Response, CreateUserInviteBatch_Body>({
-            url: '/invites/batch',
+            url: '/v2/invites/batch',
             method: 'post',
             data: body,
         }),

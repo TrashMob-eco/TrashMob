@@ -11,7 +11,7 @@ export const CreateContactRequest = () => ({
     key: ['/ContactRequest', 'create'],
     service: async (body: CreateContactRequest_Body) =>
         ApiService('public').fetchData<CreateContactRequest_Response, CreateContactRequest_Body>({
-            url: '/ContactRequest',
+            url: '/v2/contactrequest',
             method: 'post',
             data: body,
         }),
@@ -25,7 +25,7 @@ export const GetPartnerLocationContactsByLocationId = (params: GetPartnerLocatio
     key: ['/partnerlocationcontacts/getbypartnerlocation/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerLocationContactsByLocationId_Response>({
-            url: `/partnerlocationcontacts/getbypartnerlocation/${params.locationId}`,
+            url: `/v2/partner-location-contacts/by-location/${params.locationId}`,
             method: 'get',
         }),
 });
@@ -36,7 +36,7 @@ export const GetPartnerLocationContactByContactId = (params: GetPartnerLocationC
     key: ['/partnerlocationcontacts/', params.contactId],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerLocationContactByContactId_Response>({
-            url: `/partnerlocationcontacts/${params.contactId}`,
+            url: `/v2/partner-location-contacts/${params.contactId}`,
             method: 'get',
         }),
 });
@@ -47,7 +47,7 @@ export const CreatePartnerLocationContact = () => ({
     key: ['/partnerlocationcontacts', 'create'],
     service: async (body: CreatePartnerLocationContact_Body) =>
         ApiService('protected').fetchData<CreatePartnerLocationContact_Response, CreatePartnerLocationContact_Body>({
-            url: '/partnerlocationcontacts',
+            url: '/v2/partner-location-contacts',
             method: 'post',
             data: body,
         }),
@@ -59,7 +59,7 @@ export const UpdatePartnerLocationContact = () => ({
     key: ['/partnerlocationcontacts', 'update'],
     service: async (body: UpdatePartnerLocationContact_Body) =>
         ApiService('protected').fetchData<UpdatePartnerLocationContact_Response, UpdatePartnerLocationContact_Body>({
-            url: '/partnerlocationcontacts',
+            url: '/v2/partner-location-contacts',
             method: 'put',
             data: body,
         }),
@@ -73,7 +73,7 @@ export const DeletePartnerLocationContactByContactId = () => ({
     key: ['/partnerlocationcontacts', 'delete by contactId'],
     service: async (params: DeletePartnerLocationContactByContactId_Params) =>
         ApiService('protected').fetchData<DeletePartnerLocationContactByContactId_Response>({
-            url: `/partnerlocationcontacts/${params.contactId}`,
+            url: `/v2/partner-location-contacts/${params.contactId}`,
             method: 'delete',
         }),
 });
@@ -84,7 +84,7 @@ export const GetPartnerContactsByPartnerId = (params: GetPartnerContactsByPartne
     key: ['/partnercontacts/getbypartner/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerContactsByPartnerId_Response>({
-            url: `/partnercontacts/getbypartner/${params.partnerId}`,
+            url: `/v2/partner-contacts/by-partner/${params.partnerId}`,
             method: 'get',
         }),
 });
@@ -95,7 +95,7 @@ export const GetPartnerContactsByContactId = (params: GetPartnerContactsByContac
     key: ['/partnercontacts/', params.contactId],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerContactsByContactId_Response>({
-            url: `/partnercontacts/${params.contactId}`,
+            url: `/v2/partner-contacts/${params.contactId}`,
             method: 'get',
         }),
 });
@@ -106,7 +106,7 @@ export const CreatePartnerContact = () => ({
     key: ['/partnercontacts', 'create'],
     service: async (body: CreatePartnerContact_Body) =>
         ApiService('protected').fetchData<CreatePartnerContact_Response, CreatePartnerContact_Body>({
-            url: '/partnercontacts',
+            url: '/v2/partner-contacts',
             method: 'post',
             data: body,
         }),
@@ -118,7 +118,7 @@ export const UpdatePartnerContact = () => ({
     key: ['/partnercontacts', 'update'],
     service: async (body: UpdatePartnerContact_Body) =>
         ApiService('protected').fetchData<UpdatePartnerContact_Response, UpdatePartnerContact_Body>({
-            url: '/partnercontacts',
+            url: '/v2/partner-contacts',
             method: 'put',
             data: body,
         }),
@@ -130,7 +130,7 @@ export const DeletePartnerContactByContactId = () => ({
     key: ['/partnercontacts/', 'delete by contactId'],
     service: async (params: DeletePartnerContactByContactId_Params) =>
         ApiService('protected').fetchData<DeletePartnerContactByContactId_Response>({
-            url: `/partnercontacts/${params.contactId}`,
+            url: `/v2/partner-contacts/${params.contactId}`,
             method: 'delete',
         }),
 });

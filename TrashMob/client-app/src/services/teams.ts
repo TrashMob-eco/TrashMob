@@ -17,7 +17,7 @@ export const GetAllTeams = () => ({
     key: ['/admin/teams'],
     service: async () =>
         ApiService('protected').fetchData<GetAllTeams_Response>({
-            url: '/admin/teams',
+            url: '/v2/admin/teams',
             method: 'get',
         }),
 });
@@ -29,7 +29,7 @@ export const DeleteTeam = () => ({
     key: ['/admin/teams', 'delete'],
     service: async (params: DeleteTeam_Params) =>
         ApiService('protected').fetchData<DeleteTeam_Response>({
-            url: `/admin/teams/${params.teamId}`,
+            url: `/v2/admin/teams/${params.teamId}`,
             method: 'delete',
         }),
 });
@@ -41,7 +41,7 @@ export const ReactivateTeam = () => ({
     key: ['/admin/teams', 'reactivate'],
     service: async (params: ReactivateTeam_Params) =>
         ApiService('protected').fetchData<ReactivateTeam_Response>({
-            url: `/admin/teams/${params.teamId}/reactivate`,
+            url: `/v2/admin/teams/${params.teamId}/reactivate`,
             method: 'post',
         }),
 });
@@ -93,7 +93,7 @@ export const GetTeamsILead = () => ({
     key: ['/teams/my/leading'],
     service: async () =>
         ApiService('protected').fetchData<GetTeamsILead_Response>({
-            url: '/teams/my/leading',
+            url: '/v2/teams/my/leading',
             method: 'get',
         }),
 });
@@ -190,7 +190,7 @@ export const AddTeamMember = () => ({
     key: ['/teams/members', 'add'],
     service: async (params: AddTeamMember_Params) =>
         ApiService('protected').fetchData<AddTeamMember_Response>({
-            url: `/teams/${params.teamId}/members/${params.userId}`,
+            url: `/v2/teams/${params.teamId}/members/${params.userId}`,
             method: 'post',
         }),
 });
@@ -238,7 +238,7 @@ export const GetTeamEvents = (params: GetTeamEvents_Params) => ({
     key: ['/teams/', params.teamId, '/events'],
     service: async () =>
         ApiService('public').fetchData<GetTeamEvents_Response>({
-            url: `/teams/${params.teamId}/events`,
+            url: `/v2/teams/${params.teamId}/events/upcoming`,
             method: 'get',
         }),
 });
@@ -297,7 +297,7 @@ export const GetTeamPhotos = (params: GetTeamPhotos_Params) => ({
     key: ['/teams/', params.teamId, '/photos'],
     service: async () =>
         ApiService('public').fetchData<GetTeamPhotos_Response>({
-            url: `/teams/${params.teamId}/photos`,
+            url: `/v2/teams/${params.teamId}/photos`,
             method: 'get',
         }),
 });
@@ -308,7 +308,7 @@ export const UploadTeamPhoto = () => ({
     key: ['/teams/photos', 'upload'],
     service: async (params: UploadTeamPhoto_Params, formData: FormData) =>
         ApiService('protected').fetchData<UploadTeamPhoto_Response>({
-            url: `/teams/${params.teamId}/photos`,
+            url: `/v2/teams/${params.teamId}/photos`,
             method: 'post',
             data: formData,
             headers: {
@@ -324,7 +324,7 @@ export const UpdateTeamPhotoCaption = () => ({
     key: ['/teams/photos', 'update'],
     service: async (params: UpdateTeamPhotoCaption_Params, caption: UpdateTeamPhotoCaption_Body) =>
         ApiService('protected').fetchData<UpdateTeamPhotoCaption_Response, UpdateTeamPhotoCaption_Body>({
-            url: `/teams/${params.teamId}/photos/${params.photoId}`,
+            url: `/v2/teams/${params.teamId}/photos/${params.photoId}`,
             method: 'put',
             data: caption,
         }),
@@ -336,7 +336,7 @@ export const DeleteTeamPhoto = () => ({
     key: ['/teams/photos', 'delete'],
     service: async (params: DeleteTeamPhoto_Params) =>
         ApiService('protected').fetchData<DeleteTeamPhoto_Response>({
-            url: `/teams/${params.teamId}/photos/${params.photoId}`,
+            url: `/v2/teams/${params.teamId}/photos/${params.photoId}`,
             method: 'delete',
         }),
 });
@@ -351,7 +351,7 @@ export const UploadTeamLogo = () => ({
     key: ['/teams/logo', 'upload'],
     service: async (params: UploadTeamLogo_Params, formData: FormData) =>
         ApiService('protected').fetchData<UploadTeamLogo_Response>({
-            url: `/teams/${params.teamId}/logo`,
+            url: `/v2/teams/${params.teamId}/logo`,
             method: 'post',
             data: formData,
             headers: {
@@ -366,7 +366,7 @@ export const DeleteTeamLogo = () => ({
     key: ['/teams/logo', 'delete'],
     service: async (params: DeleteTeamLogo_Params) =>
         ApiService('protected').fetchData<DeleteTeamLogo_Response>({
-            url: `/teams/${params.teamId}/logo`,
+            url: `/v2/teams/${params.teamId}/logo`,
             method: 'delete',
         }),
 });

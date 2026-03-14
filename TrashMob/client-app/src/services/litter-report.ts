@@ -1,6 +1,7 @@
 import LitterReportData from '@/components/Models/LitterReportData';
 import { ApiService } from '.';
 
+// No v2 equivalent for filtered list (new/notcancelled) — stays on v1
 export type GetLitterReports_Response = LitterReportData[];
 export const GetLitterReports = () => ({
     key: ['/litterreport', 'list'],
@@ -17,11 +18,12 @@ export const GetLitterReport = (params: GetLitterReport_Params) => ({
     key: ['/litterreport', params.litterReportId],
     service: async () =>
         ApiService('public').fetchData<GetLitterReport_Response>({
-            url: `/litterreport/${params.litterReportId}`,
+            url: `/v2/litterreports/${params.litterReportId}`,
             method: 'get',
         }),
 });
 
+// No v2 equivalent for status-filtered endpoints — stays on v1
 export type GetNewLitterReports_Response = LitterReportData[];
 export const GetNewLitterReports = () => ({
     key: ['/litterreport', 'new'],
@@ -32,6 +34,7 @@ export const GetNewLitterReports = () => ({
         }),
 });
 
+// No v2 equivalent for status-filtered endpoints — stays on v1
 export type GetNotCancelledLitterReports_Response = LitterReportData[];
 export const GetNotCancelledLitterReports = () => ({
     key: ['/litterreport', 'notcancelled'],
@@ -48,7 +51,7 @@ export const GetUserLitterReports = (params: GetUserLitterReports_Params) => ({
     key: ['/litterreport', 'user', params.userId],
     service: async () =>
         ApiService('protected').fetchData<GetUserLitterReports_Response>({
-            url: `/litterreport/userlitterreports/${params.userId}`,
+            url: `/v2/litterreports/userlitterreports/${params.userId}`,
             method: 'get',
         }),
 });
@@ -59,7 +62,7 @@ export const GetLitterReportImage = (params: GetLitterReportImage_Params) => ({
     key: ['/litterreport', 'image', params.litterImageId, params.imageSize],
     service: async () =>
         ApiService('public').fetchData<GetLitterReportImage_Response>({
-            url: `/litterreport/image/${params.litterImageId}/${params.imageSize}`,
+            url: `/v2/litterreports/image/${params.litterImageId}/${params.imageSize}`,
             method: 'get',
         }),
 });
@@ -70,7 +73,7 @@ export const UpdateLitterReport = (params: UpdateLitterReport_Params) => ({
     key: ['/litterreport', 'update', params.litterReport.id],
     service: async () =>
         ApiService('protected').fetchData<UpdateLitterReport_Response>({
-            url: '/litterreport',
+            url: '/v2/litterreports',
             method: 'put',
             data: params.litterReport,
         }),
@@ -82,7 +85,7 @@ export const DeleteLitterReport = (params: DeleteLitterReport_Params) => ({
     key: ['/litterreport', 'delete', params.litterReportId],
     service: async () =>
         ApiService('protected').fetchData<DeleteLitterReport_Response>({
-            url: `/litterreport/${params.litterReportId}`,
+            url: `/v2/litterreports/${params.litterReportId}`,
             method: 'delete',
         }),
 });
@@ -92,7 +95,7 @@ export const CreateLitterReport = () => ({
     key: ['/litterreport', 'create'],
     service: async (litterReport: LitterReportData) =>
         ApiService('protected').fetchData<CreateLitterReport_Response>({
-            url: '/litterreport',
+            url: '/v2/litterreports',
             method: 'post',
             data: litterReport,
         }),
@@ -107,7 +110,7 @@ export const UploadLitterImage = () => ({
         formData.append('parentId', params.litterImageId);
         formData.append('imageType', '4');
         return ApiService('protected').fetchData<void>({
-            url: `/litterreport/image/${params.litterImageId}`,
+            url: `/v2/litterreports/image/${params.litterImageId}`,
             method: 'post',
             data: formData,
         });

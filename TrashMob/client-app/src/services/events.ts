@@ -5,6 +5,7 @@
 // EventAttendees
 
 import { ApiService } from '.';
+import { PagedResponse } from '../lib/api-errors';
 import DisplayEventSummary from '../components/Models/DisplayEventSummary';
 import EventAttendeeData from '../components/Models/EventAttendeeData';
 import EventData from '../components/Models/EventData';
@@ -43,12 +44,12 @@ export const GetFilteredEvents = (params: GetFilteredEvents_Params) => ({
     },
 });
 
-export type GetAllEvents_Response = EventData[];
+export type GetAllEvents_Response = PagedResponse<EventData>;
 export const GetAllEvents = () => ({
     key: ['/events'],
     service: async () =>
         ApiService('protected').fetchData<GetAllEvents_Response>({
-            url: '/v2/events',
+            url: '/v2/events?pageSize=100',
             method: 'get',
         }),
 });

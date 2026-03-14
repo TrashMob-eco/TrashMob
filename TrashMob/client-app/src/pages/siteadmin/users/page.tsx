@@ -10,7 +10,7 @@ export const SiteAdminUsers = () => {
     const { data: users } = useQuery({
         queryKey: GetAllUsers().key,
         queryFn: GetAllUsers().service,
-        select: (res) => res.data,
+        select: (res) => res.data.items,
     });
 
     const deleteUserById = useMutation({

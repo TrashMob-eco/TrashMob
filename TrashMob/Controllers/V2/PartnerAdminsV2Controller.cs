@@ -182,6 +182,40 @@ namespace TrashMob.Controllers.V2
             return StatusCode(StatusCodes.Status201Created, result.ToV2Dto());
         }
 
+        /// <summary>
+        /// Removes a user as an administrator for a partner.
+        /// </summary>
+        /// <param name="partnerId">The partner ID.</param>
+        /// <param name="userId">The user ID to remove as admin.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="204">Partner admin removed.</response>
+        /// <response code="403">Not authorized.</response>
+        /// <response code="404">Partner not found.</response>
+        [HttpDelete("{partnerId}/{userId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RemovePartnerUser(Guid partnerId, Guid userId, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 RemovePartnerUser for Partner={PartnerId}, User={UserId}", partnerId, userId);
+
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
+            if (partner is null)
+            {
+                return NotFound();
+            }
+
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
+            {
+                return Forbid();
+            }
+
+            await partnerAdminManager.Delete(partnerId, userId, cancellationToken);
+            return NoContent();
+        }
+
         private async Task<bool> IsAuthorizedAsync(object resource, string policy)
         {
             if (User.Identity?.IsAuthenticated != true)
