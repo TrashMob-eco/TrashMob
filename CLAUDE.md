@@ -19,6 +19,8 @@ npm start          # Dev server
 npm run build      # Production build
 npm test           # Run Vitest tests
 npm run lint       # ESLint with fixes
+npm run format     # Prettier formatting
+npm run check      # Both lint + format (matches CI)
 ```
 
 ### Database Migrations
