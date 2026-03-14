@@ -16,7 +16,7 @@ export const GetMyMetrics = (params: GetMyMetrics_Params) => ({
     key: ['/events/', params.eventId, '/attendee-metrics/my-metrics'],
     service: async () =>
         ApiService('protected').fetchData<GetMyMetrics_Response>({
-            url: `/events/${params.eventId}/attendee-metrics/my-metrics`,
+            url: `/v2/events/${params.eventId}/attendee-metrics/my-metrics`,
             method: 'get',
         }),
 });
@@ -28,7 +28,7 @@ export const SubmitMyMetrics = () => ({
     key: ['/events/attendee-metrics', 'submit'],
     service: async (params: SubmitMyMetrics_Params, body: SubmitMyMetrics_Body) =>
         ApiService('protected').fetchData<SubmitMyMetrics_Response, SubmitMyMetrics_Body>({
-            url: `/events/${params.eventId}/attendee-metrics/my-metrics`,
+            url: `/v2/events/${params.eventId}/attendee-metrics/my-metrics`,
             method: 'post',
             data: body,
         }),
@@ -44,7 +44,7 @@ export const GetAllMetrics = (params: GetAllMetrics_Params) => ({
     key: ['/events/', params.eventId, '/attendee-metrics'],
     service: async () =>
         ApiService('protected').fetchData<GetAllMetrics_Response>({
-            url: `/events/${params.eventId}/attendee-metrics`,
+            url: `/v2/events/${params.eventId}/attendee-metrics`,
             method: 'get',
         }),
 });
@@ -55,7 +55,7 @@ export const GetPendingMetrics = (params: GetPendingMetrics_Params) => ({
     key: ['/events/', params.eventId, '/attendee-metrics/pending'],
     service: async () =>
         ApiService('protected').fetchData<GetPendingMetrics_Response>({
-            url: `/events/${params.eventId}/attendee-metrics/pending`,
+            url: `/v2/events/${params.eventId}/attendee-metrics/pending`,
             method: 'get',
         }),
 });
@@ -66,7 +66,7 @@ export const ApproveMetrics = () => ({
     key: ['/events/attendee-metrics', 'approve'],
     service: async (params: ApproveMetrics_Params) =>
         ApiService('protected').fetchData<ApproveMetrics_Response>({
-            url: `/events/${params.eventId}/attendee-metrics/${params.metricsId}/approve`,
+            url: `/v2/events/${params.eventId}/attendee-metrics/${params.metricsId}/approve`,
             method: 'post',
         }),
 });
@@ -78,7 +78,7 @@ export const RejectMetrics = () => ({
     key: ['/events/attendee-metrics', 'reject'],
     service: async (params: RejectMetrics_Params, body: RejectMetrics_Body) =>
         ApiService('protected').fetchData<RejectMetrics_Response, RejectMetrics_Body>({
-            url: `/events/${params.eventId}/attendee-metrics/${params.metricsId}/reject`,
+            url: `/v2/events/${params.eventId}/attendee-metrics/${params.metricsId}/reject`,
             method: 'post',
             data: body,
         }),
@@ -97,7 +97,7 @@ export const AdjustMetrics = () => ({
     key: ['/events/attendee-metrics', 'adjust'],
     service: async (params: AdjustMetrics_Params, body: AdjustMetrics_Body) =>
         ApiService('protected').fetchData<AdjustMetrics_Response, AdjustMetrics_Body>({
-            url: `/events/${params.eventId}/attendee-metrics/${params.metricsId}/adjust`,
+            url: `/v2/events/${params.eventId}/attendee-metrics/${params.metricsId}/adjust`,
             method: 'put',
             data: body,
         }),
@@ -109,7 +109,7 @@ export const ApproveAllPending = () => ({
     key: ['/events/attendee-metrics', 'approve-all'],
     service: async (params: ApproveAllPending_Params) =>
         ApiService('protected').fetchData<ApproveAllPending_Response>({
-            url: `/events/${params.eventId}/attendee-metrics/approve-all`,
+            url: `/v2/events/${params.eventId}/attendee-metrics/approve-all`,
             method: 'post',
         }),
 });
@@ -120,7 +120,7 @@ export const GetMetricsTotals = (params: GetMetricsTotals_Params) => ({
     key: ['/events/', params.eventId, '/attendee-metrics/totals'],
     service: async () =>
         ApiService('protected').fetchData<GetMetricsTotals_Response>({
-            url: `/events/${params.eventId}/attendee-metrics/totals`,
+            url: `/v2/events/${params.eventId}/attendee-metrics/totals`,
             method: 'get',
         }),
 });
@@ -135,7 +135,7 @@ export const GetPublicMetrics = (params: GetPublicMetrics_Params) => ({
     key: ['/events/', params.eventId, '/attendee-metrics/public'],
     service: async () =>
         ApiService('public').fetchData<GetPublicMetrics_Response>({
-            url: `/events/${params.eventId}/attendee-metrics/public`,
+            url: `/v2/events/${params.eventId}/attendee-metrics/public`,
             method: 'get',
         }),
 });
@@ -146,7 +146,7 @@ export const GetUserImpact = (params: GetUserImpact_Params) => ({
     key: ['/users/', params.userId, '/impact'],
     service: async () =>
         ApiService('protected').fetchData<GetUserImpact_Response>({
-            url: `/users/${params.userId}/impact`,
+            url: `/v2/users/${params.userId}/impact`,
             method: 'get',
         }),
 });

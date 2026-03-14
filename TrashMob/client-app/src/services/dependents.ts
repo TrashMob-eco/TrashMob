@@ -13,7 +13,7 @@ export const GetMyDependents = (params: GetMyDependents_Params) => ({
     key: ['/users', params.userId, 'dependents'],
     service: async () =>
         ApiService('protected').fetchData<GetMyDependents_Response>({
-            url: `/users/${params.userId}/dependents`,
+            url: `/v2/users/${params.userId}/dependents`,
             method: 'get',
         }),
 });
@@ -25,7 +25,7 @@ export const AddDependent = (params: AddDependent_Params) => ({
     key: ['/users', params.userId, 'dependents', 'create'],
     service: async (body: AddDependent_Body) =>
         ApiService('protected').fetchData<AddDependent_Response, AddDependent_Body>({
-            url: `/users/${params.userId}/dependents`,
+            url: `/v2/users/${params.userId}/dependents`,
             method: 'post',
             data: body,
         }),
@@ -38,7 +38,7 @@ export const UpdateDependent = (params: UpdateDependent_Params) => ({
     key: ['/users', params.userId, 'dependents', 'update'],
     service: async (body: UpdateDependent_Body) =>
         ApiService('protected').fetchData<UpdateDependent_Response, UpdateDependent_Body>({
-            url: `/users/${params.userId}/dependents/${body.id}`,
+            url: `/v2/users/${params.userId}/dependents/${body.id}`,
             method: 'put',
             data: body,
         }),
@@ -50,7 +50,7 @@ export const DeleteDependent = (params: DeleteDependent_Params) => ({
     key: ['/users', params.userId, 'dependents', 'delete'],
     service: async () =>
         ApiService('protected').fetchData<DeleteDependent_Response>({
-            url: `/users/${params.userId}/dependents/${params.dependentId}`,
+            url: `/v2/users/${params.userId}/dependents/${params.dependentId}`,
             method: 'delete',
         }),
 });
@@ -70,7 +70,7 @@ export const GetDependentCurrentWaiver = (params: GetDependentCurrentWaiver_Para
     key: ['/dependents', params.dependentId, 'waiver'],
     service: async () =>
         ApiService('protected').fetchData<GetDependentCurrentWaiver_Response>({
-            url: `/dependents/${params.dependentId}/waiver`,
+            url: `/v2/dependents/${params.dependentId}/waiver`,
             method: 'get',
         }),
 });
@@ -85,7 +85,7 @@ export const GetEventDependentCount = (params: GetEventDependentCount_Params) =>
     key: ['/events', params.eventId, 'dependents', 'count'],
     service: async () =>
         ApiService('protected').fetchData<GetEventDependentCount_Response>({
-            url: `/events/${params.eventId}/dependents/count`,
+            url: `/v2/events/${params.eventId}/dependents/count`,
             method: 'get',
         }),
 });
@@ -97,7 +97,7 @@ export const RegisterEventDependents = (params: RegisterEventDependents_Params) 
     key: ['/events', params.eventId, 'dependents', 'register'],
     service: async (body: RegisterEventDependents_Body) =>
         ApiService('protected').fetchData<RegisterEventDependents_Response, RegisterEventDependents_Body>({
-            url: `/events/${params.eventId}/dependents`,
+            url: `/v2/events/${params.eventId}/dependents`,
             method: 'post',
             data: body,
         }),
@@ -115,7 +115,7 @@ export const GetEventDependents = (params: GetEventDependents_Params) => ({
     key: ['/events', params.eventId, 'dependents'],
     service: async () =>
         ApiService('protected').fetchData<GetEventDependents_Response>({
-            url: `/events/${params.eventId}/dependents`,
+            url: `/v2/events/${params.eventId}/dependents`,
             method: 'get',
         }),
 });
@@ -126,7 +126,7 @@ export const UnregisterEventDependent = (params: UnregisterEventDependent_Params
     key: ['/events', params.eventId, 'dependents', 'unregister'],
     service: async () =>
         ApiService('protected').fetchData<UnregisterEventDependent_Response>({
-            url: `/events/${params.eventId}/dependents/${params.dependentId}`,
+            url: `/v2/events/${params.eventId}/dependents/${params.dependentId}`,
             method: 'delete',
         }),
 });

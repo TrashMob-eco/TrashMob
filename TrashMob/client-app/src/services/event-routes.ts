@@ -14,7 +14,7 @@ export const GetEventRoutes = (params: GetEventRoutes_Params) => ({
     key: ['/events/', params.eventId, '/routes'],
     service: async () =>
         ApiService('public').fetchData<GetEventRoutes_Response>({
-            url: `/events/${params.eventId}/routes`,
+            url: `/v2/events/${params.eventId}/routes`,
             method: 'get',
         }),
 });
@@ -25,7 +25,7 @@ export const GetEventRouteStats = (params: GetEventRouteStats_Params) => ({
     key: ['/events/', params.eventId, '/routes/stats'],
     service: async () =>
         ApiService('public').fetchData<GetEventRouteStats_Response>({
-            url: `/events/${params.eventId}/routes/stats`,
+            url: `/v2/events/${params.eventId}/routes/stats`,
             method: 'get',
         }),
 });
@@ -35,7 +35,7 @@ export const GetMyRoutes = () => ({
     key: ['/users/me/routes'],
     service: async () =>
         ApiService('protected').fetchData<GetMyRoutes_Response>({
-            url: '/users/me/routes',
+            url: '/v2/users/me/routes',
             method: 'get',
         }),
 });
@@ -45,7 +45,7 @@ export type TrimRouteTime_Response = DisplayEventAttendeeRoute;
 export const TrimRouteTime = (params: TrimRouteTime_Params) => ({
     service: async () =>
         ApiService('protected').fetchData<TrimRouteTime_Response>({
-            url: `/routes/${params.routeId}/trim-time`,
+            url: `/v2/eventattendeeroutes/${params.routeId}/trim-time`,
             method: 'put',
             data: { newEndTime: params.newEndTime },
         }),
@@ -56,7 +56,7 @@ export type RestoreRouteTime_Response = DisplayEventAttendeeRoute;
 export const RestoreRouteTime = (params: RestoreRouteTime_Params) => ({
     service: async () =>
         ApiService('protected').fetchData<RestoreRouteTime_Response>({
-            url: `/routes/${params.routeId}/restore-time`,
+            url: `/v2/eventattendeeroutes/${params.routeId}/restore-time`,
             method: 'put',
         }),
 });
@@ -67,7 +67,7 @@ export const GetEventSummaryPrefill = (params: GetEventSummaryPrefill_Params) =>
     key: ['/events/', params.eventId, '/routes/summary-prefill'],
     service: async () =>
         ApiService('protected').fetchData<GetEventSummaryPrefill_Response>({
-            url: `/events/${params.eventId}/routes/summary-prefill?weightUnitId=${params.weightUnitId ?? 1}`,
+            url: `/v2/events/${params.eventId}/routes/summary-prefill?weightUnitId=${params.weightUnitId ?? 1}`,
             method: 'get',
         }),
 });
@@ -78,7 +78,7 @@ export const GetEventAttendeeRoutesByEventId = (params: GetEventAttendeeRoutesBy
     key: ['/eventattendeeroutes/byeventid/', params.eventId],
     service: async () =>
         ApiService('protected').fetchData<GetEventAttendeeRoutesByEventId_Response>({
-            url: `/eventattendeeroutes/byeventid/${params.eventId}`,
+            url: `/v2/eventattendeeroutes/by-event/${params.eventId}`,
             method: 'get',
         }),
 });
@@ -87,7 +87,7 @@ export type UpdateRouteMetadata_Params = { routeId: string };
 export const UpdateRouteMetadata = (params: UpdateRouteMetadata_Params) => ({
     service: async (data: UpdateRouteMetadataRequest) =>
         ApiService('protected').fetchData<DisplayEventAttendeeRoute>({
-            url: `/routes/${params.routeId}`,
+            url: `/v2/eventattendeeroutes/${params.routeId}`,
             method: 'put',
             data,
         }),
@@ -97,7 +97,7 @@ export type DeleteEventAttendeeRoute_Params = { routeId: string };
 export const DeleteEventAttendeeRoute = (params: DeleteEventAttendeeRoute_Params) => ({
     service: async () =>
         ApiService('protected').fetchData<void>({
-            url: `/eventattendeeroutes/${params.routeId}`,
+            url: `/v2/eventattendeeroutes/${params.routeId}`,
             method: 'delete',
         }),
 });

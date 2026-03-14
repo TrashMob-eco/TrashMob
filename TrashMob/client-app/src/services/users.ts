@@ -6,7 +6,7 @@ export const GetAllUsers = () => ({
     key: ['/users', 'all users'],
     service: async () =>
         ApiService('protected').fetchData<GetAllUsers_Response>({
-            url: '/users',
+            url: '/v2/users',
             method: 'get',
         }),
 });
@@ -17,7 +17,7 @@ export const GetUserById = (params: GetUserById_Params) => ({
     key: ['/Users', params],
     service: async () =>
         ApiService('protected').fetchData<GetUserById_Response>({
-            url: `/Users/${params.userId}`,
+            url: `/v2/users/${params.userId}`,
             method: 'get',
         }),
 });
@@ -28,7 +28,7 @@ export const GetUserByEmail = (params: GetUserByEmail_Params) => ({
     key: ['/Users/getuserbyemail', params],
     service: async () =>
         ApiService('protected').fetchData<GetUserByEmail_Response>({
-            url: `/Users/getuserbyemail/${encodeURIComponent(params.email)}`,
+            url: `/v2/users/getuserbyemail/${encodeURIComponent(params.email)}`,
             method: 'get',
         }),
 });
@@ -39,7 +39,7 @@ export const GetUserByObjectId = (params: GetUserByObjectId_Params) => ({
     key: ['/Users/getbyobjectid', params],
     service: async () =>
         ApiService('protected').fetchData<GetUserByObjectId_Response>({
-            url: `/Users/getbyobjectid/${params.objectId}`,
+            url: `/v2/users/getbyobjectid/${params.objectId}`,
             method: 'get',
         }),
 });
@@ -50,7 +50,7 @@ export const UpdateUser = () => ({
     key: ['/users', 'update'],
     service: async (body: UpdateUser_Body) =>
         ApiService('protected').fetchData<UpdateUser_Response, UpdateUser_Body>({
-            url: '/users',
+            url: '/v2/users',
             method: 'put',
             data: body,
         }),
@@ -74,7 +74,7 @@ export const UploadProfilePhoto = () => ({
         const formData = new FormData();
         formData.append('formFile', file);
         return ApiService('protected').fetchData<UploadProfilePhoto_Response>({
-            url: '/users/photo',
+            url: '/v2/users/photo',
             method: 'post',
             data: formData,
             headers: {
