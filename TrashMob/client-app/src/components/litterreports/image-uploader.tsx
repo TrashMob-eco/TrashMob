@@ -9,8 +9,12 @@ import * as MapStore from '@/store/MapStore';
 
 export interface ImageWithLocation {
     id: string;
-    file: File;
+    /** File object for new uploads. Undefined for existing server images. */
+    file?: File;
+    /** Preview URL — either a blob URL (new) or a server image URL (existing). */
     previewUrl: string;
+    /** Server image URL for existing images. */
+    imageUrl?: string;
     latitude: number | null;
     longitude: number | null;
     streetAddress: string;
@@ -27,6 +31,7 @@ interface ImageUploaderProps {
     onImagesChange: (images: ImageWithLocation[]) => void;
     onEditLocation: (imageId: string) => void;
     maxImages?: number;
+    minImages?: number;
     maxSizeMB?: number;
 }
 
@@ -37,6 +42,7 @@ export const ImageUploader = ({
     onImagesChange,
     onEditLocation,
     maxImages = 5,
+    minImages = 0,
     maxSizeMB = 10,
 }: ImageUploaderProps) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -176,13 +182,17 @@ export const ImageUploader = ({
 
     const handleRemoveImage = useCallback(
         (imageId: string) => {
+            if (minImages > 0 && images.length <= minImages) {
+                setError(`A litter report must have at least ${minImages} image.`);
+                return;
+            }
             const imageToRemove = images.find((img) => img.id === imageId);
-            if (imageToRemove) {
+            if (imageToRemove?.file) {
                 URL.revokeObjectURL(imageToRemove.previewUrl);
             }
             onImagesChange(images.filter((img) => img.id !== imageId));
         },
-        [images, onImagesChange],
+        [images, onImagesChange, minImages],
     );
 
     const handleClick = () => {
