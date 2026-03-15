@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'TrashMob/client-app/**'
+      - 'TrashMob/Controllers/**'
       - '.github/workflows/e2e-tests.yml'
   push:
     branches: [main]
     paths:
       - 'TrashMob/client-app/**'
+      - 'TrashMob/Controllers/**'
       - '.github/workflows/e2e-tests.yml'
   workflow_dispatch:
     inputs:
