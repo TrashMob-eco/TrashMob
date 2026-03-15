@@ -177,6 +177,9 @@
             services.AddScoped<IDonationEmailManager, DonationEmailManager>();
             services.AddScoped<IFundraisingAnalyticsManager, FundraisingAnalyticsManager>();
 
+            // Participation Reports
+            services.AddScoped<IParticipationReportService, ParticipationReportService>();
+
             // Newsletter
             services.AddScoped<INewsletterManager, NewsletterManager>();
             services.AddScoped<IUserNewsletterPreferenceManager, UserNewsletterPreferenceManager>();
