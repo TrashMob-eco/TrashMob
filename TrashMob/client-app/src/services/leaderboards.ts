@@ -61,7 +61,7 @@ export const GetLeaderboardOptions = () => ({
     key: ['/leaderboards/options'],
     service: async () =>
         ApiService('public').fetchData<GetLeaderboardOptions_Response>({
-            url: '/leaderboards/options',
+            url: '/v2/leaderboards/options',
             method: 'get',
         }),
 });

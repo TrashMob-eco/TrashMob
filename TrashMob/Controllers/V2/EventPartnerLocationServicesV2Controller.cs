@@ -11,6 +11,7 @@ namespace TrashMob.Controllers.V2
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Web.Resource;
+    using System.Linq;
     using TrashMob.Models;
     using TrashMob.Models.Extensions.V2;
     using TrashMob.Models.Poco;
@@ -29,6 +30,7 @@ namespace TrashMob.Controllers.V2
     public class EventPartnerLocationServicesV2Controller(
         IEventPartnerLocationServiceManager eventPartnerLocationServiceManager,
         IKeyedManager<Event> eventManager,
+        IPartnerLocationManager partnerLocationManager,
         IAuthorizationService authorizationService,
         ILogger<EventPartnerLocationServicesV2Controller> logger) : ControllerBase
     {
@@ -157,6 +159,69 @@ namespace TrashMob.Controllers.V2
             await eventPartnerLocationServiceManager.UpdateAsync(entity, UserId, cancellationToken);
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Accepts or declines an event partner location service.
+        /// </summary>
+        /// <param name="acceptDecline">Either "accept" or "decline".</param>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="partnerLocationId">The partner location ID.</param>
+        /// <param name="serviceTypeId">The service type ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the updated service.</response>
+        /// <response code="403">Not authorized.</response>
+        /// <response code="404">Service or partner not found.</response>
+        [HttpPut("{acceptDecline}/{eventId}/{partnerLocationId}/{serviceTypeId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AcceptOrDecline(
+            string acceptDecline, Guid eventId, Guid partnerLocationId, int serviceTypeId,
+            CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 {Action}EventPartnerLocationService Event={EventId}, PartnerLocation={PartnerLocationId}, ServiceType={ServiceTypeId}",
+                acceptDecline, eventId, partnerLocationId, serviceTypeId);
+
+            if (acceptDecline != "accept" && acceptDecline != "decline")
+            {
+                return Problem(detail: "Action must be 'accept' or 'decline'.", statusCode: StatusCodes.Status400BadRequest, title: "Invalid action");
+            }
+
+            var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationId, cancellationToken);
+            if (partner is null)
+            {
+                return NotFound();
+            }
+
+            var eventPartnerLocationServices =
+                await eventPartnerLocationServiceManager.GetCurrentPartnersAsync(eventId, cancellationToken);
+
+            if (eventPartnerLocationServices is null || !eventPartnerLocationServices.Any(epls =>
+                    epls.ServiceTypeId == serviceTypeId && epls.PartnerLocationId == partnerLocationId))
+            {
+                return NotFound();
+            }
+
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
+            {
+                return Forbid();
+            }
+
+            var eventPartnerLocationService =
+                eventPartnerLocationServices.FirstOrDefault(epls => epls.ServiceTypeId == serviceTypeId);
+
+            eventPartnerLocationService.EventPartnerLocationServiceStatusId = acceptDecline == "accept"
+                ? (int)EventPartnerLocationServiceStatusEnum.Accepted
+                : (int)EventPartnerLocationServiceStatusEnum.Declined;
+
+            var updatedService = await eventPartnerLocationServiceManager
+                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken);
+
+            return Ok(updatedService);
         }
 
         /// <summary>

@@ -33,6 +33,7 @@ namespace TrashMob.Controllers.V2
     public class EventsV2Controller(
         IEventManager eventManager,
         IEventAttendeeManager eventAttendeeManager,
+        IEventSummaryManager eventSummaryManager,
         IAuthorizationService authorizationService,
         ILogger<EventsV2Controller> logger) : ControllerBase
     {
@@ -219,6 +220,90 @@ namespace TrashMob.Controllers.V2
                 PageIndex = pageIndex,
                 TotalPages = pageSize > 0 ? (int)Math.Ceiling(ordered.Count / (double)pageSize) : 1,
             });
+        }
+
+        /// <summary>
+        /// Gets a list of all active events.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the active events.</response>
+        [HttpGet("active")]
+        [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetActiveEvents(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 GetActiveEvents");
+
+            Guid? userId = User.Identity?.IsAuthenticated == true ? UserId : (Guid?)null;
+            var results = await eventManager.GetActiveEventsAsync(userId, cancellationToken);
+
+            return Ok(results.Select(e => e.ToV2Dto()));
+        }
+
+        /// <summary>
+        /// Gets a list of all completed events.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the completed events.</response>
+        [HttpGet("completed")]
+        [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetCompletedEvents(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 GetCompletedEvents");
+
+            var results = await eventManager.GetCompletedEventsAsync(cancellationToken);
+
+            return Ok(results.Select(e => e.ToV2Dto()));
+        }
+
+        /// <summary>
+        /// Gets a list of all events that are not canceled.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the not-canceled events.</response>
+        [HttpGet("notcanceled")]
+        [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetNotCanceledEvents(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 GetNotCanceledEvents");
+
+            Guid? userId = User.Identity?.IsAuthenticated == true ? UserId : (Guid?)null;
+            var results = await eventManager.GetFilteredEventsAsync(new EventFilter(), userId, cancellationToken);
+
+            return Ok(results.Select(e => e.ToV2Dto()));
+        }
+
+        /// <summary>
+        /// Gets event summaries filtered by location.
+        /// </summary>
+        /// <param name="country">The country filter.</param>
+        /// <param name="region">The region filter.</param>
+        /// <param name="city">The city filter.</param>
+        /// <param name="postalCode">The postal code filter.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the filtered event summaries.</response>
+        [HttpGet("summaries")]
+        [ProducesResponseType(typeof(IEnumerable<DisplayEventSummary>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetEventSummaries(
+            [FromQuery] string country = "",
+            [FromQuery] string region = "",
+            [FromQuery] string city = "",
+            [FromQuery] string postalCode = "",
+            CancellationToken cancellationToken = default)
+        {
+            logger.LogInformation("V2 GetEventSummaries Country={Country}, Region={Region}, City={City}, PostalCode={PostalCode}",
+                country, region, city, postalCode);
+
+            var locationFilter = new LocationFilter
+            {
+                City = city,
+                Region = region,
+                Country = country,
+                PostalCode = postalCode,
+            };
+
+            var eventSummaries = await eventSummaryManager.GetFilteredAsync(locationFilter, cancellationToken);
+
+            return Ok(eventSummaries);
         }
 
         /// <summary>

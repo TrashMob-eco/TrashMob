@@ -14,7 +14,7 @@ export const GetMySponsors = () => ({
     key: ['/sponsors/mine'],
     service: async () =>
         ApiService('protected').fetchData<GetMySponsors_Response>({
-            url: `/sponsors/mine`,
+            url: `/v2/sponsors/mine`,
             method: 'get',
         }),
 });
@@ -29,7 +29,7 @@ export const GetSponsorAdoptions = (params: GetSponsorAdoptions_Params) => ({
     key: ['/sponsors/', params.sponsorId, '/adoptions'],
     service: async () =>
         ApiService('protected').fetchData<GetSponsorAdoptions_Response>({
-            url: `/sponsors/${params.sponsorId}/adoptions`,
+            url: `/v2/sponsors/${params.sponsorId}/adoptions`,
             method: 'get',
         }),
 });
@@ -44,7 +44,7 @@ export const GetSponsorCleanupLogs = (params: GetSponsorCleanupLogs_Params) => (
     key: ['/sponsors/', params.sponsorId, '/cleanup-logs'],
     service: async () =>
         ApiService('protected').fetchData<GetSponsorCleanupLogs_Response>({
-            url: `/sponsors/${params.sponsorId}/cleanup-logs`,
+            url: `/v2/sponsors/${params.sponsorId}/cleanup-logs`,
             method: 'get',
         }),
 });
@@ -58,7 +58,7 @@ export const ExportSponsorCleanupLogs = (params: ExportSponsorCleanupLogs_Params
     key: ['/sponsors/', params.sponsorId, '/cleanup-logs/export'],
     service: async () =>
         ApiService('protected').fetchData<Blob>({
-            url: `/sponsors/${params.sponsorId}/cleanup-logs/export`,
+            url: `/v2/sponsors/${params.sponsorId}/cleanup-logs/export`,
             method: 'get',
             responseType: 'blob',
         }),

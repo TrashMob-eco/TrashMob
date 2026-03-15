@@ -54,7 +54,7 @@ export const GetHeroSection = () => ({
     key: ['/cms/hero-section'],
     service: async () =>
         ApiService('public')
-            .fetchData<GetHeroSection_Response>({ url: '/cms/hero-section', method: 'get' })
+            .fetchData<GetHeroSection_Response>({ url: '/v2/cms/hero-section', method: 'get' })
             .then((res) => res.data?.data ?? null)
             .catch(() => null),
 });
@@ -64,7 +64,7 @@ export const GetWhatIsTrashmob = () => ({
     key: ['/cms/what-is-trashmob'],
     service: async () =>
         ApiService('public')
-            .fetchData<GetWhatIsTrashmob_Response>({ url: '/cms/what-is-trashmob', method: 'get' })
+            .fetchData<GetWhatIsTrashmob_Response>({ url: '/v2/cms/what-is-trashmob', method: 'get' })
             .then((res) => res.data?.data ?? null)
             .catch(() => null),
 });
@@ -74,7 +74,7 @@ export const GetGettingStarted = () => ({
     key: ['/cms/getting-started'],
     service: async () =>
         ApiService('public')
-            .fetchData<GetGettingStarted_Response>({ url: '/cms/getting-started', method: 'get' })
+            .fetchData<GetGettingStarted_Response>({ url: '/v2/cms/getting-started', method: 'get' })
             .then((res) => res.data?.data ?? null)
             .catch(() => null),
 });
@@ -132,7 +132,7 @@ export const GetNewsPosts = (params: NewsPostsParams = {}) => ({
         if (params.category) searchParams.set('category', params.category);
         const qs = searchParams.toString();
         return ApiService('public')
-            .fetchData<GetNewsPosts_Response>({ url: `/cms/news-posts${qs ? `?${qs}` : ''}`, method: 'get' })
+            .fetchData<GetNewsPosts_Response>({ url: `/v2/cms/news-posts${qs ? `?${qs}` : ''}`, method: 'get' })
             .then((res) => res.data)
             .catch(() => ({ data: [], meta: { pagination: { page: 1, pageSize: 10, pageCount: 0, total: 0 } } }));
     },
@@ -143,7 +143,7 @@ export const GetNewsPostBySlug = (slug: string) => ({
     key: ['/cms/news-posts', slug],
     service: async () =>
         ApiService('public')
-            .fetchData<GetNewsPostBySlug_Response>({ url: `/cms/news-posts/${slug}`, method: 'get' })
+            .fetchData<GetNewsPostBySlug_Response>({ url: `/v2/cms/news-posts/${slug}`, method: 'get' })
             .then((res) => res.data?.data?.[0] ?? null)
             .catch(() => null),
 });
@@ -153,7 +153,7 @@ export const GetNewsCategories = () => ({
     key: ['/cms/news-categories'],
     service: async () =>
         ApiService('public')
-            .fetchData<GetNewsCategories_Response>({ url: '/cms/news-categories', method: 'get' })
+            .fetchData<GetNewsCategories_Response>({ url: '/v2/cms/news-categories', method: 'get' })
             .then((res) => res.data?.data ?? [])
             .catch(() => []),
 });
@@ -164,6 +164,6 @@ export const GetCmsAdminUrl = () => ({
     key: ['/cms/admin-url'],
     service: async () =>
         ApiService('protected')
-            .fetchData<GetCmsAdminUrl_Response>({ url: '/cms/admin-url', method: 'get' })
+            .fetchData<GetCmsAdminUrl_Response>({ url: '/v2/cms/admin-url', method: 'get' })
             .then((res) => res.data),
 });

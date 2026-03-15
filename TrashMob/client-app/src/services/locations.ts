@@ -100,14 +100,13 @@ export const GetEventPickupLocations = (params: GetEventPickupLocations_Params) 
         }),
 });
 
-// No v2 equivalent — stays on v1
 export type GetEventPickupLocationsByUser_Params = { userId: string };
 export type GetEventPickupLocationsByUser_Response = PickupLocationData[];
 export const GetEventPickupLocationsByUser = (params: GetEventPickupLocationsByUser_Params) => ({
     key: ['/pickupLocations/getbyuser/', params],
     service: async () =>
         ApiService('protected').fetchData<GetEventPickupLocationsByUser_Response>({
-            url: `/pickupLocations/getbyuser/${params.userId}`,
+            url: `/v2/pickuplocations/by-user/${params.userId}`,
             method: 'get',
         }),
 });
@@ -293,7 +292,6 @@ export const UpdateLocationService = () => ({
         }),
 });
 
-// No v2 equivalent — stays on v1
 export type GetPartnerLocationEventServicesByLocationId_Params = {
     locationId: string;
 };
@@ -304,24 +302,22 @@ export const GetPartnerLocationEventServicesByLocationId = (
     key: ['/partnerlocationeventservices/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerLocationEventServicesByLocationId_Response>({
-            url: `/partnerlocationeventservices/${params.locationId}`,
+            url: `/v2/partnerlocationeventservices/${params.locationId}`,
             method: 'get',
         }),
 });
 
-// No v2 equivalent — stays on v1
 export type GetPartnerLocationEventServicesByUserId_Params = { userId: string };
 export type GetPartnerLocationEventServicesByUserId_Response = DisplayPartnerLocationEventData[];
 export const GetPartnerLocationEventServicesByUserId = (params: GetPartnerLocationEventServicesByUserId_Params) => ({
     key: ['/partnerlocationeventservices/getbyuser/', params],
     service: async () =>
         ApiService('protected').fetchData<GetPartnerLocationEventServicesByUserId_Response>({
-            url: `/partnerlocationeventservices/getbyuser/${params.userId}`,
+            url: `/v2/partnerlocationeventservices/by-user/${params.userId}`,
             method: 'get',
         }),
 });
 
-// No v2 equivalent for accept/decline route pattern — stays on v1
 export type UpdateEventPartnerLocationServices_Params = {
     acceptDecline: 'accept' | 'decline';
     eventId: string;
@@ -333,19 +329,18 @@ export const UpdateEventPartnerLocationServices = () => ({
     key: ['/eventpartnerlocationservices/', 'update'],
     service: async (params: UpdateEventPartnerLocationServices_Params) =>
         ApiService('protected').fetchData<UpdateEventPartnerLocationServices_Response>({
-            url: `/eventpartnerlocationservices/${params.acceptDecline}/${params.eventId}/${params.partnerLocationId}/${params.serviceTypeId}`,
+            url: `/v2/eventpartnerlocationservices/${params.acceptDecline}/${params.eventId}/${params.partnerLocationId}/${params.serviceTypeId}`,
             method: 'put',
         }),
 });
 
-// No v2 equivalent — stays on v1
 export type PickupLocationMarkAsPickedUp_Params = { locationId: string };
 export type PickupLocationMarkAsPickedUp_Response = unknown;
 export const PickupLocationMarkAsPickedUp = () => ({
     key: ['/pickuplocations/markpickedup/'],
     service: async (params: PickupLocationMarkAsPickedUp_Params) =>
         ApiService('protected').fetchData<PickupLocationMarkAsPickedUp_Response>({
-            url: `/pickuplocations/markpickedup/${params.locationId}`,
+            url: `/v2/pickuplocations/${params.locationId}/mark-picked-up`,
             method: 'post',
         }),
 });

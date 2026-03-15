@@ -21,13 +21,14 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     {
         private readonly Mock<IEventManager> eventManager = new();
         private readonly Mock<IEventAttendeeManager> eventAttendeeManager = new();
+        private readonly Mock<IEventSummaryManager> eventSummaryManager = new();
         private readonly Mock<IAuthorizationService> authorizationService = new();
         private readonly Mock<ILogger<EventsV2Controller>> logger = new();
         private readonly EventsV2Controller controller;
 
         public EventsV2ControllerTests()
         {
-            controller = new EventsV2Controller(eventManager.Object, eventAttendeeManager.Object, authorizationService.Object, logger.Object);
+            controller = new EventsV2Controller(eventManager.Object, eventAttendeeManager.Object, eventSummaryManager.Object, authorizationService.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),

@@ -51,7 +51,7 @@ export const CheckCommunitySlug = (params: CheckCommunitySlug_Params) => ({
         const queryParams = new URLSearchParams({ slug: params.slug });
         if (params.excludePartnerId) queryParams.append('excludePartnerId', params.excludePartnerId);
         return ApiService('public').fetchData<CheckCommunitySlug_Response>({
-            url: `/communities/check-slug?${queryParams.toString()}`,
+            url: `/v2/communities/check-slug?${queryParams.toString()}`,
             method: 'get',
         });
     },
@@ -93,7 +93,7 @@ export const GetCommunityLitterReports = (params: GetCommunityLitterReports_Para
     key: ['/communities/', params.slug, '/litterreports'],
     service: async () =>
         ApiService('public').fetchData<GetCommunityLitterReports_Response>({
-            url: `/communities/${params.slug}/litterreports`,
+            url: `/v2/communities/${params.slug}/litterreports`,
             method: 'get',
         }),
 });
@@ -118,7 +118,7 @@ export const GetFeaturedCommunities = () => ({
     key: ['/communities/featured'],
     service: async () =>
         ApiService('public').fetchData<GetFeaturedCommunities_Response>({
-            url: '/communities/featured',
+            url: '/v2/communities/featured',
             method: 'get',
         }),
 });
@@ -134,7 +134,7 @@ export const GetCommunityPublicStats = () => ({
     key: ['/communities/public-stats'],
     service: async () =>
         ApiService('public').fetchData<GetCommunityPublicStats_Response>({
-            url: '/communities/public-stats',
+            url: '/v2/communities/public-stats',
             method: 'get',
         }),
 });
@@ -166,7 +166,7 @@ export const GetCommunityDashboard = (params: GetCommunityDashboard_Params) => (
     key: ['/communities/admin/', params.communityId, '/dashboard'],
     service: async () =>
         ApiService('protected').fetchData<GetCommunityDashboard_Response>({
-            url: `/communities/admin/${params.communityId}/dashboard`,
+            url: `/v2/communities/admin/${params.communityId}/dashboard`,
             method: 'get',
         }),
 });
@@ -177,7 +177,7 @@ export const GetCommunityForAdmin = (params: GetCommunityForAdmin_Params) => ({
     key: ['/communities/admin/', params.communityId],
     service: async () =>
         ApiService('protected').fetchData<GetCommunityForAdmin_Response>({
-            url: `/communities/admin/${params.communityId}`,
+            url: `/v2/communities/admin/${params.communityId}`,
             method: 'get',
         }),
 });
@@ -188,7 +188,7 @@ export const UpdateCommunityContent = () => ({
     key: ['/communities/admin/', 'update'],
     service: async (params: UpdateCommunityContent_Params) =>
         ApiService('protected').fetchData<UpdateCommunityContent_Response>({
-            url: `/communities/admin/${params.id}`,
+            url: `/v2/communities/admin/${params.id}`,
             method: 'put',
             data: params,
         }),
@@ -215,7 +215,7 @@ export const SuggestCommunityBounds = (params: SuggestCommunityBounds_Params) =>
     key: ['/communities/admin/', params.communityId, '/suggest-bounds'],
     service: async () =>
         ApiService('protected').fetchData<SuggestCommunityBounds_Response>({
-            url: `/communities/admin/${params.communityId}/suggest-bounds`,
+            url: `/v2/communities/admin/${params.communityId}/suggest-bounds`,
             method: 'get',
         }),
 });
@@ -232,7 +232,7 @@ export const UploadCommunityLogo = () => ({
         const formData = new FormData();
         formData.append('formFile', file);
         return ApiService('protected').fetchData<UploadCommunityLogo_Response>({
-            url: `/communities/admin/${params.communityId}/logo`,
+            url: `/v2/communities/admin/${params.communityId}/logo`,
             method: 'post',
             data: formData,
             headers: { 'Content-Type': 'multipart/form-data' },
@@ -248,7 +248,7 @@ export const UploadCommunityBanner = () => ({
         const formData = new FormData();
         formData.append('formFile', file);
         return ApiService('protected').fetchData<UploadCommunityBanner_Response>({
-            url: `/communities/admin/${params.communityId}/banner`,
+            url: `/v2/communities/admin/${params.communityId}/banner`,
             method: 'post',
             data: formData,
             headers: { 'Content-Type': 'multipart/form-data' },

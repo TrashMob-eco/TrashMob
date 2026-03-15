@@ -13,7 +13,7 @@ export const GetSponsors = (params: GetSponsors_Params) => ({
     key: ['/communities/', params.partnerId, '/sponsors'],
     service: async () =>
         ApiService('protected').fetchData<GetSponsors_Response>({
-            url: `/communities/${params.partnerId}/sponsors`,
+            url: `/v2/communities/${params.partnerId}/sponsors`,
             method: 'get',
         }),
 });
@@ -24,7 +24,7 @@ export const GetSponsor = (params: GetSponsor_Params) => ({
     key: ['/communities/', params.partnerId, '/sponsors/', params.sponsorId],
     service: async () =>
         ApiService('protected').fetchData<GetSponsor_Response>({
-            url: `/communities/${params.partnerId}/sponsors/${params.sponsorId}`,
+            url: `/v2/communities/${params.partnerId}/sponsors/${params.sponsorId}`,
             method: 'get',
         }),
 });
@@ -36,7 +36,7 @@ export const CreateSponsor = () => ({
     key: ['/communities/sponsors', 'create'],
     service: async (params: CreateSponsor_Params, body: CreateSponsor_Body) =>
         ApiService('protected').fetchData<CreateSponsor_Response, CreateSponsor_Body>({
-            url: `/communities/${params.partnerId}/sponsors`,
+            url: `/v2/communities/${params.partnerId}/sponsors`,
             method: 'post',
             data: body,
         }),
@@ -49,7 +49,7 @@ export const UpdateSponsor = () => ({
     key: ['/communities/sponsors', 'update'],
     service: async (params: UpdateSponsor_Params, body: UpdateSponsor_Body) =>
         ApiService('protected').fetchData<UpdateSponsor_Response, UpdateSponsor_Body>({
-            url: `/communities/${params.partnerId}/sponsors/${params.sponsorId}`,
+            url: `/v2/communities/${params.partnerId}/sponsors/${params.sponsorId}`,
             method: 'put',
             data: body,
         }),
@@ -61,7 +61,7 @@ export const DeactivateSponsor = () => ({
     key: ['/communities/sponsors', 'deactivate'],
     service: async (params: DeactivateSponsor_Params) =>
         ApiService('protected').fetchData<DeactivateSponsor_Response>({
-            url: `/communities/${params.partnerId}/sponsors/${params.sponsorId}`,
+            url: `/v2/communities/${params.partnerId}/sponsors/${params.sponsorId}`,
             method: 'delete',
         }),
 });
@@ -78,7 +78,7 @@ export const UploadSponsorLogo = () => ({
         const formData = new FormData();
         formData.append('formFile', file);
         return ApiService('protected').fetchData<UploadSponsorLogo_Response>({
-            url: `/communities/${params.partnerId}/sponsors/${params.sponsorId}/logo`,
+            url: `/v2/communities/${params.partnerId}/sponsors/${params.sponsorId}/logo`,
             method: 'post',
             data: formData,
             headers: { 'Content-Type': 'multipart/form-data' },

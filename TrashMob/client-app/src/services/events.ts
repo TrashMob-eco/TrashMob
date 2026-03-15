@@ -59,7 +59,7 @@ export const GetAllActiveEvents = () => ({
     key: ['/Events/active'],
     service: async () =>
         ApiService('public').fetchData<GetAllActiveEvents_Response>({
-            url: '/Events/active',
+            url: '/v2/events/active',
             method: 'get',
         }),
 });
@@ -69,7 +69,7 @@ export const GetAllCompletedEvents = () => ({
     key: ['/Events/completed'],
     service: async () =>
         ApiService('public').fetchData<GetAllCompletedEvents_Response>({
-            url: '/Events/completed',
+            url: '/v2/events/completed',
             method: 'get',
         }),
 });
@@ -79,7 +79,7 @@ export const GetAllNotCancelledEvents = () => ({
     key: ['/Events/notcanceled'],
     service: async () =>
         ApiService('public').fetchData<GetAllNotCancelledEvents_Response>({
-            url: '/Events/notcanceled',
+            url: '/v2/events/notcanceled',
             method: 'get',
         }),
 });
@@ -106,7 +106,7 @@ export const GetEventsSummaries = (params: GetEventsSummaries_Params) => ({
     key: ['/eventsummaries', params],
     service: async () =>
         ApiService('public').fetchData<GetEventsSummaries_Response>({
-            url: `/eventsummaries?country=${params.country}&region=${params.region}&city=${params.city}&postalCode=${params.postalCode}`,
+            url: `/v2/events/summaries?country=${params.country}&region=${params.region}&city=${params.city}&postalCode=${params.postalCode}`,
             method: 'get',
         }),
 });
