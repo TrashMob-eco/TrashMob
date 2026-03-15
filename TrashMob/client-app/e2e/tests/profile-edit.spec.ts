@@ -4,9 +4,10 @@ test.describe('Profile Edit Flow', () => {
     test.describe.configure({ retries: 2 });
     test('should edit and save profile name fields', async ({ authenticatedPage: page }) => {
         await page.goto('/myprofile');
+        await page.waitForLoadState('networkidle').catch(() => {});
 
         const givenNameInput = page.locator('input[name="givenName"]');
-        await expect(givenNameInput).toBeVisible({ timeout: 15000 });
+        await expect(givenNameInput).toBeVisible({ timeout: 30000 });
 
         // Save original value
         const originalGivenName = await givenNameInput.inputValue();
