@@ -68,9 +68,11 @@ export const ConvertToPartnerDialog = ({
                 </DialogHeader>
                 <div className='space-y-4'>
                     <div>
-                        <label className='text-sm font-medium'>Partner Type</label>
+                        <label htmlFor='partner-type' className='text-sm font-medium'>
+                            Partner Type
+                        </label>
                         <Select value={String(partnerTypeId)} onValueChange={(v) => setPartnerTypeId(Number(v))}>
-                            <SelectTrigger>
+                            <SelectTrigger id='partner-type'>
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>

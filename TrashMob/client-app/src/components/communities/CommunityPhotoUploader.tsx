@@ -152,8 +152,9 @@ export const CommunityPhotoUploader: FC<CommunityPhotoUploaderProps> = ({ slug, 
 
                 <div className='space-y-4 py-4'>
                     {/* Drop zone / file input */}
-                    <div
-                        className='border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors'
+                    <button
+                        type='button'
+                        className='border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors w-full'
                         onClick={() => fileInputRef.current?.click()}
                     >
                         <input
@@ -167,7 +168,7 @@ export const CommunityPhotoUploader: FC<CommunityPhotoUploaderProps> = ({ slug, 
                         <ImagePlus className='h-10 w-10 mx-auto text-muted-foreground mb-2' />
                         <p className='text-sm text-muted-foreground'>Click to select photos or drag and drop</p>
                         <p className='text-xs text-muted-foreground mt-1'>JPEG, PNG, WebP up to 10MB each</p>
-                    </div>
+                    </button>
 
                     {/* Photo previews */}
                     {photos.length > 0 ? (

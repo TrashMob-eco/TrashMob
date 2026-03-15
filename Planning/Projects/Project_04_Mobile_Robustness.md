@@ -67,7 +67,13 @@ Mobile app quality directly impacts user retention and app store visibility. A c
 - [ ] Create manual test matrix for devices and OS versions
 - [ ] Perform regression testing on physical devices
 - [ ] Load test API integrations
-- [ ] Accessibility audit (TalkBack, VoiceOver)
+- [ ] Accessibility audit:
+  - [ ] Audit all XAML views for `SemanticProperties.Description` on interactive elements and images
+  - [ ] Test full app flow with TalkBack (Android) — verify all screens are navigable
+  - [ ] Test full app flow with VoiceOver (iOS) — verify all screens are navigable
+  - [ ] Ensure sufficient color contrast ratios (4.5:1 for text, 3:1 for large text)
+  - [ ] Verify keyboard/switch-access navigation works on Android
+  - [ ] Use Android Accessibility Scanner app to audit key screens
 
 ### Phase 4 - UX Improvements (Substantial)
 
@@ -490,4 +496,4 @@ The following GitHub issues are tracked as part of this project:
 **Last Updated:** March 14, 2026
 **Owner:** Mobile Product Lead + MAUI Developers
 **Status:** In Progress (Phases 1-2 Complete, Phases 3-4 Substantial, Phase 5 Partial, Phase 6 Complete, Phase 7 In Progress — 203 ViewModel tests, Appium UI tests, extensive UX improvements across 15+ PRs, Entra auth switch, app stores updated with new screenshots and content; code health audit underway)
-**Next Review:** Ongoing — remaining items are quality/ops improvements (2 open bugs: #1466, #1459) + Phase 7 code health cleanup
+**Next Review:** Ongoing — remaining items are quality/ops improvements (bugs #1466 and #1459 fixed) + Phase 3 accessibility audit + Phase 7 code health cleanup

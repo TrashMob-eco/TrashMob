@@ -113,8 +113,11 @@ export const EventRouteTimeTrimDialog = ({ route, open, onOpenChange, eventId }:
                     </div>
 
                     <div>
-                        <label className='block text-sm font-medium mb-1'>Remove from end: {trimMinutes} min</label>
+                        <label htmlFor='trim-minutes-event' className='block text-sm font-medium mb-1'>
+                            Remove from end: {trimMinutes} min
+                        </label>
                         <input
+                            id='trim-minutes-event'
                             type='range'
                             min={0}
                             max={Math.max(totalMinutes - 1, 1)}

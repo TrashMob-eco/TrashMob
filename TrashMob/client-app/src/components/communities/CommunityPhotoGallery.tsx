@@ -123,7 +123,8 @@ export const CommunityPhotoGallery: FC<CommunityPhotoGalleryProps> = ({
                     ) : (
                         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
                             {photos.map((photo, index) => (
-                                <div
+                                <button
+                                    type='button'
                                     key={photo.id}
                                     className='relative aspect-square cursor-pointer group overflow-hidden rounded-lg'
                                     onClick={() => setSelectedPhotoIndex(index)}
@@ -134,7 +135,7 @@ export const CommunityPhotoGallery: FC<CommunityPhotoGalleryProps> = ({
                                         className='w-full h-full object-cover transition-transform group-hover:scale-105'
                                     />
                                     <div className='absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors' />
-                                </div>
+                                </button>
                             ))}
                         </div>
                     )}

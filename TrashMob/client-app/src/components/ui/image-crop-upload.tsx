@@ -132,8 +132,9 @@ export function ImageCropUpload({
             <p className='text-xs text-muted-foreground'>Recommended: {recommendedSize}</p>
 
             {/* Current image preview or upload zone */}
-            <div
-                className='relative flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/25 transition-colors hover:border-muted-foreground/50'
+            <button
+                type='button'
+                className='relative flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/25 transition-colors hover:border-muted-foreground/50'
                 style={{ aspectRatio: aspectRatio, maxHeight: aspectRatio >= 2 ? '150px' : '200px' }}
                 onClick={() => !uploading && inputRef.current?.click()}
             >
@@ -157,7 +158,7 @@ export function ImageCropUpload({
                         <span className='text-sm'>Click to upload</span>
                     </div>
                 )}
-            </div>
+            </button>
 
             <input
                 ref={inputRef}

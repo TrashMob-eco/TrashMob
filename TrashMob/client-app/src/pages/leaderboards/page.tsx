@@ -90,9 +90,11 @@ export const LeaderboardsPage = () => {
             {/* Filters */}
             <div className='flex flex-wrap gap-4 mb-6'>
                 <div className='w-48'>
-                    <label className='text-sm font-medium mb-1 block'>Leaderboard Type</label>
+                    <label htmlFor='leaderboard-type' className='text-sm font-medium mb-1 block'>
+                        Leaderboard Type
+                    </label>
                     <Select value={leaderboardType} onValueChange={setLeaderboardType}>
-                        <SelectTrigger>
+                        <SelectTrigger id='leaderboard-type'>
                             <SelectValue placeholder='Select type' />
                         </SelectTrigger>
                         <SelectContent>
@@ -106,9 +108,11 @@ export const LeaderboardsPage = () => {
                 </div>
 
                 <div className='w-40'>
-                    <label className='text-sm font-medium mb-1 block'>Time Range</label>
+                    <label htmlFor='time-range' className='text-sm font-medium mb-1 block'>
+                        Time Range
+                    </label>
                     <Select value={timeRange} onValueChange={setTimeRange}>
-                        <SelectTrigger>
+                        <SelectTrigger id='time-range'>
                             <SelectValue placeholder='Select range' />
                         </SelectTrigger>
                         <SelectContent>
