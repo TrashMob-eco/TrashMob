@@ -5,32 +5,31 @@ const BASE_API = process.env.BASE_URL
     : 'https://dev.trashmob.eco/api';
 
 /**
- * Helper: navigate to event details and wait for it to load.
- * Returns false if the page crashes (intermittent backend 500s).
+ * Event details tests are prone to intermittent crashes due to backend 500s
+ * on the attendee routes endpoint. These tests use soft assertions and skip
+ * when the page crashes rather than failing the CI run.
  */
-async function gotoEventDetails(page: import('@playwright/test').Page, eventId: string): Promise<boolean> {
-    await page.goto(`/eventdetails/${eventId}`);
-    // Wait for either the event content or the error boundary
-    const result = await Promise.race([
-        page.locator('h2, h3').first().waitFor({ state: 'visible', timeout: 30000 }).then(() => 'loaded'),
-        page.getByText('Something went wrong').waitFor({ state: 'visible', timeout: 30000 }).then(() => 'crashed'),
-    ]).catch(() => 'timeout');
-    return result === 'loaded';
-}
-
 test.describe('Event Details', () => {
-    // Intermittent backend 500s can crash this page
-    test.describe.configure({ retries: 2 });
+    test.describe.configure({ retries: 1 });
 
     test('should display event name and details', async ({ authenticatedPage: page }) => {
         const response = await page.request.get(`${BASE_API}/v2/events/active`);
         const events = await response.json();
         test.skip(!Array.isArray(events) || events.length === 0, 'No active events');
 
-        const loaded = await gotoEventDetails(page, events[0].id);
-        test.skip(!loaded, 'Event details page crashed (intermittent backend error)');
+        await page.goto(`/eventdetails/${events[0].id}`);
 
-        await expect(page.locator('h2, h3').first()).toBeVisible();
+        // Wait for either content or error boundary
+        const heading = page.locator('h2, h3').first();
+        const errorBoundary = page.getByText('Something went wrong');
+        await expect(heading.or(errorBoundary)).toBeVisible({ timeout: 30000 });
+
+        // Skip if page crashed
+        if (await errorBoundary.isVisible().catch(() => false)) {
+            test.skip(true, 'Event details page crashed (intermittent backend error)');
+        }
+
+        await expect(heading).toBeVisible();
     });
 
     test('should show register or unregister button', async ({ authenticatedPage: page }) => {
@@ -38,10 +37,19 @@ test.describe('Event Details', () => {
         const events = await response.json();
         test.skip(!Array.isArray(events) || events.length === 0, 'No active events');
 
-        const loaded = await gotoEventDetails(page, events[0].id);
-        test.skip(!loaded, 'Event details page crashed (intermittent backend error)');
+        await page.goto(`/eventdetails/${events[0].id}`);
 
-        await expect(page.getByRole('button', { name: /register|unregister/i })).toBeVisible({ timeout: 10000 });
+        // Give the page time to fully load (attendees query can crash after initial render)
+        const errorBoundary = page.getByText('Something went wrong');
+        const registerBtn = page.getByRole('button', { name: /register|unregister/i });
+
+        await expect(registerBtn.or(errorBoundary)).toBeVisible({ timeout: 30000 });
+
+        if (await errorBoundary.isVisible().catch(() => false)) {
+            test.skip(true, 'Event details page crashed (intermittent backend error)');
+        }
+
+        await expect(registerBtn).toBeVisible();
     });
 
     test('should show share button', async ({ authenticatedPage: page }) => {
@@ -49,9 +57,17 @@ test.describe('Event Details', () => {
         const events = await response.json();
         test.skip(!Array.isArray(events) || events.length === 0, 'No active events');
 
-        const loaded = await gotoEventDetails(page, events[0].id);
-        test.skip(!loaded, 'Event details page crashed (intermittent backend error)');
+        await page.goto(`/eventdetails/${events[0].id}`);
 
-        await expect(page.getByRole('button', { name: /share/i })).toBeVisible({ timeout: 10000 });
+        const errorBoundary = page.getByText('Something went wrong');
+        const shareBtn = page.getByRole('button', { name: /share/i });
+
+        await expect(shareBtn.or(errorBoundary)).toBeVisible({ timeout: 30000 });
+
+        if (await errorBoundary.isVisible().catch(() => false)) {
+            test.skip(true, 'Event details page crashed (intermittent backend error)');
+        }
+
+        await expect(shareBtn).toBeVisible();
     });
 });
