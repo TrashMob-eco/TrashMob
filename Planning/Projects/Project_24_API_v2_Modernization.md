@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1, 2a–2i, 3a–3f complete — 85+ v2 controllers, 110+ DTOs, 993 tests; Phase 3g–3h, 4 remaining) |
+| **Status** | In Progress (Phases 1, 2a–2i, 3a–3g complete — 85+ v2 controllers, 110+ DTOs, 993 tests, zero v1 URLs in frontend; Phase 3h, 4 remaining) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Very Large |
@@ -298,19 +298,27 @@ All 48 frontend service files migrated to v2 API endpoints. Zero v1 URLs remaini
 - 4 siteadmin pages updated for paginated response wrapper (events, users, partners, litter-reports)
 - `AdoptableAreaDto` and `SponsorDto` audit fields fixed for frontend compatibility
 
-#### Phase 3g - Base URL Switch & TypeScript Model Alignment
+#### Phase 3g - TypeScript Model Alignment ✅ COMPLETE (PR #3098)
 
 - [x] `config.ts` — migrated to `/v2/config`
 - [x] `services.ts` — migrated to `/v2/lookups/service-types`
 - [x] `contact.ts` — migrated to `/v2/contactrequest`, `/v2/partner-location-contacts/...`, `/v2/partner-contacts/...`
 - [x] `feedback.ts` — migrated to `/v2/feedback`
 - [x] `message.ts` — migrated to `/v2/messagerequest/`
-- [ ] `index.ts` — **Switch `BASE_URL` from `/api` to `/api/v2.0`** (final step after model alignment)
-- [ ] Update `vite.config.ts` proxy to forward `/api/v2.0` requests
-- [ ] **TypeScript model alignment** — update frontend model classes in `components/Models/` to match v2 DTO shapes
-- [ ] **Smoke test all pages** after base URL switch
+- [x] `weight-units.tsx` — migrated to `/v2/weightunits`
+- [x] **TypeScript model alignment** — 7 model classes updated to match v2 DTO shapes:
+  - `EventData`: added `isEventPublic`, nullable `latitude`/`longitude`
+  - `UserData`: nullable `memberSince`, nullable `latitude`/`longitude`
+  - `TeamMemberData`: added `givenName`, `profilePhotoUrl`; `userName` now required
+  - `LitterReportData`: added `images[]` field (v2 name), `litterImages` deprecated
+  - `LitterImageData`: added `imageUrl` (v2 name), `imageURL` deprecated
+  - `PartnerData`: added `isFeatured`, bounds fields, `boundaryGeoJson`, `regionType`, `countyName`
+  - `PickupLocationData`: added `county`, nullable `latitude`/`longitude`
+- [x] **Field renames** — `.litterImages` → `.images` (37 occurrences in 13 files), `.imageURL` → `.imageUrl` (2 occurrences)
+- [x] **Nullable type fixes** — 8 component files updated for null-safe Google Maps positions, Date constructors, form fields
+- [x] ~~Base URL switch~~ — **Not needed.** All service URLs already include `/v2/` prefix explicitly, so base URL (`/api`) works correctly.
 
-**Phase 3g totals:** 5 service files + base URL switch + smoke test. **Low model impact** — infrastructure endpoints with minimal shape changes.
+**Phase 3g totals:** 1 service file + 7 model classes aligned + 21 component files updated for field renames and nullable types.
 
 #### Phase 3h - Verification & Cleanup
 
@@ -710,8 +718,8 @@ public class CorrelationIdMiddleware(
 
 **Last Updated:** March 14, 2026
 **Owner:** Engineering Team
-**Status:** In Progress — Phases 1–2 complete (72+ v2 controllers, 100+ DTOs, 72+ test suites); Phase 3 (React frontend migration) starting; Phase 4 remaining
-**Next Review:** Phase 3-prereq (error handling & shared infrastructure)
+**Status:** In Progress — Phases 1–2 complete (85+ v2 controllers, 110+ DTOs, 993 tests); Phase 3 complete (zero v1 URLs in frontend, all TS models aligned); Phase 3h (cleanup) and Phase 4 (advanced features) remaining
+**Next Review:** Phase 3h (verification & cleanup)
 
 ---
 
