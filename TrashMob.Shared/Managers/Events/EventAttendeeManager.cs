@@ -25,6 +25,25 @@ namespace TrashMob.Shared.Managers.Events
     {
 
         /// <inheritdoc />
+        public override async Task<EventAttendee> AddAsync(EventAttendee instance, Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            var evt = await eventRepository.GetAsync(instance.EventId, cancellationToken);
+
+            if (evt != null && evt.MaxNumberOfParticipants > 0)
+            {
+                var currentCount = await GetActiveAttendeeCountAsync(instance.EventId, cancellationToken);
+
+                if (currentCount >= evt.MaxNumberOfParticipants)
+                {
+                    throw new InvalidOperationException("This event is full. No more registrations are allowed.");
+                }
+            }
+
+            return await base.AddAsync(instance, userId, cancellationToken);
+        }
+
+        /// <inheritdoc />
         public override async Task<IEnumerable<EventAttendee>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {

@@ -23,6 +23,7 @@ interface RegisterBtnProps {
     isAttending: string;
     isUserLoaded: boolean;
     isEventCompleted: boolean;
+    isEventFull?: boolean;
 }
 
 export const RegisterBtn: FC<RegisterBtnProps> = ({
@@ -31,6 +32,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
     isAttending,
     isUserLoaded,
     isEventCompleted,
+    isEventFull = false,
 }) => {
     const userId = currentUser.id;
     const navigate = useNavigate();
@@ -156,12 +158,15 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
         <>
             <Button
                 className={cn({
-                    hidden: !isUserLoaded || isAttending === 'Yes' || registered || isEventCompleted,
+                    hidden: !isUserLoaded || isAttending === 'Yes' || registered || isEventCompleted || isEventFull,
                 })}
                 onClick={() => handleAttend(eventId)}
             >
                 {registered ? 'Attended!' : 'Attend'}
             </Button>
+            {isEventFull && !isEventCompleted && isAttending !== 'Yes' && !registered ? (
+                <p className='text-sm font-medium text-destructive'>This event is full.</p>
+            ) : null}
 
             {requiredWaivers ? (
                 <WaiverSigningFlow
