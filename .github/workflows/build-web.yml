@@ -12,6 +12,8 @@ on:
             - ready_for_review        
         paths:
             - "TrashMob/client-app/**"
+            - "!TrashMob/client-app/e2e/**"
+            - "!TrashMob/client-app/playwright.config.ts"
    
 jobs:
     eslint-prettier:
