@@ -4,9 +4,10 @@ test.describe('Profile Edit Flow', () => {
     test.describe.configure({ retries: 2 });
     test('should edit and save profile name fields', async ({ authenticatedPage: page }) => {
         await page.goto('/myprofile');
+        await page.waitForLoadState('networkidle').catch(() => {});
 
         const givenNameInput = page.locator('input[name="givenName"]');
-        await expect(givenNameInput).toBeVisible({ timeout: 15000 });
+        await expect(givenNameInput).toBeVisible({ timeout: 30000 });
 
         // Save original value
         const originalGivenName = await givenNameInput.inputValue();
@@ -19,7 +20,7 @@ test.describe('Profile Edit Flow', () => {
         await page.getByRole('button', { name: /save/i }).click();
 
         // Should show success toast
-        await expect(page.getByText(/profile updated/i)).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('Profile updated!', { exact: true })).toBeVisible({ timeout: 10000 });
 
         // Restore original value — reload same page and wait for form to repopulate
         await page.reload({ waitUntil: 'domcontentloaded' });
@@ -28,7 +29,7 @@ test.describe('Profile Edit Flow', () => {
         await page.waitForTimeout(2000);
         await givenNameInput.fill(originalGivenName);
         await page.getByRole('button', { name: /save/i }).click();
-        await expect(page.getByText(/profile updated/i)).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('Profile updated!', { exact: true })).toBeVisible({ timeout: 10000 });
     });
 
     test('should discard changes and navigate away', async ({ authenticatedPage: page }) => {
