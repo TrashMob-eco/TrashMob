@@ -183,13 +183,33 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
     }
 
     [RelayCommand]
-    private void DeleteLitterImage(LitterImageViewModel? litterImageViewModel)
+    private async Task DeleteLitterImage(LitterImageViewModel? litterImageViewModel)
     {
-        if (litterImageViewModel != null)
+        if (litterImageViewModel == null) return;
+
+        if (LitterImageViewModels.Count <= 1)
         {
-            LitterImageViewModels.Remove(litterImageViewModel);
+            var action = await Shell.Current.DisplayActionSheet(
+                "A litter report must have at least one image.",
+                "Cancel",
+                null,
+                "Add another image first",
+                "Delete entire report");
+
+            if (action == "Delete entire report")
+            {
+                await ExecuteAsync(async () =>
+                {
+                    await litterReportManager.DeleteLitterReportAsync(litterReport.Id);
+                    await NotificationService.Notify("Litter report has been deleted.");
+                    await Navigation.PopAsync();
+                }, "Failed to delete the litter report. Please try again.");
+            }
+
+            return;
         }
 
+        LitterImageViewModels.Remove(litterImageViewModel);
         ValidateReport();
     }
 
