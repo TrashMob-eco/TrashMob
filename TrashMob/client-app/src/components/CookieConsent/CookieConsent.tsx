@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { getConsent, setConsent, loadClarity, loadAppInsights } from '@/lib/analytics';
+import { getConsent, setConsent, loadClarity, loadAppInsights, loadGoogleAnalytics } from '@/lib/analytics';
 
 export function CookieConsent() {
     const [visible, setVisible] = useState(() => getConsent() === null);
@@ -11,6 +11,7 @@ export function CookieConsent() {
         setConsent(true);
         loadClarity();
         loadAppInsights();
+        loadGoogleAnalytics();
         setVisible(false);
     }
 

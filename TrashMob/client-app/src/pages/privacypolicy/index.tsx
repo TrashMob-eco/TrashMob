@@ -3,8 +3,8 @@ import { HeroSection } from '@/components/Customization/HeroSection';
 import { Logo } from '@/components/Logo';
 
 export const CurrentPrivacyPolicyVersion: PrivacyPolicyVersion = {
-    versionId: '1.0',
-    versionDate: new Date(2026, 1, 23, 0, 0, 0, 0),
+    versionId: '1.1',
+    versionDate: new Date(2026, 2, 15, 0, 0, 0, 0),
 };
 
 export class PrivacyPolicyVersion {
@@ -136,6 +136,24 @@ export const PrivacyPolicy: React.FC = () => {
                             Privacy Policy
                         </a>
                     </li>
+                    <li>
+                        <strong>Google Analytics</strong> — Website traffic analysis and conversion tracking (with your
+                        consent).{' '}
+                        <a href='https://policies.google.com/privacy' target='_blank' rel='noopener noreferrer'>
+                            Privacy Policy
+                        </a>
+                    </li>
+                    <li>
+                        <strong>Microsoft Clarity</strong> — Anonymized session recordings and heatmaps to improve
+                        usability (with your consent).{' '}
+                        <a
+                            href='https://privacy.microsoft.com/privacystatement'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                        >
+                            Privacy Policy
+                        </a>
+                    </li>
                 </ul>
 
                 <h2 className='font-medium text-3xl'>Data Sharing</h2>
@@ -250,10 +268,26 @@ export const PrivacyPolicy: React.FC = () => {
                 <h2 className='font-medium text-3xl'>Cookies and Tracking</h2>
 
                 <p className='text-lg'>
-                    TrashMob uses minimal cookies, limited to authentication session management. We do not use
-                    third-party advertising cookies, cross-site tracking pixels, or behavioral analytics that follow you
-                    across other websites. Application performance monitoring is handled through Azure Application
-                    Insights, which does not perform cross-site tracking.
+                    TrashMob uses cookies for authentication session management. With your consent, we also use the
+                    following analytics services to understand how the platform is used and to improve the experience:
+                </p>
+
+                <ul>
+                    <li>
+                        <strong>Azure Application Insights</strong> — Performance monitoring and feature usage tracking
+                    </li>
+                    <li>
+                        <strong>Google Analytics (GA4)</strong> — Traffic sources, page views, and conversion tracking
+                    </li>
+                    <li>
+                        <strong>Microsoft Clarity</strong> — Anonymized session recordings and heatmaps
+                    </li>
+                </ul>
+
+                <p className='text-lg'>
+                    These analytics tools are only loaded after you accept cookies via the consent banner. You can
+                    reject non-essential cookies and still use TrashMob with full functionality. We do not use
+                    third-party advertising cookies or cross-site tracking pixels.
                 </p>
 
                 <h2 className='font-medium text-3xl'>Data Security</h2>
