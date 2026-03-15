@@ -15,7 +15,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import * as ToolTips from '@/store/ToolTips';
 import * as MapStore from '@/store/MapStore';
-
 import { CreatePartnerLocations, GetLocationsByPartner } from '@/services/locations';
 import PartnerLocationData from '@/components/Models/PartnerLocationData';
 import { GoogleMap } from '@/components/Map/GoogleMap';
@@ -58,12 +57,7 @@ const formSchema = z.object({
     postalCode: z.string(),
 });
 
-interface PartnerLocationCreateFormProps {
-    azureSubscriptionKey: string;
-}
-
-export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps) => {
-    const { azureSubscriptionKey } = props;
+export const PartnerLocationCreateForm = () => {
     const { partnerId, locationId } = useParams<{ partnerId: string; locationId: string }>() as {
         partnerId: string;
         locationId: string;
@@ -158,7 +152,6 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
         {
             lat: location?.lat,
             long: location?.lng,
-            azureKey: azureSubscriptionKey || '',
         },
         { enabled: false },
     );
@@ -257,14 +250,9 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
                         >
                             <Marker position={location} draggable onDragEnd={handleMarkerDragEnd} />
                         </GoogleMap>
-                        {azureSubscriptionKey ? (
-                            <div style={{ position: 'absolute', top: 8, left: 8 }}>
-                                <AzureSearchLocationInput
-                                    azureKey={azureSubscriptionKey}
-                                    onSelectLocation={handleSelectSearchLocation}
-                                />
-                            </div>
-                        ) : null}
+                        <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                            <AzureSearchLocationInput onSelectLocation={handleSelectSearchLocation} />
+                        </div>
                     </div>
                     <div className='text-[0.8rem] font-medium text-muted my-2'>
                         {location
@@ -288,19 +276,12 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
 
 export const PartnerLocationCreate = () => {
     const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
-    const [azureSubscriptionKey, setAzureSubscriptionKey] = useState<string>();
 
-    useEffect(() => {
-        MapStore.getOption().then((opts) => {
-            setAzureSubscriptionKey(opts.subscriptionKey);
-        });
-    }, []);
-
-    if (isLoading || !azureSubscriptionKey) return null;
+    if (isLoading) return null;
 
     return (
         <APIProvider apiKey={googleApiKey || ''}>
-            <PartnerLocationCreateForm azureSubscriptionKey={azureSubscriptionKey} />
+            <PartnerLocationCreateForm />
         </APIProvider>
     );
 };

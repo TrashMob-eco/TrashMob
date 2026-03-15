@@ -16,15 +16,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { GoogleMap } from '@/components/Map/GoogleMap';
-import {
-    AzureSearchLocationInputWithKey as AzureSearchLocationInput,
-    SearchLocationOption,
-} from '@/components/Map/AzureSearchLocationInput';
+import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
 import TeamData from '@/components/Models/TeamData';
 import { CreateTeam, GetMyTeams, GetTeamsILead } from '@/services/teams';
-import { AzureMapSearchAddressReverse, AzureMapSearchAddressReverse_Params } from '@/services/maps';
+import { ReverseGeocode, ReverseGeocode_Params } from '@/services/maps';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
-import { useGetAzureKey } from '@/hooks/useGetAzureKey';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -54,7 +50,6 @@ const createTeamSchema = z.object({
 type CreateTeamFormValues = z.infer<typeof createTeamSchema>;
 
 const CreateTeamForm = () => {
-    const azureKey = useGetAzureKey();
     const { currentUser } = useLogin();
     const { toast } = useToast();
     const queryClient = useQueryClient();
@@ -139,9 +134,9 @@ const CreateTeamForm = () => {
     const description = form.watch('description');
     const isPublic = form.watch('isPublic');
 
-    const searchAddressReverse = async (params: AzureMapSearchAddressReverse_Params) => {
+    const searchAddressReverse = async (params: ReverseGeocode_Params) => {
         try {
-            const { data } = await AzureMapSearchAddressReverse().service(params);
+            const { data } = await ReverseGeocode().service(params);
             const firstResult = data?.addresses[0];
             if (firstResult) {
                 form.setValue('city', firstResult.address.municipality || '');
@@ -155,15 +150,14 @@ const CreateTeamForm = () => {
     };
 
     useEffect(() => {
-        if (azureKey && latitude && longitude) {
-            const params: AzureMapSearchAddressReverse_Params = {
+        if (latitude && longitude) {
+            const params: ReverseGeocode_Params = {
                 lat: latitude,
                 long: longitude,
-                azureKey: azureKey,
             };
             searchAddressReverse(params);
         }
-    }, [latitude, longitude, azureKey]);
+    }, [latitude, longitude]);
 
     const onSubmit = (formValues: CreateTeamFormValues) => {
         const team = new TeamData();

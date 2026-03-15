@@ -4,8 +4,7 @@ import exifr from 'exifr';
 import { ImagePlus, X, MapPin, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { AzureMapSearchAddressReverse } from '@/services/maps';
-import * as MapStore from '@/store/MapStore';
+import { ReverseGeocode } from '@/services/maps';
 
 export interface ImageWithLocation {
     id: string;
@@ -56,9 +55,7 @@ export const ImageUploader = ({
 
             if (gps?.latitude && gps?.longitude) {
                 // Got GPS, now reverse geocode
-                const opts = await MapStore.getOption();
-                const response = await AzureMapSearchAddressReverse().service({
-                    azureKey: opts.subscriptionKey,
+                const response = await ReverseGeocode().service({
                     lat: gps.latitude,
                     long: gps.longitude,
                 });

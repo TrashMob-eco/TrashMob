@@ -22,7 +22,6 @@ import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map
 import { MapMouseEvent } from '@vis.gl/react-google-maps';
 import { useAzureMapSearchAddressReverse } from '@/hooks/useAzureMapSearchAddressReverse';
 import { MapCircle } from '@/components/Map/MapCircle';
-import { useMapStore } from '@/hooks/useMapStore';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import UserData from '@/components/Models/UserData';
@@ -52,7 +51,6 @@ export const LocationPreference = () => {
     const navigate = useNavigate();
     const { toast } = useToast();
     const { currentUser, handleUserUpdated } = useLogin();
-    const { azureSubscriptionKey } = useMapStore();
     const siteDefaultCenter = useGetDefaultMapCenter();
 
     const { data: user } = useQuery({
@@ -149,7 +147,6 @@ export const LocationPreference = () => {
         {
             lat: latitude,
             long: longitude,
-            azureKey: azureSubscriptionKey,
         },
         { enabled: false },
     );
@@ -241,14 +238,11 @@ export const LocationPreference = () => {
                                                         }
                                                     />
                                                 </GoogleMap>
-                                                {azureSubscriptionKey ? (
-                                                    <div style={{ position: 'absolute', top: 8, left: 8 }}>
-                                                        <AzureSearchLocationInput
-                                                            azureKey={azureSubscriptionKey}
-                                                            onSelectLocation={handleSelectSearchLocation}
-                                                        />
-                                                    </div>
-                                                ) : null}
+                                                <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                                    <AzureSearchLocationInput
+                                                        onSelectLocation={handleSelectSearchLocation}
+                                                    />
+                                                </div>
                                             </div>
                                         ) : null}
                                     </div>

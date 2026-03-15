@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning |
+| **Status** | In Progress (Phases 1-3 Complete; Phase 4 Deferred) |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -37,24 +37,25 @@ This directly supports volunteer retention (people come back when their effort i
 
 ## Scope
 
-### Phase 1 - Backend API + Email Template
-- ☐ Create `ParticipationReport` email HTML template (branded, professional)
-- ☐ Create PDF generation service for the participation report
-- ☐ Add `POST /api/v2/events/{eventId}/participation-report` endpoint (sends report to requesting user)
-- ☐ Add `POST /api/v2/events/{eventId}/participation-report/send-all` endpoint (event lead sends to all verified attendees)
-- ☐ Validate: only send for attendees with Approved or Adjusted metrics
-- ☐ Include PDF attachment in the email
+### Phase 1 - Backend API + Email Template ✅
+- ✅ Create `ParticipationReport` email HTML template (branded, professional)
+- ✅ Create PDF generation service (QuestPDF — branded layout with verification stamp)
+- ✅ Add `POST /api/v2/events/{eventId}/participation-report` endpoint (sends report to requesting user)
+- ✅ Add `POST /api/v2/events/{eventId}/participation-report/send-all` endpoint (event lead sends to all verified attendees)
+- ✅ Validate: only send for attendees with Approved or Adjusted metrics
+- ✅ Include PDF attachment in the email
+- ✅ 9 unit tests for service logic
 
-### Phase 2 - Web UI
-- ☐ Add "Request Participation Report" button on event summary page (visible to attendees with approved metrics)
-- ☐ Add "Send Reports to All Attendees" button for event leads on event summary page
-- ☐ Toast confirmation when report is sent
-- ☐ Disable button if metrics are still Pending or Rejected
+### Phase 2 - Web UI ✅
+- ✅ Add "Request My Report" button on event summary page (visible to attendees with approved metrics)
+- ✅ Add "Send Reports to All Verified Attendees" button for event leads on event summary page
+- ✅ Toast confirmation when report is sent
+- ✅ Status message when metrics are pending/rejected or not yet submitted
 
-### Phase 3 - Mobile UI
-- ☐ Add "Request Participation Report" button on View Event screen (after event completion)
-- ☐ Add "Send Reports to All" option for event leads
-- ☐ Toast/notification confirmation when report is sent
+### Phase 3 - Mobile UI ✅
+- ✅ Add "Request My Report" button on View Event screen (after event completion)
+- ✅ Add "Send All Reports" card for event leads
+- ✅ Notification confirmation when report is sent
 
 ### Phase 4 - Verification (Future)
 - ☐ Generate unique verification URL per report (e.g., `trashmob.eco/verify/{reportId}`)
@@ -297,5 +298,5 @@ The service:
 
 **Last Updated:** 2026-03-15
 **Owner:** Joe / Engineering
-**Status:** Planning
-**Next Review:** Before Phase 1 kickoff
+**Status:** In Progress (Phases 1-3 Complete)
+**Next Review:** When Phase 4 (verification URLs) is prioritized

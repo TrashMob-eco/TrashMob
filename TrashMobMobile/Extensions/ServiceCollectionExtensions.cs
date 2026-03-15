@@ -63,6 +63,7 @@
             services.AddSingleton<IWaiverManager, WaiverManager>();
             services.AddSingleton<IWaiverRestService, WaiverRestService>();
             services.AddSingleton<IRouteTrackingSessionManager, RouteTrackingSessionManager>();
+            services.AddSingleton<IParticipationReportRestService, ParticipationReportRestService>();
 
             // Offline persistence services
             services.AddSingleton<OfflineDatabase>();
