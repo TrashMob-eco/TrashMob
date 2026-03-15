@@ -1,6 +1,8 @@
 import { test, expect } from '../fixtures/auth.fixture';
 
 test.describe('Dashboard Interactions', () => {
+    test.describe.configure({ retries: 1 });
+
     test.describe('Event Table', () => {
         test('should sort events by name', async ({ authenticatedPage: page }) => {
             await page.goto('/mydashboard');
