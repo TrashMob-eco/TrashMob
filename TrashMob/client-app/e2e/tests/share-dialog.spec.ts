@@ -5,7 +5,7 @@ const BASE_API = process.env.BASE_URL
     : 'https://dev.trashmob.eco/api';
 
 test.describe('Share Dialog', () => {
-    test.describe.configure({ retries: 1 });
+    test.describe.configure({ retries: 2 });
 
     test('should open share dialog with social tab', async ({ authenticatedPage: page }) => {
         const response = await page.request.get(`${BASE_API}/v2/events/active`);

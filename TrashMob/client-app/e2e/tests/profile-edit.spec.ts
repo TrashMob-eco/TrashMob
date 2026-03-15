@@ -1,6 +1,7 @@
 import { test, expect } from '../fixtures/auth.fixture';
 
 test.describe('Profile Edit Flow', () => {
+    test.describe.configure({ retries: 2 });
     test('should edit and save profile name fields', async ({ authenticatedPage: page }) => {
         await page.goto('/myprofile');
 

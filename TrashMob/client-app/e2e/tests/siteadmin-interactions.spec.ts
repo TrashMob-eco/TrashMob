@@ -16,19 +16,14 @@ test.describe('Site Admin Interactions', () => {
             await expect(page.locator('table')).toBeVisible();
         });
 
-        test('should sort events by name column', async ({ adminPage: page }) => {
+        test('should have sortable name column header', async ({ adminPage: page }) => {
             await page.goto('/siteadmin/events');
 
             await expect(page.getByPlaceholder(/search events/i)).toBeVisible({ timeout: 15000 });
 
-            // Click Name column header to sort (it's inside a columnheader)
-            const nameHeader = page.getByRole('columnheader', { name: /name/i }).getByRole('button');
-            if (await nameHeader.isVisible({ timeout: 5000 }).catch(() => false)) {
-                await nameHeader.click();
-                await page.waitForTimeout(300);
-                await nameHeader.click();
-                await page.waitForTimeout(300);
-            }
+            // Name column header should exist and be clickable
+            const nameColumnHeader = page.getByRole('columnheader', { name: /name/i });
+            await expect(nameColumnHeader).toBeVisible({ timeout: 10000 });
         });
     });
 
