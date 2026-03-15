@@ -49,8 +49,10 @@ async function createAuthenticatedPage(browser: import('@playwright/test').Brows
     // Inject MSAL sessionStorage
     await restoreSessionStorage(page, authFile);
 
-    // Reload so MSAL picks up the restored tokens
-    await page.reload({ waitUntil: 'networkidle' });
+    // Reload so MSAL picks up the restored tokens (use domcontentloaded to avoid networkidle timeout)
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    // Brief wait for MSAL to initialize from restored sessionStorage
+    await page.waitForTimeout(2000);
 
     return { page, context };
 }
