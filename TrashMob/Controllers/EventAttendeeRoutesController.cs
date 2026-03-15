@@ -46,7 +46,9 @@ namespace TrashMob.Controllers
         {
             var result = await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken);
 
-            var currentUserId = User.Identity?.IsAuthenticated == true ? UserId : Guid.Empty;
+            var currentUserId = User.Identity?.IsAuthenticated == true && HttpContext.Items["UserId"] != null
+                ? UserId
+                : Guid.Empty;
 
             var displayEventAttendeeRoutes = result
                 .Where(r => r.PrivacyLevel != "Private" || r.UserId == currentUserId)
