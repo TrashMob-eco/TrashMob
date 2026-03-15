@@ -47,16 +47,22 @@ public partial class WelcomeViewModel(IAuthService authService, IStatsRestServic
 
             IsBusy = false;
 
-            if (signedIn.Succeeded)
+            if (signedIn.Succeeded && App.CurrentUser != null)
             {
                 // Yield to allow the Android activity to fully resume after
                 // returning from the MSAL browser/webview, preventing a black
                 // screen when navigating immediately after interactive auth.
-                await Task.Delay(100);
+                // 500ms is needed on some Android devices; 100ms was insufficient.
+                await Task.Delay(500);
                 await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
                     await Shell.Current.GoToAsync($"//{nameof(MainTabsPage)}");
                 });
+            }
+            else if (signedIn.Succeeded)
+            {
+                // Auth succeeded but user lookup failed — treat as error
+                await NotificationService.NotifyError("Sign in succeeded but your account could not be loaded. Please try again.");
             }
             else
             {
