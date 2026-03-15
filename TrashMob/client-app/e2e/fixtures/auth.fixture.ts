@@ -41,15 +41,16 @@ async function createAuthenticatedPage(browser: import('@playwright/test').Brows
     });
     const page = await context.newPage();
 
-    // Navigate to the app origin first (needed to set sessionStorage on the right domain)
+    // Navigate to a lightweight page first (needed to set sessionStorage on the right domain)
+    // Avoid the home page which can crash if v2 paginated responses aren't handled yet
     const state: AuthState = JSON.parse(fs.readFileSync(authFile, 'utf-8'));
     const origin = state.sessionStorageOrigin || 'https://dev.trashmob.eco';
-    await page.goto(origin, { waitUntil: 'commit' });
+    await page.goto(`${origin}/aboutus`, { waitUntil: 'commit' });
 
     // Inject MSAL sessionStorage
     await restoreSessionStorage(page, authFile);
 
-    // Reload so MSAL picks up the restored tokens (use domcontentloaded to avoid networkidle timeout)
+    // Reload so MSAL picks up the restored tokens
     await page.reload({ waitUntil: 'domcontentloaded' });
     // Brief wait for MSAL to initialize from restored sessionStorage
     await page.waitForTimeout(2000);
