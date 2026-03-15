@@ -8,8 +8,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AzureMapSearchAddressReverse } from '@/services/maps';
-import * as MapStore from '@/store/MapStore';
+import { ReverseGeocode } from '@/services/maps';
 import type { ImageWithLocation } from './image-uploader';
 
 interface ImageLocationEditorProps {
@@ -20,7 +19,6 @@ interface ImageLocationEditorProps {
 }
 
 export const ImageLocationEditor = ({ open, onOpenChange, image, onSave }: ImageLocationEditorProps) => {
-    const [azureSubscriptionKey, setAzureSubscriptionKey] = useState<string>('');
     const [latitude, setLatitude] = useState<number | null>(null);
     const [longitude, setLongitude] = useState<number | null>(null);
     const [streetAddress, setStreetAddress] = useState('');
@@ -29,13 +27,6 @@ export const ImageLocationEditor = ({ open, onOpenChange, image, onSave }: Image
     const [country, setCountry] = useState('');
     const [postalCode, setPostalCode] = useState('');
     const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
-
-    // Load Azure key
-    useEffect(() => {
-        MapStore.getOption().then((opts) => {
-            setAzureSubscriptionKey(opts.subscriptionKey);
-        });
-    }, []);
 
     // Reset state when image changes
     useEffect(() => {
@@ -52,12 +43,9 @@ export const ImageLocationEditor = ({ open, onOpenChange, image, onSave }: Image
 
     const reverseGeocode = useCallback(
         async (lat: number, lng: number) => {
-            if (!azureSubscriptionKey) return;
-
             setIsReverseGeocoding(true);
             try {
-                const response = await AzureMapSearchAddressReverse().service({
-                    azureKey: azureSubscriptionKey,
+                const response = await ReverseGeocode().service({
                     lat,
                     long: lng,
                 });
@@ -76,7 +64,7 @@ export const ImageLocationEditor = ({ open, onOpenChange, image, onSave }: Image
                 setIsReverseGeocoding(false);
             }
         },
-        [azureSubscriptionKey],
+        [],
     );
 
     const handleSelectSearchLocation = useCallback(
@@ -160,15 +148,12 @@ export const ImageLocationEditor = ({ open, onOpenChange, image, onSave }: Image
                                 />
                             ) : null}
                         </GoogleMap>
-                        {azureSubscriptionKey ? (
-                            <div className='absolute top-2 left-2 z-10'>
-                                <AzureSearchLocationInput
-                                    azureKey={azureSubscriptionKey}
-                                    onSelectLocation={handleSelectSearchLocation}
-                                    placeholder='Search for a location...'
-                                />
-                            </div>
-                        ) : null}
+                        <div className='absolute top-2 left-2 z-10'>
+                            <AzureSearchLocationInput
+                                onSelectLocation={handleSelectSearchLocation}
+                                placeholder='Search for a location...'
+                            />
+                        </div>
                     </div>
 
                     <p className='text-sm text-muted-foreground'>

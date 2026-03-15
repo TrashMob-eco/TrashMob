@@ -1,15 +1,15 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { AzureMapSearchAddressReverse, AzureMapSearchAddressReverse_Params } from '../services/maps';
+import { ReverseGeocode, ReverseGeocode_Params } from '../services/maps';
 import { AzureMapSearchAddressReverseResult } from '../components/Models/AzureMapSearchAddressReverse';
 
 export const useAzureMapSearchAddressReverse = (
-    params: AzureMapSearchAddressReverse_Params,
+    params: ReverseGeocode_Params,
     options: Pick<UseQueryOptions, 'enabled'> = {},
 ) => {
     return useQuery<AzureMapSearchAddressReverseResult>({
-        queryKey: [AzureMapSearchAddressReverse().key, params.lat, params.long],
+        queryKey: [ReverseGeocode().key, params.lat, params.long],
         queryFn: async () => {
-            const response = await AzureMapSearchAddressReverse().service(params);
+            const response = await ReverseGeocode().service(params);
             return response.data;
         },
         ...options,

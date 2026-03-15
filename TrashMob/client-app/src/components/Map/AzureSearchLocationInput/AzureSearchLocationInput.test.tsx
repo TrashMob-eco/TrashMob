@@ -4,9 +4,9 @@ import { vi } from 'vitest';
 import { AzureSearchLocationInput } from './AzureSearchLocationInput';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Mock AzureMapSearchAddress API
+// Mock SearchAddress API
 vi.mock('@/services/maps', () => ({
-    AzureMapSearchAddress: vi.fn(() => ({
+    SearchAddress: vi.fn(() => ({
         key: vi.fn(() => ['mock-query-key']),
         service: vi.fn().mockResolvedValue({
             data: {
@@ -27,12 +27,11 @@ const queryClient = new QueryClient();
 
 describe('AzureSearchLocationInput', () => {
     const mockOnSelectLocation = vi.fn();
-    const azureKey = 'test-azure-key';
 
     const renderComponent = () => {
         render(
             <QueryClientProvider client={queryClient}>
-                <AzureSearchLocationInput azureKey={azureKey} onSelectLocation={mockOnSelectLocation} />
+                <AzureSearchLocationInput onSelectLocation={mockOnSelectLocation} />
             </QueryClientProvider>,
         );
     };
@@ -51,7 +50,7 @@ describe('AzureSearchLocationInput', () => {
     //     await userEvent.type(inputElement, 'cali');
 
     //     // Wait for the search to complete and the service to be called
-    //     await waitFor(() => expect(AzureMapSearchAddress.mock.instances[0].service).toHaveBeenCalled());
+    //     await waitFor(() => expect(SearchAddress.mock.instances[0].service).toHaveBeenCalled());
 
     //     await waitFor(() => expect(screen.getByText('Cali, Dumangas')).toBeInTheDocument());
 

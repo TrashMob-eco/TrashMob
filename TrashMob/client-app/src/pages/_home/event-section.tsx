@@ -1,6 +1,5 @@
 import { Link } from 'react-router';
 import toNumber from 'lodash/toNumber';
-import * as MapStore from '@/store/MapStore';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
 import { EventsMap } from '@/components/events/event-map';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,7 @@ import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItemAlt, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { List, Map, Plus, Pencil, Trash2 } from 'lucide-react';
 import { useGetDefaultMapCenter } from '@/hooks/useGetDefaultMapCenter';
-import { AzureMapSearchAddressReverse } from '@/services/maps';
+import { ReverseGeocode } from '@/services/maps';
 import { GetAllEventsBeingAttendedByUser } from '@/services/events';
 import { GetNotCancelledLitterReports } from '@/services/litter-report';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -53,12 +52,6 @@ export const EventSection = (props: EventSectionProps) => {
     const { isUserLoaded, currentUser } = useLogin();
     const defaultMapCenter = useGetDefaultMapCenter();
 
-    const [azureSubscriptionKey, setAzureSubscriptionKey] = useState<string>('');
-    useEffect(() => {
-        MapStore.getOption().then((opts) => {
-            setAzureSubscriptionKey(opts.subscriptionKey);
-        });
-    });
 
     /** Statuses */
     const statuses = [
@@ -141,11 +134,8 @@ export const EventSection = (props: EventSectionProps) => {
      */
     // Side Effect 1: Reverse Search City from lat,lng
     useEffect(() => {
-        if (!azureSubscriptionKey) return;
-
-        AzureMapSearchAddressReverse()
+        ReverseGeocode()
             .service({
-                azureKey: azureSubscriptionKey,
                 lat: defaultMapCenter.lat,
                 long: defaultMapCenter.lng,
             })
@@ -160,7 +150,7 @@ export const EventSection = (props: EventSectionProps) => {
                 };
                 setSelectedLocation(location);
             });
-    }, [defaultMapCenter, azureSubscriptionKey]);
+    }, [defaultMapCenter]);
 
     // Side Effect 2: When eventStatusFilter change, set timeRangeOption accordingly
     useEffect(() => {
@@ -186,7 +176,6 @@ export const EventSection = (props: EventSectionProps) => {
                         <h3 className='my-0 font-semibold'>Events near</h3>
                         <div className='relative z-10 h-[60px]'>
                             <AzureSearchLocationInput
-                                azureKey={azureSubscriptionKey}
                                 entityType={['Municipality']}
                                 placeholder={selectedLocation ? selectedLocation.address.municipality : 'Location ...'}
                                 className='rounded-none! border-none! shadow-none! bg-transparent!'

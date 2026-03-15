@@ -21,7 +21,6 @@ import * as ToolTips from '@/store/ToolTips';
 import PartnerRequestData from '@/components/Models/PartnerRequestData';
 import * as Constants from '@/components/Models/Constants';
 import { CharacterCounter } from '@/components/ui/character-counter';
-import * as MapStore from '@/store/MapStore';
 import { CreatePartnerRequest } from '@/services/partners';
 import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
 import { Marker } from '@vis.gl/react-google-maps';
@@ -119,11 +118,6 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
         },
     });
 
-    React.useEffect(() => {
-        MapStore.getOption().then((opts) => {
-            setAzureSubscriptionKey(opts.subscriptionKey);
-        });
-    }, []);
 
     const form = useForm<FormInputs>({
         resolver: zodResolver(formSchema),
@@ -164,13 +158,10 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
     const title =
         mode === PartnerRequestMode.SEND ? 'Send invite to join TrashMob as a partner' : 'Apply to become a partner';
 
-    const [azureSubscriptionKey, setAzureSubscriptionKey] = React.useState<string>();
-
     const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse(
         {
             lat: location?.lat,
             long: location?.lng,
-            azureKey: azureSubscriptionKey || '',
         },
         { enabled: false },
     );
@@ -468,14 +459,11 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                                                             onDragEnd={handleMarkerDragEnd}
                                                         />
                                                     </GoogleMap>
-                                                    {azureSubscriptionKey ? (
-                                                        <div style={{ position: 'absolute', top: 8, left: 8 }}>
-                                                            <AzureSearchLocationInput
-                                                                azureKey={azureSubscriptionKey}
-                                                                onSelectLocation={handleSelectSearchLocation}
-                                                            />
-                                                        </div>
-                                                    ) : null}
+                                                    <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                                        <AzureSearchLocationInput
+                                                            onSelectLocation={handleSelectSearchLocation}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </FormControl>
                                         </FormItem>

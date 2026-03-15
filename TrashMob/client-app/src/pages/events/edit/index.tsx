@@ -23,8 +23,7 @@ import { ManageEventDashboardLayout } from '../_layout';
 import { MapMouseEvent, Marker } from '@vis.gl/react-google-maps';
 import * as Constants from '@/components/Models/Constants';
 import EventData from '@/components/Models/EventData';
-import { AzureMapSearchAddressReverse, AzureMapSearchAddressReverse_Params } from '@/services/maps';
-import { useGetAzureKey } from '@/hooks/useGetAzureKey';
+import { ReverseGeocode, ReverseGeocode_Params } from '@/services/maps';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Check, CircleDashed, Crown, Loader2, UserRoundCheck } from 'lucide-react';
@@ -64,7 +63,6 @@ const updateEventSchema = z.object({
 
 export const EditEventPage = () => {
     const { eventId } = useParams<{ eventId: string }>() as { eventId: string };
-    const azureKey = useGetAzureKey();
     const { currentUser } = useLogin();
 
     const {
@@ -195,8 +193,8 @@ export const EditEventPage = () => {
     const latitude = form.watch('latitude');
     const longitude = form.watch('longitude');
 
-    const searchAddressReverse = async (params: AzureMapSearchAddressReverse_Params) => {
-        const { data } = await AzureMapSearchAddressReverse().service(params);
+    const searchAddressReverse = async (params: ReverseGeocode_Params) => {
+        const { data } = await ReverseGeocode().service(params);
         const firstResult = data?.addresses[0];
         if (firstResult) {
             form.setValue('streetAddress', firstResult.address.streetNameAndNumber);
@@ -208,15 +206,14 @@ export const EditEventPage = () => {
     };
 
     useEffect(() => {
-        if (azureKey && latitude && longitude) {
-            const params: AzureMapSearchAddressReverse_Params = {
+        if (latitude && longitude) {
+            const params: ReverseGeocode_Params = {
                 lat: latitude,
                 long: longitude,
-                azureKey: azureKey,
             };
             searchAddressReverse(params);
         }
-    }, [latitude, longitude, azureKey]);
+    }, [latitude, longitude]);
 
     const numAttendees = (eventAttendees || []).length;
     const numLeads = (eventLeads || []).length;

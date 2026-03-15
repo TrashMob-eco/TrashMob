@@ -14,14 +14,11 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import * as ToolTips from '@/store/ToolTips';
-import * as MapStore from '@/store/MapStore';
-
 import { GetEventPickupLocationById, GetEventPickupLocations, UpdateEventPickupLocation } from '@/services/locations';
 import { GoogleMap } from '@/components/Map/GoogleMap';
 import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google-maps';
 import { useAzureMapSearchAddressReverse } from '@/hooks/useAzureMapSearchAddressReverse';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
-import { useGetAzureKey } from '@/hooks/useGetAzureKey';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import PickupLocationData from '@/components/Models/PickupLocationData';
 
@@ -63,7 +60,6 @@ const formSchema = z.object({
 interface PickupLocationEditFormProps {}
 
 export const PickupLocationEditForm = (props: PickupLocationEditFormProps) => {
-    const azureSubscriptionKey = useGetAzureKey();
     const { eventId, locationId } = useParams<{ eventId: string; locationId: string }>() as {
         eventId: string;
         locationId: string;
@@ -189,7 +185,6 @@ export const PickupLocationEditForm = (props: PickupLocationEditFormProps) => {
         {
             lat: latitude,
             long: longitude,
-            azureKey: azureSubscriptionKey || '',
         },
         { enabled: false },
     );
@@ -303,14 +298,11 @@ export const PickupLocationEditForm = (props: PickupLocationEditFormProps) => {
                                     onDragEnd={handleMarkerDragEnd}
                                 />
                             </GoogleMap>
-                            {azureSubscriptionKey ? (
-                                <div style={{ position: 'absolute', top: 8, left: 8 }}>
-                                    <AzureSearchLocationInput
-                                        azureKey={azureSubscriptionKey}
-                                        onSelectLocation={handleSelectSearchLocation}
-                                    />
-                                </div>
-                            ) : null}
+                            <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                <AzureSearchLocationInput
+                                    onSelectLocation={handleSelectSearchLocation}
+                                />
+                            </div>
                         </div>
                     ) : null}
                     <div className='text-[0.8rem] font-medium text-muted my-2'>

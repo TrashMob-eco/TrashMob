@@ -32,10 +32,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { GoogleMap } from '@/components/Map/GoogleMap';
-import {
-    AzureSearchLocationInputWithKey as AzureSearchLocationInput,
-    SearchLocationOption,
-} from '@/components/Map/AzureSearchLocationInput';
+import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
 import TeamData from '@/components/Models/TeamData';
 import TeamMemberData from '@/components/Models/TeamMemberData';
 import TeamPhotoData from '@/components/Models/TeamPhotoData';
@@ -55,9 +52,8 @@ import {
     GetMyTeams,
     GetTeamsILead,
 } from '@/services/teams';
-import { AzureMapSearchAddressReverse, AzureMapSearchAddressReverse_Params } from '@/services/maps';
+import { ReverseGeocode, ReverseGeocode_Params } from '@/services/maps';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
-import { useGetAzureKey } from '@/hooks/useGetAzureKey';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -96,7 +92,6 @@ const formatDate = (date: Date) => {
 
 const EditTeamForm = () => {
     const { teamId } = useParams<{ teamId: string }>() as { teamId: string };
-    const azureKey = useGetAzureKey();
     const { currentUser } = useLogin();
     const { toast } = useToast();
     const queryClient = useQueryClient();
@@ -354,9 +349,9 @@ const EditTeamForm = () => {
     const teamName = form.watch('name');
     const description = form.watch('description');
 
-    const searchAddressReverse = async (params: AzureMapSearchAddressReverse_Params) => {
+    const searchAddressReverse = async (params: ReverseGeocode_Params) => {
         try {
-            const { data } = await AzureMapSearchAddressReverse().service(params);
+            const { data } = await ReverseGeocode().service(params);
             const firstResult = data?.addresses[0];
             if (firstResult) {
                 form.setValue('city', firstResult.address.municipality || '');
@@ -370,15 +365,14 @@ const EditTeamForm = () => {
     };
 
     useEffect(() => {
-        if (azureKey && latitude && longitude) {
-            const params: AzureMapSearchAddressReverse_Params = {
+        if (latitude && longitude) {
+            const params: ReverseGeocode_Params = {
                 lat: latitude,
                 long: longitude,
-                azureKey: azureKey,
             };
             searchAddressReverse(params);
         }
-    }, [latitude, longitude, azureKey]);
+    }, [latitude, longitude]);
 
     const onSubmit = (formValues: EditTeamFormValues) => {
         if (!team) return;
