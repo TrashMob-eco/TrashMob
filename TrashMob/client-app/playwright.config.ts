@@ -1,4 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Load .env.local for test credentials (gitignored)
+dotenv.config({ path: path.resolve(__dirname, '.env.local') });
 
 /**
  * Playwright E2E Test Configuration
@@ -6,6 +11,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
     testDir: './e2e/tests',
+    globalSetup: './e2e/global-setup.ts',
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
