@@ -298,9 +298,11 @@ export const SiteAdminProspectDetail = () => {
                             </DialogHeader>
                             <div className='space-y-4'>
                                 <div>
-                                    <label className='text-sm font-medium'>Type</label>
+                                    <label htmlFor='activity-type' className='text-sm font-medium'>
+                                        Type
+                                    </label>
                                     <Select value={activityType} onValueChange={setActivityType}>
-                                        <SelectTrigger>
+                                        <SelectTrigger id='activity-type'>
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -313,16 +315,22 @@ export const SiteAdminProspectDetail = () => {
                                     </Select>
                                 </div>
                                 <div>
-                                    <label className='text-sm font-medium'>Subject</label>
+                                    <label htmlFor='activity-subject' className='text-sm font-medium'>
+                                        Subject
+                                    </label>
                                     <Input
+                                        id='activity-subject'
                                         value={activitySubject}
                                         onChange={(e) => setActivitySubject(e.target.value)}
                                         placeholder='Brief subject'
                                     />
                                 </div>
                                 <div>
-                                    <label className='text-sm font-medium'>Details</label>
+                                    <label htmlFor='activity-details' className='text-sm font-medium'>
+                                        Details
+                                    </label>
                                     <Textarea
+                                        id='activity-details'
                                         value={activityDetails}
                                         onChange={(e) => setActivityDetails(e.target.value)}
                                         rows={3}

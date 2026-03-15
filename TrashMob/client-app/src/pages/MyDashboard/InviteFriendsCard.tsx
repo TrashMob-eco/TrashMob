@@ -150,8 +150,11 @@ export const InviteFriendsCard = () => {
 
                 {/* Email Input */}
                 <div className='space-y-2'>
-                    <label className='text-sm font-medium'>Email Addresses</label>
+                    <label htmlFor='invite-emails' className='text-sm font-medium'>
+                        Email Addresses
+                    </label>
                     <Textarea
+                        id='invite-emails'
                         placeholder='Enter email addresses (one per line, or separated by commas)'
                         value={emailText}
                         onChange={(e) => setEmailText(e.target.value)}

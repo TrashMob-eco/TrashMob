@@ -104,11 +104,11 @@ export function OutreachPreviewDialog({ prospectId, open, onOpenChange }: Outrea
                         {preview.subject && !preview.subject.includes('complete') ? (
                             <>
                                 <div>
-                                    <label className='text-sm font-medium'>Subject</label>
+                                    <span className='text-sm font-medium'>Subject</span>
                                     <p className='text-sm border rounded-md p-2 bg-muted/50'>{preview.subject}</p>
                                 </div>
                                 <div>
-                                    <label className='text-sm font-medium'>Email Body</label>
+                                    <span className='text-sm font-medium'>Email Body</span>
                                     <div
                                         className='border rounded-md p-4 bg-white text-sm prose prose-sm max-w-none'
                                         dangerouslySetInnerHTML={{ __html: preview.htmlBody }}

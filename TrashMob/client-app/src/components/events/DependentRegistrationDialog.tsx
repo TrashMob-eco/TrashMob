@@ -94,9 +94,11 @@ export const DependentRegistrationDialog: FC<DependentRegistrationDialogProps> =
                     {(dependents || []).map((dep) => (
                         <label
                             key={dep.id}
+                            htmlFor={`dep-${dep.id}`}
                             className='flex items-center gap-3 rounded-md border p-3 cursor-pointer hover:bg-accent'
                         >
                             <Checkbox
+                                id={`dep-${dep.id}`}
                                 checked={selectedIds.has(dep.id)}
                                 onCheckedChange={() => toggleDependent(dep.id)}
                             />

@@ -293,9 +293,11 @@ export const PartnerCommunityAreasGenerate = () => {
                             )}
                             <div className='flex items-end gap-4'>
                                 <div className='flex-1'>
-                                    <label className='text-sm font-medium mb-2 block'>Category</label>
+                                    <label htmlFor='area-category' className='text-sm font-medium mb-2 block'>
+                                        Category
+                                    </label>
                                     <Select value={category} onValueChange={setCategory} disabled={!hasBounds}>
-                                        <SelectTrigger>
+                                        <SelectTrigger id='area-category'>
                                             <SelectValue placeholder='Select a category...' />
                                         </SelectTrigger>
                                         <SelectContent>

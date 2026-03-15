@@ -166,7 +166,8 @@ export const EventPhotoGallery: FC<EventPhotoGalleryProps> = ({
                     ) : photos && photos.length > 0 ? (
                         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
                             {photos.map((photo, index) => (
-                                <div
+                                <button
+                                    type='button'
                                     key={photo.id}
                                     className='relative group rounded-lg overflow-hidden border cursor-pointer bg-muted'
                                     onClick={() => setSelectedPhotoIndex(index)}
@@ -184,7 +185,7 @@ export const EventPhotoGallery: FC<EventPhotoGalleryProps> = ({
                                             Under Review
                                         </Badge>
                                     ) : null}
-                                </div>
+                                </button>
                             ))}
                         </div>
                     ) : (
