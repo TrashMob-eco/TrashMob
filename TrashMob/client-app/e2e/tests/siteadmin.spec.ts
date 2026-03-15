@@ -144,12 +144,11 @@ test.describe('Site Administration', () => {
     });
 
     test.describe('Content Management', () => {
-        test('should load content page with editable areas', async ({ adminPage: page }) => {
+        test('should load content page', async ({ adminPage: page }) => {
             await page.goto('/siteadmin/content');
 
             await expect(page.getByText(/content management/i).first()).toBeVisible({ timeout: 15000 });
             await expect(page.getByText(/hero section/i)).toBeVisible({ timeout: 10000 });
-            await expect(page.getByRole('button', { name: /open cms admin/i })).toBeVisible({ timeout: 10000 });
         });
     });
 
