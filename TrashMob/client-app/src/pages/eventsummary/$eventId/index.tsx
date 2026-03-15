@@ -29,7 +29,7 @@ import {
 } from '@/services/locations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
-import { Ellipsis, Loader2, Pencil, Plus, RefreshCw, SquareX } from 'lucide-react';
+import { Ellipsis, FileText, Loader2, Mail, Pencil, Plus, RefreshCw, SquareX } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import EventSummaryData from '@/components/Models/EventSummaryData';
@@ -40,6 +40,8 @@ import { GetEventSummaryPrefill } from '@/services/event-routes';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AssociatedLitterReports } from '@/components/eventsummary/associated-litter-reports';
+import { GetMyMetrics } from '@/services/event-attendee-metrics';
+import { RequestParticipationReport, SendAllParticipationReports } from '@/services/participation-report';
 
 const upsertEventSummarySchema = z.object({
     actualNumberOfAttendees: z.number(),
@@ -176,6 +178,55 @@ export const EditEventSummary = () => {
     });
 
     /** End of Hauling Partners */
+
+    /** Participation Reports */
+    const { data: myMetrics } = useQuery({
+        queryKey: GetMyMetrics({ eventId }).key,
+        queryFn: GetMyMetrics({ eventId }).service,
+        select: (res) => res.data,
+    });
+
+    const hasApprovedMetrics = myMetrics && (myMetrics.status === 'Approved' || myMetrics.status === 'Adjusted');
+
+    const requestReport = useMutation({
+        mutationKey: RequestParticipationReport().key,
+        mutationFn: RequestParticipationReport().service,
+        onSuccess: () => {
+            toast({
+                variant: 'primary',
+                title: 'Report sent!',
+                description: 'Check your email for the participation report with PDF attachment.',
+            });
+        },
+        onError: (error: Error) => {
+            toast({
+                variant: 'destructive',
+                title: 'Could not send report',
+                description: error.message,
+            });
+        },
+    });
+
+    const sendAllReports = useMutation({
+        mutationKey: SendAllParticipationReports().key,
+        mutationFn: SendAllParticipationReports().service,
+        onSuccess: (res) => {
+            const count = res.data?.sentCount ?? 0;
+            toast({
+                variant: 'primary',
+                title: 'Reports sent!',
+                description: `Sent ${count} participation report${count !== 1 ? 's' : ''} to verified attendees.`,
+            });
+        },
+        onError: (error: Error) => {
+            toast({
+                variant: 'destructive',
+                title: 'Could not send reports',
+                description: error.message,
+            });
+        },
+    });
+    /** End of Participation Reports */
 
     const form = useForm<z.infer<typeof upsertEventSummarySchema>>({
         resolver: zodResolver(upsertEventSummarySchema),
@@ -609,6 +660,50 @@ export const EditEventSummary = () => {
                     </CardHeader>
                     <CardContent>
                         <AssociatedLitterReports eventId={eventId} isOwner={isOwner} />
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Participation Reports</CardTitle>
+                        <CardDescription>
+                            Send official volunteer participation reports as proof of hours for school, court, or
+                            employer requirements. Reports are only available for attendees with approved metrics.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className='flex flex-col gap-3 sm:flex-row sm:items-center'>
+                        {hasApprovedMetrics ? (
+                            <Button
+                                variant='outline'
+                                onClick={() => requestReport.mutate({ eventId })}
+                                disabled={requestReport.isPending}
+                            >
+                                {requestReport.isPending ? (
+                                    <Loader2 className='h-4 w-4 mr-2 animate-spin' />
+                                ) : (
+                                    <FileText className='h-4 w-4 mr-2' />
+                                )}
+                                Request My Report
+                            </Button>
+                        ) : (
+                            <p className='text-sm text-muted-foreground'>
+                                {myMetrics
+                                    ? `Your metrics are ${myMetrics.status?.toLowerCase() ?? 'pending'}. Reports are available once approved by the event lead.`
+                                    : 'Submit your metrics for this event to be eligible for a participation report.'}
+                            </p>
+                        )}
+                        {isOwner ? (
+                            <Button
+                                onClick={() => sendAllReports.mutate({ eventId })}
+                                disabled={sendAllReports.isPending}
+                            >
+                                {sendAllReports.isPending ? (
+                                    <Loader2 className='h-4 w-4 mr-2 animate-spin' />
+                                ) : (
+                                    <Mail className='h-4 w-4 mr-2' />
+                                )}
+                                Send Reports to All Verified Attendees
+                            </Button>
+                        ) : null}
                     </CardContent>
                 </Card>
                 <Card>
