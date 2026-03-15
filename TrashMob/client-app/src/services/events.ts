@@ -194,12 +194,12 @@ export const UpdateEventSummary = () => ({
 });
 
 export type GetEventAttendees_Params = { eventId: string };
-export type GetEventAttendees_Response = UserData[];
+export type GetEventAttendees_Response = PagedResponse<EventAttendeeData>;
 export const GetEventAttendees = (params: GetEventAttendees_Params) => ({
     key: ['/eventattendees', params.eventId],
     service: async () =>
         ApiService('protected').fetchData<GetEventAttendees_Response>({
-            url: `/v2/events/${params.eventId}/attendees`,
+            url: `/v2/events/${params.eventId}/attendees?pageSize=100`,
             method: 'get',
         }),
 });

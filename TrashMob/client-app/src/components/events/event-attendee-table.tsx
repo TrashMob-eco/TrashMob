@@ -17,12 +17,12 @@ import { GetEventAttendeeWaiverStatus } from '@/services/user-waivers';
 import { GetEventDependents } from '@/services/dependents';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { PaperWaiverUploadDialog } from '@/components/Waivers';
-import UserData from '../Models/UserData';
+import EventAttendeeData from '../Models/EventAttendeeData';
 import EventData from '../Models/EventData';
 import { ChevronUp, ChevronDown, MoreHorizontal, FileText, Upload, CircleUserRound, Info } from 'lucide-react';
 
 interface EventAttendeeTableProps {
-    users: UserData[];
+    users: EventAttendeeData[];
     event: EventData;
 }
 
@@ -34,7 +34,7 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
 
     // State for paper waiver upload dialog
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-    const [selectedUserForUpload, setSelectedUserForUpload] = useState<UserData | null>(null);
+    const [selectedUserForUpload, setSelectedUserForUpload] = useState<EventAttendeeData | null>(null);
 
     // Fetch event leads to determine who has lead status
     const { data: eventLeads } = useQuery({
@@ -130,7 +130,7 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
         demoteMutation.mutate({ eventId: event.id, userId });
     };
 
-    const handleOpenUploadDialog = (user: UserData) => {
+    const handleOpenUploadDialog = (user: EventAttendeeData) => {
         setSelectedUserForUpload(user);
         setUploadDialogOpen(true);
     };

@@ -94,10 +94,10 @@ export const TeamsPage = () => {
     const { isUserLoaded } = useLogin();
     const [viewMode, setViewMode] = useState<ViewMode>('list');
 
-    const { data: teams, isLoading } = useQuery<AxiosResponse<TeamData[]>, unknown, TeamData[]>({
+    const { data: teams, isLoading } = useQuery({
         queryKey: GetPublicTeams().key,
         queryFn: GetPublicTeams().service,
-        select: (res) => res.data,
+        select: (res) => res.data?.items || [],
     });
 
     return (

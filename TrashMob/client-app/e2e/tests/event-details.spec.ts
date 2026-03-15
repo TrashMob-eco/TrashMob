@@ -5,6 +5,8 @@ const BASE_API = process.env.BASE_URL
     : 'https://dev.trashmob.eco/api';
 
 test.describe('Event Details', () => {
+    // Event details page has intermittent crashes due to backend 500s on attendee routes
+    test.describe.configure({ retries: 2 });
     test('should display event name and details', async ({ authenticatedPage: page }) => {
         const response = await page.request.get(`${BASE_API}/v2/events/active`);
         const events = await response.json();

@@ -1,6 +1,7 @@
 // Teams API service
 
 import { ApiService } from '.';
+import { PagedResponse } from '../lib/api-errors';
 import EventData from '../components/Models/EventData';
 import TeamData from '../components/Models/TeamData';
 import TeamEventData from '../components/Models/TeamEventData';
@@ -51,7 +52,7 @@ export type GetPublicTeams_Params = {
     longitude?: number;
     radiusMiles?: number;
 };
-export type GetPublicTeams_Response = TeamData[];
+export type GetPublicTeams_Response = PagedResponse<TeamData>;
 export const GetPublicTeams = (params?: GetPublicTeams_Params) => ({
     key: ['/teams', params],
     service: async () => {

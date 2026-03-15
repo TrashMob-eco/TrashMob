@@ -29,7 +29,7 @@ export const useEditEventPageQueries = (eventId: string) => {
     const { data: eventAttendees } = useQuery({
         queryKey: GetEventAttendees({ eventId }).key,
         queryFn: GetEventAttendees({ eventId }).service,
-        select: (res) => res.data,
+        select: (res) => res.data?.items || [],
     });
 
     const { data: eventLeads } = useQuery({
