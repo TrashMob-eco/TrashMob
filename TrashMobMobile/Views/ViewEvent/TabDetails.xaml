@@ -134,9 +134,6 @@
                     <Label Text="{Binding EventViewModel.Description}"
                            FontSize="Micro"
                            TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                    <Label Text="{Binding WhatToExpect}"
-                           FontSize="Micro"
-                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                 </VerticalStackLayout>
             </Border>
 
