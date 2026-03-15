@@ -78,9 +78,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private string spotsLeft = string.Empty;
 
     [ObservableProperty]
-    private string whatToExpect = string.Empty;
-
-    [ObservableProperty]
     private bool arePartnersAvailable;
 
     [ObservableProperty]
@@ -249,9 +246,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             // Check for crashed/interrupted route sessions for this event
             await CheckForInterruptedSessionsAsync(eventId);
-
-            WhatToExpect =
-                "What to Expect:\n\u2022 Cleanup supplies provided\n\u2022 Meet fellow community members\n\u2022 Contribute to a cleaner environment";
 
             // Load only what the Details tab needs — registration status, attendee count, and metrics
             await Task.WhenAll(SetRegistrationOptions(), GetAttendeeCount());
