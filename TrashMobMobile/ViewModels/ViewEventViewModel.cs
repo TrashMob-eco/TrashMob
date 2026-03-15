@@ -29,7 +29,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IEventAttendeeMetricsRestService eventAttendeeMetricsRestService,
     RoutePointWriter routePointWriter,
     SyncQueue syncQueue,
-    IDependentRestService dependentRestService) : BaseViewModel(notificationService)
+    IDependentRestService dependentRestService,
+    IParticipationReportRestService participationReportRestService) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
@@ -178,6 +179,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     [ObservableProperty]
     private bool showLeadMetricsActions;
+
+    [ObservableProperty]
+    private bool canRequestReport;
+
+    [ObservableProperty]
+    private bool canSendAllReports;
 
     private EventAttendeeMetrics? existingMetrics;
 
@@ -1245,6 +1252,26 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         HasDensityData = EventAttendeeRoutes.Any(r => r.DensityGramsPerMeter is not null and > 0);
     }
 
+    [RelayCommand]
+    private async Task RequestParticipationReport()
+    {
+        await ExecuteAsync(async () =>
+        {
+            await participationReportRestService.RequestReportAsync(mobEvent.Id);
+            await NotificationService.Notify("Participation report sent! Check your email.");
+        }, "Failed to send participation report. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task SendAllParticipationReports()
+    {
+        await ExecuteAsync(async () =>
+        {
+            var count = await participationReportRestService.SendAllReportsAsync(mobEvent.Id);
+            await NotificationService.Notify($"Sent {count} participation report{(count != 1 ? "s" : "")} to verified attendees.");
+        }, "Failed to send participation reports. Please try again.");
+    }
+
     private async Task LoadMyMetrics()
     {
         if (!mobEvent.IsCompleted())
@@ -1286,7 +1313,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             PendingMetricsCount = PendingMetricsList.Count;
             ShowLeadMetricsActions = PendingMetricsCount > 0;
+            CanSendAllReports = true;
         }
+
+        // Show report button if metrics are approved or adjusted
+        CanRequestReport = existingMetrics != null
+            && (existingMetrics.Status == "Approved" || existingMetrics.Status == "Adjusted");
     }
 
     private static string FormatWeight(decimal? weight, int? unitId)
