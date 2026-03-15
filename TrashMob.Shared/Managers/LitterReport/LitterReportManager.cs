@@ -364,15 +364,22 @@ namespace TrashMob.Shared.Managers.LitterReport
         public async Task<LitterReport> UpdateAsync(FullLitterReport instance, Guid userId,
             CancellationToken cancellationToken)
         {
-            var existingInstance =
-                await Repo.GetWithNoTrackingAsync(instance.Id, cancellationToken);
+            var existingInstance = Repo.Get(l => l.Id == instance.Id, withNoTracking: false)
+                .Include(l => l.LitterImages)
+                .FirstOrDefault();
 
             if (existingInstance is null)
             {
                 return null;
             }
 
-            var updateInstance = await base.UpdateAsync(instance.ToLitterReport(), userId, cancellationToken);
+            existingInstance.Name = instance.Name;
+            existingInstance.Description = instance.Description;
+            existingInstance.LitterReportStatusId = instance.LitterReportStatusId;
+            existingInstance.LastUpdatedByUserId = userId;
+            existingInstance.LastUpdatedDate = DateTime.UtcNow;
+
+            var updateInstance = await base.UpdateAsync(existingInstance, userId, cancellationToken);
 
             // Delete images not in the updated report
             var ExistinglitterImages = await litterImageManager.GetByParentIdAsync(instance.Id, cancellationToken);
