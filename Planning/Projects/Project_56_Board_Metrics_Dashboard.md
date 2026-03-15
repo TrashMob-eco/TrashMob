@@ -36,15 +36,16 @@ Because Claude can handle the implementation work (API integrations, UI componen
 
 ## Scope
 
-### Phase 1 - Platform Metrics (App Insights + Sentry)
+### Phase 1 - Platform Metrics + Impact Stats (App Insights + Sentry + DB)
 - ☐ Admin-only dashboard page at `/admin/board-metrics`
 - ☐ App Insights integration: DAU, WAU, MAU, events created, registrations, litter reports
 - ☐ Sentry integration: crash-free rate, error count, mobile session count
+- ☐ Impact metrics from app database: total bags collected, total weight cleaned, total volunteer hours, total events completed
 - ☐ Date range selector (last 30d, last quarter, custom)
 - ☐ Simple trend charts for each metric
 
 ### Phase 2 - Traffic Analytics + Google Ads (GA4 + Clarity)
-- ☐ Add Google Analytics 4 to the site (gtag.js snippet in `index.html`)
+- ✅ Add Google Analytics 4 to the site (PR #3110 — gtag.js with cookie consent, prod-only)
 - ☐ Configure GA4 conversion events: signup, event registration, event creation, litter report
 - ☐ GA4 dashboard integration: traffic sources, top channels, conversion rates, campaign performance
 - ☐ Link GA4 to Google Ads account (and apply for Google Ad Grants — $10K/month free search ads for nonprofits)
@@ -106,7 +107,7 @@ Because Claude can handle the implementation work (API integrations, UI componen
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
 | **QuickBooks API complexity/cost** | Medium | Medium | Phase 3 — defer if API costs are prohibitive; manual entry fallback |
-| **Microsoft Clarity lacks a public API** | High | Low | Use Clarity's reporting export or embed Clarity's own dashboard via iframe |
+| **Clarity API only returns last 1-3 days** | High | Medium | Poll daily via scheduled job and store results in snapshot table for historical access |
 | **API rate limits on free tiers** | Medium | Low | Cache responses server-side; refresh daily, not on every page load |
 | **Sensitive financial data exposure** | Low | High | Admin-only route with ValidUser + Admin policy; no financial data in client bundle unless authenticated |
 | **External API breaking changes** | Medium | Medium | Isolate each integration behind its own service class; version-pin API clients |
@@ -137,6 +138,12 @@ public class BoardMetricsSnapshot : KeyedModel
     public int EventsCreated { get; set; }
     public int Registrations { get; set; }
     public int LitterReports { get; set; }
+
+    // Impact metrics (from app database)
+    public int TotalBagsCollected { get; set; }
+    public decimal TotalWeightCleaned { get; set; }
+    public decimal TotalVolunteerHours { get; set; }
+    public int TotalEventsCompleted { get; set; }
 
     // Mobile metrics
     public decimal CrashFreeRate { get; set; }
@@ -354,11 +361,12 @@ None — this is an admin-only web feature.
 - **Rate limits:** 40 req/sec for org tokens
 
 ### Microsoft Clarity
-- **API:** Limited public API as of 2026; may need to:
-  - Use Clarity's export feature (manual/scheduled)
-  - Embed Clarity dashboard via iframe
-  - Use Clarity's integration with Azure Log Analytics (if available)
-- **Fallback:** Manual entry of key Clarity metrics into snapshot table
+- **API:** [Data Export API](https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-data-export-api) — `GET https://www.clarity.ms/export-data/api/v1/project-live-insights`
+- **Auth:** JWT bearer token (generated in Clarity Settings → Data Export → Generate new API token)
+- **Key data:** Traffic (sessions, bot sessions, unique users, pages/session), Popular Pages, Engagement Time, Scroll Depth, Dead/Rage/Error click counts
+- **Dimensions:** Browser, Device, Country/Region, OS, Source, Medium, Campaign, Channel, URL (up to 3 per request)
+- **Rate limits:** 10 requests/project/day
+- **Limitation:** Data only covers last 1-3 days (no arbitrary date ranges). Must poll daily and store snapshots for historical trends.
 
 ### Azure Cost Management
 - **SDK:** `Azure.ResourceManager.CostManagement` NuGet package
@@ -376,30 +384,22 @@ None — this is an admin-only web feature.
 
 ## Open Questions
 
-1. **Which specific metrics does the board want to see?**
-   **Recommendation:** Start with the KPIs from Project 29, add crash-free rate, monthly Azure spend, and top-line financials. Refine after first board meeting with the dashboard.
-   **Owner:** Joe / Board
-   **Due:** Before Phase 1 implementation
+1. ~~**Which specific metrics does the board want to see?**~~ **RESOLVED**
+   **Decision:** Project 29 KPIs (DAU, events created, registrations, litter reports) + impact metrics from DB (bags collected, weight cleaned, volunteer hours, total events) + crash-free rate + monthly Azure spend. Financial metrics deferred (see Q3). Refine after first board meeting.
 
-2. **Clarity API access — is there a usable API?**
-   **Recommendation:** Investigate current Clarity API capabilities. If no API, use iframe embed or manual snapshot approach.
-   **Owner:** Engineering
-   **Due:** Before Phase 2
+2. ~~**Clarity API access — is there a usable API?**~~ **RESOLVED — Yes**
+   **Findings:** Clarity has a [Data Export API](https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-data-export-api). Auth via JWT bearer token (generated in Clarity Settings → Data Export). Single endpoint: `GET https://www.clarity.ms/export-data/api/v1/project-live-insights`. Returns JSON with metrics (Traffic, Popular Pages, Dead/Rage/Error clicks, Scroll Depth, Engagement Time) broken down by up to 3 dimensions (Browser, Device, Country, OS, Source, URL, etc.).
+   **Limitations:** Max 10 requests/project/day, data limited to last 1-3 days only, 1000 row response cap. No historical range queries — we'll need to poll daily and store snapshots for trend analysis.
+   **Action:** Generate an API token in Clarity settings. Backend service should cache daily pulls and store in the snapshot table for historical access.
 
-3. **QuickBooks integration — is the API cost justified?**
-   **Recommendation:** QuickBooks API is free for apps in production. Main cost is OAuth2 complexity. Evaluate whether manual entry of 4-5 financial figures monthly is simpler.
-   **Owner:** Joe
-   **Due:** Before Phase 3
+3. ~~**QuickBooks integration — is the API cost justified?**~~ **DEFERRED**
+   **Decision:** Hold off on QuickBooks integration for now. Revisit after Phases 1-2 are complete and board feedback is collected.
 
-4. **Should we apply for Google Ad Grants?**
-   **Recommendation:** Yes — $10K/month in free search ads is significant for volunteer recruitment. Requires 501(c)(3) status (TrashMob has this), conversion tracking (GA4 provides this), and ongoing campaign management. Consider whether there's volunteer capacity to manage ad campaigns, or budget for a freelancer.
-   **Owner:** Joe / Board
-   **Due:** Phase 2 planning
+4. ~~**Should we apply for Google Ad Grants?**~~ **IN PROGRESS**
+   **Status:** Application submitted, waiting for Google approval. GA4 tracking is now in place (PR #3110) to satisfy the conversion tracking prerequisite.
 
-5. **Should historical snapshots be daily or monthly?**
-   **Recommendation:** Monthly — matches board meeting cadence, reduces storage, and simplifies the snapshot job.
-   **Owner:** Engineering
-   **Due:** Phase 3 planning
+5. ~~**Should historical snapshots be daily or monthly?**~~ **RESOLVED**
+   **Decision:** Monthly — matches board meeting cadence, reduces storage, and simplifies the snapshot job.
 
 ---
 
@@ -412,7 +412,7 @@ None — this is an admin-only web feature.
 
 ---
 
-**Last Updated:** 2026-03-14
+**Last Updated:** 2026-03-15
 **Owner:** Joe / Engineering
 **Status:** Planning
 **Next Review:** Before Phase 1 kickoff
