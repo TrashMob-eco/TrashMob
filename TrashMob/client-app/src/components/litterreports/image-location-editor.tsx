@@ -41,31 +41,28 @@ export const ImageLocationEditor = ({ open, onOpenChange, image, onSave }: Image
         }
     }, [image]);
 
-    const reverseGeocode = useCallback(
-        async (lat: number, lng: number) => {
-            setIsReverseGeocoding(true);
-            try {
-                const response = await ReverseGeocode().service({
-                    lat,
-                    long: lng,
-                });
+    const reverseGeocode = useCallback(async (lat: number, lng: number) => {
+        setIsReverseGeocoding(true);
+        try {
+            const response = await ReverseGeocode().service({
+                lat,
+                long: lng,
+            });
 
-                const result = response.data.addresses[0];
-                if (result) {
-                    setStreetAddress(result.address?.streetName || '');
-                    setCity(result.address?.municipality || '');
-                    setRegion(result.address?.countrySubdivision || '');
-                    setCountry(result.address?.country || '');
-                    setPostalCode(result.address?.postalCode || '');
-                }
-            } catch (error) {
-                console.error('Reverse geocoding failed:', error);
-            } finally {
-                setIsReverseGeocoding(false);
+            const result = response.data.addresses[0];
+            if (result) {
+                setStreetAddress(result.address?.streetName || '');
+                setCity(result.address?.municipality || '');
+                setRegion(result.address?.countrySubdivision || '');
+                setCountry(result.address?.country || '');
+                setPostalCode(result.address?.postalCode || '');
             }
-        },
-        [],
-    );
+        } catch (error) {
+            console.error('Reverse geocoding failed:', error);
+        } finally {
+            setIsReverseGeocoding(false);
+        }
+    }, []);
 
     const handleSelectSearchLocation = useCallback(
         (location: SearchLocationOption) => {

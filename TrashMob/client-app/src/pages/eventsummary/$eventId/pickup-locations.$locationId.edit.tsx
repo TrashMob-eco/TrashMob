@@ -299,9 +299,7 @@ export const PickupLocationEditForm = (props: PickupLocationEditFormProps) => {
                                 />
                             </GoogleMap>
                             <div style={{ position: 'absolute', top: 8, left: 8 }}>
-                                <AzureSearchLocationInput
-                                    onSelectLocation={handleSelectSearchLocation}
-                                />
+                                <AzureSearchLocationInput onSelectLocation={handleSelectSearchLocation} />
                             </div>
                         </div>
                     ) : null}

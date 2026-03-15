@@ -52,7 +52,6 @@ export const EventSection = (props: EventSectionProps) => {
     const { isUserLoaded, currentUser } = useLogin();
     const defaultMapCenter = useGetDefaultMapCenter();
 
-
     /** Statuses */
     const statuses = [
         { value: EventStatusFilter.UPCOMING, label: 'Upcoming' },

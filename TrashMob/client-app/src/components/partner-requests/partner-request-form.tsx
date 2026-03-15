@@ -118,7 +118,6 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
         },
     });
 
-
     const form = useForm<FormInputs>({
         resolver: zodResolver(formSchema),
         defaultValues: {
