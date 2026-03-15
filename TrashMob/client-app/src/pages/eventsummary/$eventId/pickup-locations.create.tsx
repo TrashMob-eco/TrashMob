@@ -104,8 +104,8 @@ export const PickupLocationCreateForm = (props: PickupLocationCreateFormProps) =
         if (event) {
             form.reset({
                 name: `Bags from ${event.name}`,
-                latitude: event.latitude,
-                longitude: event.longitude,
+                latitude: event.latitude ?? undefined,
+                longitude: event.longitude ?? undefined,
                 streetAddress: event.streetAddress,
                 city: event.city,
                 country: event.country,

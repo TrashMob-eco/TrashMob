@@ -200,7 +200,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const userId = currentUser.id;
-    const userPreferredLocation = { lat: currentUser.latitude, lng: currentUser.longitude };
+    const userPreferredLocation = { lat: currentUser.latitude ?? 0, lng: currentUser.longitude ?? 0 };
 
     const [upcomingEventsView, setUpcomingEventsView] = useState<'table' | 'map'>('table');
     const [pastEventsView, setPastEventsView] = useState<'table' | 'map'>('table');

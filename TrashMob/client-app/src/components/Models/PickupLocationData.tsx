@@ -13,9 +13,11 @@ class PickupLocationData {
 
     country: string = '';
 
-    latitude: number = 0;
+    county: string = '';
 
-    longitude: number = 0;
+    latitude: number | null = null;
+
+    longitude: number | null = null;
 
     postalCode: string = '';
 

@@ -30,7 +30,7 @@ export const LitterReportInfoWindowContent = ({ report }: LitterReportInfoWindow
     const statusId = report.litterReportStatusId as LitterReportStatusEnum;
     const statusLabel = LitterReportStatusLabels[statusId] || 'Unknown';
     const statusColor = LitterReportStatusColors[statusId] || 'bg-gray-500';
-    const firstImage = report.litterImages?.[0];
+    const firstImage = report.images?.[0];
 
     const location = firstImage ? [firstImage.city, firstImage.region].filter(Boolean).join(', ') : null;
 
@@ -40,8 +40,8 @@ export const LitterReportInfoWindowContent = ({ report }: LitterReportInfoWindow
                 <Badge variant='outline' className={`${statusColor} text-white border-0 text-xs`}>
                     {statusLabel}
                 </Badge>
-                {report.litterImages?.length ? (
-                    <span className='text-xs text-muted-foreground'>{report.litterImages.length} photo(s)</span>
+                {report.images?.length ? (
+                    <span className='text-xs text-muted-foreground'>{report.images.length} photo(s)</span>
                 ) : null}
             </div>
 

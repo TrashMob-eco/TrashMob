@@ -205,7 +205,9 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
                                     </TableCell>
                                     <TableCell>{user.city}</TableCell>
                                     <TableCell>{user.country}</TableCell>
-                                    <TableCell>{new Date(user.memberSince).toLocaleDateString()}</TableCell>
+                                    <TableCell>
+                                        {user.memberSince ? new Date(user.memberSince).toLocaleDateString() : ''}
+                                    </TableCell>
                                     {isCurrentUserLead ? (
                                         <TableCell>
                                             {hasValidWaiver ? (

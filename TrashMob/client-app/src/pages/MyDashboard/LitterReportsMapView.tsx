@@ -27,7 +27,7 @@ export const LitterReportsMapView = ({ reports }: LitterReportsMapViewProps) => 
     const [selected, setSelected] = useState<LitterReportData | null>(null);
 
     const reportsWithLocation = reports.filter((r) => {
-        const img = r.litterImages?.[0];
+        const img = r.images?.[0];
         return img?.latitude && img?.longitude;
     });
 
@@ -38,13 +38,12 @@ export const LitterReportsMapView = ({ reports }: LitterReportsMapViewProps) => 
     }
 
     const avgLat =
-        reportsWithLocation.reduce((sum, r) => sum + (r.litterImages[0].latitude ?? 0), 0) / reportsWithLocation.length;
+        reportsWithLocation.reduce((sum, r) => sum + (r.images[0].latitude ?? 0), 0) / reportsWithLocation.length;
     const avgLng =
-        reportsWithLocation.reduce((sum, r) => sum + (r.litterImages[0].longitude ?? 0), 0) /
-        reportsWithLocation.length;
+        reportsWithLocation.reduce((sum, r) => sum + (r.images[0].longitude ?? 0), 0) / reportsWithLocation.length;
 
     const getLocation = (report: LitterReportData) => {
-        const firstImage = report.litterImages?.[0];
+        const firstImage = report.images?.[0];
         if (!firstImage) return '';
         const parts = [firstImage.city, firstImage.region].filter(Boolean);
         return parts.join(', ');
@@ -62,8 +61,8 @@ export const LitterReportsMapView = ({ reports }: LitterReportsMapViewProps) => 
                     <AdvancedMarker
                         key={report.id}
                         position={{
-                            lat: report.litterImages[0].latitude!,
-                            lng: report.litterImages[0].longitude!,
+                            lat: report.images[0].latitude!,
+                            lng: report.images[0].longitude!,
                         }}
                         onClick={() => setSelected(report)}
                     >
@@ -74,8 +73,8 @@ export const LitterReportsMapView = ({ reports }: LitterReportsMapViewProps) => 
                 {selected ? (
                     <InfoWindow
                         position={{
-                            lat: selected.litterImages[0].latitude!,
-                            lng: selected.litterImages[0].longitude!,
+                            lat: selected.images[0].latitude!,
+                            lng: selected.images[0].longitude!,
                         }}
                         onCloseClick={() => setSelected(null)}
                     >

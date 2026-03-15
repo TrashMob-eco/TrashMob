@@ -39,7 +39,7 @@ const formatDate = (date: Date | null) => {
 };
 
 const getLocation = (report: LitterReportData) => {
-    const firstImage = report.litterImages?.[0];
+    const firstImage = report.images?.[0];
     if (!firstImage) return '-';
     const parts = [firstImage.city, firstImage.region].filter(Boolean);
     return parts.join(', ') || '-';
@@ -123,7 +123,7 @@ const columns: ColumnDef<LitterReportData>[] = [
     {
         id: 'images',
         header: 'Photos',
-        cell: ({ row }) => <span>{row.original.litterImages?.length || 0}</span>,
+        cell: ({ row }) => <span>{row.original.images?.length || 0}</span>,
     },
     {
         id: 'actions',
@@ -176,7 +176,7 @@ export const LitterReportsPage = () => {
         () =>
             filteredReports
                 .map((report) => {
-                    const img = report.litterImages?.find((i) => i.latitude && i.longitude);
+                    const img = report.images?.find((i) => i.latitude && i.longitude);
                     if (!img) return null;
                     return { ...report, latitude: img.latitude!, longitude: img.longitude! };
                 })

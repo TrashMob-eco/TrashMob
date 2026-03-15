@@ -50,7 +50,7 @@ export const NearbyLitterReportsWidget = ({ viewMode, userLocation, radiusMiles 
 
         return litterReports
             .map((report) => {
-                const firstImage = report.litterImages?.[0];
+                const firstImage = report.images?.[0];
                 if (!firstImage?.latitude || !firstImage?.longitude) return null;
 
                 const distance = calculateDistanceMiles(
@@ -69,7 +69,7 @@ export const NearbyLitterReportsWidget = ({ viewMode, userLocation, radiusMiles 
     }, [litterReports, userLocation, radiusMiles]);
 
     const getLocation = (report: LitterReportData) => {
-        const firstImage = report.litterImages?.[0];
+        const firstImage = report.images?.[0];
         if (!firstImage) return '-';
         const parts = [firstImage.city, firstImage.region].filter(Boolean);
         return parts.join(', ') || '-';
@@ -106,7 +106,7 @@ export const NearbyLitterReportsWidget = ({ viewMode, userLocation, radiusMiles 
                     defaultZoom={11}
                 >
                     {nearbyReports.map(({ report }) => {
-                        const img = report.litterImages[0];
+                        const img = report.images[0];
                         return (
                             <AdvancedMarker
                                 key={report.id}
@@ -123,8 +123,8 @@ export const NearbyLitterReportsWidget = ({ viewMode, userLocation, radiusMiles 
                     {selected ? (
                         <InfoWindow
                             position={{
-                                lat: selected.report.litterImages[0].latitude!,
-                                lng: selected.report.litterImages[0].longitude!,
+                                lat: selected.report.images[0].latitude!,
+                                lng: selected.report.images[0].longitude!,
                             }}
                             onCloseClick={() => setSelected(null)}
                         >

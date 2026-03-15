@@ -22,7 +22,7 @@ const formatDate = (date: Date | null) => {
 };
 
 const getLocation = (report: LitterReportData) => {
-    const firstImage = report.litterImages?.[0];
+    const firstImage = report.images?.[0];
     if (!firstImage) return '-';
     const parts = [firstImage.city, firstImage.region].filter(Boolean);
     return parts.join(', ') || '-';

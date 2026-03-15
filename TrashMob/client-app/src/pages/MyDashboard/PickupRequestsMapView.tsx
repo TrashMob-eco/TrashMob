@@ -20,7 +20,9 @@ interface PickupRequestsMapViewProps {
 export const PickupRequestsMapView = ({ pickups }: PickupRequestsMapViewProps) => {
     const [selected, setSelected] = useState<PickupLocationData | null>(null);
 
-    const pickupsWithLocation = pickups.filter((p) => p.latitude !== 0 && p.longitude !== 0);
+    const pickupsWithLocation = pickups.filter(
+        (p) => p.latitude != null && p.latitude !== 0 && p.longitude != null && p.longitude !== 0,
+    );
 
     if (pickupsWithLocation.length === 0) {
         return (
@@ -30,8 +32,8 @@ export const PickupRequestsMapView = ({ pickups }: PickupRequestsMapViewProps) =
         );
     }
 
-    const avgLat = pickupsWithLocation.reduce((sum, p) => sum + p.latitude, 0) / pickupsWithLocation.length;
-    const avgLng = pickupsWithLocation.reduce((sum, p) => sum + p.longitude, 0) / pickupsWithLocation.length;
+    const avgLat = pickupsWithLocation.reduce((sum, p) => sum + (p.latitude ?? 0), 0) / pickupsWithLocation.length;
+    const avgLng = pickupsWithLocation.reduce((sum, p) => sum + (p.longitude ?? 0), 0) / pickupsWithLocation.length;
 
     return (
         <div className='rounded-md overflow-hidden border'>
@@ -44,7 +46,7 @@ export const PickupRequestsMapView = ({ pickups }: PickupRequestsMapViewProps) =
                 {pickupsWithLocation.map((pickup) => (
                     <AdvancedMarker
                         key={pickup.id}
-                        position={{ lat: pickup.latitude, lng: pickup.longitude }}
+                        position={{ lat: pickup.latitude!, lng: pickup.longitude! }}
                         onClick={() => setSelected(pickup)}
                     >
                         <PickupMarkerPin />
@@ -53,7 +55,7 @@ export const PickupRequestsMapView = ({ pickups }: PickupRequestsMapViewProps) =
 
                 {selected ? (
                     <InfoWindow
-                        position={{ lat: selected.latitude, lng: selected.longitude }}
+                        position={{ lat: selected.latitude!, lng: selected.longitude! }}
                         onCloseClick={() => setSelected(null)}
                     >
                         <div className='text-sm space-y-1 max-w-[200px]'>
