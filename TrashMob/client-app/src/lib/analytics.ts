@@ -20,11 +20,14 @@ export function setConsent(analytics: boolean): void {
     localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
 }
 
+const GA4_MEASUREMENT_ID = 'G-T9F2NDS042';
+
 let clarityLoaded = false;
 let appInsightsLoaded = false;
+let ga4Loaded = false;
 
 export function loadClarity(): void {
-    if (clarityLoaded) return;
+    if (clarityLoaded || !import.meta.env.PROD) return;
     clarityLoaded = true;
 
     (function (c: Window, l: Document, a: string, r: string, i: string) {
@@ -40,6 +43,25 @@ export function loadClarity(): void {
         const y = l.getElementsByTagName(r)[0];
         y?.parentNode?.insertBefore(t, y);
     })(window, document, 'clarity', 'script', 'az7h8gs917');
+}
+
+export function loadGoogleAnalytics(): void {
+    if (ga4Loaded || !import.meta.env.PROD) return;
+    ga4Loaded = true;
+
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`;
+    document.head.appendChild(script);
+
+    const w = window as unknown as Record<string, unknown>;
+    if (!w.dataLayer) w.dataLayer = [];
+    const dataLayer = w.dataLayer as unknown[];
+    function gtag(...args: unknown[]) {
+        dataLayer.push(args);
+    }
+    gtag('js', new Date());
+    gtag('config', GA4_MEASUREMENT_ID);
 }
 
 export function loadAppInsights(): void {
@@ -124,5 +146,6 @@ export function initAnalytics(): void {
     if (consent?.analytics) {
         loadClarity();
         loadAppInsights();
+        loadGoogleAnalytics();
     }
 }
