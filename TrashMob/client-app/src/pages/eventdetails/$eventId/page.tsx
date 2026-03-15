@@ -43,7 +43,7 @@ const useGetEventAttendees = (eventId: string) => {
     return useQuery({
         queryKey: GetEventAttendees({ eventId }).key,
         queryFn: GetEventAttendees({ eventId }).service,
-        select: (res) => res.data,
+        select: (res) => res.data?.items || [],
         enabled: !!eventId,
     });
 };
