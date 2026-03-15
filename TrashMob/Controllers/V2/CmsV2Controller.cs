@@ -57,9 +57,14 @@ namespace TrashMob.Controllers.V2
 
                 return Content(rewritten, "application/json");
             }
+            catch (OperationCanceledException)
+            {
+                // Client disconnected — not an error worth logging
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, "Request canceled.");
+            }
             catch (HttpRequestException ex)
             {
-                logger.LogError(ex, "Failed to fetch hero section from CMS");
+                logger.LogWarning(ex, "Failed to fetch hero section from CMS");
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS unavailable.");
             }
         }
@@ -94,9 +99,13 @@ namespace TrashMob.Controllers.V2
 
                 return Content(rewritten, "application/json");
             }
+            catch (OperationCanceledException)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, "Request canceled.");
+            }
             catch (HttpRequestException ex)
             {
-                logger.LogError(ex, "Failed to fetch what-is-trashmob from CMS");
+                logger.LogWarning(ex, "Failed to fetch what-is-trashmob from CMS");
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS unavailable.");
             }
         }
@@ -131,9 +140,13 @@ namespace TrashMob.Controllers.V2
 
                 return Content(rewritten, "application/json");
             }
+            catch (OperationCanceledException)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, "Request canceled.");
+            }
             catch (HttpRequestException ex)
             {
-                logger.LogError(ex, "Failed to fetch getting-started from CMS");
+                logger.LogWarning(ex, "Failed to fetch getting-started from CMS");
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS unavailable.");
             }
         }
@@ -189,9 +202,13 @@ namespace TrashMob.Controllers.V2
 
                 return Content(rewritten, "application/json");
             }
+            catch (OperationCanceledException)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, "Request canceled.");
+            }
             catch (HttpRequestException ex)
             {
-                logger.LogError(ex, "Failed to fetch news posts from CMS");
+                logger.LogWarning(ex, "Failed to fetch news posts from CMS");
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS unavailable.");
             }
         }
@@ -240,9 +257,13 @@ namespace TrashMob.Controllers.V2
 
                 return Content(rewritten, "application/json");
             }
+            catch (OperationCanceledException)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, "Request canceled.");
+            }
             catch (HttpRequestException ex)
             {
-                logger.LogError(ex, "Failed to fetch news post by slug from CMS");
+                logger.LogWarning(ex, "Failed to fetch news post by slug from CMS");
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS unavailable.");
             }
         }
@@ -276,9 +297,13 @@ namespace TrashMob.Controllers.V2
 
                 return Content(response, "application/json");
             }
+            catch (OperationCanceledException)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, "Request canceled.");
+            }
             catch (HttpRequestException ex)
             {
-                logger.LogError(ex, "Failed to fetch news categories from CMS");
+                logger.LogWarning(ex, "Failed to fetch news categories from CMS");
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS unavailable.");
             }
         }
@@ -346,9 +371,13 @@ namespace TrashMob.Controllers.V2
 
                 return Content(rss.ToString(), "application/rss+xml");
             }
+            catch (OperationCanceledException)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, "Request canceled.");
+            }
             catch (HttpRequestException ex)
             {
-                logger.LogError(ex, "Failed to generate news feed from CMS");
+                logger.LogWarning(ex, "Failed to generate news feed from CMS");
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS unavailable.");
             }
         }
