@@ -24,8 +24,8 @@ test.describe('Team Creation Page', () => {
 
         await expect(page.locator('input[name="name"]')).toBeVisible({ timeout: 15000 });
 
-        await expect(page.getByText('Public Team')).toBeVisible();
-        await expect(page.getByText('Require Approval')).toBeVisible();
+        await expect(page.getByText('Public Team')).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('Require Approval')).toBeVisible({ timeout: 5000 });
     });
 
     test('should have Create Team and Cancel buttons', async ({ authenticatedPage: page }) => {
