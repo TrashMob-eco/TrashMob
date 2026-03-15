@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
 using TrashMobMobile.Extensions;
+using TrashMobMobile.Pages;
 using TrashMobMobile.Services;
 
 public partial class HomeFeedViewModel(
@@ -56,6 +57,13 @@ public partial class HomeFeedViewModel(
         await ExecuteAsync(async () =>
         {
             var user = userManager.CurrentUser;
+            if (user == null)
+            {
+                // User not loaded yet — navigate back to welcome
+                await Shell.Current.GoToAsync($"//{nameof(WelcomePage)}");
+                return;
+            }
+
             WelcomeMessage = $"Hi, {user.UserName}";
             UserInitials = GetInitials(user.UserName);
             LocationSummary = BuildLocationSummary(user);
