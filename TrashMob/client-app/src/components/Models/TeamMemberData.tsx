@@ -19,8 +19,11 @@ class TeamMemberData {
 
     lastUpdatedDate: Date = new Date();
 
-    // Optional user info for display purposes
-    userName?: string;
+    userName: string = '';
+
+    givenName: string = '';
+
+    profilePhotoUrl: string = '';
 }
 
 export default TeamMemberData;

@@ -125,6 +125,8 @@ export const PickupLocationEditForm = (props: PickupLocationEditFormProps) => {
         if (pickupLocation) {
             form.reset({
                 ...pickupLocation,
+                latitude: pickupLocation.latitude ?? undefined,
+                longitude: pickupLocation.longitude ?? undefined,
             });
         }
     }, [pickupLocation]);

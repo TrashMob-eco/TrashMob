@@ -132,8 +132,8 @@ export const EditEventPage = () => {
             region: event.region,
             country: event.country,
             postalCode: event.postalCode,
-            latitude: event.latitude,
-            longitude: event.longitude,
+            latitude: event.latitude ?? undefined,
+            longitude: event.longitude ?? undefined,
             maxNumberOfParticipants: event.maxNumberOfParticipants,
             eventVisibilityId: `${event.eventVisibilityId}`,
             teamId: event.teamId,
@@ -574,13 +574,13 @@ export const EditEventPage = () => {
                                 <div className='col-span-12'>
                                     <GoogleMap
                                         id='locationPicker'
-                                        defaultCenter={{ lat: event.latitude, lng: event.longitude }}
+                                        defaultCenter={{ lat: event.latitude ?? 0, lng: event.longitude ?? 0 }}
                                         defaultZoom={16}
                                         style={{ width: '100%', height: '300px' }}
                                         onClick={handleClickMap}
                                     >
                                         <Marker
-                                            position={{ lat: event.latitude, lng: event.longitude }}
+                                            position={{ lat: event.latitude ?? 0, lng: event.longitude ?? 0 }}
                                             draggable
                                             onDragEnd={handleMarkerDragEnd}
                                         />
@@ -595,7 +595,7 @@ export const EditEventPage = () => {
                                             ]).join(', ')}
                                         </span>
                                         <span>
-                                            ({event.latitude}, {event.longitude})
+                                            ({event.latitude ?? 0}, {event.longitude ?? 0})
                                         </span>
                                     </FormDescription>
                                 </div>

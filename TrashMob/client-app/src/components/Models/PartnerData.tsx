@@ -42,6 +42,22 @@ class PartnerData {
 
     country: string = '';
 
+    isFeatured: boolean = false;
+
+    boundsNorth: number | null = null;
+
+    boundsSouth: number | null = null;
+
+    boundsEast: number | null = null;
+
+    boundsWest: number | null = null;
+
+    boundaryGeoJson: string = '';
+
+    regionType: number | null = null;
+
+    countyName: string = '';
+
     logoUrl: string = '';
 
     contactEmail: string = '';

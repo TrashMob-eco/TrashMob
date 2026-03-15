@@ -19,11 +19,11 @@ class UserData {
 
     trashMobWaiverVersion: string = '';
 
-    memberSince: Date = new Date();
+    memberSince: Date | null = null;
 
-    latitude: number = 0;
+    latitude: number | null = null;
 
-    longitude: number = 0;
+    longitude: number | null = null;
 
     prefersMetric: boolean = false;
 

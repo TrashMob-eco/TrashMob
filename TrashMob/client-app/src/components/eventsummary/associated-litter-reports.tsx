@@ -103,8 +103,8 @@ export const AssociatedLitterReports = ({ eventId, isOwner }: AssociatedLitterRe
         }
     };
 
-    const getLocation = (report: { litterImages?: Array<{ city?: string; region?: string }> }) => {
-        const firstImage = report.litterImages?.[0];
+    const getLocation = (report: { images?: Array<{ city?: string; region?: string }> }) => {
+        const firstImage = report.images?.[0];
         if (!firstImage) return '-';
         const parts = [firstImage.city, firstImage.region].filter(Boolean);
         return parts.join(', ') || '-';
@@ -163,7 +163,7 @@ export const AssociatedLitterReports = ({ eventId, isOwner }: AssociatedLitterRe
                                         {LitterReportStatusLabels[statusId] || 'Unknown'}
                                     </Badge>
                                 </TableCell>
-                                <TableCell>{report.litterImages?.length || 0}</TableCell>
+                                <TableCell>{report.images?.length || 0}</TableCell>
                                 {isOwner ? (
                                     <TableCell>
                                         <DropdownMenu>

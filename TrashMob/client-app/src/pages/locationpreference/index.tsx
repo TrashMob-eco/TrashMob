@@ -108,7 +108,7 @@ export const LocationPreference = () => {
             body.userName = currentUser.userName ?? '';
             body.email = currentUser.email ?? '';
             body.dateAgreedToTrashMobWaiver = new Date(currentUser.dateAgreedToTrashMobWaiver);
-            body.memberSince = new Date(currentUser.memberSince);
+            body.memberSince = currentUser.memberSince ? new Date(currentUser.memberSince) : new Date();
             body.trashMobWaiverVersion = currentUser.trashMobWaiverVersion;
 
             body.city = values.city ?? '';

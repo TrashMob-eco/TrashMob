@@ -151,7 +151,7 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
     // Get litter reports with coordinates from their images
     const litterReportsWithLocation = litterReports
         .map((report) => {
-            const imageWithLocation = report.litterImages?.find((img) => img.latitude && img.longitude);
+            const imageWithLocation = report.images?.find((img) => img.latitude && img.longitude);
             if (!imageWithLocation) return null;
             return {
                 ...report,
@@ -325,7 +325,7 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                                       className={cn({
                                           'animate-[bounce_1s_both_3s]': isInViewPort,
                                       })}
-                                      position={{ lat: event.latitude, lng: event.longitude }}
+                                      position={{ lat: event.latitude!, lng: event.longitude! }}
                                       onMouseEnter={() => handleEventMarkerHover(event.id)}
                                       zIndex={10}
                                   >

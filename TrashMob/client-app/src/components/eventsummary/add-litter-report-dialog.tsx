@@ -74,7 +74,7 @@ export const AddLitterReportDialog = ({
     };
 
     const getLocation = (report: LitterReportData) => {
-        const firstImage = report.litterImages?.[0];
+        const firstImage = report.images?.[0];
         if (!firstImage) return 'No location';
         const parts = [firstImage.city, firstImage.region].filter(Boolean);
         return parts.join(', ') || 'No location';
@@ -149,7 +149,7 @@ export const AddLitterReportDialog = ({
                                                             {LitterReportStatusLabels[statusId] || 'Unknown'}
                                                         </Badge>
                                                         <span className='text-xs text-muted-foreground'>
-                                                            {report.litterImages?.length || 0} photo(s)
+                                                            {report.images?.length || 0} photo(s)
                                                         </span>
                                                     </div>
                                                 </div>

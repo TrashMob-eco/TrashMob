@@ -192,7 +192,7 @@ export const CreateEventPage = () => {
     // Pre-populate form when creating from a litter report
     useEffect(() => {
         if (fromLitterReport) {
-            const firstImage = fromLitterReport.litterImages?.[0];
+            const firstImage = fromLitterReport.images?.[0];
             if (firstImage) {
                 form.setValue('latitude', firstImage.latitude || 0);
                 form.setValue('longitude', firstImage.longitude || 0);

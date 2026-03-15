@@ -5,6 +5,14 @@ class LitterImageData {
 
     litterReportId: string = '';
 
+    /**
+     * V2 API returns this as `imageUrl` (camelCase from C# `ImageUrl`).
+     */
+    imageUrl: string = '';
+
+    /**
+     * @deprecated Use `imageUrl` instead. V1 API used `imageURL` casing.
+     */
     imageURL: string = '';
 
     streetAddress: string = '';

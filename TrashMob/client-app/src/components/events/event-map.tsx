@@ -100,7 +100,7 @@ export const EventsMap = (props: EventsMapProps) => {
     // Get first image with coordinates for each litter report (for pin placement)
     const litterReportsWithLocation = (litterReports || [])
         .map((report) => {
-            const imageWithLocation = report.litterImages?.find((img) => img.latitude && img.longitude);
+            const imageWithLocation = report.images?.find((img) => img.latitude && img.longitude);
             if (!imageWithLocation) return null;
             return {
                 ...report,
@@ -124,24 +124,26 @@ export const EventsMap = (props: EventsMapProps) => {
         <div ref={ref}>
             <GoogleMap id={id} gestureHandling={gestureHandling} {...rest}>
                 {/* Event Markers */}
-                {eventsWithAttendance.map((event) => {
-                    const isCompleted = isCompletedEvent(event);
-                    return (
-                        <AdvancedMarker
-                            key={event.id}
-                            ref={(el) => {
-                                eventMarkersRef.current[event.id] = el!;
-                            }}
-                            className={cn({
-                                'animate-[bounce_1s_both_3s]': isInViewPort,
-                            })}
-                            position={{ lat: event.latitude, lng: event.longitude }}
-                            onMouseEnter={() => handleEventMarkerHover(event.id)}
-                        >
-                            <EventPin color={isCompleted ? colors.completed : colors.upcoming} size={48} />
-                        </AdvancedMarker>
-                    );
-                })}
+                {eventsWithAttendance
+                    .filter((e) => e.latitude != null && e.longitude != null)
+                    .map((event) => {
+                        const isCompleted = isCompletedEvent(event);
+                        return (
+                            <AdvancedMarker
+                                key={event.id}
+                                ref={(el) => {
+                                    eventMarkersRef.current[event.id] = el!;
+                                }}
+                                className={cn({
+                                    'animate-[bounce_1s_both_3s]': isInViewPort,
+                                })}
+                                position={{ lat: event.latitude!, lng: event.longitude! }}
+                                onMouseEnter={() => handleEventMarkerHover(event.id)}
+                            >
+                                <EventPin color={isCompleted ? colors.completed : colors.upcoming} size={48} />
+                            </AdvancedMarker>
+                        );
+                    })}
 
                 {/* Litter Report Markers */}
                 {showLitterReports

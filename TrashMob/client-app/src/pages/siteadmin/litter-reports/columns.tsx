@@ -45,10 +45,10 @@ export const columns: ColumnDef<LitterReportData>[] = [
         },
     },
     {
-        accessorKey: 'litterImages',
+        accessorKey: 'images',
         header: 'Images',
         cell: ({ row }) => {
-            const images = row.original.litterImages || [];
+            const images = row.original.images || [];
             return images.length;
         },
     },

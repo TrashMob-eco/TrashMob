@@ -31,15 +31,17 @@ class EventData {
 
     createdDate: Date = new Date();
 
-    latitude: number = 0;
+    latitude: number | null = null;
 
-    longitude: number = 0;
+    longitude: number | null = null;
 
     maxNumberOfParticipants: number = 0;
 
     lastUpdatedByUserId: string = Guid.EMPTY;
 
     lastUpdatedDate: Date = new Date();
+
+    isEventPublic: boolean = true;
 
     eventVisibilityId: number = 1;
 

@@ -128,7 +128,7 @@ const CreateLitterReportPageInner = () => {
             litterReport.lastUpdatedByUserId = currentUser.id;
 
             // Build litter image data array
-            litterReport.litterImages = images.map((img) => {
+            litterReport.images = images.map((img) => {
                 const litterImage = new LitterImageData();
                 litterImage.id = img.id;
                 litterImage.litterReportId = litterReport.id;
@@ -151,7 +151,7 @@ const CreateLitterReportPageInner = () => {
             // Step 2: Upload each image file
             for (const img of images) {
                 // Find the corresponding image ID from the created report
-                const createdImage = createdReport.litterImages.find(
+                const createdImage = createdReport.images.find(
                     (ci: LitterImageData) =>
                         ci.latitude === img.latitude &&
                         ci.longitude === img.longitude &&

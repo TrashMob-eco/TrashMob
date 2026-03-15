@@ -168,7 +168,7 @@ export const MyProfile = () => {
             body.id = currentUser.id;
             body.email = currentUser.email ?? '';
             body.dateAgreedToTrashMobWaiver = new Date(currentUser.dateAgreedToTrashMobWaiver);
-            body.memberSince = new Date(currentUser.memberSince);
+            body.memberSince = currentUser.memberSince ? new Date(currentUser.memberSince) : new Date();
             body.trashMobWaiverVersion = currentUser.trashMobWaiverVersion;
             body.latitude = currentUser.latitude;
             body.longitude = currentUser.longitude;
@@ -359,7 +359,14 @@ export const MyProfile = () => {
                                     <div className='col-span-12 sm:col-span-6'>
                                         <div className='space-y-2'>
                                             <FormLabel>Member Since</FormLabel>
-                                            <Input value={new Date(user.memberSince).toLocaleDateString()} disabled />
+                                            <Input
+                                                value={
+                                                    user.memberSince
+                                                        ? new Date(user.memberSince).toLocaleDateString()
+                                                        : ''
+                                                }
+                                                disabled
+                                            />
                                         </div>
                                     </div>
                                 </div>

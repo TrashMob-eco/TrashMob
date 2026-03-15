@@ -40,7 +40,7 @@ const formatDate = (date: Date | null) => {
     });
 };
 
-const getFullAddress = (image: LitterReportData['litterImages'][0]) => {
+const getFullAddress = (image: LitterReportData['images'][0]) => {
     if (!image) return '-';
     const parts = [image.streetAddress, image.city, image.region, image.postalCode, image.country].filter(Boolean);
     return parts.join(', ') || '-';
@@ -144,7 +144,7 @@ export const LitterReportDetailPage = () => {
     const statusId = litterReport.litterReportStatusId as LitterReportStatusEnum;
     const statusLabel = LitterReportStatusLabels[statusId] || 'Unknown';
     const statusColor = LitterReportStatusColors[statusId] || 'bg-gray-500';
-    const firstImage = litterReport.litterImages?.[0];
+    const firstImage = litterReport.images?.[0];
 
     return (
         <div>
@@ -210,13 +210,13 @@ export const LitterReportDetailPage = () => {
                         </Card>
 
                         {/* Photos */}
-                        {litterReport.litterImages && litterReport.litterImages.length > 0 ? (
+                        {litterReport.images && litterReport.images.length > 0 ? (
                             <Card>
                                 <CardHeader>
                                     <CardTitle className='flex items-center gap-2'>
                                         <ImageIcon className='h-5 w-5' /> Photos (
                                         {
-                                            litterReport.litterImages.filter(
+                                            litterReport.images.filter(
                                                 (img) => !img.inReview || currentUser.isSiteAdmin,
                                             ).length
                                         }
@@ -225,17 +225,17 @@ export const LitterReportDetailPage = () => {
                                 </CardHeader>
                                 <CardContent>
                                     <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
-                                        {litterReport.litterImages
+                                        {litterReport.images
                                             .filter((img) => !img.inReview || currentUser.isSiteAdmin)
                                             .map((image) => (
                                                 <div
                                                     key={image.id}
                                                     className='aspect-square relative rounded-lg overflow-hidden bg-muted group'
                                                 >
-                                                    {image.imageURL ? (
+                                                    {image.imageUrl ? (
                                                         <>
                                                             <img
-                                                                src={image.imageURL}
+                                                                src={image.imageUrl}
                                                                 alt='Litter'
                                                                 className='object-cover w-full h-full'
                                                             />
@@ -326,15 +326,14 @@ export const LitterReportDetailPage = () => {
                         ) : null}
 
                         {/* Location details for each image */}
-                        {litterReport.litterImages &&
-                        litterReport.litterImages.filter((img) => !img.inReview || currentUser.isSiteAdmin).length >
-                            1 ? (
+                        {litterReport.images &&
+                        litterReport.images.filter((img) => !img.inReview || currentUser.isSiteAdmin).length > 1 ? (
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Photo Locations</CardTitle>
                                 </CardHeader>
                                 <CardContent className='space-y-3'>
-                                    {litterReport.litterImages
+                                    {litterReport.images
                                         .filter((img) => !img.inReview || currentUser.isSiteAdmin)
                                         .map((image, index) => (
                                             <div key={image.id} className='text-sm'>
