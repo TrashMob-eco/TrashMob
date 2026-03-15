@@ -41,8 +41,7 @@ test.describe('Public Pages', () => {
     });
 
     test.describe('Navigation', () => {
-        // TODO: Navigation menu tests need refinement for radix UI hover behavior
-        test.skip('should navigate to Teams page from Explore menu', async ({ page }) => {
+        test('should navigate to Teams page from Explore menu', async ({ page }) => {
             const homePage = new HomePage(page);
             await homePage.goto();
 
@@ -50,7 +49,7 @@ test.describe('Public Pages', () => {
             await expect(page).toHaveURL('/teams');
         });
 
-        test.skip('should navigate to Communities page from Explore menu', async ({ page }) => {
+        test('should navigate to Communities page from Explore menu', async ({ page }) => {
             const homePage = new HomePage(page);
             await homePage.goto();
 

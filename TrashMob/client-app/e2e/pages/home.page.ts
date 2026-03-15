@@ -66,21 +66,27 @@ export class HomePage {
         await this.heroTitle.waitFor({ state: 'visible' });
     }
 
-    // Navigation helpers - radix navigation menu opens on hover
+    // Navigation helpers - Radix NavigationMenu requires real mouse events to open.
+    // Playwright's .hover() doesn't always trigger the pointer events Radix listens for,
+    // but mouse.move to the element center does.
+    private async hoverNavTrigger(trigger: Locator) {
+        const box = await trigger.boundingBox();
+        if (box) {
+            await this.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+        }
+        await this.page.waitForTimeout(400); // Allow animation
+    }
+
     async openExploreMenu() {
-        await this.exploreMenu.hover();
-        // Wait for menu content to be visible
-        await this.page.waitForTimeout(300); // Allow animation
+        await this.hoverNavTrigger(this.exploreMenu);
     }
 
     async openTakeActionMenu() {
-        await this.takeActionMenu.hover();
-        await this.page.waitForTimeout(300);
+        await this.hoverNavTrigger(this.takeActionMenu);
     }
 
     async openAboutMenu() {
-        await this.aboutMenu.hover();
-        await this.page.waitForTimeout(300);
+        await this.hoverNavTrigger(this.aboutMenu);
     }
 
     async navigateToEvents() {
@@ -90,12 +96,13 @@ export class HomePage {
 
     async navigateToTeams() {
         await this.openExploreMenu();
-        await this.page.getByRole('link', { name: 'Teams' }).click();
+        // Use the nav menu link specifically (contains description text)
+        await this.page.getByRole('link', { name: /Teams.*join.*team/i }).click();
     }
 
     async navigateToCommunities() {
         await this.openExploreMenu();
-        await this.page.getByRole('link', { name: 'Communities' }).click();
+        await this.page.getByRole('link', { name: /Communities.*community programs/i }).click();
     }
 
     async navigateToCreateEvent() {
