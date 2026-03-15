@@ -323,6 +323,40 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Participation Reports -->
+            <Border IsVisible="{Binding CanRequestReport}"
+                    Style="{StaticResource CardBorder}"
+                    Margin="5,4">
+                <VerticalStackLayout Spacing="8" Padding="12">
+                    <Label Text="Participation Report"
+                           FontFamily="LexendSemibold"
+                           FontSize="Small" />
+                    <Label Text="Request an official report of your volunteer participation for this event. The report will be emailed to you as a PDF."
+                           FontSize="Micro"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    <Button Text="Request My Report"
+                            Command="{Binding RequestParticipationReportCommand}"
+                            Style="{StaticResource SecondarySmallButton}"
+                            HorizontalOptions="Fill" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border IsVisible="{Binding CanSendAllReports}"
+                    Style="{StaticResource CardBorder}"
+                    Margin="5,4">
+                <VerticalStackLayout Spacing="8" Padding="12">
+                    <Label Text="Send Reports to Attendees"
+                           FontFamily="LexendSemibold"
+                           FontSize="Small" />
+                    <Label Text="Send participation report emails to all attendees with verified metrics."
+                           FontSize="Micro"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    <Button Text="Send All Reports"
+                            Command="{Binding SendAllParticipationReportsCommand}"
+                            HorizontalOptions="Fill" />
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentView>
