@@ -12,20 +12,20 @@ test.describe('Team Creation Page', () => {
         await expect(page.locator('input[name="name"]')).toBeVisible();
     });
 
-    test('should have name and description fields with character counters', async ({ authenticatedPage: page }) => {
+    test('should have name and description fields', async ({ authenticatedPage: page }) => {
         await page.goto('/teams/create');
 
         await expect(page.locator('input[name="name"]')).toBeVisible({ timeout: 15000 });
-        await expect(page.locator('textarea[name="description"]').or(page.locator('[name="description"]'))).toBeVisible();
+        await expect(page.locator('textarea[name="description"]')).toBeVisible();
     });
 
-    test('should have public/private and approval toggles', async ({ authenticatedPage: page }) => {
+    test('should have public and approval toggle labels', async ({ authenticatedPage: page }) => {
         await page.goto('/teams/create');
 
         await expect(page.locator('input[name="name"]')).toBeVisible({ timeout: 15000 });
 
-        // Public team toggle
-        await expect(page.getByText(/public team|private team/i)).toBeVisible();
+        await expect(page.getByText('Public Team')).toBeVisible();
+        await expect(page.getByText('Require Approval')).toBeVisible();
     });
 
     test('should have Create Team and Cancel buttons', async ({ authenticatedPage: page }) => {

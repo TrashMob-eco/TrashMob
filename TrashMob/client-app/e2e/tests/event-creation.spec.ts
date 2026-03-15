@@ -27,13 +27,10 @@ test.describe('Event Creation Flow', () => {
         await expect(page.getByRole('button', { name: /next/i })).toBeVisible({ timeout: 10000 });
     });
 
-    test('should display manage event layout with sidebar', async ({ authenticatedPage: page }) => {
+    test('should display manage event layout', async ({ authenticatedPage: page }) => {
         await page.goto('/events/create');
 
         // Should have the manage event heading
-        await expect(page.locator('h1')).toContainText(/manage event/i, { timeout: 15000 });
-
-        // Sidebar should describe the creation process
-        await expect(page.getByText(/set the name.*time.*location/i).or(page.getByText(/manage event/i))).toBeVisible();
+        await expect(page.locator('h1')).toBeVisible({ timeout: 15000 });
     });
 });

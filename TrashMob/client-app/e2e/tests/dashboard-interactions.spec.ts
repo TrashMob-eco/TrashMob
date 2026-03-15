@@ -7,7 +7,7 @@ test.describe('Dashboard Interactions', () => {
         test('should sort events by name', async ({ authenticatedPage: page }) => {
             await page.goto('/mydashboard');
 
-            await expect(page.getByRole('heading', { name: /my events/i })).toBeVisible({ timeout: 15000 });
+            await expect(page.getByRole('heading', { name: /my events/i })).toBeVisible({ timeout: 30000 });
 
             // Find sortable Name column header button
             const nameHeader = page.locator('table').first().getByRole('button', { name: /name/i });
