@@ -15,13 +15,11 @@ test.describe('Contact Us Form', () => {
             await expect(contactPage.submitButton).toBeVisible();
         });
 
-        // TODO: Enable after contact form changes are deployed to dev
-        test.skip('should have required field indicators', async ({ page }) => {
+        test('should have required field indicators', async ({ page }) => {
             const contactPage = new ContactPage(page);
             await contactPage.goto();
 
-            // Check that required fields have appropriate indicators
-            // This could be aria-required, required attribute, or visual indicator
+            // Check that required fields have the required attribute
             await expect(contactPage.nameInput).toHaveAttribute('required', '');
             await expect(contactPage.emailInput).toHaveAttribute('required', '');
             await expect(contactPage.messageInput).toHaveAttribute('required', '');
@@ -71,8 +69,7 @@ test.describe('Contact Us Form', () => {
     });
 
     test.describe('Form Submission', () => {
-        // Note: This test may need reCAPTCHA handling in CI
-        test.skip('should submit form with valid data', async ({ page }) => {
+        test('should submit form with valid data', async ({ page }) => {
             const contactPage = new ContactPage(page);
             await contactPage.goto();
 
