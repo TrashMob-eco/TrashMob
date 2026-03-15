@@ -45,7 +45,7 @@ const useGetFilteredEvents = (params: GetFilteredEvents_Params) => {
     return useQuery({
         queryKey: GetFilteredEvents(params).key,
         queryFn: GetFilteredEvents(params).service,
-        select: (res) => res.data || [],
+        select: (res) => res.data?.items || [],
     });
 };
 

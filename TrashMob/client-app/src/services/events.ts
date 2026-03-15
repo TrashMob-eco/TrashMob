@@ -31,7 +31,7 @@ export type GetFilteredEvents_Params = {
     endDate?: string;
     createdByUserId?: string;
 };
-export type GetFilteredEvents_Response = EventData[];
+export type GetFilteredEvents_Response = PagedResponse<EventData>;
 
 export const GetFilteredEvents = (params: GetFilteredEvents_Params) => ({
     key: ['/events/filteredevents', params],
