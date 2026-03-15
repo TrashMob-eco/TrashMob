@@ -95,11 +95,13 @@ namespace TrashMob.Controllers.V2
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Attendee registered.</response>
         /// <response code="400">Waivers required.</response>
+        /// <response code="409">Event is full.</response>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(WaiverRequiredResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> AddEventAttendee(
             Guid eventId,
             EventAttendeeDto dto,
@@ -125,8 +127,18 @@ namespace TrashMob.Controllers.V2
                 });
             }
 
-            await eventAttendeeManager.AddAsync(eventAttendee, UserId, cancellationToken);
-            return Ok();
+            try
+            {
+                await eventAttendeeManager.AddAsync(eventAttendee, UserId, cancellationToken);
+                return Ok();
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("full"))
+            {
+                return Problem(
+                    detail: ex.Message,
+                    statusCode: StatusCodes.Status409Conflict,
+                    title: "Event Full");
+            }
         }
 
         /// <summary>

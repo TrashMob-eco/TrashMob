@@ -101,6 +101,10 @@ export const EventDetails: FC<EventDetailsProps> = () => {
 
     const isEventCompleted = event ? isCompletedEvent(event) : true;
 
+    const totalHeadcount = (eventAttendees || []).length + (dependentCount || 0);
+    const isEventFull =
+        !!maxNumberOfParticipants && maxNumberOfParticipants > 0 && totalHeadcount >= maxNumberOfParticipants;
+
     const startDateTime = moment(eventDate);
     const endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
 
@@ -145,6 +149,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                                         isEventCompleted={isEventCompleted}
                                         currentUser={currentUser}
                                         isUserLoaded={isUserLoaded}
+                                        isEventFull={isEventFull}
                                     />
                                 ) : null}
                                 <DropdownMenu>

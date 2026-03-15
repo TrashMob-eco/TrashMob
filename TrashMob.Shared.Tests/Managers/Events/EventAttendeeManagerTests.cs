@@ -52,6 +52,113 @@ namespace TrashMob.Shared.Tests.Managers.Events
                 _emailManager.Object);
         }
 
+        #region AddAsync Capacity Tests
+
+        [Fact]
+        public async Task AddAsync_WhenEventIsFull_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            var evt = new EventBuilder()
+                .WithId(eventId)
+                .WithMaxParticipants(2)
+                .Build();
+
+            var existingAttendees = new List<EventAttendee>
+            {
+                new EventAttendeeBuilder().ForEvent(eventId).Build(),
+                new EventAttendeeBuilder().ForEvent(eventId).Build()
+            };
+
+            _eventRepository.Setup(r => r.GetAsync(eventId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(evt);
+
+            _attendeeRepository.SetupGet(existingAttendees);
+
+            var newAttendee = new EventAttendeeBuilder()
+                .ForEvent(eventId)
+                .ForUser(userId)
+                .Build();
+
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => _sut.AddAsync(newAttendee, userId));
+
+            Assert.Contains("full", ex.Message);
+        }
+
+        [Fact]
+        public async Task AddAsync_WhenEventHasCapacity_Succeeds()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            var evt = new EventBuilder()
+                .WithId(eventId)
+                .WithMaxParticipants(5)
+                .Build();
+
+            var existingAttendees = new List<EventAttendee>
+            {
+                new EventAttendeeBuilder().ForEvent(eventId).Build(),
+                new EventAttendeeBuilder().ForEvent(eventId).Build()
+            };
+
+            _eventRepository.Setup(r => r.GetAsync(eventId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(evt);
+
+            _attendeeRepository.SetupGet(existingAttendees);
+            _attendeeRepository.Setup(r => r.AddAsync(It.IsAny<EventAttendee>()))
+                .ReturnsAsync((EventAttendee ea) => ea);
+
+            var newAttendee = new EventAttendeeBuilder()
+                .ForEvent(eventId)
+                .ForUser(userId)
+                .Build();
+
+            // Act
+            var result = await _sut.AddAsync(newAttendee, userId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(eventId, result.EventId);
+        }
+
+        [Fact]
+        public async Task AddAsync_WhenNoCapacityLimit_Succeeds()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            var evt = new EventBuilder()
+                .WithId(eventId)
+                .WithMaxParticipants(0)
+                .Build();
+
+            _eventRepository.Setup(r => r.GetAsync(eventId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(evt);
+
+            _attendeeRepository.Setup(r => r.AddAsync(It.IsAny<EventAttendee>()))
+                .ReturnsAsync((EventAttendee ea) => ea);
+
+            var newAttendee = new EventAttendeeBuilder()
+                .ForEvent(eventId)
+                .ForUser(userId)
+                .Build();
+
+            // Act
+            var result = await _sut.AddAsync(newAttendee, userId);
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        #endregion
+
         #region GetEventsUserIsAttendingAsync Tests
 
         [Fact]
