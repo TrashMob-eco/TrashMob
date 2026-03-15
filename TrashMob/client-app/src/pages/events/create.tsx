@@ -15,10 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { TimePicker } from '@/components/ui/timepicker';
 import { GoogleMap } from '@/components/Map/GoogleMap';
 import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google-maps';
-import {
-    AzureSearchLocationInputWithKey as AzureSearchLocationInput,
-    SearchLocationOption,
-} from '@/components/Map/AzureSearchLocationInput';
+import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useGetEventTypes } from '@/hooks/useGetEventTypes';
@@ -32,8 +29,7 @@ import { CreateEvent, GetUserEvents } from '@/services/events';
 import EventData from '@/components/Models/EventData';
 import LitterReportData from '@/components/Models/LitterReportData';
 import { AddEventLitterReport, GetEventLitterReports } from '@/services/event-litter-reports';
-import { AzureMapSearchAddressReverse, AzureMapSearchAddressReverse_Params } from '@/services/maps';
-import { useGetAzureKey } from '@/hooks/useGetAzureKey';
+import { ReverseGeocode, ReverseGeocode_Params } from '@/services/maps';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import { useFeatureMetrics } from '@/hooks/useFeatureMetrics';
@@ -82,7 +78,6 @@ const createEventSchema = z.object({
 });
 
 export const CreateEventPage = () => {
-    const azureKey = useGetAzureKey();
     const { currentUser } = useLogin();
     const { toast } = useToast();
     const queryClient = useQueryClient();
@@ -315,8 +310,8 @@ export const CreateEventPage = () => {
     const latitude = form.watch('latitude');
     const longitude = form.watch('longitude');
 
-    const searchAddressReverse = async (params: AzureMapSearchAddressReverse_Params) => {
-        const { data } = await AzureMapSearchAddressReverse().service(params);
+    const searchAddressReverse = async (params: ReverseGeocode_Params) => {
+        const { data } = await ReverseGeocode().service(params);
         const firstResult = data?.addresses[0];
         if (firstResult) {
             form.setValue('streetAddress', firstResult.address.streetNameAndNumber);
@@ -331,15 +326,14 @@ export const CreateEventPage = () => {
     };
 
     useEffect(() => {
-        if (azureKey && latitude && longitude) {
-            const params: AzureMapSearchAddressReverse_Params = {
+        if (latitude && longitude) {
+            const params: ReverseGeocode_Params = {
                 lat: latitude,
                 long: longitude,
-                azureKey: azureKey,
             };
             searchAddressReverse(params);
         }
-    }, [latitude, longitude, azureKey]);
+    }, [latitude, longitude]);
 
     return (
         <ManageEventDashboardLayout title='Create an event'>
