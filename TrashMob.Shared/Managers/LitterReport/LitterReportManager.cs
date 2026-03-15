@@ -373,6 +373,16 @@ namespace TrashMob.Shared.Managers.LitterReport
                 return null;
             }
 
+            // Ensure at least one image remains after the update
+            var incomingImageCount = instance.LitterImages?.Count ?? 0;
+            var newImageCount = instance.LitterImages?.Count(x => x.Id == Guid.Empty) ?? 0;
+            var retainedExistingCount = incomingImageCount - newImageCount;
+            if (incomingImageCount == 0 || (retainedExistingCount == 0 && newImageCount == 0))
+            {
+                logger.LogWarning("UpdateAsync(FullLitterReport) rejected: no images for report {Id}", instance.Id);
+                return null;
+            }
+
             existingInstance.Name = instance.Name;
             existingInstance.Description = instance.Description;
             existingInstance.LitterReportStatusId = instance.LitterReportStatusId;
