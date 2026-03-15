@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (55 Total)
+### 2026 Projects (56 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -74,6 +74,7 @@
 | [Project 49 - Privacy & Compliance Review](./Projects/Project_49_Privacy_Compliance_Review.md) | Deletion audit, data export, GDPR compliance, cookie consent | In Progress (Phases 1-4 Complete, Phase 5 Partial) |
 | [Project 53 - Mobile Offline Persistence](./Projects/Project_53_Mobile_Offline_Persistence.md) | Client-side persistence for routes, metrics, and photos with background sync | Complete (Phases 1–4); Deferred: platform background sync, server-side dedup |
 | [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md) | Pre-event waiver validation, configurable check-in notifications, attendance roster for event leads | Not Started |
+| [Project 56 - Board Metrics Dashboard](./Projects/Project_56_Board_Metrics_Dashboard.md) | Unified admin dashboard consolidating App Insights, GA4, Sentry, Clarity, Azure costs, and QuickBooks for board meetings | Planning |
 
 #### High Priority (Marketing & Growth)
 
@@ -138,6 +139,7 @@
 - [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md) ✅
 - [Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md) ✅
 - [Project 37 - Unit Test Coverage](./Projects/Project_37_Unit_Test_Coverage.md) ✅
+- [Project 56 - Board Metrics Dashboard](./Projects/Project_56_Board_Metrics_Dashboard.md)
 - [Project 38 - Mobile Feature Parity](./Projects/Project_38_Mobile_Feature_Parity.md)
 
 ### Infrastructure & Operations
@@ -167,11 +169,12 @@
 |--------|-------|----------|
 | ✅ **Complete** | 32 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53 |
 | **In Progress** | 13 | Projects 1, 4, 5, 6, 8, 15, 23, 25, 30, 41, 45, 46, 49 |
+| **Planning** | 1 | Project 56 |
 | **Ready for Review** | 1 | Project 2 |
-| **Not Started** | 6 | Projects 12, 24, 31, 36, 43, 52, 54 |
+| **Not Started** | 7 | Projects 12, 24, 31, 36, 43, 52, 54, 55 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 54 project specifications documented
+**Total:** 56 project specifications documented
 
 ---
 
@@ -201,6 +204,12 @@
 | Project | What's Left |
 |---------|-------------|
 | [Project 2 - Home Page Improvements](./Projects/Project_02_Home_Page.md) | All phases pending design review (dynamic content, map enhancements, sponsorship, quick actions) |
+
+### Planning
+
+| Project | Description |
+|---------|-------------|
+| [Project 56 - Board Metrics Dashboard](./Projects/Project_56_Board_Metrics_Dashboard.md) | Unified admin dashboard pulling from App Insights, GA4, Sentry, Clarity, Azure Cost Management, and QuickBooks for monthly board meetings |
 
 ### Not Started
 
@@ -293,6 +302,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** March 4, 2026
+**Last Updated:** March 14, 2026
 **Maintained By:** Product & Engineering Team
 **Next Review:** End of Q1 2026
