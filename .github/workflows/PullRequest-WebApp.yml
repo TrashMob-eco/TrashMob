@@ -11,6 +11,8 @@ on:
       - '.github/workflows/release_ca-tm-pr-westus2.yml'
       - 'Deploy/containerApp.bicep'
       - 'TrashMob/**'
+      - '!TrashMob/client-app/e2e/**'
+      - '!TrashMob/client-app/playwright.config.ts'
       - 'TrashMob.Models/**'
       - 'TrashMob.Shared/**'
       - 'TrashMob.Shared.Tests/**'

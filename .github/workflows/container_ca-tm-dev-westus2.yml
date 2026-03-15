@@ -9,6 +9,8 @@ on:
     paths:
       - '.github/workflows/container_ca-tm-dev-westus2.yml'
       - 'TrashMob/**'
+      - '!TrashMob/client-app/e2e/**'
+      - '!TrashMob/client-app/playwright.config.ts'
       - 'TrashMob.Models/**'
       - 'TrashMob.Shared/**'
       - 'Deploy/containerApp.bicep'
