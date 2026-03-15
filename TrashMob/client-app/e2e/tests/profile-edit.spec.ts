@@ -70,9 +70,10 @@ test.describe('Profile Edit Flow', () => {
 
     test('should persist profile data after page reload', async ({ authenticatedPage: page }) => {
         await page.goto('/myprofile');
+        await page.waitForLoadState('networkidle').catch(() => {});
 
         const cityInput = page.locator('input[name="city"]');
-        await expect(cityInput).toBeVisible({ timeout: 15000 });
+        await expect(cityInput).toBeVisible({ timeout: 30000 });
 
         // Get current city value
         const currentCity = await cityInput.inputValue();

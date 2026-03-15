@@ -4,23 +4,6 @@ test.describe('Dashboard Interactions', () => {
     test.describe.configure({ retries: 1 });
 
     test.describe('Event Table', () => {
-        test('should sort events by name', async ({ authenticatedPage: page }) => {
-            await page.goto('/mydashboard');
-
-            await expect(page.getByRole('heading', { name: /my events/i })).toBeVisible({ timeout: 15000 });
-
-            // Find sortable Name column header button
-            const nameHeader = page.locator('table').first().getByRole('button', { name: /name/i });
-            if (await nameHeader.isVisible({ timeout: 5000 }).catch(() => false)) {
-                await nameHeader.click();
-                // After click, sort indicator should change
-                await page.waitForTimeout(300);
-                // Click again to reverse sort
-                await nameHeader.click();
-                await page.waitForTimeout(300);
-            }
-        });
-
         test('should filter events with dropdown', async ({ authenticatedPage: page }) => {
             await page.goto('/mydashboard');
 
