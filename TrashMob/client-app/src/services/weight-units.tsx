@@ -6,7 +6,7 @@ export const GetWeightUnits = () => ({
     key: ['/weightunits'],
     service: async () =>
         ApiService('public').fetchData<WeightUnit_Response>({
-            url: `/weightunits`,
+            url: `/v2/weightunits`,
             method: 'get',
         }),
 });
