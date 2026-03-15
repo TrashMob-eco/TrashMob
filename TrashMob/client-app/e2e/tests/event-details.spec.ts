@@ -41,15 +41,15 @@ test.describe('Event Details', () => {
 
         // Give the page time to fully load (attendees query can crash after initial render)
         const errorBoundary = page.getByText('Something went wrong');
-        const registerBtn = page.getByRole('button', { name: /register|unregister/i });
+        const attendBtn = page.getByRole('button', { name: /attend|register|unregister/i });
 
-        await expect(registerBtn.or(errorBoundary)).toBeVisible({ timeout: 30000 });
+        await expect(attendBtn.or(errorBoundary)).toBeVisible({ timeout: 30000 });
 
         if (await errorBoundary.isVisible().catch(() => false)) {
             test.skip(true, 'Event details page crashed (intermittent backend error)');
         }
 
-        await expect(registerBtn).toBeVisible();
+        await expect(attendBtn).toBeVisible();
     });
 
     test('should show share button', async ({ authenticatedPage: page }) => {
