@@ -32,7 +32,7 @@ namespace TrashMob.Controllers.V2
         ILookupRepository<NewsletterCategory> categoryRepository,
         ILogger<NewsletterPreferencesV2Controller> logger) : ControllerBase
     {
-        private System.Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
+        private System.Guid UserId => System.Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : System.Guid.Empty;
 
         /// <summary>
         /// Gets all newsletter categories.

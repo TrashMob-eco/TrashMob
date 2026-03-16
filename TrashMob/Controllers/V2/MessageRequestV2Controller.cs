@@ -32,7 +32,7 @@ namespace TrashMob.Controllers.V2
         IMessageRequestManager messageRequestManager,
         ILogger<MessageRequestV2Controller> logger) : ControllerBase
     {
-        private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
+        private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
 
         /// <summary>
         /// Sends a message request (broadcast message to users).

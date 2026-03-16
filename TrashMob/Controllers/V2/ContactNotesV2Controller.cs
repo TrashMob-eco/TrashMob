@@ -30,7 +30,7 @@ namespace TrashMob.Controllers.V2
         IContactNoteManager contactNoteManager,
         ILogger<ContactNotesV2Controller> logger) : ControllerBase
     {
-        private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
+        private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
 
         /// <summary>
         /// Gets all notes for a specific contact.

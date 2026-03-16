@@ -32,7 +32,7 @@ namespace TrashMob.Controllers.V2
         private const int MaxEmailsPerBatch = 10;
         private const int MaxInvitesPerMonth = 50;
 
-        private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
+        private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
 
         /// <summary>
         /// Gets the current user's invite batches.

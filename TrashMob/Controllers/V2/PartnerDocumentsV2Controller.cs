@@ -46,7 +46,7 @@ namespace TrashMob.Controllers.V2
         private const long MaxFileSizeBytes = 25 * 1024 * 1024; // 25 MB
         private const long MaxPartnerStorageBytes = 500 * 1024 * 1024; // 500 MB
 
-        private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
+        private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
 
         /// <summary>
         /// Gets all documents for a given partner.

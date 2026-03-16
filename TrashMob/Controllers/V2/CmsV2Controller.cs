@@ -62,6 +62,11 @@ namespace TrashMob.Controllers.V2
                 // Client disconnected — not an error worth logging
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "Request canceled.");
             }
+            catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                // Content not yet published in CMS — return null data silently
+                return Content("{\"data\":null}", "application/json");
+            }
             catch (HttpRequestException ex)
             {
                 logger.LogWarning(ex, "Failed to fetch hero section from CMS");
@@ -103,6 +108,10 @@ namespace TrashMob.Controllers.V2
             {
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "Request canceled.");
             }
+            catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return Content("{\"data\":null}", "application/json");
+            }
             catch (HttpRequestException ex)
             {
                 logger.LogWarning(ex, "Failed to fetch what-is-trashmob from CMS");
@@ -143,6 +152,10 @@ namespace TrashMob.Controllers.V2
             catch (OperationCanceledException)
             {
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "Request canceled.");
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return Content("{\"data\":null}", "application/json");
             }
             catch (HttpRequestException ex)
             {
@@ -205,6 +218,10 @@ namespace TrashMob.Controllers.V2
             catch (OperationCanceledException)
             {
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "Request canceled.");
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return Content("{\"data\":[],\"meta\":{\"pagination\":{\"page\":1,\"pageSize\":10,\"pageCount\":0,\"total\":0}}}", "application/json");
             }
             catch (HttpRequestException ex)
             {
@@ -300,6 +317,10 @@ namespace TrashMob.Controllers.V2
             catch (OperationCanceledException)
             {
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "Request canceled.");
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return Content("{\"data\":[]}", "application/json");
             }
             catch (HttpRequestException ex)
             {
