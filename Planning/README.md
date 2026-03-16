@@ -37,7 +37,7 @@
 | [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) | Branded partner community pages | ✅ Complete |
 | [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) | Scale email invitations | ✅ Complete |
 | [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors (combined with Project 1) | In Progress (Phase 0, 3 Complete; Phases 1-2 blocked on Privo) |
-| [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Pagination, error handling, auto-generated clients | Not Started |
+| [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Pagination, error handling, DTOs, v2 API layer | Ready for Production (89 controllers, 467 endpoints, zero v1 client URLs) |
 | [Project 38 - Mobile Feature Parity](./Projects/Project_38_Mobile_Feature_Parity.md) | Teams, leaderboards, photos for mobile volunteers | ✅ Complete |
 | [Project 44 - Area Map Editor](./Projects/Project_44_Area_Map_Editor.md) | Interactive map editor, AI area suggestions, bulk import/export, AI generation | ✅ Complete |
 
@@ -54,7 +54,7 @@
 | [Project 20 - Gamification](./Projects/Project_20_Gamification.md) | Leaderboards and achievements | ✅ Complete |
 | [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) | Multiple event admins | ✅ Complete |
 | [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Per-attendee event statistics | ✅ Complete |
-| [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | E2E tests for web and mobile | In Progress (Phase 1 Complete) |
+| [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | E2E tests for web and mobile | In Progress (Phases 1-3 Complete — 197 E2E tests, authenticated + admin) |
 | [Project 37 - Unit Test Coverage](./Projects/Project_37_Unit_Test_Coverage.md) | Improve backend unit test coverage | ✅ Complete |
 | [Project 26 - KeyVault RBAC Migration](./Projects/Project_26_KeyVault_RBAC_Migration.md) | Migrate from access policies to RBAC | ✅ Complete |
 | [Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md) | Admin photo review and flagging | ✅ Complete |
@@ -170,10 +170,11 @@
 | Status | Count | Projects |
 |--------|-------|----------|
 | ✅ **Complete** | 32 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53 |
+| **Ready for Production** | 1 | Project 24 |
 | **In Progress** | 14 | Projects 1, 4, 5, 6, 8, 15, 23, 25, 30, 41, 45, 46, 49, 57 |
 | **Planning** | 1 | Project 56 |
 | **Ready for Review** | 1 | Project 2 |
-| **Not Started** | 7 | Projects 12, 24, 31, 36, 43, 52, 54, 55 |
+| **Not Started** | 6 | Projects 12, 31, 36, 43, 52, 54, 55 |
 | **Deprioritized** | 1 | Project 33 |
 
 **Total:** 57 project specifications documented
@@ -193,7 +194,7 @@
 | [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Phase 3: Security audit — review remaining API endpoints for authorization, input validation, rate limiting |
 | [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Phase 5 remaining: Minor waiver signing dialog (web + mobile), WaiverVersion record with minor scope, compliance export with dependent waivers — all pending legal review of minor waiver text |
 | [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Mobile app route recording/upload device testing on iOS and Android |
-| [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | Phase 2: Core web flow E2E tests (event CRUD, litter reports, partner management); Phase 3: Mobile test foundation; Phase 4: Remaining tests & perf baseline |
+| [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | Phase 4: Mobile test foundation (deferred). 197 web E2E tests complete across 32 files. |
 | [Project 30 - Azure Billing Alerts](./Projects/Project_30_Azure_Billing_Alerts.md) | Operational monitoring and alert tuning |
 | [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md) | Phase 5: Reporting & analytics (community-level volunteer vs. sponsored breakdown, cost-per-mile, company comparison, compliance reports) |
 | [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md) | Deferred: Community testimonials (waiting on onboarded communities), AI Sales Agent integration |
@@ -219,12 +220,17 @@
 | Project | Description |
 |---------|-------------|
 | [Project 12 - In-App Messaging](./Projects/Project_12_In_App_Messaging.md) | Push notifications, in-app message center, notification preferences |
-| [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Versioned API endpoints, deprecation, auto-generated clients |
 | [Project 31 - Feature Flags](./Projects/Project_31_Feature_Flags.md) | Feature flag infrastructure for safe deployments and gradual rollouts |
 | [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | Community tier pricing, feature comparison, branding guidelines, digital assets |
 | [Project 43 - Sign Management](./Projects/Project_43_Sign_Management.md) | Track physical Adopt-A-Location signs (status, coordinates, text, lifecycle) |
 | [Project 52 - Volunteer Rewards](./Projects/Project_52_Volunteer_Rewards.md) | Partner reward sourcing, criteria, distribution, fraud prevention (future) |
 | [Project 54 - Community Adoption Outreach](./Projects/Project_54_Community_Adoption_Outreach.md) | AI-powered sponsor/adopter discovery and outreach for community managers |
+
+### Ready for Production
+
+| Project | Status |
+|---------|--------|
+| [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | 89 v2 controllers, 467 endpoints, 100 DTOs, 1005 backend tests, zero v1 client URLs. Phase 4 (ETags, rate limiting) deferred. Production rollout pending. |
 
 ### Complete with Deferred Items
 
