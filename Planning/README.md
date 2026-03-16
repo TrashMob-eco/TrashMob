@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (57 Total)
+### 2026 Projects (58 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -87,6 +87,7 @@
 | [Project 46 - Product Support](./Projects/Project_46_Product_Support.md) | Define product support role, channels, onboarding, and knowledge base | In Progress (Phases 1-3 Complete) |
 | [Project 50 - News & Blog](./Projects/Project_50_News_Blog.md) | Blog-style news page powered by Strapi CMS with pagination and categories | ✅ Complete |
 | [Project 51 - Contact Management](./Projects/Project_51_Contact_Management.md) | Donor tracking, grant management, contact CRM for nonprofit fundraising (Site Admin only) | ✅ Complete |
+| [Project 58 - Community Event Seeding](./Projects/Project_58_Community_Event_Seeding.md) | Admin-seeded public cleanup events with claim workflow to solve cold-start growth problem | Planning |
 
 #### Low Priority (Nice-to-Have)
 
@@ -162,6 +163,7 @@
 - [Project 50 - News & Blog](./Projects/Project_50_News_Blog.md)
 - [Project 51 - Contact Management](./Projects/Project_51_Contact_Management.md)
 - [Project 52 - Volunteer Rewards](./Projects/Project_52_Volunteer_Rewards.md)
+- [Project 58 - Community Event Seeding](./Projects/Project_58_Community_Event_Seeding.md)
 
 ---
 
@@ -171,12 +173,12 @@
 |--------|-------|----------|
 | ✅ **Complete** | 32 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53 |
 | **In Progress** | 14 | Projects 1, 4, 5, 6, 8, 15, 23, 25, 30, 41, 45, 46, 49, 57 |
-| **Planning** | 1 | Project 56 |
+| **Planning** | 2 | Projects 56, 58 |
 | **Ready for Review** | 1 | Project 2 |
 | **Not Started** | 7 | Projects 12, 24, 31, 36, 43, 52, 54, 55 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 57 project specifications documented
+**Total:** 58 project specifications documented
 
 ---
 
@@ -213,6 +215,7 @@
 | Project | Description |
 |---------|-------------|
 | [Project 56 - Board Metrics Dashboard](./Projects/Project_56_Board_Metrics_Dashboard.md) | Unified admin dashboard pulling from App Insights, GA4, Sentry, Clarity, Azure Cost Management, and QuickBooks for monthly board meetings |
+| [Project 58 - Community Event Seeding](./Projects/Project_58_Community_Event_Seeding.md) | Admin-seeded public cleanup events with organizer claim workflow to solve cold-start growth |
 
 ### Not Started
 
@@ -305,6 +308,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** March 15, 2026
+**Last Updated:** March 16, 2026
 **Maintained By:** Product & Engineering Team
 **Next Review:** End of Q1 2026
