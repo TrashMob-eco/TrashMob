@@ -232,12 +232,14 @@ export const LitterReportsPage = () => {
                     <ToggleGroup value={view} onValueChange={(v) => v && setView(v)} type='single' variant='outline'>
                         <ToggleGroupItem
                             value='list'
+                            aria-label='List view'
                             className='data-[state=on]:bg-primary data-[state=on]:text-primary-foreground'
                         >
                             <List />
                         </ToggleGroupItem>
                         <ToggleGroupItem
                             value='map'
+                            aria-label='Map view'
                             className='data-[state=on]:bg-primary data-[state=on]:text-primary-foreground'
                         >
                             <Map />
