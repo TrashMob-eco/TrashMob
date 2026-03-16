@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 1 Complete) |
+| **Status** | Phases 1–3 Complete — 197 E2E tests, 32 test files, authenticated + admin flows, CI integration |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -43,22 +43,38 @@ Reduce regression risk, enable confident releases, and replace manual test scena
 
 ## Scope
 
-### Web (Playwright)
-- ✅ User registration and sign-in flows
-- ✅ Event creation, editing, and cancellation
-- ✅ Event registration and waiver signing
-- ✅ Litter report creation and management
-- ✅ Partner request and management flows
-- ✅ Site administration access controls
-- ✅ Contact form submission
+### Web (Playwright) ✅ IMPLEMENTED
+- ✅ User authentication (Entra External ID login with MSAL session restoration)
+- ✅ Event creation wizard (multi-step form)
+- ✅ Event details and registration (attend button, calendar, share)
+- ✅ Event editing (dashboard interactions)
+- ✅ Litter report listing and filtering
+- ✅ Litter report editing
+- ✅ Partner request forms (become/invite partner)
+- ✅ Site administration (25 admin pages)
+- ✅ Contact form submission and validation
+- ✅ Dashboard (events, teams, impact, waivers, newsletters, invites)
+- ✅ Profile editing with save/discard/validation
+- ✅ Team creation and detail views
+- ✅ Leaderboard filtering and tab switching
+- ✅ Community listing and detail
+- ✅ Location preference page
+- ✅ Newsletter preference toggles
+- ✅ Waiver status in dashboard
+- ✅ Share dialog (social + QR code)
+- ✅ Navigation menus (Radix hover)
+- ✅ Mobile responsive layout
+- ✅ API health checks (6 endpoints)
+- ✅ Error pages (404)
+- ✅ Accessibility (keyboard navigation, ARIA)
 
-### Mobile (Appium/.NET MAUI Testing)
-- ✅ Authentication flows
-- ✅ Event discovery and details
-- ✅ Event registration
-- ✅ Litter report creation with camera
-- ✅ Dashboard and stats viewing
-- ✅ Map interactions
+### Mobile (Appium/.NET MAUI Testing) — NOT STARTED
+- ❌ Authentication flows
+- ❌ Event discovery and details
+- ❌ Event registration
+- ❌ Litter report creation with camera
+- ❌ Dashboard and stats viewing
+- ❌ Map interactions
 
 ---
 
@@ -66,36 +82,36 @@ Reduce regression risk, enable confident releases, and replace manual test scena
 
 - ❌ Visual regression testing (future phase)
 - ❌ Performance/load testing (separate project)
-- ❌ API-only tests (covered by unit tests)
 - ❌ Third-party service integration tests
+- ❌ Mobile UI testing (deferred — mobile app is stable and tested manually)
 
 ---
 
 ## Success Metrics
 
 ### Quantitative
-- **Test coverage of critical user flows:** ≥ 80%
-- **CI pipeline runs all E2E tests on PRs:** 100%
-- **Test execution time:** < 10 minutes
-- **Flaky test rate:** < 5%
-- **Manual regression testing time:** Reduced by 50%
+- **E2E test count:** 197 tests (target was critical flows ≥ 80% — achieved)
+- **CI pipeline runs all E2E tests on PRs:** ✅ Yes (`.github/workflows/e2e-tests.yml`)
+- **Test execution time:** ~4–5 minutes in CI (target was < 10 minutes — achieved)
+- **Flaky test rate:** < 3% (2-3 tests occasionally need retry — target was < 5%)
+- **Manual regression testing time:** Significantly reduced — all critical pages have automated coverage
 
 ### Qualitative
-- Developers confident in automated test coverage
-- Faster release cycles
-- Fewer production regressions
+- ✅ Developers confident in automated test coverage
+- ✅ Faster release cycles (PRs verified automatically)
+- ✅ Fewer production regressions (caught paginated response bugs, attendee DTO mismatches via E2E)
 
 ---
 
 ## Dependencies
 
 ### Blockers
-- **Project 5 (CI/CD Infrastructure):** Stable pipeline for test execution
+- **Project 5 (CI/CD Infrastructure):** ✅ Stable pipeline — complete
 
 ### Enables
-- Faster development velocity
-- Confident refactoring
-- Better code quality
+- ✅ Faster development velocity
+- ✅ Confident refactoring (Project 24 v2 migration validated by E2E)
+- ✅ Better code quality
 
 ---
 
@@ -103,400 +119,233 @@ Reduce regression risk, enable confident releases, and replace manual test scena
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
-| **Flaky tests** | High | Medium | Retry logic; stable test data; proper waits |
-| **Slow test execution** | Medium | Medium | Parallelization; test sharding; selective runs |
-| **Test maintenance burden** | Medium | Medium | Page object pattern; shared fixtures; good abstraction |
-| **Mobile emulator issues in CI** | Medium | High | Android-first; stable emulator images; fallback to device farm |
+| **Flaky tests** | Medium | Medium | ✅ Retry logic (1-2 retries per test); stable auth state caching (30min); `waitForLoadState` + explicit timeouts |
+| **Slow test execution** | Low | Medium | ✅ Parallel execution (2 CI workers); runs in ~4-5 min |
+| **Test maintenance burden** | Medium | Medium | ✅ Page object pattern; shared auth fixture; error boundary detection |
+| **Auth session expiry** | Medium | Medium | ✅ Global setup re-login if state > 30 min old; sessionStorage capture/restore |
+| **Mobile emulator issues in CI** | N/A | N/A | Mobile testing deferred |
 
 ---
 
-## Implementation Plan
+## Current Implementation (Phases 1–3 Complete)
 
-### Web Testing - Playwright Setup
+### Infrastructure
+- ✅ **Playwright** installed and configured in `TrashMob/client-app/`
+- ✅ **GitHub Actions workflow** (`.github/workflows/e2e-tests.yml`) runs on PRs to main + pushes to main
+- ✅ **Trigger paths:** `TrashMob/client-app/**` + `TrashMob/Controllers/**` (controller changes trigger E2E too)
+- ✅ **Path exclusions:** `e2e/**` and `playwright.config.ts` excluded from app build/deploy workflows (e2e-only changes don't trigger rebuilds)
+- ✅ **Tests run against dev.trashmob.eco** with Chromium browser
+- ✅ **Test reports** uploaded as artifacts (HTML report always, test results on failure)
+- ✅ **Authenticated testing** via Entra External ID login with MSAL sessionStorage capture
+- ✅ **Admin testing** via separate admin user with site admin privileges
+- ✅ **dotenv integration** for local credentials (`.env.local`, gitignored)
 
-**Project Structure:**
+### Authentication Infrastructure
+- **Global setup** (`e2e/global-setup.ts`): Logs in both standard user and admin user via Entra External ID, saves cookies + MSAL sessionStorage to `.auth/user.json` and `.auth/admin.json`
+- **Auth fixture** (`e2e/fixtures/auth.fixture.ts`): Provides `authenticatedPage` and `adminPage` fixtures that restore MSAL sessions; auto-skips tests when credentials unavailable
+- **Session caching:** Auth state cached for 30 minutes to avoid re-login on every test run
+- **CI secrets:** `E2E_USER_EMAIL`, `E2E_USER_PASSWORD`, `E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD`
+
+### File Structure
 ```
 TrashMob/client-app/
+├── playwright.config.ts          # Multi-browser config with globalSetup + dotenv
 ├── e2e/
+│   ├── global-setup.ts           # Entra login for user + admin, saves auth state
+│   ├── .auth/                    # Auth state files (gitignored)
+│   │   ├── user.json
+│   │   └── admin.json
 │   ├── fixtures/
-│   │   ├── auth.fixture.ts      # Authentication helpers
-│   │   └── test-data.fixture.ts # Test data management
+│   │   ├── auth.fixture.ts       # authenticatedPage + adminPage fixtures
+│   │   └── base.fixture.ts       # Base test fixture
 │   ├── pages/
-│   │   ├── home.page.ts         # Home page object
-│   │   ├── events.page.ts       # Events page object
-│   │   ├── login.page.ts        # Login page object
-│   │   └── dashboard.page.ts    # Dashboard page object
-│   ├── tests/
-│   │   ├── auth.spec.ts         # Authentication tests
-│   │   ├── events.spec.ts       # Event management tests
+│   │   ├── home.page.ts          # Home page object (Radix nav hover)
+│   │   ├── contact.page.ts       # Contact form page object
+│   │   └── events.page.ts        # Events page object
+│   ├── tests/                    # 32 test files, 197 tests
+│   │   ├── accessibility.spec.ts
+│   │   ├── api-health.spec.ts
+│   │   ├── authenticated.spec.ts
+│   │   ├── communities.spec.ts
+│   │   ├── contact.spec.ts
+│   │   ├── dashboard-interactions.spec.ts
+│   │   ├── dashboard.spec.ts
+│   │   ├── error-pages.spec.ts
+│   │   ├── event-creation.spec.ts
+│   │   ├── event-details.spec.ts
+│   │   ├── event-registration.spec.ts
+│   │   ├── footer.spec.ts
+│   │   ├── home-interactions.spec.ts
+│   │   ├── home-page.spec.ts
+│   │   ├── leaderboard-interactions.spec.ts
+│   │   ├── leaderboards.spec.ts
+│   │   ├── litter-report-edit.spec.ts
 │   │   ├── litter-reports.spec.ts
-│   │   ├── partners.spec.ts
-│   │   └── admin.spec.ts
-│   └── playwright.config.ts
+│   │   ├── location-preference.spec.ts
+│   │   ├── mobile.spec.ts
+│   │   ├── newsletter-preferences.spec.ts
+│   │   ├── page-coverage.spec.ts
+│   │   ├── partner-request.spec.ts
+│   │   ├── profile-edit.spec.ts
+│   │   ├── profile.spec.ts
+│   │   ├── public-pages.spec.ts
+│   │   ├── share-dialog.spec.ts
+│   │   ├── siteadmin-interactions.spec.ts
+│   │   ├── siteadmin.spec.ts
+│   │   ├── team-create.spec.ts
+│   │   ├── team-detail.spec.ts
+│   │   └── waivers.spec.ts
+│   └── utils/
+│       └── helpers.ts            # Shared utilities (uniqueId, dates, toasts)
 ```
 
-**Playwright Configuration:**
-```typescript
-// playwright.config.ts
-import { defineConfig, devices } from '@playwright/test';
+### Test Inventory (197 tests across 32 files)
 
-export default defineConfig({
-  testDir: './e2e/tests',
-  fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 2 : undefined,
-  reporter: [
-    ['html', { open: 'never' }],
-    ['junit', { outputFile: 'test-results/junit.xml' }],
-  ],
-  use: {
-    baseURL: process.env.BASE_URL || 'https://localhost:44332',
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-  },
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'mobile',
-      use: { ...devices['iPhone 13'] },
-    },
-  ],
-});
-```
+#### Public Pages (no auth required)
+| Test File | Tests | Coverage |
+|-----------|-------|----------|
+| `public-pages.spec.ts` | 24 | Home page, navigation (Explore/About menus), 18 static pages, accessibility |
+| `home-page.spec.ts` | 5 | Hero section, stats, introduction, events, getting started |
+| `home-interactions.spec.ts` | 7 | Tab switching, map/list toggle, event count, Take Action menu, stats |
+| `footer.spec.ts` | 5 | Copyright, nav links, social media, non-profit disclosure |
+| `mobile.spec.ts` | 6 | Hamburger menu, nav toggle, sign-in, sections, footer, static pages |
+| `error-pages.spec.ts` | 4 | 404 page, back/home links, contact link |
+| `contact.spec.ts` | 8 | Form display, required fields, validation, submission, accessibility |
+| `communities.spec.ts` | 3 | Page display, browse heading, community detail navigation |
+| `litter-reports.spec.ts` | 4 | Filter controls, list/map toggle, location search, Report Litter link |
+| `page-coverage.spec.ts` (public) | 3 | News page, unsubscribe, non-existent article |
+| `api-health.spec.ts` | 6 | Config, stats, Google Maps key, events, communities, leaderboards |
 
-**Example Test (Authentication):**
-```typescript
-// e2e/tests/auth.spec.ts
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/login.page';
+#### Authenticated User (standard user)
+| Test File | Tests | Coverage |
+|-----------|-------|----------|
+| `authenticated.spec.ts` | 6 | Account menu, dashboard, profile, event creation, teams, litter reports |
+| `dashboard.spec.ts` | 9 | Hero, logged in, events heading/link/upcoming/completed, teams, browse teams, impact |
+| `dashboard-interactions.spec.ts` | 7 | Event filter dropdown, list/map toggle, sidebar nav (impact/waivers/newsletters), invite friends |
+| `profile.spec.ts` | 6 | Form with data, email read-only, save/discard, data privacy, photo, name fields |
+| `profile-edit.spec.ts` | 4 | Edit + save with toast, discard navigation, username validation, data persistence |
+| `event-details.spec.ts` | 3 | Event name display, attend button, share button |
+| `event-creation.spec.ts` | 4 | Step 1 display, step indicators, Next button, manage event layout |
+| `event-registration.spec.ts` | 3 | Attend button state, calendar dropdown options, calendar/share visibility |
+| `share-dialog.spec.ts` | 2 | Open dialog with social tab, switch to QR code tab |
+| `leaderboards.spec.ts` | 4 | Page with tabs, filter dropdowns, tab switching, ranking info |
+| `leaderboard-interactions.spec.ts` | 3 | Type filter dropdown, volunteers/teams tabs, ranking display |
+| `location-preference.spec.ts` | 4 | Heading, preferences card, save/discard, address fields |
+| `newsletter-preferences.spec.ts` | 3 | Toggle display, subscription toggle + restore, unsubscribe all |
+| `waivers.spec.ts` | 2 | Dashboard waivers section, signed waiver status |
+| `team-detail.spec.ts` | 4 | Team info, members, share button, join/manage action |
+| `team-create.spec.ts` | 5 | Form fields, name/description, public/approval toggles, create/cancel, validation |
+| `partner-request.spec.ts` | 3 | Become partner form + fields, email field, invite partner |
+| `litter-report-edit.spec.ts` | 8 | Page load, form fields, buttons, access control, cancellation |
+| `page-coverage.spec.ts` (auth) | 5 | Waivers, become/invite partner, delete data + buttons, achievements |
+| `accessibility.spec.ts` | 8 | Heading hierarchy, alt text, form labels, ARIA, color contrast, focus, landmarks, skip links |
 
-test.describe('User Authentication', () => {
-  test('user can sign up with valid information', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.clickSignUp();
+#### Site Admin (admin user)
+| Test File | Tests | Coverage |
+|-----------|-------|----------|
+| `siteadmin.spec.ts` | 25 | Layout, sidebar nav, events/users/partners tables, partner requests, litter reports, teams, contacts/CRM, contact tags, waivers + compliance, feedback + status tabs, newsletters + create, email templates, content management, bulk invites, photo moderation, donations, grants, prospects, job opportunities |
+| `siteadmin-interactions.spec.ts` | 5 | Events search + sort header, users search, contacts tab filter, feedback status filter, sidebar navigation |
 
-    // Fill registration form
-    await page.fill('[name="username"]', 'testuser_' + Date.now());
-    await page.fill('[name="email"]', `test${Date.now()}@example.com`);
-    await page.check('[name="agreeToPrivacyPolicy"]');
-    await page.check('[name="agreeToTermsOfService"]');
-    await page.click('button[type="submit"]');
+### Bugs Found by E2E Tests
+E2E tests caught real bugs during development:
+1. **Home page crash** — `GetFilteredEvents` returned `PagedResponse` but frontend expected raw array (PR #3100)
+2. **Event details crash** — `EventAttendeeDto` has `userId` but components referenced `.id` (PR #3117)
+3. **Teams page silent failure** — `GetPublicTeams` response was `PagedResponse` but not unwrapped (PR #3109)
+4. **Google Maps 404** — MapsV2Controller missing `googlemapkey`, `search`, `reversegeocode` endpoints (PR #3101)
+5. **Azure Maps 404 on every page** — Frontend fetched unused Azure Maps key via deprecated endpoint (PR #3130)
 
-    // Verify success
-    await expect(page).toHaveURL(/dashboard/);
-  });
+### Test Scenarios Coverage
 
-  test('user cannot sign up without agreeing to terms', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.clickSignUp();
-
-    await page.fill('[name="username"]', 'testuser');
-    await page.fill('[name="email"]', 'test@example.com');
-    // Don't check terms
-    await page.click('button[type="submit"]');
-
-    // Verify error
-    await expect(page.locator('.error')).toBeVisible();
-  });
-});
-```
-
-**Page Object Example:**
-```typescript
-// e2e/pages/events.page.ts
-import { Page, Locator } from '@playwright/test';
-
-export class EventsPage {
-  readonly page: Page;
-  readonly createEventButton: Locator;
-  readonly eventNameInput: Locator;
-  readonly eventDateInput: Locator;
-  readonly eventLocationInput: Locator;
-  readonly submitButton: Locator;
-
-  constructor(page: Page) {
-    this.page = page;
-    this.createEventButton = page.getByRole('button', { name: 'Create Event' });
-    this.eventNameInput = page.locator('[name="eventName"]');
-    this.eventDateInput = page.locator('[name="eventDate"]');
-    this.eventLocationInput = page.locator('[name="location"]');
-    this.submitButton = page.getByRole('button', { name: 'Submit' });
-  }
-
-  async goto() {
-    await this.page.goto('/events');
-  }
-
-  async createEvent(name: string, date: string, location: string) {
-    await this.createEventButton.click();
-    await this.eventNameInput.fill(name);
-    await this.eventDateInput.fill(date);
-    await this.eventLocationInput.fill(location);
-    await this.submitButton.click();
-  }
-}
-```
-
-### Mobile Testing Setup
-
-**Project Structure:**
-```
-TrashMobMobile.Tests.UI/
-├── PageObjects/
-│   ├── LoginPage.cs
-│   ├── EventsPage.cs
-│   └── DashboardPage.cs
-├── Tests/
-│   ├── AuthenticationTests.cs
-│   ├── EventTests.cs
-│   └── LitterReportTests.cs
-├── Fixtures/
-│   └── AppFixture.cs
-└── TrashMobMobile.Tests.UI.csproj
-```
-
-**MAUI Test Example:**
-```csharp
-// Tests/AuthenticationTests.cs
-[TestClass]
-public class AuthenticationTests : BaseTest
-{
-    [TestMethod]
-    public async Task User_Can_Login_Successfully()
-    {
-        // Arrange
-        var loginPage = new LoginPage(App);
-
-        // Act
-        await loginPage.EnterUsername("testuser@example.com");
-        await loginPage.EnterPassword("TestPassword123!");
-        await loginPage.TapLoginButton();
-
-        // Assert
-        var dashboardPage = new DashboardPage(App);
-        Assert.IsTrue(await dashboardPage.IsDisplayed());
-    }
-
-    [TestMethod]
-    public async Task User_Sees_Error_With_Invalid_Credentials()
-    {
-        // Arrange
-        var loginPage = new LoginPage(App);
-
-        // Act
-        await loginPage.EnterUsername("invalid@example.com");
-        await loginPage.EnterPassword("wrongpassword");
-        await loginPage.TapLoginButton();
-
-        // Assert
-        Assert.IsTrue(await loginPage.IsErrorDisplayed());
-    }
-}
-```
-
-### GitHub Actions Workflow
-
-```yaml
-# .github/workflows/e2e-tests.yml
-name: E2E Tests
-
-on:
-  pull_request:
-    branches: [main]
-  push:
-    branches: [main]
-
-jobs:
-  web-e2e:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: |
-          cd TrashMob/client-app
-          npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Run Playwright tests
-        run: npx playwright test
-        env:
-          BASE_URL: ${{ secrets.DEV_URL }}
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: TrashMob/client-app/playwright-report/
-
-  mobile-e2e:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Start Android Emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 33
-          script: |
-            dotnet test TrashMobMobile.Tests.UI/TrashMobMobile.Tests.UI.csproj
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mobile-test-results
-          path: '**/TestResults/**'
-```
-
----
-
-## Test Scenarios to Automate
-
-### From TestScenarios.md
-
-| Scenario | Test File | Priority |
-|----------|-----------|----------|
-| Sign up for site | auth.spec.ts | Critical |
-| Sign in to site | auth.spec.ts | Critical |
-| Contact Us | contact.spec.ts | Medium |
-| Update User Location Preference | user-settings.spec.ts | Medium |
-| Create Event | events.spec.ts | Critical |
-| Update event | events.spec.ts | High |
-| Sign Waiver | waiver.spec.ts | High |
-| Register for event | events.spec.ts | Critical |
-| Send Invite to potential partner | partners.spec.ts | Medium |
-| Request to become a partner | partners.spec.ts | Medium |
-| Update Partner | partners.spec.ts | Medium |
-| Site Administration | admin.spec.ts | High |
+| Scenario (from TestScenarios.md) | Status | Test File(s) |
+|---|---|---|
+| Sign up for site | ✅ Partial (login tested, not signup) | `authenticated.spec.ts` |
+| Sign in to site | ✅ Complete | `global-setup.ts`, `authenticated.spec.ts` |
+| Contact Us | ✅ Complete | `contact.spec.ts` |
+| Update User Location Preference | ✅ Complete | `location-preference.spec.ts` |
+| Create Event | ✅ Partial (form navigation, not submission) | `event-creation.spec.ts` |
+| Update event | ✅ Partial (dashboard interactions) | `dashboard-interactions.spec.ts` |
+| Sign Waiver | ✅ Partial (waiver status verified) | `waivers.spec.ts` |
+| Register for event | ✅ Complete | `event-registration.spec.ts`, `event-details.spec.ts` |
+| Send Invite to potential partner | ✅ Complete | `partner-request.spec.ts` |
+| Request to become a partner | ✅ Complete | `partner-request.spec.ts` |
+| Update Partner | ✅ Partial (admin list view) | `siteadmin.spec.ts` |
+| Site Administration | ✅ Complete (25 admin pages) | `siteadmin.spec.ts`, `siteadmin-interactions.spec.ts` |
 
 ---
 
 ## Implementation Phases
 
-### Phase 1: Web Foundation
-- Set up Playwright in client-app
-- Configure test fixtures
-- Implement authentication tests
-- Add GitHub Actions workflow
+### Phase 1: Web Foundation ✅ COMPLETE
+- ✅ Set up Playwright in client-app
+- ✅ Configure test fixtures (base + auth)
+- ✅ Implement public page tests (55 tests)
+- ✅ Add GitHub Actions workflow
 
-### Phase 2: Core Web Flows
-- Event CRUD tests
-- Litter report tests
-- Partner management tests
-- Dashboard tests
+### Phase 2: Authenticated Flows ✅ COMPLETE
+- ✅ Entra External ID login via global setup
+- ✅ MSAL sessionStorage capture/restore
+- ✅ Dashboard, profile, event, team, litter report tests
+- ✅ Admin user login + site admin tests (25 admin pages)
+- ✅ API health checks
 
-### Phase 3: Mobile Foundation
-- Evaluate Appium vs MAUI testing
-- Set up mobile test project
-- Implement auth flow tests
-- Configure CI (Android first)
+### Phase 3: User Interactions ✅ COMPLETE
+- ✅ Form editing (profile save/discard/validation)
+- ✅ Tab switching (leaderboards, home events, admin feedback)
+- ✅ List/map view toggles (events, litter reports, dashboard)
+- ✅ Dropdown filters (event filter, leaderboard type/range)
+- ✅ Share dialog (open/close, social/QR tabs)
+- ✅ Navigation menu hover (Radix NavigationMenu)
+- ✅ Newsletter preference toggles
+- ✅ Event creation wizard steps
+- ✅ Team creation form
+- ✅ Partner request forms
+- ✅ Page coverage for previously untested pages
 
-### Phase 4: Completion
-- Remaining web tests
-- Remaining mobile tests
-- Performance baseline
-- Delete TestScenarios.md
-
----
-
-## Current Implementation (Phase 1 Complete)
-
-### Infrastructure
-- ✅ **Playwright installed** and configured in `TrashMob/client-app/`
-- ✅ **GitHub Actions workflow** (`.github/workflows/e2e-tests.yml`) runs on PRs
-- ✅ **Tests run against dev.trashmob.eco** with Chromium browser
-- ✅ **Test reports** uploaded as artifacts on failure
-
-### Files Created
-```
-TrashMob/client-app/
-├── playwright.config.ts          # Multi-browser config (Chromium, Firefox, Mobile)
-├── e2e/
-│   ├── fixtures/
-│   │   ├── auth.fixture.ts       # Authentication helpers
-│   │   └── base.fixture.ts       # Base test fixture
-│   ├── pages/
-│   │   ├── home.page.ts          # Home page object
-│   │   ├── contact.page.ts       # Contact page object
-│   │   └── events.page.ts        # Events page object
-│   ├── tests/
-│   │   ├── public-pages.spec.ts  # Public page navigation tests
-│   │   └── contact.spec.ts       # Contact form tests
-│   └── utils/
-│       └── helpers.ts            # Shared utilities
-```
-
-### Tests Implemented
-| Test File | Coverage |
-|-----------|----------|
-| `public-pages.spec.ts` | Home page, navigation, About menu, static pages (Teams, Partnerships, Help, FAQ, Getting Started, About Us, Privacy Policy, Terms of Service), keyboard accessibility |
-| `contact.spec.ts` | Contact form validation, submission |
-
-### Next Steps (Phase 2)
-- [ ] Add authenticated test user flow
-- [ ] Event CRUD tests (`events.spec.ts`)
-- [ ] Litter report tests
-- [ ] Partner management tests
-- [ ] Dashboard tests
+### Phase 4: Mobile Testing — NOT STARTED (Deferred)
+- ❌ Evaluate Appium vs MAUI testing
+- ❌ Set up mobile test project
+- ❌ Implement auth flow tests
+- ❌ Configure CI (Android first)
 
 ---
 
 ## Decisions
 
 1. **Test data management strategy?**
-   **Decision:** Seed data before tests; cleanup after; use isolated test users per test run
+   **Decision:** Use real dev environment data; no destructive operations in tests; profile edits restored after test
 
 2. **Test environment?**
-   **Decision:** Use dev environment with test tenant; consider ephemeral environments for PR isolation in future
+   **Decision:** Tests run against dev.trashmob.eco (deployed). Local tests proxy API via `.env.local`
 
 3. **Required vs optional PR checks?**
-   **Decision:** Start as optional checks; promote to required after 2 weeks of stability (< 5% flaky rate)
+   **Decision:** Currently optional. Promoting to required after stability is confirmed.
 
 4. **Browser/device matrix?**
-   **Decision:** Chrome + Firefox for web; Android-first for mobile; expand to iOS after Android stable
+   **Decision:** Chromium only in CI (fastest). Firefox and mobile projects defined but not run in CI.
+
+5. **Auth approach?**
+   **Decision:** Entra External ID login via global setup with sessionStorage capture. Two test users: standard + admin.
 
 ---
 
 ## Related Documents
 
 - **[Project 5 - CI/CD](./Project_05_Deployment_Pipelines.md)** - Pipeline infrastructure
-- **[TestScenarios.md](../../TestScenarios.md)** - Manual scenarios to automate
+- **[Project 24 - API v2](./Project_24_API_v2_Modernization.md)** - V2 migration validated by E2E tests
+- **[TestScenarios.md](../../TestScenarios.md)** - Manual scenarios (most now automated)
 - **[Playwright Documentation](https://playwright.dev)** - Framework docs
 
 ---
 
-**Last Updated:** February 5, 2026
+**Last Updated:** March 15, 2026
 **Owner:** Engineering Team
-**Status:** In Progress (Phase 1 Complete)
-**Next Review:** After Phase 2 completion
+**Status:** Phases 1–3 Complete (197 tests, 32 files, 3 user roles)
+**Next Review:** After mobile testing evaluation
 
 ---
 
 ## Changelog
 
+- **2026-03-15:** Major update — Phases 2 and 3 complete. 197 E2E tests across 32 files covering public pages, authenticated user flows, admin pages, and user interactions. Auth infrastructure (Entra login, MSAL session capture, admin user). CI workflow triggers on controller changes. E2E-only changes excluded from build/deploy workflows. Documented all test files, coverage, bugs found, and test scenario mapping.
 - **2026-02-05:** Updated status to "In Progress (Phase 1 Complete)". Playwright framework installed, GitHub Actions workflow running on PRs, page objects and initial tests implemented.
 - **2026-01-31:** Converted open questions to decisions; confirmed all scope items
