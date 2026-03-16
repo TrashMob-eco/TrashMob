@@ -21,7 +21,7 @@ export const SiteHeader = (props: SiteHeaderProps) => {
         <header className='border-b shadow-md shadow-black/10 bg-white py-4 overflow-visible relative z-50'>
             <div className='container'>
                 <div className='flex items-center flex-wrap flex-row'>
-                    <a className='-ml-2 grow lg:grow-0' href='/'>
+                    <a className='-ml-2 grow lg:grow-0' href='/' aria-label='TrashMob home'>
                         <Logo className='w-[165px]' />
                     </a>
                     <Button
