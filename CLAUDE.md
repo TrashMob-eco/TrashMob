@@ -23,6 +23,15 @@ npm run format     # Prettier formatting
 npm run check      # Both lint + format (matches CI)
 ```
 
+### E2E Tests (Playwright)
+```bash
+cd TrashMob/client-app
+npm run e2e                           # Run all E2E tests (197 tests)
+npm run e2e -- --project=chromium     # Chromium only
+npm run e2e -- --grep "Dashboard"     # Filter by name
+BASE_URL=https://dev.trashmob.eco npm run e2e  # Against deployed dev
+```
+
 ### Database Migrations
 ```bash
 # From TrashMob folder
@@ -156,15 +165,19 @@ npm start
 - Use **structured logging** with `LoggerMessage` source generators or message templates (not string interpolation)
 - Use `== null` / `!= null` in EF Core LINQ expressions (not `is null` / `is not null` — causes CS8122)
 - Add **XML documentation** for public APIs (required for Swagger)
-- Write **unit tests** for business logic (xUnit, 450+ tests)
+- Write **unit tests** for business logic (xUnit, 1000+ tests)
 
 ### API Design
+- **All new endpoints must be v2** — 89 v2 controllers, 467 endpoints, 100 DTOs in `TrashMob.Models/Poco/V2/`
 - RESTful endpoints with proper HTTP verbs (GET, POST, PUT, DELETE)
 - Return appropriate HTTP status codes (200, 201, 400, 401, 403, 404, 500)
-- Use **DTOs** (in `TrashMob.Models/Poco/`) for request/response to decouple from database models
+- Use **v2 DTOs** (in `TrashMob.Models/Poco/V2/`) — no raw EF entities cross the wire
+- V2 DTOs use **`ToV2Dto()`** extension methods in `TrashMob.Models/Extensions/V2/`
+- Paginated collection endpoints return **`PagedResponse<T>`** with `{ items, pagination }` wrapper
 - Add **`[ProducesResponseType]`** attributes for all responses (required for Swagger)
 - Add **authentication/authorization** attributes: `[Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]`
 - Use **`[RequiredScope(Constants.TrashMobWriteScope)]`** on write endpoints
+- Error responses use **RFC 9457 Problem Details** format via `GlobalExceptionHandlerMiddleware`
 - Call **`TrackEvent()`** for telemetry on mutation operations
 
 ### Database & EF Core
@@ -219,33 +232,56 @@ See component-level CLAUDE.md files for detailed patterns: `TrashMob/CLAUDE.md`,
 
 ### Adding a new API endpoint
 1. Create/update model in `TrashMob.Models/` (inherit `KeyedModel` for entities with GUID Id)
-2. Add interface in `TrashMob.Shared/Managers/Interfaces/` (extend `IKeyedManager<T>`)
-3. Implement manager in `TrashMob.Shared/Managers/` (extend `KeyedManager<T>`, use primary constructor)
-4. Register in `TrashMob.Shared/ServiceBuilder.cs` (repositories are auto-resolved)
-5. Add controller in `TrashMob/Controllers/` (extend `KeyedController<T>` or `SecureController`, use primary constructor)
-6. Add React Query service in `TrashMob/client-app/src/services/` (factory returning `{ key, service }`)
+2. Create v2 DTO in `TrashMob.Models/Poco/V2/` and mapping in `TrashMob.Models/Extensions/V2/`
+3. Add interface in `TrashMob.Shared/Managers/Interfaces/` (extend `IKeyedManager<T>`)
+4. Implement manager in `TrashMob.Shared/Managers/` (extend `KeyedManager<T>`, use primary constructor)
+5. Register in `TrashMob.Shared/ServiceBuilder.cs` (repositories are auto-resolved)
+6. Add **v2 controller** in `TrashMob/Controllers/V2/` (extend `ControllerBase`, use primary constructor, return DTOs only)
+7. Add tests in `TrashMob.Shared.Tests/Controllers/V2/`
+8. Add React Query service in `TrashMob/client-app/src/services/` (factory returning `{ key, service }`, URL must use `/v2/` prefix)
 
-### Controller Template (Current Pattern)
+### V2 Controller Template (Current Pattern)
+```csharp
+[ApiController]
+[ApiVersion("2.0")]
+[EnableCors("_myAllowSpecificOrigins")]
+[Route("api/v{version:apiVersion}/things")]
+public class ThingsV2Controller(
+    IThingManager thingManager,
+    ILogger<ThingsV2Controller> logger) : ControllerBase
+{
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ThingDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
+    {
+        logger.LogInformation("V2 GetThing Id={ThingId}", id);
+        var entity = await thingManager.GetAsync(id, cancellationToken);
+        return entity == null ? NotFound() : Ok(entity.ToV2Dto());
+    }
+
+    [HttpPost]
+    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+    [RequiredScope(Constants.TrashMobWriteScope)]
+    [ProducesResponseType(typeof(ThingDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Add(ThingDto dto, CancellationToken cancellationToken)
+    {
+        var result = await thingManager.AddAsync(dto.ToEntity(), UserId, cancellationToken);
+        return Ok(result.ToV2Dto());
+    }
+}
+```
+
+### V1 Controller Template (Legacy — do not create new v1 controllers)
 ```csharp
 public class ThingsController(
-    IThingManager thingManager,
-    IOtherManager otherManager)
+    IThingManager thingManager)
     : KeyedController<Thing>(thingManager)
 {
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
     {
         return Ok(await Manager.GetAsync(id, cancellationToken));
-    }
-
-    [HttpPost]
-    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-    [RequiredScope(Constants.TrashMobWriteScope)]
-    public async Task<IActionResult> Add(Thing instance, CancellationToken cancellationToken)
-    {
-        var result = await Manager.AddAsync(instance, UserId, cancellationToken);
-        TrackEvent("AddThing");
-        return Ok(result);
     }
 }
 ```
