@@ -364,7 +364,7 @@ namespace TrashMob.Controllers.V2
         [HttpGet("by-name/{name}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [ProducesResponseType(typeof(Waiver), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(WaiverDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetWaiverByName(
             string name,
@@ -379,7 +379,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            return Ok(waiver);
+            return Ok(waiver.ToV2Dto());
         }
 
         private string GetClientIpAddress()

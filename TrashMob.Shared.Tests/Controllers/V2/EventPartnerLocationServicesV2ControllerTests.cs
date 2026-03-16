@@ -12,6 +12,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using TrashMob.Controllers.V2;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Shared.Managers.Interfaces;
     using Xunit;
 
@@ -65,7 +66,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetHaulingPartnerLocation(eventId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<PartnerLocation>(okResult.Value);
+            Assert.IsType<PartnerLocationDto>(okResult.Value);
         }
 
         [Fact]

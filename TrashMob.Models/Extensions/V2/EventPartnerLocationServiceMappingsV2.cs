@@ -20,5 +20,19 @@ namespace TrashMob.Models.Extensions.V2
                 EventPartnerLocationServiceStatusId = dto.EventPartnerLocationServiceStatusId,
             };
         }
+
+        /// <summary>
+        /// Maps an <see cref="EventPartnerLocationService"/> entity to a <see cref="EventPartnerLocationServiceDto"/>.
+        /// </summary>
+        public static EventPartnerLocationServiceDto ToV2Dto(this EventPartnerLocationService entity)
+        {
+            return new EventPartnerLocationServiceDto
+            {
+                EventId = entity.EventId,
+                PartnerLocationId = entity.PartnerLocationId,
+                ServiceTypeId = entity.ServiceTypeId,
+                EventPartnerLocationServiceStatusId = entity.EventPartnerLocationServiceStatusId,
+            };
+        }
     }
 }

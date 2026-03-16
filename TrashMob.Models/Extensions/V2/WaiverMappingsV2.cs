@@ -65,6 +65,32 @@ namespace TrashMob.Models.Extensions.V2
         }
 
         /// <summary>
+        /// Maps a <see cref="Waiver"/> to a <see cref="WaiverDto"/>.
+        /// </summary>
+        public static WaiverDto ToV2Dto(this Waiver entity)
+        {
+            return new WaiverDto
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                IsWaiverEnabled = entity.IsWaiverEnabled,
+            };
+        }
+
+        /// <summary>
+        /// Maps a V2 <see cref="WaiverDto"/> back to a <see cref="Waiver"/> entity.
+        /// </summary>
+        public static Waiver ToEntity(this WaiverDto dto)
+        {
+            return new Waiver
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                IsWaiverEnabled = dto.IsWaiverEnabled,
+            };
+        }
+
+        /// <summary>
         /// Maps a V2 <see cref="UserWaiverDto"/> back to a <see cref="UserWaiver"/> entity.
         /// </summary>
         public static UserWaiver ToEntity(this UserWaiverDto dto)

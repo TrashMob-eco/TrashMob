@@ -353,7 +353,7 @@ namespace TrashMob.Controllers.V2
         /// Bulk imports areas into a community. Only community admins can import areas.
         /// </summary>
         /// <param name="partnerId">The community (partner) ID.</param>
-        /// <param name="areas">The areas to import.</param>
+        /// <param name="areaDtos">The areas to import.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost("import")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
@@ -364,10 +364,10 @@ namespace TrashMob.Controllers.V2
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> BulkImportAreas(
             Guid partnerId,
-            [FromBody] List<AdoptableArea> areas,
+            [FromBody] List<AdoptableAreaDto> areaDtos,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation("V2 BulkImportAreas for Partner={PartnerId}, Count={Count}", partnerId, areas?.Count ?? 0);
+            logger.LogInformation("V2 BulkImportAreas for Partner={PartnerId}, Count={Count}", partnerId, areaDtos?.Count ?? 0);
 
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
             if (partner is null)
@@ -380,16 +380,17 @@ namespace TrashMob.Controllers.V2
                 return Forbid();
             }
 
-            if (areas is null || areas.Count == 0)
+            if (areaDtos is null || areaDtos.Count == 0)
             {
                 return BadRequest("At least one area is required.");
             }
 
-            if (areas.Count > 500)
+            if (areaDtos.Count > 500)
             {
                 return BadRequest("Maximum 500 areas per import. Please split into smaller batches.");
             }
 
+            var areas = areaDtos.Select(dto => dto.ToEntity()).ToList();
             var result = await areaManager.BulkCreateAsync(partnerId, UserId, areas, cancellationToken);
             return Ok(result);
         }
