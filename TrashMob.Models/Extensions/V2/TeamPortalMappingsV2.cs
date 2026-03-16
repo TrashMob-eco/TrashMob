@@ -49,5 +49,36 @@ namespace TrashMob.Models.Extensions.V2
         }
 
         #endregion
+
+        #region TeamEvent
+
+        /// <summary>
+        /// Maps a TeamEvent entity to a V2 TeamEventDto.
+        /// </summary>
+        public static TeamEventDto ToV2Dto(this TeamEvent entity)
+        {
+            return new TeamEventDto
+            {
+                Id = entity.Id,
+                TeamId = entity.TeamId,
+                EventId = entity.EventId,
+                CreatedDate = entity.CreatedDate,
+            };
+        }
+
+        /// <summary>
+        /// Maps a V2 TeamEventDto to a TeamEvent entity.
+        /// </summary>
+        public static TeamEvent ToEntity(this TeamEventDto dto)
+        {
+            return new TeamEvent
+            {
+                Id = dto.Id,
+                TeamId = dto.TeamId,
+                EventId = dto.EventId,
+            };
+        }
+
+        #endregion
     }
 }

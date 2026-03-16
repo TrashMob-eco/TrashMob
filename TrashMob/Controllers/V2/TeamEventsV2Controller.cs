@@ -142,7 +142,7 @@ namespace TrashMob.Controllers.V2
         [HttpPost("{eventId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(TeamEvent), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(TeamEventDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -188,7 +188,7 @@ namespace TrashMob.Controllers.V2
             };
 
             var created = await teamEventRepository.AddAsync(teamEvent);
-            return CreatedAtAction(nameof(GetUpcomingTeamEvents), new { teamId }, created);
+            return CreatedAtAction(nameof(GetUpcomingTeamEvents), new { teamId }, created.ToV2Dto());
         }
 
         /// <summary>

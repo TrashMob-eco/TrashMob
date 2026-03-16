@@ -60,14 +60,14 @@ namespace TrashMob.Controllers.V2
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns the hauling partner location.</response>
         [HttpGet("hauling/{eventId}")]
-        [ProducesResponseType(typeof(PartnerLocation), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PartnerLocationDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetHaulingPartnerLocation(Guid eventId, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 GetHaulingPartnerLocation for Event={EventId}", eventId);
 
             var result = await eventPartnerLocationServiceManager.GetHaulingPartnerLocationForEvent(eventId, cancellationToken);
 
-            return Ok(result);
+            return Ok(result?.ToV2Dto());
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace TrashMob.Controllers.V2
         [HttpPut("{acceptDecline}/{eventId}/{partnerLocationId}/{serviceTypeId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(EventPartnerLocationServiceDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -221,7 +221,7 @@ namespace TrashMob.Controllers.V2
             var updatedService = await eventPartnerLocationServiceManager
                 .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken);
 
-            return Ok(updatedService);
+            return Ok(updatedService.ToV2Dto());
         }
 
         /// <summary>
