@@ -33,23 +33,30 @@ TrashMob/
 
 ## Controller Patterns
 
-### Controller Hierarchy
+### V2 Controllers (89 controllers in `Controllers/V2/`)
+
+**All new endpoints must be v2.** V1 controllers in `Controllers/` are legacy — do not add new endpoints there.
+
+V2 controllers extend `ControllerBase` directly (not `SecureController`), use primary constructors, and return DTOs only.
+
+### V2 Controller Checklist
+
+- [ ] `[ApiController]`, `[ApiVersion("2.0")]`, `[EnableCors("_myAllowSpecificOrigins")]`
+- [ ] Route: `[Route("api/v{version:apiVersion}/things")]`
+- [ ] Use **primary constructor** with `ILogger<T>` and managers
+- [ ] Add **`CancellationToken cancellationToken`** as last parameter on all async methods
+- [ ] Add **XML doc comments** on all public methods (Swagger requires them)
+- [ ] Add **`[ProducesResponseType]`** for every response (use DTOs, not entities)
+- [ ] Add **`[Authorize]`** + **`[RequiredScope]`** on write operations
+- [ ] Return **DTOs only** — use `.ToV2Dto()` mapping, never return raw EF entities
+- [ ] Use **structured logging** with message templates (e.g., `"V2 GetThing Id={ThingId}"`)
+- [ ] Paginated collections return **`PagedResponse<TDto>`** via `ToPagedAsync()`
+
+### V1 Controller Hierarchy (Legacy)
 
 - `BaseController` — Provides `Logger` property (lazy-loaded)
 - `SecureController : BaseController` — Adds `UserId`, `AuthorizationService`, `IsAuthorizedAsync()`
-- `KeyedController<T> : SecureController` — Generic CRUD for entities with GUID keys (provides `Manager` property)
-
-### Controller Checklist (New Endpoints)
-
-See [root CLAUDE.md](../CLAUDE.md#controller-template-current-pattern) for the standard controller template.
-
-- [ ] Use **primary constructor** (not field injection)
-- [ ] Add **`CancellationToken cancellationToken`** as last parameter on all async methods
-- [ ] Add **XML doc comments** on all public methods (Swagger requires them)
-- [ ] Add **`[ProducesResponseType]`** attributes for every possible response
-- [ ] Add **`[Authorize]`** + **`[RequiredScope]`** on write operations
-- [ ] Call **`TrackEvent()`** on mutations for telemetry
-- [ ] Use **`IsAuthorizedAsync()`** for entity-level authorization (not manual `UserId` comparison)
+- `KeyedController<T> : SecureController` — Generic CRUD for entities with GUID keys
 
 ## React Frontend Patterns
 
@@ -58,14 +65,14 @@ See [root CLAUDE.md](../CLAUDE.md#controller-template-current-pattern) for the s
 All API calls use a factory pattern returning `{ key, service }` for TanStack React Query:
 
 ```typescript
-// src/services/things.ts
+// src/services/things.ts — ALL URLs must use /v2/ prefix
 export type GetThing_Params = { id: string };
 
 export const GetThing = (params: GetThing_Params) => ({
     key: ['/things', params.id],
     service: async () =>
         ApiService('protected').fetchData<ThingData>({
-            url: `/things/${params.id}`,
+            url: `/v2/things/${params.id}`,
             method: 'get',
         }),
 });
@@ -74,7 +81,7 @@ export const CreateThing = () => ({
     key: ['/things/create'],
     service: async (body: ThingData) =>
         ApiService('protected').fetchData<ThingData>({
-            url: '/things',
+            url: '/v2/things',
             method: 'post',
             data: body,
         }),
@@ -315,4 +322,4 @@ npm start
 - [Planning/README.md](../Planning/README.md) — 2026 roadmap
 - [TrashMob.prd](./TrashMob.prd) — Product requirements
 
-**Last Updated:** February 15, 2026
+**Last Updated:** March 15, 2026
