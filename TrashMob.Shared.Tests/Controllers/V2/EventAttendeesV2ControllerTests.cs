@@ -9,7 +9,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using TrashMob.Controllers;
+
     using TrashMob.Controllers.V2;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
@@ -289,7 +289,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.VerifyAttendeeWaiverStatus(eventId, userId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var waiverResult = Assert.IsType<WaiverCheckResult>(okResult.Value);
+            var waiverResult = Assert.IsType<WaiverCheckResultDto>(okResult.Value);
             Assert.True(waiverResult.HasValidWaiver);
         }
 
