@@ -1,6 +1,7 @@
 namespace TrashMob.Controllers.V2
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace TrashMob.Controllers.V2
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
     using TrashMob.Models.Extensions.V2;
+    using TrashMob.Models.Poco;
     using TrashMob.Models.Poco.V2;
     using TrashMob.Security;
     using TrashMob.Shared;
@@ -34,6 +36,7 @@ namespace TrashMob.Controllers.V2
         IEventAttendeeMetricsManager metricsManager,
         IImageManager imageManager,
         IUserDataExportManager exportManager,
+        IEventAttendeeRouteManager routeManager,
         ILogger<UsersV2Controller> logger) : ControllerBase
     {
         private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
@@ -405,6 +408,23 @@ namespace TrashMob.Controllers.V2
             await userManager.DeleteAsync(id, cancellationToken);
 
             return NoContent();
+        }
+
+        /// <summary>
+        /// Gets the current user's route history across all events.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The user's route history.</returns>
+        /// <response code="200">Returns the route history.</response>
+        [HttpGet("me/routes")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(IEnumerable<DisplayUserRouteHistory>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMyRoutes(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 GetMyRoutes User={UserId}", UserId);
+            var routes = await routeManager.GetUserRouteHistoryAsync(UserId, cancellationToken);
+            return Ok(routes);
         }
     }
 }

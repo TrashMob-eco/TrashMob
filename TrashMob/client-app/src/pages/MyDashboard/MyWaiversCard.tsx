@@ -24,7 +24,7 @@ export const MyWaiversCard: FC<MyWaiversCardProps> = ({ userId }) => {
         queryKey: GetMyWaivers().key,
         queryFn: GetMyWaivers().service,
         select: (res) => res.data,
-        enabled: !!userId,
+        enabled: !!userId && userId !== '00000000-0000-0000-0000-000000000000',
     });
 
     // Get pending waivers
@@ -36,7 +36,7 @@ export const MyWaiversCard: FC<MyWaiversCardProps> = ({ userId }) => {
         queryKey: GetRequiredWaivers().key,
         queryFn: GetRequiredWaivers().service,
         select: (res) => res.data,
-        enabled: !!userId,
+        enabled: !!userId && userId !== '00000000-0000-0000-0000-000000000000',
     });
 
     const handleDownloadPdf = (userWaiverId: string) => {
