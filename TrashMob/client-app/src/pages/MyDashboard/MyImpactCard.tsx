@@ -20,7 +20,7 @@ export const MyImpactCard: FC<MyImpactCardProps> = ({ userId, prefersMetric = fa
         queryKey: GetUserImpact({ userId }).key,
         queryFn: GetUserImpact({ userId }).service,
         select: (res) => res.data,
-        enabled: !!userId,
+        enabled: !!userId && userId !== '00000000-0000-0000-0000-000000000000',
     });
 
     if (isLoading) {
