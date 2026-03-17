@@ -68,9 +68,9 @@ export function loadAppInsights(): void {
     if (appInsightsLoaded) return;
     appInsightsLoaded = true;
 
-    fetch('/api/config')
-        .then((response) => response.json())
-        .then((config: { applicationInsightsKey?: string }) => {
+    import('../services/config')
+        .then(({ getAppConfig }) => getAppConfig())
+        .then((config) => {
             const instrumentationKey = config.applicationInsightsKey;
             if (!instrumentationKey) {
                 console.warn('Application Insights instrumentation key not available');
