@@ -222,7 +222,7 @@ public class Program
 
         builder.Services.AddApiVersioning(options =>
             {
-                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.DefaultApiVersion = new ApiVersion(2, 0);
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.ReportApiVersions = true;
                 options.ApiVersionReader = new UrlSegmentApiVersionReader();
@@ -344,17 +344,11 @@ public class Program
 
         builder.Services.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "TrashMob API",
-                Version = "v1",
-                Description = "Legacy API endpoints. Maintained for backward compatibility while clients migrate to v2.",
-            });
             options.SwaggerDoc("v2", new OpenApiInfo
             {
                 Title = "TrashMob API",
                 Version = "v2",
-                Description = "Modern API with server-side pagination, filtering, and lean DTOs. Designed for web and mobile clients.",
+                Description = "TrashMob REST API with server-side pagination, filtering, and lean DTOs.",
             });
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
@@ -411,7 +405,6 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TrashMob API v1");
                 c.SwaggerEndpoint("/swagger/v2/swagger.json", "TrashMob API v2");
             });
         }

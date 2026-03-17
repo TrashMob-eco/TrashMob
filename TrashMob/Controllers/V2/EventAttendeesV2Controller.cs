@@ -262,7 +262,7 @@ namespace TrashMob.Controllers.V2
         [HttpGet("{userId}/waiver-status")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [ProducesResponseType(typeof(WaiverCheckResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(WaiverCheckResultDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> VerifyAttendeeWaiverStatus(
             Guid eventId, Guid userId, CancellationToken cancellationToken)
@@ -281,7 +281,7 @@ namespace TrashMob.Controllers.V2
             var hasValidWaiver = await userWaiverManager
                 .HasValidWaiverForEventAsync(userId, eventId, cancellationToken);
 
-            return Ok(new WaiverCheckResult { HasValidWaiver = hasValidWaiver });
+            return Ok(new WaiverCheckResultDto { HasValidWaiver = hasValidWaiver });
         }
     }
 }

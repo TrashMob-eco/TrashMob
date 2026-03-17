@@ -1,0 +1,399 @@
+{
+  "data": {
+    "title": "What Your Community Page Actually Does: A Tour of TrashMob’s New Tools for Program Managers",
+    "slug": "what-your-community-page-actually-does",
+    "excerpt": "A closer look at the tools TrashMob gives community program managers — branded pages, regional support, impact dashboards, volunteer engagement, and the enrollment process that gets you up and running.",
+    "author": "Joe Beernink",
+    "isFeatured": true,
+    "estimatedReadTime": 5,
+    "tags": [
+      "communities",
+      "features",
+      "program-management",
+      "analytics",
+      "volunteers"
+    ],
+    "category": {
+      "connect": [
+        1
+      ]
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Last week we announced the 2026 platform launch. This week, let’s get specific about what the community tools actually look like and how they work for program managers running cleanup initiatives at the city, county, or state level."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "Your community, your brand"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Every TrashMob community gets a dedicated public page at trashmob.eco/communities/your-community. It’s not a generic profile — it’s a branded landing page that represents your organization."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "You control the logo, banner image, brand colors, tagline, and description. When volunteers visit your page, they see your identity — not ours. Your events, teams, litter reports, and impact stats all roll up under your community automatically."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "The admin dashboard gives you a content editor where you can update all of this in minutes. Change your banner for a seasonal campaign, update your description for a new initiative — no tickets to file, no waiting on anyone."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "City, county, or statewide — we support your geography"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Not every cleanup program operates at the city level. County road commissions, state DOTs, regional conservation districts, watershed authorities — they all manage cleanup programs across larger geographies."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "TrashMob supports city, county, state, and custom regional community types. Each community defines its coverage area with a geographic boundary, and the platform automatically scopes events, teams, and litter reports to that area. The map on your community page zooms to fit your region, whether that’s a small town or an entire state."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "This means a county-level community sees everything happening across all its cities. A state DOT sees activity along every highway corridor in its jurisdiction. The data rolls up to match how your organization actually operates."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "Impact numbers that are ready when the board asks"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Every event in your community captures structured data: number of volunteers, bags collected, weight removed, hours worked, GPS route traces, and before-and-after photos. That data flows into your community dashboard automatically."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Your dashboard shows total events, total participants, bags collected, and weight removed — filterable by date range. When your city council, board of directors, or grant funder asks “what have you accomplished this year?” the answer is a few clicks away, not a week of digging through spreadsheets."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "The data is exportable. Pull a CSV for your annual report. Show a heat map of litter concentration to justify where to focus resources next quarter. Use the photo gallery in a presentation to your funders."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "Keeping volunteers engaged after the first cleanup"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Getting volunteers to show up once is easy. Getting them to come back is the hard part. TrashMob gives you multiple tools to keep your community engaged:"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "bold": true,
+            "text": "Teams"
+          },
+          {
+            "type": "text",
+            "text": " let volunteers organize with friends, coworkers, or neighbors. Teams have their own identity, leaderboard ranking, and collective impact stats. When people clean up as a group, they stay motivated longer."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "bold": true,
+            "text": "Community leaderboards"
+          },
+          {
+            "type": "text",
+            "text": " recognize individual and team contributions within your community. Friendly competition drives repeat participation — people want to see their name climb the rankings."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "bold": true,
+            "text": "Bulk email invites"
+          },
+          {
+            "type": "text",
+            "text": " let you upload a CSV of contacts and send targeted invitations to join your community. Onboard a neighborhood association, a corporate partner’s employee group, or your existing volunteer list in one batch."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "bold": true,
+            "text": "Newsletters"
+          },
+          {
+            "type": "text",
+            "text": " keep your community in the loop with event announcements, milestone celebrations, and impact updates. Compose and send directly from your admin dashboard."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "Coming soon: Adopt-a-Location"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "We’re putting the finishing touches on our adopt-a-location system — interactive maps where volunteers and teams claim specific streets, parks, trails, and waterways for ongoing maintenance. It’s a big feature, and it deserves its own deep dive. Stay tuned for the next blog post where we’ll walk through the full adoption workflow, sponsored adoptions for businesses, and the AI-powered tools that help you set up your adoptable areas."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "Getting started takes five minutes"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "The enrollment process is straightforward:"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "1. Visit the “For Communities” page at trashmob.eco"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "2. Click “Start Your Community” and fill out the partner request form — select “Community” as your type, tell us about your organization and coverage area"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "3. Our team reviews your application (typically within a few business days)"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "4. We set up your community page, configure your geographic boundary, and hand you the keys to the admin dashboard"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "From there, you customize your branding, invite your volunteers, and start creating events. Most communities are fully operational within a week of approval."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "Free for volunteers, always"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "One thing we hear consistently from program managers: “I can’t ask my volunteers to pay for another app.” You don’t have to. Individual volunteers use TrashMob completely free — join events, track personal impact, report litter, join teams. That never changes."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Community management tools are what we offer to organizations, and we work with each community to find a partnership model that fits their budget and needs. We’re a 501(c)(3) nonprofit, and our goal is adoption, not revenue maximization."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "Let’s get your community set up"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "If you run a cleanup program and you’re still coordinating through email, spreadsheets, and paper waivers — we built this for you."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "bold": true,
+            "text": "Visit "
+          },
+          {
+            "type": "link",
+            "url": "https://www.trashmob.eco/for-communities",
+            "children": [
+              {
+                "type": "text",
+                "text": "trashmob.eco/for-communities"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "bold": true,
+            "text": " to learn more, or email "
+          },
+          {
+            "type": "link",
+            "url": "mailto:info@trashmob.eco",
+            "children": [
+              {
+                "type": "text",
+                "text": "info@trashmob.eco"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "bold": true,
+            "text": " to schedule a walkthrough."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "italic": true,
+            "text": "TrashMob.eco is a 501(c)(3) nonprofit dedicated to empowering communities to keep their neighborhoods clean."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "data": {
+    "title": "TrashMob 2026: A New Era for Community Cleanup Programs",
+    "slug": "trashmob-2026-a-new-era-for-community-cleanup-programs",
+    "excerpt": "TrashMob.eco launches its biggest update ever \u2014 a complete platform for cities, counties, and nonprofits to run cleanup and adopt-a-location programs without the spreadsheets, email chains, and manual tracking.",
+    "author": "Joe Beernink",
+    "isFeatured": true,
+    "estimatedReadTime": 4,
+    "tags": ["communities", "launch", "partnerships", "adopt-a-location"],
+    "category": {
+      "connect": [1]
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "If you manage a community cleanup program, you already know the drill: spreadsheets tracking who adopted which street, email threads coordinating Saturday events, paper waivers stuffed in a filing cabinet, and a quarterly report that takes days to compile from scattered sources."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "We built TrashMob to fix that."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "children": [
+          {
+            "type": "text",
+            "text": "One platform, everything connected"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "TrashMob.eco started as a simple way for volunteers to find and join litter cleanups. It\u2019s grown into something much bigger \u2014 an operations platform that handles the full lifecycle of community cleanup programs."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Event coordination. Volunteer teams. Adopt-a-location with interactive maps. Custom waivers. Impact tracking. Reporting. It\u2019s all connected and it all works together, so the data flows from the field to your dashboard without anyone re-keying numbers into a spreadsheet."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "children": [
+          {
+            "type": "text",
+            "text": "Built for the people who run cleanup programs"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "The 2026 release was designed with community program managers in mind. Here\u2019s what changes for you:"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "bold": true,
+            "text": "Your own branded community page."
+          },
+          {
+            "type": "text",
+            "text": " Your logo, your programs, your impact stats \u2014 all in one place that volunteers can find and trust. Events, teams, adoptable areas, and litter reports all roll up under your community."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "bold": true,
+            "text": "Adopt-a-location that actually scales."
+          },
+          {
+            "type": "text",
+            "text": " Define adoptable areas on an interactive map, accept team applications, set maintenance schedules, and track compliance. Import your existing locations from GIS shapefiles, KML, or GeoJSON \u2014 or let our AI tools suggest optimal zones."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "bold": true,
+            "text": "No more paper waivers."
+          },
+          {
+            "type": "text",
+            "text": " Create community-specific digital waivers that volunteers sign before their first event. Every signature tracked, every version managed."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "bold": true,
+            "text": "Impact data you can actually use."
+          },
+          {
+            "type": "text",
+            "text": " Before/after photos, GPS route traces, weight collected, hours logged, per-volunteer metrics. Export to CSV when your council or board asks for numbers."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "children": [
+          {
+            "type": "text",
+            "text": "The volunteer experience matters too"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Volunteers don\u2019t come back if the experience is frustrating. TrashMob gives them reasons to stay engaged: teams they can join with friends, leaderboards that recognize effort, achievement badges, photo galleries that show their impact, and a mobile app that works as well as the website."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "When volunteers are happy, your program grows. When your program grows, your community gets cleaner. That\u2019s the cycle we\u2019re building for."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "children": [
+          {
+            "type": "text",
+            "text": "We\u2019re a nonprofit, and that matters"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "TrashMob is a 501(c)(3) nonprofit. We\u2019re not trying to monetize your volunteer data or build a business on top of your community\u2019s goodwill. We exist to make cleanup programs work better, and we\u2019re funded by the communities we serve."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Individual volunteers always use TrashMob for free. Communities partner with us for the tools that make program management effortless."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "children": [
+          {
+            "type": "text",
+            "text": "Let\u2019s talk"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "We\u2019re actively looking for community partners \u2014 cities, counties, nonprofits, and civic organizations \u2014 who are ready to modernize how they run cleanup and adoption programs."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "If you\u2019re spending staff time on coordination that a platform should handle, we should have a conversation."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "bold": true,
+            "text": "Visit the \u201cFor Communities\u201d page at trashmob.eco or email info@trashmob.eco to schedule a 30-minute discovery call."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "italic": true,
+            "text": "TrashMob.eco is a 501(c)(3) nonprofit dedicated to empowering communities to keep their neighborhoods clean."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,130 @@
+id: /subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/rg-trashmob-dev-westus2/providers/Microsoft.App/containerapps/ca-strapi-tm-dev-westus2
+identity:
+  principalId: d989b1ec-4a13-4d64-93fe-97690bb5ed67
+  tenantId: f0062da2-b273-427c-b99e-6e85f75b23eb
+  type: SystemAssigned
+location: West US 2
+name: ca-strapi-tm-dev-westus2
+properties:
+  configuration:
+    activeRevisionsMode: Single
+    dapr: null
+    identitySettings: []
+    ingress:
+      additionalPortMappings: null
+      allowInsecure: false
+      clientCertificateMode: null
+      corsPolicy: null
+      customDomains: null
+      exposedPort: 0
+      external: true
+      fqdn: ca-strapi-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io
+      ipSecurityRestrictions: null
+      stickySessions: null
+      targetPort: 1337
+      traffic:
+      - latestRevision: true
+        weight: 100
+      transport: Auto
+    maxInactiveRevisions: null
+    registries:
+    - identity: ''
+      passwordSecretRef: registry-password
+      server: acrtmdevwestus2.azurecr.io
+      username: acrtmdevwestus2
+    runtime: null
+    secrets:
+    - name: registry-password
+    - name: admin-jwt-secret
+    - name: api-token-salt
+    - name: app-keys
+    - name: transfer-token-salt
+    service: null
+  customDomainVerificationId: C322C4AAB9BDBB86B785BFB761F783F383A4517F5EA47943C0DCF16BF7F2FAA3
+  delegatedIdentities: []
+  environmentId: /subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/rg-trashmob-dev-westus2/providers/Microsoft.App/managedEnvironments/cae-tm-dev-westus2
+  eventStreamEndpoint: https://westus2.azurecontainerapps.dev/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/rg-trashmob-dev-westus2/containerApps/ca-strapi-tm-dev-westus2/eventstream
+  latestReadyRevisionName: ca-strapi-tm-dev-westus2--0000024
+  latestRevisionFqdn: ca-strapi-tm-dev-westus2--0000024.ashypebble-059d2628.westus2.azurecontainerapps.io
+  latestRevisionName: ca-strapi-tm-dev-westus2--0000024
+  managedEnvironmentId: /subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/rg-trashmob-dev-westus2/providers/Microsoft.App/managedEnvironments/cae-tm-dev-westus2
+  outboundIpAddresses:
+  - 172.194.248.175
+  provisioningState: Succeeded
+  runningStatus: Running
+  template:
+    containers:
+    - env:
+      - name: DATABASE_CLIENT
+        value: sqlite
+      - name: ADMIN_JWT_SECRET
+        secretRef: admin-jwt-secret
+      - name: API_TOKEN_SALT
+        secretRef: api-token-salt
+      - name: APP_KEYS
+        secretRef: app-keys
+      - name: TRANSFER_TOKEN_SALT
+        secretRef: transfer-token-salt
+      - name: NODE_ENV
+        value: production
+      - name: HOST
+        value: 0.0.0.0
+      - name: PORT
+        value: '1337'
+      image: acrtmdevwestus2.azurecr.io/trashmob-strapi:2.11.656
+      name: ca-strapi-tm-dev-westus2
+      probes:
+      - failureThreshold: 3
+        httpGet:
+          path: /_health
+          port: 1337
+        initialDelaySeconds: 60
+        periodSeconds: 30
+        timeoutSeconds: 10
+        type: Liveness
+      - failureThreshold: 3
+        httpGet:
+          path: /_health
+          port: 1337
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        type: Readiness
+      resources:
+        cpu: 0.5
+        ephemeralStorage: 2Gi
+        memory: 1Gi
+      volumeMounts:
+      - mountPath: /app/public/uploads
+        volumeName: strapi-uploads
+      - mountPath: /app/data
+        volumeName: strapi-data
+    initContainers: null
+    revisionSuffix: ''
+    scale:
+      cooldownPeriod: 300
+      maxReplicas: 1
+      minReplicas: 1
+      pollingInterval: 30
+      rules: null
+    serviceBinds: null
+    terminationGracePeriodSeconds: null
+    volumes:
+    - name: strapi-uploads
+      storageName: strapi-uploads
+      storageType: AzureFile
+    - name: strapi-data
+      storageName: strapi-data
+      storageType: AzureFile
+  workloadProfileName: null
+resourceGroup: rg-trashmob-dev-westus2
+systemData:
+  createdAt: '2026-01-26T04:00:01.2285179'
+  createdBy: 417bd9ea-cd4b-408a-b1ed-1ad07331db85
+  createdByType: Application
+  lastModifiedAt: '2026-02-25T03:01:22.410564'
+  lastModifiedBy: 417bd9ea-cd4b-408a-b1ed-1ad07331db85
+  lastModifiedByType: Application
+tags:
+  environment: dev
+type: Microsoft.App/containerApps

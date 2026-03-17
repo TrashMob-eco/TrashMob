@@ -1,5 +1,6 @@
 namespace TrashMob.Controllers.IFTTT
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -16,8 +17,9 @@ namespace TrashMob.Controllers.IFTTT
     [Route("api/ifttt/v1/[controller]")]
     [RequiredScope(Constants.TrashMobIFTTTScope)]
     public class QueriesController(IQueriesManager queriesManager)
-        : SecureController
+        : ControllerBase
     {
+        private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
 
         /// <summary>
         /// Gets all events for IFTTT queries.

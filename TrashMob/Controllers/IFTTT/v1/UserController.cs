@@ -1,5 +1,6 @@
 namespace TrashMob.Controllers.IFTTT
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -12,8 +13,9 @@ namespace TrashMob.Controllers.IFTTT
     /// </summary>
     [Route("api/ifttt/v1/[controller]")]
     public class UserController(IUserManager userManager)
-        : SecureController
+        : ControllerBase
     {
+        private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
 
         /// <summary>
         /// Gets user info for IFTTT integration.

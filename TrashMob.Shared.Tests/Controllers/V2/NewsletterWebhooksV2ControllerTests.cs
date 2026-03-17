@@ -8,7 +8,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using TrashMob.Controllers;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Controllers.V2;
     using TrashMob.Shared.Managers.Interfaces;
     using Xunit;

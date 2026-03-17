@@ -10,7 +10,7 @@ namespace TrashMob.Controllers.V2
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using TrashMob.Controllers;
+    using TrashMob.Models.Poco.V2;
     using TrashMob.Shared.Managers.Interfaces;
 
     /// <summary>

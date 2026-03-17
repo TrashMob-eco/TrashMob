@@ -24,8 +24,9 @@ namespace TrashMob.Controllers.V2
     [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
     public class ParticipationReportV2Controller(
         IParticipationReportService reportService,
-        ILogger<ParticipationReportV2Controller> logger) : SecureController
+        ILogger<ParticipationReportV2Controller> logger) : ControllerBase
     {
+        private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
         /// <summary>
         /// Sends a participation report email with PDF attachment to the requesting user.
         /// Only available for attendees with Approved or Adjusted metrics.
@@ -52,7 +53,7 @@ namespace TrashMob.Controllers.V2
                     title: "Cannot generate report");
             }
 
-            TrackEvent("ParticipationReport_Requested");
+            logger.LogInformation("TrackEvent: {EventName}", "ParticipationReport_Requested");
             return Ok();
         }
 
@@ -89,7 +90,7 @@ namespace TrashMob.Controllers.V2
                     title: "Cannot send reports");
             }
 
-            TrackEvent("ParticipationReport_SentAll");
+            logger.LogInformation("TrackEvent: {EventName}", "ParticipationReport_SentAll");
             return Ok(new { sentCount = result.Data });
         }
     }
