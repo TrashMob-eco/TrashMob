@@ -32,7 +32,7 @@ namespace TrashMob.Controllers.V2
         IDependentManager dependentManager,
         ILogger<DependentInvitationsV2Controller> logger) : ControllerBase
     {
-        private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
+        private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
 
         /// <summary>
         /// Verifies an invitation token and returns invite details. No authentication required.

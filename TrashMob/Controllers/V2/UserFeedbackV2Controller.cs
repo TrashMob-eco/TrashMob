@@ -33,7 +33,7 @@ namespace TrashMob.Controllers.V2
         private static readonly string[] ValidCategories = ["Bug", "FeatureRequest", "General", "Praise"];
         private static readonly string[] ValidStatuses = ["New", "Reviewed", "Resolved", "Deferred"];
 
-        private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
+        private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
 
         /// <summary>
         /// Submits new user feedback. Can be called by authenticated or anonymous users.

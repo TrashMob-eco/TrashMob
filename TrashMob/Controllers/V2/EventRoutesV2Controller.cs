@@ -40,7 +40,7 @@ namespace TrashMob.Controllers.V2
         private const double EarthRadiusMeters = 6_371_000;
         private static readonly Random Rng = new();
 
-        private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
+        private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
         /// <summary>
         /// Gets anonymized routes for an event (no user identity).
         /// </summary>

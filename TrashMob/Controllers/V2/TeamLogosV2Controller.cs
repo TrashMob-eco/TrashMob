@@ -31,7 +31,7 @@ namespace TrashMob.Controllers.V2
         IImageManager imageManager,
         ILogger<TeamLogosV2Controller> logger) : ControllerBase
     {
-        private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
+        private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
 
         /// <summary>
         /// Uploads a logo for a team. Replaces any existing logo. Only team leads can upload logos.

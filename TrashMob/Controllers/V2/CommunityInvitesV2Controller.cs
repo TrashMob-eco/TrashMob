@@ -34,7 +34,7 @@ namespace TrashMob.Controllers.V2
         IAuthorizationService authorizationService,
         ILogger<CommunityInvitesV2Controller> logger) : ControllerBase
     {
-        private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
+        private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
 
         /// <summary>
         /// Gets all email invite batches for a community.
