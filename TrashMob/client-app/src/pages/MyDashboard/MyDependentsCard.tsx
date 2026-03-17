@@ -76,7 +76,7 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
         queryKey: queryConfig.key,
         queryFn: queryConfig.service,
         select: (res) => res.data,
-        enabled: !!userId,
+        enabled: !!userId && userId !== '00000000-0000-0000-0000-000000000000',
     });
 
     const form = useForm<DependentFormInputs>({
@@ -121,7 +121,7 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
         const { data } = useQuery({
             queryKey: q.key,
             queryFn: q.service,
-            enabled: !!userId,
+            enabled: !!userId && userId !== '00000000-0000-0000-0000-000000000000',
             select: (res: { data: DependentInvitationData[] }) => res.data,
         });
         if (data) {
