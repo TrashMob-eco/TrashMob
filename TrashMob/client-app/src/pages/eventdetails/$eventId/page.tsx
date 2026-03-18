@@ -9,7 +9,7 @@ import { RegisterBtn } from '@/components/Customization/RegisterBtn';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { getEventShareableContent, getEventShareMessage } from '@/lib/sharing-messages';
 import { isCompletedEvent } from '@/lib/event-helpers';
-import { GetAllEventsBeingAttendedByUser, GetEventAttendees, GetEventLeads } from '@/services/events';
+import { GetAllEventsBeingAttendedByUser, GetEventAttendeeCount, GetEventAttendees, GetEventLeads } from '@/services/events';
 import { GetEventDependentCount } from '@/services/dependents';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { useGetEventType } from '@/hooks/useGetEventType';
@@ -79,11 +79,17 @@ export const EventDetails: FC<EventDetailsProps> = () => {
     const { data: eventAttendees } = useGetEventAttendees(eventId);
     const { data: myAttendanceList } = useGetEventsAttendedByUser(currentUser.id);
     const { data: eventLeads } = useGetEventLeads(eventId);
+    const { data: attendeeCount } = useQuery({
+        queryKey: GetEventAttendeeCount({ eventId }).key,
+        queryFn: GetEventAttendeeCount({ eventId }).service,
+        select: (res) => res.data?.count ?? 0,
+        enabled: !!eventId,
+    });
     const { data: dependentCount } = useQuery({
         queryKey: GetEventDependentCount({ eventId }).key,
         queryFn: GetEventDependentCount({ eventId }).service,
         select: (res) => res.data,
-        enabled: !!eventId,
+        enabled: !!eventId && isUserLoaded,
     });
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
     const [showPhotoUploader, setShowPhotoUploader] = useState<boolean>(false);
@@ -106,9 +112,8 @@ export const EventDetails: FC<EventDetailsProps> = () => {
 
     const isEventCompleted = event ? isCompletedEvent(event) : true;
 
-    const totalHeadcount = (eventAttendees || []).length + (dependentCount || 0);
     const isEventFull =
-        !!maxNumberOfParticipants && maxNumberOfParticipants > 0 && totalHeadcount >= maxNumberOfParticipants;
+        !!maxNumberOfParticipants && maxNumberOfParticipants > 0 && (attendeeCount ?? 0) >= maxNumberOfParticipants;
 
     const startDateTime = moment(eventDate);
     const endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
@@ -234,22 +239,20 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                             {currentUser ? <EventRouteCards eventId={eventId} currentUserId={currentUser.id} /> : null}
                         </div>
                     </div>
-                    {currentUser ? (
-                        <div className='container mx-auto mb-16'>
-                            <hr />
-                            <h2 className='font-semibold text-xl mt-5 mb-4'>
-                                Total Headcount: {(eventAttendees || []).length + (dependentCount || 0)}
-                            </h2>
-                            <p className='text-sm text-muted-foreground mb-4'>
-                                {(eventAttendees || []).length} Adult{(eventAttendees || []).length !== 1 ? 's' : ''}
-                                {dependentCount
-                                    ? ` + ${dependentCount} Dependent${dependentCount !== 1 ? 's' : ''}`
-                                    : ''}
-                                {maxNumberOfParticipants ? ` · Max Participants: ${maxNumberOfParticipants}` : ''}
-                            </p>
-                            <EventAttendeeTable users={eventAttendees || []} event={event} />
-                        </div>
-                    ) : null}
+                    <div className='container mx-auto mb-16'>
+                        <hr />
+                        <h2 className='font-semibold text-xl mt-5 mb-4'>
+                            Total Headcount: {(attendeeCount ?? 0) + (dependentCount || 0)}
+                        </h2>
+                        <p className='text-sm text-muted-foreground mb-4'>
+                            {attendeeCount ?? 0} Adult{(attendeeCount ?? 0) !== 1 ? 's' : ''}
+                            {dependentCount
+                                ? ` + ${dependentCount} Dependent${dependentCount !== 1 ? 's' : ''}`
+                                : ''}
+                            {maxNumberOfParticipants ? ` · Max Participants: ${maxNumberOfParticipants}` : ''}
+                        </p>
+                        {isUserLoaded ? <EventAttendeeTable users={eventAttendees || []} event={event} /> : null}
+                    </div>
                     {/* Event Photos Section */}
                     <div className='container mx-auto mb-16'>
                         <hr className='mb-5' />
