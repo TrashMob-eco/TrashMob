@@ -9,7 +9,12 @@ import { RegisterBtn } from '@/components/Customization/RegisterBtn';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { getEventShareableContent, getEventShareMessage } from '@/lib/sharing-messages';
 import { isCompletedEvent } from '@/lib/event-helpers';
-import { GetAllEventsBeingAttendedByUser, GetEventAttendeeCount, GetEventAttendees, GetEventLeads } from '@/services/events';
+import {
+    GetAllEventsBeingAttendedByUser,
+    GetEventAttendeeCount,
+    GetEventAttendees,
+    GetEventLeads,
+} from '@/services/events';
 import { GetEventDependentCount } from '@/services/dependents';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { useGetEventType } from '@/hooks/useGetEventType';
@@ -246,9 +251,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                         </h2>
                         <p className='text-sm text-muted-foreground mb-4'>
                             {attendeeCount ?? 0} Adult{(attendeeCount ?? 0) !== 1 ? 's' : ''}
-                            {dependentCount
-                                ? ` + ${dependentCount} Dependent${dependentCount !== 1 ? 's' : ''}`
-                                : ''}
+                            {dependentCount ? ` + ${dependentCount} Dependent${dependentCount !== 1 ? 's' : ''}` : ''}
                             {maxNumberOfParticipants ? ` · Max Participants: ${maxNumberOfParticipants}` : ''}
                         </p>
                         {isUserLoaded ? <EventAttendeeTable users={eventAttendees || []} event={event} /> : null}
