@@ -193,6 +193,17 @@ export const UpdateEventSummary = () => ({
         }),
 });
 
+export type GetEventAttendeeCount_Params = { eventId: string };
+export type GetEventAttendeeCount_Response = { eventId: string; count: number };
+export const GetEventAttendeeCount = (params: GetEventAttendeeCount_Params) => ({
+    key: ['/eventattendees', params.eventId, 'count'],
+    service: async () =>
+        ApiService('public').fetchData<GetEventAttendeeCount_Response>({
+            url: `/v2/events/${params.eventId}/attendees/count`,
+            method: 'get',
+        }),
+});
+
 export type GetEventAttendees_Params = { eventId: string };
 export type GetEventAttendees_Response = PagedResponse<EventAttendeeData>;
 export const GetEventAttendees = (params: GetEventAttendees_Params) => ({
