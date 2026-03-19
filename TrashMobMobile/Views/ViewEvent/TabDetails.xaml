@@ -325,7 +325,7 @@
 
             <!-- Participation Reports -->
             <Border IsVisible="{Binding CanRequestReport}"
-                    Style="{StaticResource CardBorder}"
+                    Style="{StaticResource RoundBorder}"
                     Margin="5,4">
                 <VerticalStackLayout Spacing="8" Padding="12">
                     <Label Text="Participation Report"
@@ -342,7 +342,7 @@
             </Border>
 
             <Border IsVisible="{Binding CanSendAllReports}"
-                    Style="{StaticResource CardBorder}"
+                    Style="{StaticResource RoundBorder}"
                     Margin="5,4">
                 <VerticalStackLayout Spacing="8" Padding="12">
                     <Label Text="Send Reports to Attendees"
