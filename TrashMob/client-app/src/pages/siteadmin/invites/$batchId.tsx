@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, CheckCircle, XCircle, Clock, Mail } from 'lucide-react';
-import { GetAdminInviteBatchDetails } from '@/services/email-invites';
+import { GetUserInviteBatchDetails } from '@/services/email-invites';
 
 export const SiteAdminInviteDetails = () => {
     const { batchId } = useParams<{ batchId: string }>();
 
     const { data: batch, isLoading } = useQuery({
-        queryKey: GetAdminInviteBatchDetails({ id: batchId! }).key,
-        queryFn: GetAdminInviteBatchDetails({ id: batchId! }).service,
+        queryKey: GetUserInviteBatchDetails({ id: batchId! }).key,
+        queryFn: GetUserInviteBatchDetails({ id: batchId! }).service,
         select: (res) => res.data,
         enabled: !!batchId,
     });
