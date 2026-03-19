@@ -279,7 +279,7 @@
                             <DataTemplate x:DataType="models:EventAttendeeMetrics">
                                 <Border Padding="12,8"
                                         Margin="0,2"
-                                        BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}"
                                         StrokeShape="RoundRectangle 8"
                                         Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
                                         StrokeThickness="1">
