@@ -279,7 +279,7 @@
                             <DataTemplate x:DataType="models:EventAttendeeMetrics">
                                 <Border Padding="12,8"
                                         Margin="0,2"
-                                        BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}"
                                         StrokeShape="RoundRectangle 8"
                                         Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
                                         StrokeThickness="1">
@@ -325,7 +325,7 @@
 
             <!-- Participation Reports -->
             <Border IsVisible="{Binding CanRequestReport}"
-                    Style="{StaticResource CardBorder}"
+                    Style="{StaticResource RoundBorder}"
                     Margin="5,4">
                 <VerticalStackLayout Spacing="8" Padding="12">
                     <Label Text="Participation Report"
@@ -342,7 +342,7 @@
             </Border>
 
             <Border IsVisible="{Binding CanSendAllReports}"
-                    Style="{StaticResource CardBorder}"
+                    Style="{StaticResource RoundBorder}"
                     Margin="5,4">
                 <VerticalStackLayout Spacing="8" Padding="12">
                     <Label Text="Send Reports to Attendees"

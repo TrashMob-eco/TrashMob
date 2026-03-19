@@ -13,17 +13,17 @@
             <VerticalStackLayout Padding="16" Spacing="16">
 
                 <!-- Summary Card -->
-                <Frame BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundLight}, Dark={StaticResource CardBackgroundDark}}"
+                <Frame BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
                        CornerRadius="12" Padding="16" HasShadow="False"
                        BorderColor="Transparent">
                     <VerticalStackLayout Spacing="8">
                         <Label Text="Offline Queue"
                                FontSize="18"
                                FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
+                               TextColor="{AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}" />
                         <Label Text="{Binding PendingSummary}"
                                FontSize="14"
-                               TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" />
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
 
                         <Button Text="Retry All"
                                 Command="{Binding RetryAllCommand}"
@@ -49,12 +49,12 @@
                            FontSize="16"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
-                           TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
+                           TextColor="{AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}" />
                     <Label Text="All your data has been synced to the server."
                            FontSize="14"
                            HorizontalOptions="Center"
                            HorizontalTextAlignment="Center"
-                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" />
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                 </VerticalStackLayout>
 
                 <!-- Pending Items List -->
@@ -63,7 +63,7 @@
                                 SelectionMode="None">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:SyncItemViewModel">
-                            <Frame BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundLight}, Dark={StaticResource CardBackgroundDark}}"
+                            <Frame BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
                                    CornerRadius="8" Padding="12" HasShadow="False"
                                    BorderColor="Transparent"
                                    Margin="0,0,0,8">
@@ -80,12 +80,12 @@
                                                Text="{Binding Description}"
                                                FontSize="14"
                                                FontAttributes="Bold"
-                                               TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
+                                               TextColor="{AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}"
                                                VerticalOptions="Center" />
                                     </Grid>
                                     <Label Text="{Binding StatusDisplay}"
                                            FontSize="12"
-                                           TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" />
+                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                                     <Label Text="{Binding LastError}"
                                            FontSize="11"
                                            TextColor="Red"
