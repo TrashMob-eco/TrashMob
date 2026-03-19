@@ -8,7 +8,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { Send, Mail } from 'lucide-react';
 
 import { getColumns } from './columns';
-import { GetAdminInviteBatches, CreateAdminInviteBatch } from '@/services/email-invites';
+import { GetUserInviteBatches, CreateUserInviteBatch } from '@/services/email-invites';
 
 export const SiteAdminInvites = () => {
     const queryClient = useQueryClient();
@@ -16,17 +16,17 @@ export const SiteAdminInvites = () => {
     const [error, setError] = useState('');
 
     const { data: batches } = useQuery({
-        queryKey: GetAdminInviteBatches().key,
-        queryFn: GetAdminInviteBatches().service,
+        queryKey: GetUserInviteBatches().key,
+        queryFn: GetUserInviteBatches().service,
         select: (res) => res.data,
     });
 
     const createBatch = useMutation({
-        mutationKey: CreateAdminInviteBatch().key,
-        mutationFn: CreateAdminInviteBatch().service,
+        mutationKey: CreateUserInviteBatch().key,
+        mutationFn: CreateUserInviteBatch().service,
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: GetAdminInviteBatches().key,
+                queryKey: GetUserInviteBatches().key,
                 refetchType: 'all',
             });
             setEmailInput('');
