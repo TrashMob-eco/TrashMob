@@ -115,6 +115,34 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Weather Forecast Card -->
+            <Border Style="{x:StaticResource RoundBorder}"
+                    IsVisible="{Binding IsWeatherAvailable}">
+                <HorizontalStackLayout Spacing="12">
+                    <Image MaximumWidthRequest="24" MaximumHeightRequest="24" VerticalOptions="Center">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconWeather}"
+                                             Size="24"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <VerticalStackLayout Spacing="2">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="{Binding WeatherTemperature}"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Small" />
+                            <Label Text="{Binding WeatherSummary}"
+                                   FontSize="Small"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        <Label Text="{Binding WeatherDetails}"
+                               FontSize="Micro"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Border>
+
             <!-- About This Event Card -->
             <Border Style="{x:StaticResource RoundBorder}">
                 <VerticalStackLayout Spacing="8">

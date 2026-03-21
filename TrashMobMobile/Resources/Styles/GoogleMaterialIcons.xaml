@@ -1430,7 +1430,7 @@
     <!-- <x:String x:Key="IconWeatherHail">&#xf0592;</x:String> -->
     <!-- <x:String x:Key="IconWeatherLightning">&#xf0593;</x:String> -->
     <!-- <x:String x:Key="IconWeatherNight">&#xf0594;</x:String> -->
-    <!-- <x:String x:Key="IconWeatherPartlyCloudy">&#xf0595;</x:String> -->
+    <x:String x:Key="IconWeather">&#xf0595;</x:String>
     <!-- <x:String x:Key="IconWeatherPouring">&#xf0596;</x:String> -->
     <!-- <x:String x:Key="IconWeatherRainy">&#xf0597;</x:String> -->
     <!-- <x:String x:Key="IconWeatherSnowy">&#xf0598;</x:String> -->

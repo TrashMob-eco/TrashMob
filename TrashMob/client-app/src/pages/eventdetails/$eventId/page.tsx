@@ -36,6 +36,7 @@ import { EventPartnersCard } from '@/components/events/EventPartnersCard';
 import { EventRouteStatsCard } from '@/components/events/EventRouteStatsCard';
 import { EventRoutesMap } from '@/components/events/EventRoutesMap';
 import { EventRouteCards } from '@/components/events/EventRouteCards';
+import { WeatherCard } from '@/components/events/weather-card';
 
 import { Calendar, Share2, ClipboardList } from 'lucide-react';
 import makeUrls from '@/lib/add-to-calendar';
@@ -208,6 +209,16 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                             <Badge>{eventType?.name}</Badge>
                             {event ? <EventVisibilityBadge eventVisibilityId={event.eventVisibilityId} /> : null}
                         </div>
+                        {!isEventCompleted && latitude && longitude && eventDate ? (
+                            <div className='mt-4'>
+                                <WeatherCard
+                                    latitude={latitude}
+                                    longitude={longitude}
+                                    eventDate={eventDate.toString()}
+                                    durationHours={durationHours ?? 2}
+                                />
+                            </div>
+                        ) : null}
                         <p className='mt-4 mb-8 text-foreground'>{description}</p>
                         <div className='mb-8!'>
                             <EventPlaceAndLocation {...event} />
