@@ -111,9 +111,7 @@ const LitterReportEditPageInner = () => {
                 litterReportStatusId: String(litterReport.litterReportStatusId),
             });
 
-            const existingImages = (litterReport.images || []).map(
-                existingImageToImageWithLocation,
-            );
+            const existingImages = (litterReport.images || []).map(existingImageToImageWithLocation);
             setImages(existingImages);
             setImagesInitialized(true);
         }
