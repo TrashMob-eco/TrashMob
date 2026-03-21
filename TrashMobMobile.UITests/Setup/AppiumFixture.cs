@@ -29,6 +29,8 @@ public class AppiumFixture : IAsyncLifetime
         options.AddAdditionalAppiumOption("appPackage", AppPackage);
         options.AddAdditionalAppiumOption("appActivity", AppActivity);
         options.AddAdditionalAppiumOption("noReset", true);
+        options.AddAdditionalAppiumOption("uiautomator2ServerInstallTimeout", 120000);
+        options.AddAdditionalAppiumOption("uiautomator2ServerLaunchTimeout", 120000);
 
         if (!string.IsNullOrEmpty(apkPath))
         {
