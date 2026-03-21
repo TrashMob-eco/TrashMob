@@ -34,20 +34,16 @@ jobs:
         with:
           accept-android-sdk-licenses: true
 
-      - name: Install Android system image and create AVD
-        run: |
-          sdkmanager "system-images;android-35;google_apis;x86_64"
-          echo "no" | avdmanager create avd -n test_avd -k "system-images;android-35;google_apis;x86_64" --force
-
       - name: Start Android emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35
+          api-level: 31
           target: google_apis
           arch: x86_64
-          avd-name: test_avd
-          emulator-boot-timeout: 300
+          emulator-boot-timeout: 600
           disable-animations: true
+          force-avd-creation: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           script: |
             echo "Emulator started"
             adb devices
