@@ -47,11 +47,10 @@ type FormInputs = z.infer<typeof formSchema>;
 
 /** Convert existing LitterImageData from the API into ImageWithLocation for the ImageUploader. */
 function existingImageToImageWithLocation(img: LitterImageData): ImageWithLocation {
-    const serverUrl = img.imageUrl || img.imageURL || '';
     return {
         id: img.id,
-        previewUrl: serverUrl,
-        imageUrl: serverUrl,
+        previewUrl: img.imageUrl,
+        imageUrl: img.imageUrl,
         latitude: img.latitude,
         longitude: img.longitude,
         streetAddress: img.streetAddress || '',
@@ -112,7 +111,7 @@ const LitterReportEditPageInner = () => {
                 litterReportStatusId: String(litterReport.litterReportStatusId),
             });
 
-            const existingImages = (litterReport.images || litterReport.litterImages || []).map(
+            const existingImages = (litterReport.images || []).map(
                 existingImageToImageWithLocation,
             );
             setImages(existingImages);

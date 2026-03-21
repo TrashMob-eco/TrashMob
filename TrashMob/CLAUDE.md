@@ -35,9 +35,7 @@ TrashMob/
 
 ### V2 Controllers (89 controllers in `Controllers/V2/`)
 
-**All new endpoints must be v2.** V1 controllers in `Controllers/` are legacy — do not add new endpoints there.
-
-V2 controllers extend `ControllerBase` directly (not `SecureController`), use primary constructors, and return DTOs only.
+All controllers are v2, located in `Controllers/V2/`. They extend `ControllerBase` directly, use primary constructors, and return DTOs only.
 
 ### V2 Controller Checklist
 
@@ -51,12 +49,6 @@ V2 controllers extend `ControllerBase` directly (not `SecureController`), use pr
 - [ ] Return **DTOs only** — use `.ToV2Dto()` mapping, never return raw EF entities
 - [ ] Use **structured logging** with message templates (e.g., `"V2 GetThing Id={ThingId}"`)
 - [ ] Paginated collections return **`PagedResponse<TDto>`** via `ToPagedAsync()`
-
-### V1 Controller Hierarchy (Legacy)
-
-- `BaseController` — Provides `Logger` property (lazy-loaded)
-- `SecureController : BaseController` — Adds `UserId`, `AuthorizationService`, `IsAuthorizedAsync()`
-- `KeyedController<T> : SecureController` — Generic CRUD for entities with GUID keys
 
 ## React Frontend Patterns
 
@@ -253,12 +245,12 @@ class ThingData {
 - [ ] Use **`useMutation`** with `onSuccess` for toast notifications and query invalidation
 - [ ] Add route in `App.tsx` with lazy import
 - [ ] Handle loading and error states
-- [ ] Use **`getErrorMessage()`** from `@/lib/api-errors` in `onError` callbacks (handles both v1 and v2 error formats)
+- [ ] Use **`getErrorMessage()`** from `@/lib/api-errors` in `onError` callbacks (extracts RFC 9457 Problem Details)
 - [ ] Run **`npm run check`** before committing (runs both ESLint + Prettier to match CI)
 
 ### API Error Handling
 
-The Axios interceptor in `services/index.ts` normalizes API errors so `error.message` always contains the best available message (v2 Problem Details `.detail`, v1 `.message`, or fallback). For custom error extraction, use `getErrorMessage()`:
+The Axios interceptor in `services/index.ts` normalizes API errors so `error.message` always contains the best available message (RFC 9457 Problem Details `.detail` or fallback). For custom error extraction, use `getErrorMessage()`:
 
 ```typescript
 import { getErrorMessage } from '@/lib/api-errors';
@@ -281,10 +273,10 @@ npm run check      # Runs: eslint . --fix && prettier . --write
 ### Getting User Context (Backend)
 
 ```csharp
-// In SecureController-derived classes
-var userId = UserId;  // From SecureController base class (extracted from JWT claims)
+// UserId is available via HttpContext.Items (set by auth middleware)
+private Guid UserId => new(HttpContext.Items["UserId"]?.ToString() ?? string.Empty);
 
-// Use authorization handler (preferred over manual comparison)
+// Authorization check via private helper method
 if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntity))
     return Forbid();
 ```
@@ -322,4 +314,4 @@ npm start
 - [Planning/README.md](../Planning/README.md) — 2026 roadmap
 - [TrashMob.prd](./TrashMob.prd) — Product requirements
 
-**Last Updated:** March 15, 2026
+**Last Updated:** March 21, 2026
