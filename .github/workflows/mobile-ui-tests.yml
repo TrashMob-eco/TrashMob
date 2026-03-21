@@ -61,8 +61,10 @@ jobs:
             echo "Installing app on emulator..."
             dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -t:Install -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android --no-restore
             echo "Starting Appium..."
-            appium &
-            sleep 5
+            appium --relaxed-security &
+            sleep 10
+            echo "Waiting for Appium to be ready..."
+            for i in $(seq 1 12); do curl -s http://127.0.0.1:4723/status && break || sleep 5; done
             echo "Running tests..."
             dotnet test TrashMobMobile.UITests/ --logger "trx;LogFileName=results.trx" || true
 
