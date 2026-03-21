@@ -37,7 +37,15 @@ jobs:
       - name: Install MAUI workload
         run: dotnet workload install maui-android
 
-      - name: Start Android emulator
+      - name: Build Android app
+        run: dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT
+
+      - name: Install Appium
+        run: |
+          npm install -g appium
+          appium driver install uiautomator2
+
+      - name: Run Appium tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 31
@@ -51,12 +59,10 @@ jobs:
             echo "Emulator started"
             adb devices
 
-            # Build and install the app
-            dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -t:Install -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT
+            # Install the app on the emulator
+            dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -t:Install -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT --no-build
 
-            # Install and start Appium
-            npm install -g appium
-            appium driver install uiautomator2
+            # Start Appium in the background
             appium &
             sleep 5
 
