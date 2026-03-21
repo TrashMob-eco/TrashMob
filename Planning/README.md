@@ -1,7 +1,7 @@
 # TrashMob.eco — 2026 Planning Documentation
 
-**Version:** 1.2
-**Date:** February 16, 2026
+**Version:** 1.3
+**Date:** March 21, 2026
 **Owner:** Director of Product & Engineering
 
 ---
@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (58 Total)
+### 2026 Projects (59 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -37,7 +37,7 @@
 | [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) | Branded partner community pages | ✅ Complete |
 | [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) | Scale email invitations | ✅ Complete |
 | [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors (combined with Project 1) | In Progress (Phase 0, 3 Complete; Phases 1-2 blocked on Privo) |
-| [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Pagination, error handling, DTOs, v2 API layer | Ready for Production (89 controllers, 467 endpoints, zero v1 client URLs) |
+| [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Pagination, error handling, DTOs, v2 API layer | ✅ Complete (89 controllers, 467 endpoints; v1 controllers removed; deployed to production) |
 | [Project 38 - Mobile Feature Parity](./Projects/Project_38_Mobile_Feature_Parity.md) | Teams, leaderboards, photos for mobile volunteers | ✅ Complete |
 | [Project 44 - Area Map Editor](./Projects/Project_44_Area_Map_Editor.md) | Interactive map editor, AI area suggestions, bulk import/export, AI generation | ✅ Complete |
 
@@ -76,6 +76,7 @@
 | [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md) | Pre-event waiver validation, configurable check-in notifications, attendance roster for event leads | Not Started |
 | [Project 56 - Board Metrics Dashboard](./Projects/Project_56_Board_Metrics_Dashboard.md) | Unified admin dashboard consolidating App Insights, GA4, Sentry, Clarity, Azure costs, and QuickBooks for board meetings | Planning |
 | [Project 57 - Participation Report](./Projects/Project_57_Participation_Report.md) | Official volunteer participation report email with PDF for school/court/employer verification | In Progress (Phases 1-3 Complete) |
+| [Project 59 - Event Weather Forecast](./Projects/Project_59_Event_Weather_Forecast.md) | Weather forecast on event details page (web + mobile) using Open-Meteo API | Not Started |
 
 #### High Priority (Marketing & Growth)
 
@@ -125,6 +126,10 @@
 - [Project 47 - Team-Visible Private Events](./Projects/Project_47_Team_Private_Events.md) ✅
 - [Project 54 - Community Adoption Outreach](./Projects/Project_54_Community_Adoption_Outreach.md)
 
+### Event Experience
+- [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md)
+- [Project 59 - Event Weather Forecast](./Projects/Project_59_Event_Weather_Forecast.md)
+
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) ✅
 - [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md)
@@ -171,15 +176,14 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 32 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53 |
-| **Ready for Production** | 1 | Project 24 |
-| **In Progress** | 14 | Projects 1, 4, 5, 6, 8, 15, 23, 25, 30, 41, 45, 46, 49, 57 |
+| ✅ **Complete** | 33 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 24, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53 |
+| **In Progress** | 15 | Projects 1, 4, 5, 6, 8, 15, 23, 25, 30, 36, 41, 45, 46, 49, 57 |
 | **Planning** | 2 | Projects 56, 58 |
 | **Ready for Review** | 1 | Project 2 |
-| **Not Started** | 6 | Projects 12, 31, 36, 43, 52, 54, 55 |
+| **Not Started** | 6 | Projects 12, 31, 43, 52, 54, 55, 59 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 58 project specifications documented
+**Total:** 59 project specifications documented
 
 ---
 
@@ -203,6 +207,7 @@
 | [Project 46 - Product Support](./Projects/Project_46_Product_Support.md) | Phase 4: Support KPIs, feedback loop, quarterly review (activate when support role is staffed) |
 | [Project 49 - Privacy & Compliance](./Projects/Project_49_Privacy_Compliance_Review.md) | Phase 5: Cookie consent & tracking audit — update Privacy Policy, document third-party services (Clarity, App Insights) |
 | [Project 53 - Mobile Offline Persistence](./Projects/Project_53_Mobile_Offline_Persistence.md) | Deferred: Android WorkManager / iOS BGTaskScheduler background sync; server-side idempotent uploads (route SessionId dedup, photo PhotoId dedup) |
+| [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | Community tier pricing, feature comparison, branding guidelines, digital assets |
 | [Project 57 - Participation Report](./Projects/Project_57_Participation_Report.md) | Phases 1-3 complete (backend + web + mobile). Phase 4 deferred: verification URLs with QR codes |
 
 ### Ready for Design Review
@@ -224,22 +229,18 @@
 |---------|-------------|
 | [Project 12 - In-App Messaging](./Projects/Project_12_In_App_Messaging.md) | Push notifications, in-app message center, notification preferences |
 | [Project 31 - Feature Flags](./Projects/Project_31_Feature_Flags.md) | Feature flag infrastructure for safe deployments and gradual rollouts |
-| [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | Community tier pricing, feature comparison, branding guidelines, digital assets |
 | [Project 43 - Sign Management](./Projects/Project_43_Sign_Management.md) | Track physical Adopt-A-Location signs (status, coordinates, text, lifecycle) |
 | [Project 52 - Volunteer Rewards](./Projects/Project_52_Volunteer_Rewards.md) | Partner reward sourcing, criteria, distribution, fraud prevention (future) |
 | [Project 54 - Community Adoption Outreach](./Projects/Project_54_Community_Adoption_Outreach.md) | AI-powered sponsor/adopter discovery and outreach for community managers |
-
-### Ready for Production
-
-| Project | Status |
-|---------|--------|
-| [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | 89 v2 controllers, 467 endpoints, 100 DTOs, 1005 backend tests, zero v1 client URLs. Phase 4 (ETags, rate limiting) deferred. Production rollout pending. |
+| [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md) | Pre-event waiver validation, configurable check-in notifications, attendance roster |
+| [Project 59 - Event Weather Forecast](./Projects/Project_59_Event_Weather_Forecast.md) | Weather forecast on event details (web + mobile) via Open-Meteo API |
 
 ### Complete with Deferred Items
 
 | Project | Deferred Items |
 |---------|---------------|
 | [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Route association (waiting for routes to be routinely used) |
+| [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Phase 4: ETags, rate limiting, bulk operations, webhook infrastructure |
 | [Project 48 - Enhanced Route Tracking](./Projects/Project_48_Enhanced_Route_Tracking.md) | Phase 2b: Per-segment density; Phase 4: Smart trim suggestions (speed anomaly detection) |
 | [Project 51 - Contact Management](./Projects/Project_51_Contact_Management.md) | Deadline calendar, budget tracking per grant, periodic grant scan, impact-to-giving report |
 
@@ -314,6 +315,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** March 16, 2026
+**Last Updated:** March 21, 2026
 **Maintained By:** Product & Engineering Team
 **Next Review:** End of Q1 2026

@@ -61,10 +61,10 @@ dotnet ef database update
    - `BaseRepository<T>` → `KeyedRepository<T>` hierarchy
    - `MobDbContext` for entity configuration
 
-3. **Controller Pattern** (`TrashMob/Controllers/`)
-   - `BaseController` → `SecureController` hierarchy
-   - `SecureController` provides `UserId` from auth claims
-   - Authorization via `AuthorizationPolicyConstants`
+3. **Controller Pattern** (`TrashMob/Controllers/V2/`)
+   - 89 v2 controllers extending `ControllerBase` directly
+   - `UserId` extracted from `HttpContext.Items` (set by auth middleware)
+   - Authorization via `AuthorizationPolicyConstants` with private `IsAuthorizedAsync` helper
 
 **Data Flow:** Controller → Manager → Repository → DbContext
 
@@ -240,7 +240,7 @@ See component-level CLAUDE.md files for detailed patterns: `TrashMob/CLAUDE.md`,
 7. Add tests in `TrashMob.Shared.Tests/Controllers/V2/`
 8. Add React Query service in `TrashMob/client-app/src/services/` (factory returning `{ key, service }`, URL must use `/v2/` prefix)
 
-### V2 Controller Template (Current Pattern)
+### Controller Template
 ```csharp
 [ApiController]
 [ApiVersion("2.0")]
@@ -272,28 +272,18 @@ public class ThingsV2Controller(
 }
 ```
 
-### V1 Controller Template (Legacy — do not create new v1 controllers)
-```csharp
-public class ThingsController(
-    IThingManager thingManager)
-    : KeyedController<Thing>(thingManager)
-{
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
-    {
-        return Ok(await Manager.GetAsync(id, cancellationToken));
-    }
-}
-```
-
 ### Authorization Checks
 ```csharp
-// Check entity ownership
-if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntity))
-    return Forbid();
+// Private helper in each v2 controller that needs authorization
+private async Task<bool> IsAuthorizedAsync<T>(T resource, string policyName)
+{
+    if (User.Identity?.IsAuthenticated != true) return false;
+    var result = await authorizationService.AuthorizeAsync(User, resource, policyName);
+    return result.Succeeded;
+}
 
-// Check event lead role
-if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+// Usage in endpoints
+if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntity))
     return Forbid();
 ```
 

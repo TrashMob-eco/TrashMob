@@ -37,31 +37,21 @@ export interface PagedResponse<T> {
 /**
  * Extracts a user-friendly error message from an API error.
  *
- * Handles three response formats:
- * 1. V2 Problem Details: `error.response.data.detail`
- * 2. V1 custom message: `error.response.data.message` or plain string body
- * 3. Fallback: `error.message` (Axios/JS default) or generic message
+ * Checks for RFC 9457 Problem Details (`detail` field), then falls back
+ * to the Axios/JS error message, then a generic fallback.
  */
 export function getErrorMessage(error: unknown, fallback = 'An unexpected error occurred.'): string {
     if (error instanceof AxiosError && error.response?.data) {
         const data = error.response.data;
 
-        // V2 Problem Details format
+        // RFC 9457 Problem Details format
         if (typeof data === 'object' && data !== null) {
             if ('detail' in data && typeof data.detail === 'string' && data.detail) {
                 return data.detail;
             }
-            // V1 custom message format
-            if ('message' in data && typeof data.message === 'string' && data.message) {
-                return data.message;
-            }
-            // V1 errorMessage format (e.g., unsubscribe endpoint)
-            if ('errorMessage' in data && typeof data.errorMessage === 'string' && data.errorMessage) {
-                return data.errorMessage;
-            }
         }
 
-        // V1 plain string response body
+        // Plain string response body
         if (typeof data === 'string' && data) {
             return data;
         }

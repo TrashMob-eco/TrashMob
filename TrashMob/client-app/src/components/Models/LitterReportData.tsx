@@ -10,17 +10,7 @@ class LitterReportData {
 
     litterReportStatusId: number = 1;
 
-    /**
-     * V2 API returns the image collection as `images` (camelCase from C# `Images`).
-     * This is the canonical field that matches the v2 DTO JSON shape.
-     */
     images: LitterImageData[] = [];
-
-    /**
-     * @deprecated Use `images` instead. Kept for backward compatibility with existing
-     * component code that references `litterImages`. Components should migrate to `images`.
-     */
-    litterImages: LitterImageData[] = [];
 
     createdByUserId: string = '';
 

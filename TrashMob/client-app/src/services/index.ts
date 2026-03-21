@@ -13,7 +13,7 @@ const ProtectedService = axios.create({
     baseURL: Services.BASE_URL,
 });
 // Normalize API error responses so error.message contains the best available message.
-// Handles v2 Problem Details (detail field), v1 custom messages, and plain string bodies.
+// Handles RFC 9457 Problem Details (detail field) and plain string bodies.
 const normalizeErrorResponse = (error: unknown) => {
     if (error instanceof axios.AxiosError) {
         error.message = getErrorMessage(error, error.message);

@@ -109,7 +109,6 @@ export const UnsubscribeAllNewsletters = () => ({
         }),
 });
 
-// No v2 equivalent — stays on v1
 // Process token-based unsubscribe (public - no auth required)
 export type ProcessUnsubscribe_Body = { token: string };
 export type ProcessUnsubscribe_Response = {

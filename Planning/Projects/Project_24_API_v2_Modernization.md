@@ -2,11 +2,11 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Phases 1–3g complete. Phase 3h substantially complete (5 minor DTO violations remain). Phase 4 deferred. Ready for production rollout. See Production Readiness Audit below. |
+| **Status** | ✅ Complete — Deployed to production March 21, 2026. All v1 controllers removed. Phase 4 (ETags, rate limiting) deferred. |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Very Large |
-| **Dependencies** | None (v1 endpoints remain untouched throughout) |
+| **Dependencies** | None |
 
 ---
 
@@ -330,8 +330,8 @@ All 48 frontend service files migrated to v2 API endpoints. Zero v1 URLs remaini
 - [x] **Paginated response handling verified** — `GetFilteredEvents`, `GetAllEvents`, `GetAllUsers`, `GetPartners`, `GetLitterReports`, `GetEventAttendees`, `GetPublicTeams` all correctly extract `.items` from `PagedResponse<T>` ✅
 - [x] **TypeScript model alignment** — 7 models updated to match v2 DTO shapes (PR #3098), `EventAttendeeData` updated with userId→id mapping (PR #3117) ✅
 - [x] **E2E test coverage** — 180+ Playwright E2E tests covering public pages, authenticated flows, admin pages, and user interactions ✅
-- [ ] **2 deprecated model fields remain** — `LitterReportData.litterImages` and `LitterImageData.imageURL` kept for backward compatibility (marked `@deprecated`). Low priority — no functional impact.
-- [ ] **Verify v1 traffic drops to zero in Application Insights** — requires production deployment and monitoring period
+- [x] **Deprecated model fields removed** — `LitterReportData.litterImages` and `LitterImageData.imageURL` removed along with backward-compat fallbacks in edit page ✅
+- [x] **V1 controllers removed and deployed to production** — All v1 controllers deleted, v1 error format handling removed, deployed March 21, 2026 ✅
 
 ---
 
