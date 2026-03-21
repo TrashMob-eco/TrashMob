@@ -1,5 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
-import { Cloud, CloudDrizzle, CloudLightning, CloudRain, CloudSnow, Droplets, Sun, Thermometer, Wind } from 'lucide-react';
+import {
+    Cloud,
+    CloudDrizzle,
+    CloudLightning,
+    CloudRain,
+    CloudSnow,
+    Droplets,
+    Sun,
+    Thermometer,
+    Wind,
+} from 'lucide-react';
 import { GetWeatherForecast, WeatherForecast } from '@/services/weather';
 
 interface WeatherCardProps {
