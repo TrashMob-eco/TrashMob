@@ -84,7 +84,8 @@
                 </Grid>
 
                 <!-- ═══ QUICK IMPACT STATS ═══ -->
-                <Border Margin="10,4,10,8"
+                <Border AutomationId="PersonalStatsBar"
+                        Margin="10,4,10,8"
                         Padding="12,10"
                         StrokeShape="RoundRectangle 12"
                         StrokeThickness="0"
@@ -151,6 +152,7 @@
                        Style="{StaticResource SectionHeader}" />
 
                 <Label Text="No upcoming events found"
+                       AutomationId="NoEventsMessage"
                        IsVisible="{Binding AreNoEventsFound}"
                        FontSize="Small"
                        Margin="10,5"
@@ -205,12 +207,14 @@
                        Style="{StaticResource SectionHeader}" />
 
                 <Label Text="No recent litter reports"
+                       AutomationId="NoLitterReportsMessage"
                        IsVisible="{Binding AreNoLitterReportsFound}"
                        FontSize="Small"
                        Margin="10,5"
                        TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
 
                 <CollectionView ItemsSource="{Binding NearbyLitterReports}"
+                                AutomationId="NearbyLitterReportsList"
                                 SelectionMode="None"
                                 IsVisible="{Binding AreLitterReportsFound}">
                     <CollectionView.ItemTemplate>

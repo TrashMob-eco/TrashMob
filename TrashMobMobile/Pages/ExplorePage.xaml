@@ -87,10 +87,12 @@
         <!-- Row 3: Map/List toggle bar right above content -->
         <Grid Grid.Row="3" ColumnDefinitions="*, Auto, Auto" Margin="5,2">
             <ImageButton Grid.Column="1"
+                         AutomationId="ExploreMapToggle"
                          HeightRequest="24"
                          Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}"
                          Command="{Binding MapSelectedCommand}" />
             <ImageButton Grid.Column="2"
+                         AutomationId="ExploreListToggle"
                          HeightRequest="24"
                          Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}"
                          Command="{Binding ListSelectedCommand}" />
@@ -99,6 +101,7 @@
         <!-- Map View -->
         <controls:CustomMap Grid.Row="4"
                             x:Name="exploreMap"
+                            AutomationId="EventsMap"
                             ItemsSource="{Binding Addresses}"
                             IsVisible="{Binding IsMapSelected}"
                             HeightRequest="-1"
@@ -116,7 +119,7 @@
         </controls:CustomMap>
 
         <!-- List View -->
-        <ScrollView Grid.Row="4" IsVisible="{Binding IsListSelected}">
+        <ScrollView Grid.Row="4" AutomationId="ExploreListView" IsVisible="{Binding IsListSelected}">
             <VerticalStackLayout>
                 <Label Text="No results found"
                        IsVisible="{Binding AreNoItemsFound}"
