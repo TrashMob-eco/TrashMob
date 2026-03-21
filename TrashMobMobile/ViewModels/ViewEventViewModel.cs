@@ -30,7 +30,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     RoutePointWriter routePointWriter,
     SyncQueue syncQueue,
     IDependentRestService dependentRestService,
-    IParticipationReportRestService participationReportRestService) : BaseViewModel(notificationService)
+    IParticipationReportRestService participationReportRestService,
+    IWeatherRestService weatherRestService) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
@@ -48,6 +49,18 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     [ObservableProperty]
     private string displayDuration = string.Empty;
+
+    [ObservableProperty]
+    private bool isWeatherAvailable;
+
+    [ObservableProperty]
+    private string weatherSummary = string.Empty;
+
+    [ObservableProperty]
+    private string weatherTemperature = string.Empty;
+
+    [ObservableProperty]
+    private string weatherDetails = string.Empty;
 
     [ObservableProperty]
     private bool enableEditEvent;
@@ -254,8 +267,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             // Check for crashed/interrupted route sessions for this event
             await CheckForInterruptedSessionsAsync(eventId);
 
-            // Load only what the Details tab needs — registration status, attendee count, and metrics
-            await Task.WhenAll(SetRegistrationOptions(), GetAttendeeCount());
+            // Load only what the Details tab needs — registration status, attendee count, metrics, and weather
+            await Task.WhenAll(SetRegistrationOptions(), GetAttendeeCount(), GetWeatherForecastAsync());
             await LoadMyMetrics();
         }, "An error occurred while loading the event. Please try again.");
     }
@@ -435,6 +448,54 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         else
         {
             SpotsLeft = "";
+        }
+    }
+
+    private async Task GetWeatherForecastAsync()
+    {
+        if (mobEvent.IsCompleted() || mobEvent.Latitude == null || mobEvent.Longitude == null)
+        {
+            IsWeatherAvailable = false;
+            return;
+        }
+
+        try
+        {
+            var forecast = await weatherRestService.GetForecastAsync(
+                mobEvent.Latitude.Value, mobEvent.Longitude.Value,
+                mobEvent.EventDate, mobEvent.DurationHours);
+
+            if (!forecast.IsAvailable)
+            {
+                IsWeatherAvailable = false;
+                return;
+            }
+
+            IsWeatherAvailable = true;
+            WeatherTemperature = $"{Math.Round(forecast.Temperature ?? 0)}°F";
+            WeatherSummary = forecast.ConditionText ?? "Unknown";
+
+            var details = new List<string>();
+            if (forecast.HighTemperature != null && forecast.LowTemperature != null)
+            {
+                details.Add($"H: {Math.Round(forecast.HighTemperature.Value)}° L: {Math.Round(forecast.LowTemperature.Value)}°");
+            }
+
+            if (forecast.PrecipitationChance is > 0)
+            {
+                details.Add($"{forecast.PrecipitationChance}% rain");
+            }
+
+            if (forecast.WindSpeed != null)
+            {
+                details.Add($"{Math.Round(forecast.WindSpeed.Value)} mph wind");
+            }
+
+            WeatherDetails = string.Join(" · ", details);
+        }
+        catch
+        {
+            IsWeatherAvailable = false;
         }
     }
 

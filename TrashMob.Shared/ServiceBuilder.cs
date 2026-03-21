@@ -145,6 +145,9 @@
             // Feature Metrics
             services.AddSingleton<IFeatureMetricsService, FeatureMetricsService>();
 
+            // Weather
+            services.AddHttpClient<IWeatherService, OpenMeteoWeatherService>();
+
             // Email Invites
             services.AddScoped<IEmailInviteManager, EmailInviteManager>();
 
