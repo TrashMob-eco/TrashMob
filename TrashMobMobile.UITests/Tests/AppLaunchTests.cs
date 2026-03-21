@@ -20,9 +20,9 @@ public class AppLaunchTests : BaseTest
     }
 
     [Fact]
-    public void WelcomePage_GetStartedButtonVisible()
+    public void WelcomePage_SignInButtonVisible()
     {
-        var getStartedButton = WaitForElement("GetStartedButton", TimeSpan.FromSeconds(30));
-        Assert.True(getStartedButton.Displayed);
+        var signInButton = WaitForElement("SignInButton", TimeSpan.FromSeconds(30));
+        Assert.True(signInButton.Displayed);
     }
 }

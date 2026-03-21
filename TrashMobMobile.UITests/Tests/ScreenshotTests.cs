@@ -19,102 +19,89 @@ public class ScreenshotTests : BaseTest
     [Fact]
     public void Screenshot_01_WelcomePage()
     {
-        // Welcome page is the first screen for unauthenticated users
         WaitForElement("WelcomeLogo", TimeSpan.FromSeconds(30));
-
-        // Wait for animations to settle
         Thread.Sleep(1000);
-
         CaptureScreenshot("01_Welcome");
     }
 
     [Fact]
-    public void Screenshot_02_GetStarted()
+    public void Screenshot_02_SignIn()
     {
-        // Show the Get Started button prominently
-        WaitForElement("GetStartedButton", TimeSpan.FromSeconds(15));
+        WaitForElement("SignInButton", TimeSpan.FromSeconds(15));
         Thread.Sleep(500);
-
-        CaptureScreenshot("02_GetStarted");
+        CaptureScreenshot("02_SignIn");
     }
-
-    // The following tests require authentication (Category=Authenticated).
-    // They will be skipped if the app is not logged in.
-    // To capture these, set up a test account and log in before running.
 
     [Fact]
     [Trait("Category", "Authenticated")]
-    public void Screenshot_03_EventsMap()
+    public void Screenshot_03_HomeFeed()
     {
-        // Main events map showing nearby events
         try
         {
+            TapElement("HomeTab");
+            WaitForElement("WelcomeMessage", TimeSpan.FromSeconds(15));
+            Thread.Sleep(1500);
+            CaptureScreenshot("03_HomeFeed");
+        }
+        catch
+        {
+            CaptureScreenshot("03_HomeFeed_NoAuth");
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "Authenticated")]
+    public void Screenshot_04_ExploreMap()
+    {
+        try
+        {
+            TapElement("ExploreTab");
             WaitForElement("EventsMap", TimeSpan.FromSeconds(15));
-            Thread.Sleep(2000); // Wait for map tiles to load
+            Thread.Sleep(2000);
+            CaptureScreenshot("04_ExploreMap");
 
-            CaptureScreenshot("03_EventsMap");
+            TapElement("HomeTab");
         }
         catch
         {
-            // If not authenticated, capture whatever is on screen
-            CaptureScreenshot("03_EventsMap_NoAuth");
+            CaptureScreenshot("04_ExploreMap_NoAuth");
         }
     }
 
     [Fact]
     [Trait("Category", "Authenticated")]
-    public void Screenshot_04_Dashboard()
+    public void Screenshot_05_Impact()
     {
         try
         {
-            // Navigate to Dashboard tab
-            TapElement("DashboardTab");
+            TapElement("ImpactTab");
             Thread.Sleep(1500);
+            CaptureScreenshot("05_Impact");
 
-            CaptureScreenshot("04_Dashboard");
+            TapElement("HomeTab");
         }
         catch
         {
-            CaptureScreenshot("04_Dashboard_NoAuth");
+            CaptureScreenshot("05_Impact_NoAuth");
         }
     }
 
     [Fact]
     [Trait("Category", "Authenticated")]
-    public void Screenshot_05_Teams()
+    public void Screenshot_06_Profile()
     {
         try
         {
-            // Navigate to Teams tab
-            TapElement("TeamsTab");
-            Thread.Sleep(1500);
+            TapElement("ProfileTab");
+            WaitForElement("UserNameLabel", TimeSpan.FromSeconds(15));
+            Thread.Sleep(1000);
+            CaptureScreenshot("06_Profile");
 
-            CaptureScreenshot("05_Teams");
+            TapElement("HomeTab");
         }
         catch
         {
-            CaptureScreenshot("05_Teams_NoAuth");
-        }
-    }
-
-    [Fact]
-    [Trait("Category", "Authenticated")]
-    public void Screenshot_06_CreateEvent()
-    {
-        try
-        {
-            // Navigate to Create Event
-            TapElement("CreateEventButton");
-            Thread.Sleep(1500);
-
-            CaptureScreenshot("06_CreateEvent");
-
-            // Go back
-            Driver.Navigate().Back();
-        }
-        catch
-        {
-            CaptureScreenshot("06_CreateEvent_NoAuth");
+            CaptureScreenshot("06_Profile_NoAuth");
         }
     }
 }
