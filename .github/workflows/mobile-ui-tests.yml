@@ -38,7 +38,7 @@ jobs:
         run: dotnet workload install maui-android
 
       - name: Build Android app
-        run: dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT
+        run: dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android
 
       - name: Install Appium
         run: |
