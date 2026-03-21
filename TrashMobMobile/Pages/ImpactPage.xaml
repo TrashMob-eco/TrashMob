@@ -13,7 +13,7 @@
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
 
                 <!-- Your Impact -->
-                <Border Style="{StaticResource RoundBorder}" Margin="10,8,10,0">
+                <Border AutomationId="ImpactStatsSection" Style="{StaticResource RoundBorder}" Margin="10,8,10,0">
                     <VerticalStackLayout Spacing="8">
                         <Label Text="Your Impact" Style="{StaticResource SectionHeader}" Margin="0" />
                         <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
@@ -256,11 +256,13 @@
                     <VerticalStackLayout Spacing="8">
                         <Label Text="Explore More" Style="{StaticResource SectionHeader}" Margin="0" />
                         <Button Text="Leaderboards"
+                                AutomationId="LeaderboardsButton"
                                 Command="{Binding ViewLeaderboardsCommand}"
                                 Style="{StaticResource SecondaryLargeButton}"
                                 ContentLayout="Left, 12"
                                         ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconTrophy}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
                         <Button Text="Achievements"
+                                AutomationId="AchievementsButton"
                                 Command="{Binding ViewAchievementsCommand}"
                                 Style="{StaticResource SecondaryLargeButton}"
                                 ContentLayout="Left, 12"

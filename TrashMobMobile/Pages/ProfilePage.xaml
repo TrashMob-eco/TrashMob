@@ -39,9 +39,11 @@
                                    FontFamily="LexendSemibold"
                                    FontSize="Large" />
                             <Label Text="{Binding UserEmail}"
+                                   AutomationId="UserEmailLabel"
                                    FontSize="Small"
                                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                             <Label Text="{Binding MemberSince}"
+                                   AutomationId="MemberSinceLabel"
                                    FontSize="Micro"
                                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                         </VerticalStackLayout>
