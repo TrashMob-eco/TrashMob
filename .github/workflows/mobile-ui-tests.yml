@@ -37,8 +37,8 @@ jobs:
       - name: Install MAUI workload
         run: dotnet workload install maui-android
 
-      - name: Build Android APK
-        run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android
+      - name: Restore and pre-build
+        run: dotnet restore TrashMobMobile/TrashMobMobile.csproj -p:TargetFrameworks=net10.0-android
 
       - name: Install Appium
         run: |
@@ -58,28 +58,13 @@ jobs:
           script: |
             echo "Emulator started"
             adb devices
-
-            # Install the pre-built APK
-            APK_PATH=$(find TrashMobMobile/bin -name "*-Signed.apk" -o -name "*.apk" | head -1)
-            if [ -z "$APK_PATH" ]; then
-              echo "No APK found, falling back to dotnet install"
-              dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -t:Install -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android
-            else
-              echo "Installing APK: $APK_PATH"
-              adb install -r "$APK_PATH"
-            fi
-
-            # Start Appium in the background
+            echo "Installing app on emulator..."
+            dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -t:Install -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android --no-restore
+            echo "Starting Appium..."
             appium &
             sleep 5
-
-            # Run the tests
-            TEST_FILTER="${{ github.event.inputs.test_filter }}"
-            if [ -n "$TEST_FILTER" ]; then
-              dotnet test TrashMobMobile.UITests/ --filter "$TEST_FILTER" --logger "trx;LogFileName=results.trx" || true
-            else
-              dotnet test TrashMobMobile.UITests/ --logger "trx;LogFileName=results.trx" || true
-            fi
+            echo "Running tests..."
+            dotnet test TrashMobMobile.UITests/ --logger "trx;LogFileName=results.trx" || true
 
       - name: Upload test results
         if: always()
