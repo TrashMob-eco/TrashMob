@@ -59,8 +59,8 @@ jobs:
             echo "Emulator started"
             adb devices
 
-            # Install the app on the emulator
-            dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -t:Install -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT --no-build
+            # Install the app on the emulator (incremental — APK already built)
+            dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -t:Install -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android
 
             # Start Appium in the background
             appium &
