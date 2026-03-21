@@ -34,6 +34,9 @@ jobs:
         with:
           accept-android-sdk-licenses: true
 
+      - name: Install MAUI workload
+        run: dotnet workload install maui-android
+
       - name: Start Android emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
