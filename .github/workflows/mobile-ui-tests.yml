@@ -49,10 +49,7 @@ jobs:
             adb devices
 
             # Build and install the app
-            dotnet build TrashMobMobile/TrashMobMobile.csproj \
-              -f net10.0-android \
-              -t:Install \
-              -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT
+            dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -t:Install -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT
 
             # Install and start Appium
             npm install -g appium
