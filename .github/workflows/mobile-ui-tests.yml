@@ -37,8 +37,8 @@ jobs:
       - name: Install MAUI workload
         run: dotnet workload install maui-android
 
-      - name: Build Android app
-        run: dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android
+      - name: Build Android APK
+        run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android
 
       - name: Install Appium
         run: |
@@ -59,10 +59,15 @@ jobs:
             echo "Emulator started"
             adb devices
 
-            # Install the pre-built APK directly (avoids 17-min rebuild)
-            APK_PATH=$(find TrashMobMobile/bin -name "*.apk" -path "*/net10.0-android/*" | head -1)
-            echo "Installing APK: $APK_PATH"
-            adb install -r "$APK_PATH"
+            # Install the pre-built APK
+            APK_PATH=$(find TrashMobMobile/bin -name "*-Signed.apk" -o -name "*.apk" | head -1)
+            if [ -z "$APK_PATH" ]; then
+              echo "No APK found, falling back to dotnet install"
+              dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -t:Install -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android
+            else
+              echo "Installing APK: $APK_PATH"
+              adb install -r "$APK_PATH"
+            fi
 
             # Start Appium in the background
             appium &
