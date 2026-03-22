@@ -37,6 +37,9 @@ jobs:
       contents: read
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Build and push container
         id: build
         uses: ./.github/actions/container-build-push
