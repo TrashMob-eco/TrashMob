@@ -59,7 +59,7 @@ jobs:
             echo "Emulator started"
             adb devices
             echo "Installing app on emulator..."
-            dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -t:Install -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android --no-restore
+            dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -t:Install -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android -p:EmbedAssembliesIntoApk=true --no-restore
             echo "Starting Appium..."
             appium --relaxed-security &
             sleep 10
