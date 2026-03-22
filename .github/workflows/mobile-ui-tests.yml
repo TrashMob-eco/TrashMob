@@ -16,6 +16,7 @@ jobs:
   appium-tests:
     name: Android Appium Tests (Cuttlefish)
     runs-on: ubuntu-latest
+    environment: test
     timeout-minutes: 30
 
     steps:
@@ -157,6 +158,9 @@ jobs:
 
       - name: Run Appium tests
         run: dotnet test TrashMobMobile.UITests/ --logger "trx;LogFileName=results.trx" || true
+        env:
+          APPIUM_TEST_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          APPIUM_TEST_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
 
       - name: Capture emulator screenshot
         if: always()

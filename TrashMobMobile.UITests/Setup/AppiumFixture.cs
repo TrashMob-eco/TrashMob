@@ -38,6 +38,9 @@ public class AppiumFixture : IAsyncLifetime
         // Skip Appium Settings app — not needed for UI tests, and it times out on slow CI emulators
         options.AddAdditionalAppiumOption("skipDeviceInitialization", true);
 
+        // Allow Appium to interact with Chrome Custom Tabs for MSAL login
+        options.AddAdditionalAppiumOption("chromedriverAutodownload", true);
+
         if (!string.IsNullOrEmpty(apkPath))
         {
             options.App = apkPath;
@@ -45,6 +48,12 @@ public class AppiumFixture : IAsyncLifetime
 
         Driver = new AndroidDriver(new Uri(serverUrl), options, TimeSpan.FromMinutes(5));
         Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
+
+        // Auto-login in CI when test credentials are available
+        if (LoginHelper.HasCredentials)
+        {
+            LoginHelper.Login(Driver);
+        }
 
         return Task.CompletedTask;
     }
