@@ -4,10 +4,7 @@ import '@testing-library/jest-dom';
 vi.stubGlobal('scrollTo', vi.fn);
 
 // Mock URL.createObjectURL (used by azure-map-control)
-const mockURL = {
-    createObjectURL: vi.fn(),
-};
-vi.stubGlobal('URL', mockURL);
+URL.createObjectURL = vi.fn();
 
 // Mock crypto (used by azure-map-control & msal)
 vi.stubGlobal('crypto', {
