@@ -19,8 +19,9 @@ namespace TrashMob.Shared.Managers.Interfaces
 
         /// <summary>
         /// Generates and sends an outreach email to a prospect.
+        /// When a custom request with subject and body is provided, AI generation is skipped and the user-edited content is sent.
         /// </summary>
-        Task<OutreachSendResult> SendOutreachAsync(Guid prospectId, Guid userId, CancellationToken cancellationToken = default);
+        Task<OutreachSendResult> SendOutreachAsync(Guid prospectId, Guid userId, OutreachSendRequest customContent = default, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sends outreach emails to multiple prospects.
