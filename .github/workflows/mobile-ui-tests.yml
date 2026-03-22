@@ -40,7 +40,7 @@ jobs:
       - name: Run Appium tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 31
+          api-level: 30
           target: google_apis
           arch: x86_64
           emulator-boot-timeout: 900
@@ -51,7 +51,7 @@ jobs:
             echo "=== Building and installing app ==="
             dotnet publish TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -c Release -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android -p:AndroidKeyStore=false
             echo "Installing app..."
-            adb install -r -g TrashMobMobile/bin/Release/net10.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.apk
+            adb install -r -g TrashMobMobile/bin/Release/net10.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.apk || sleep 10 && adb install -r -g TrashMobMobile/bin/Release/net10.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.apk
             echo "=== Pre-installing Appium helpers ==="
             APPIUM_HOME=$(appium --show-config 2>/dev/null | grep -o '"APPIUM_HOME":"[^"]*"' | cut -d'"' -f4 || echo "$HOME/.appium")
             find "$APPIUM_HOME" -name "*.apk" -exec adb install -r -g {} \; || true
