@@ -382,11 +382,57 @@ options.AddAdditionalAppiumOption("appWaitForLaunch", false);
 Driver = new AndroidDriver(new Uri(serverUrl), options, TimeSpan.FromMinutes(5));
 ```
 
+### Community-Recommended Tools (Reddit, March 2026)
+
+After posting our CI challenges to r/dotnetMAUI, two tools were recommended:
+
+**1. [Cuttlefish](https://github.com/jonathanpeppers/cuttlefish)** — by Jonathan Peppers (Microsoft MAUI team)
+- Purpose-built for booting Android emulators, running MAUI apps, and taking screenshots
+- Lighter weight than full Appium — may work on GitHub hosted runners
+- **Status:** Needs evaluation — see Phase 5 below
+
+**2. [maui-containers](https://github.com/maui-containers/maui-containers)** — Docker container images
+- Pre-configured Android emulator + Appium server in Docker
+- Usage: forward ports, bind volume with built APK, point Appium to mounted path
+- Better suited for self-hosted/custom runners (same emulator resource constraints apply)
+
+**3. Custom/self-hosted runner** — recommended by redth (Microsoft MAUI team)
+- GitHub hosted runners likely don't have enough resources for Android emulator UI tests
+- A dedicated self-hosted runner with KVM support would solve all emulator stability issues
+
+### Cuttlefish Evaluation (March 2026) ✅ PROMISING
+
+Deep evaluation of jonathanpeppers/cuttlefish shows this is a strong candidate:
+
+**Why it works where we failed:**
+- GitHub Actions ubuntu-latest **does have KVM** — Cuttlefish uses it properly (our standard emulator didn't)
+- Uses `guest_swiftshader` GPU mode — no dedicated GPU memory needed
+- Google's own virtual device, designed for headless CI environments
+- Exposes a standard ADB device — our existing Appium tests connect to it unchanged
+
+**Proven performance on ubuntu-latest (API 34):**
+- Setup Cuttlefish (download + boot): ~2m30s
+- Build + run MAUI app (`dotnet build -t:Run`): ~2m18s
+- Screenshot capture: <1s
+- Total: ~5 minutes
+- **100% pass rate** on API 34+ across all observed runs
+
+**Limitations:**
+- Ubuntu only (not macOS — can't use for iOS testing)
+- Not a test framework — still need Appium for UI interactions/assertions
+- API 11-13 crashes runners (not relevant — we target API 34+)
+
+### Recommended Path Forward
+
+1. **Integrate Cuttlefish into mobile-ui-tests.yml** — replace emulator setup, keep existing Appium tests ← **IN PROGRESS**
+2. **If stable** → promote workflow from `[Experimental]` to standard CI
+3. **Fallback** → maui-containers on a self-hosted runner if reliability issues emerge
+
 ### Current Status
 
 - **Tests:** 28 Appium tests across 8 files — run locally only
 - **Workflow:** `.github/workflows/mobile-ui-tests.yml` marked `[Experimental]`
-- **Revisit when:** GitHub Actions adds KVM support on Ubuntu, or stable GPU-accelerated ARM emulators on macOS
+- **Revisit when:** Cuttlefish evaluation complete, or GitHub Actions adds KVM support on Ubuntu
 
 ---
 
@@ -401,13 +447,15 @@ Driver = new AndroidDriver(new Uri(serverUrl), options, TimeSpan.FromMinutes(5))
 
 **Last Updated:** March 22, 2026
 **Owner:** Engineering Team
-**Status:** Phases 1–3 Complete, Phase 4 Tests Written (CI blocked)
-**Next Review:** When GitHub Actions improves emulator support
+**Status:** Phases 1–3 Complete, Phase 4 Tests Written (CI blocked), evaluating Cuttlefish for Phase 5
+**Next Review:** After Cuttlefish evaluation
 
 ---
 
 ## Changelog
 
+- **2026-03-22:** Deep evaluation of Cuttlefish — 100% reliable on API 34+, ~5min total on ubuntu-latest with KVM. Prototyping integration with existing Appium tests.
+- **2026-03-22:** Added community-recommended CI tools (Cuttlefish, maui-containers) from Reddit r/dotnetMAUI thread. Defined recommended evaluation path for Phase 5.
 - **2026-03-22:** Phase 4 mobile testing — 28 Appium tests written (8 files), AutomationIds added to XAML views. CI workflow created but blocked by GitHub Actions emulator instability. Documented all CI attempts. Reddit discussion posted. Tests work locally.
 - **2026-03-15:** Major update — Phases 2 and 3 complete. 197 E2E tests across 32 files covering public pages, authenticated user flows, admin pages, and user interactions. Auth infrastructure (Entra login, MSAL session capture, admin user). CI workflow triggers on controller changes. E2E-only changes excluded from build/deploy workflows. Documented all test files, coverage, bugs found, and test scenario mapping.
 - **2026-02-05:** Updated status to "In Progress (Phase 1 Complete)". Playwright framework installed, GitHub Actions workflow running on PRs, page objects and initial tests implemented.
