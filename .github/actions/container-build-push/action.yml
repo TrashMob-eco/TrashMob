@@ -1,0 +1,76 @@
+name: 'Container Build and Push'
+description: 'Checkout, determine version with GitVersion, login to Azure/ACR, build and push a Docker image'
+
+inputs:
+  azure-client-id:
+    description: 'Azure OIDC client ID'
+    required: true
+  azure-tenant-id:
+    description: 'Azure OIDC tenant ID'
+    required: true
+  azure-subscription-id:
+    description: 'Azure subscription ID'
+    required: true
+  registry-name:
+    description: 'Azure Container Registry name (e.g. acrtmdevwestus2)'
+    required: true
+  image-name:
+    description: 'Docker image name (e.g. trashmob)'
+    required: true
+  dockerfile:
+    description: 'Path to Dockerfile (e.g. TrashMob/Dockerfile)'
+    required: true
+  context:
+    description: 'Docker build context (default: .)'
+    required: false
+    default: '.'
+  build-args:
+    description: 'Docker build args (e.g. --build-arg FOO=bar)'
+    required: false
+    default: ''
+
+outputs:
+  semver:
+    description: 'Semantic version from GitVersion'
+    value: ${{ steps.version_step.outputs.semVer }}
+  image-tag:
+    description: 'Full image tag (registry/image:version)'
+    value: ${{ inputs.registry-name }}.azurecr.io/${{ inputs.image-name }}:${{ steps.version_step.outputs.semVer }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v3.2.1
+      with:
+        versionSpec: '5.x'
+
+    - name: Determine Version
+      id: version_step
+      uses: gittools/actions/gitversion/execute@v3.2.1
+
+    - name: Login to Azure
+      uses: azure/login@v2
+      with:
+        client-id: ${{ inputs.azure-client-id }}
+        tenant-id: ${{ inputs.azure-tenant-id }}
+        subscription-id: ${{ inputs.azure-subscription-id }}
+
+    - name: Login to Azure Container Registry
+      shell: bash
+      run: az acr login --name ${{ inputs.registry-name }}
+
+    - name: Build and push Docker image
+      shell: bash
+      run: |
+        IMAGE_TAG="${{ inputs.registry-name }}.azurecr.io/${{ inputs.image-name }}:${{ steps.version_step.outputs.semVer }}"
+        IMAGE_TAG_LATEST="${{ inputs.registry-name }}.azurecr.io/${{ inputs.image-name }}:latest"
+
+        docker build -f ${{ inputs.dockerfile }} ${{ inputs.build-args }} -t $IMAGE_TAG -t $IMAGE_TAG_LATEST ${{ inputs.context }}
+        docker push $IMAGE_TAG
+        docker push $IMAGE_TAG_LATEST

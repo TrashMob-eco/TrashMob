@@ -37,39 +37,17 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - name: Build and push container
+        id: build
+        uses: ./.github/actions/container-build-push
         with:
-          fetch-depth: 0
-
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v3.2.1
-        with:
-          versionSpec: '5.x'
-
-      - name: Determine Version
-        id: version_step
-        uses: gittools/actions/gitversion/execute@v3.2.1
-
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Login to Azure Container Registry
-        run: |
-          az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}
-
-      - name: Build and push Docker image
-        run: |
-          IMAGE_TAG=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}
-          IMAGE_TAG_LATEST=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
-
-          docker build -f Strapi/Dockerfile -t $IMAGE_TAG -t $IMAGE_TAG_LATEST ./Strapi
-          docker push $IMAGE_TAG
-          docker push $IMAGE_TAG_LATEST
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          registry-name: ${{ env.AZURE_CONTAINER_REGISTRY }}
+          image-name: ${{ env.IMAGE_NAME }}
+          dockerfile: Strapi/Dockerfile
+          context: ./Strapi
 
       - name: Get Strapi secrets from Key Vault
         id: get-secrets
@@ -97,7 +75,7 @@ jobs:
       - name: Deploy to Azure Container Apps
         run: |
           SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-          CONTAINER_IMAGE="${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}"
+          CONTAINER_IMAGE="${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.build.outputs.semver }}"
           CONTAINER_APPS_ENV_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/${{ env.RESOURCE_GROUP }}/providers/Microsoft.App/managedEnvironments/${{ env.CONTAINER_APPS_ENVIRONMENT }}"
 
           az deployment group create \
