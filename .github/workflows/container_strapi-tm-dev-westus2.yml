@@ -120,7 +120,18 @@ jobs:
       - name: Verify Strapi Container Health
         run: |
           echo "Waiting for Strapi container to be ready..."
-          sleep 60
+          for i in $(seq 1 12); do
+            STATUS=$(az containerapp show \
+              --name ${{ env.CONTAINER_APP_NAME }} \
+              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --query properties.runningStatus \
+              -o tsv 2>/dev/null || echo "Unknown")
+            echo "Attempt $i/12: Status=$STATUS"
+            if [ "$STATUS" = "Running" ]; then
+              break
+            fi
+            sleep 10
+          done
 
           FQDN=$(az containerapp show \
             --name ${{ env.CONTAINER_APP_NAME }} \

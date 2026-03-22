@@ -1,0 +1,94 @@
+name: 'Grant RBAC Roles'
+description: 'Idempotently grants Key Vault Secrets User and Storage Blob Data Contributor roles to a container app/job managed identity'
+
+inputs:
+  resource-type:
+    description: 'Type of container resource: "app" or "job"'
+    required: true
+  resource-name:
+    description: 'Name of the container app or job'
+    required: true
+  resource-group:
+    description: 'Azure resource group'
+    required: true
+  key-vault-name:
+    description: 'Key Vault name'
+    required: true
+  storage-account-name:
+    description: 'Storage account name'
+    required: true
+  subscription-id:
+    description: 'Azure subscription ID'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Grant Key Vault and Storage RBAC roles
+      shell: bash
+      run: |
+        echo "Getting managed identity for ${{ inputs.resource-type }} ${{ inputs.resource-name }}..."
+        if [ "${{ inputs.resource-type }}" = "job" ]; then
+          PRINCIPAL_ID=$(az containerapp job show \
+            --name ${{ inputs.resource-name }} \
+            --resource-group ${{ inputs.resource-group }} \
+            --query identity.principalId \
+            -o tsv)
+        else
+          PRINCIPAL_ID=$(az containerapp show \
+            --name ${{ inputs.resource-name }} \
+            --resource-group ${{ inputs.resource-group }} \
+            --query identity.principalId \
+            -o tsv)
+        fi
+        echo "Principal ID: $PRINCIPAL_ID"
+
+        PERMISSIONS_ADDED=false
+
+        # Key Vault Secrets User
+        KEY_VAULT_ID=$(az keyvault show --name ${{ inputs.key-vault-name }} --query id -o tsv)
+
+        echo "Checking if Key Vault Secrets User role already assigned..."
+        EXISTING_KV_ROLE=$(az role assignment list \
+          --assignee $PRINCIPAL_ID \
+          --scope $KEY_VAULT_ID \
+          --role "Key Vault Secrets User" \
+          --query "[].id" \
+          -o tsv)
+
+        if [ -z "$EXISTING_KV_ROLE" ]; then
+          echo "Granting Key Vault Secrets User role..."
+          az role assignment create \
+            --assignee $PRINCIPAL_ID \
+            --role "Key Vault Secrets User" \
+            --scope $KEY_VAULT_ID
+          PERMISSIONS_ADDED=true
+        else
+          echo "Key Vault Secrets User role already assigned"
+        fi
+
+        # Storage Blob Data Contributor
+        STORAGE_SCOPE="/subscriptions/${{ inputs.subscription-id }}/resourceGroups/${{ inputs.resource-group }}/providers/Microsoft.Storage/storageAccounts/${{ inputs.storage-account-name }}"
+
+        echo "Checking if Storage Blob Data Contributor role already assigned..."
+        EXISTING_STORAGE_ROLE=$(az role assignment list \
+          --assignee $PRINCIPAL_ID \
+          --scope $STORAGE_SCOPE \
+          --query "[?roleDefinitionName=='Storage Blob Data Contributor'].roleDefinitionName" \
+          -o tsv)
+
+        if [ -z "$EXISTING_STORAGE_ROLE" ]; then
+          echo "Granting Storage Blob Data Contributor role..."
+          az role assignment create \
+            --assignee $PRINCIPAL_ID \
+            --role "Storage Blob Data Contributor" \
+            --scope $STORAGE_SCOPE
+          PERMISSIONS_ADDED=true
+        else
+          echo "Storage Blob Data Contributor role already assigned"
+        fi
+
+        if [ "$PERMISSIONS_ADDED" = true ]; then
+          echo "Waiting 30 seconds for permissions to propagate..."
+          sleep 30
+        fi
