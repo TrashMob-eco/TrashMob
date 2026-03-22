@@ -6,14 +6,15 @@ using OpenQA.Selenium.Appium.Android;
 using OpenQA.Selenium.Support.UI;
 
 /// <summary>
-/// Automates Entra External ID (CIAM) login via MSAL's Chrome Custom Tab.
-/// Used by AppiumFixture to authenticate before running tests in CI.
+/// Automates Entra External ID (CIAM) login via MSAL browser flow.
+/// Uses native UiAutomator2 selectors to interact with the browser login page
+/// (works with any browser — Chrome, AOSP Browser, WebView).
 /// Requires APPIUM_TEST_EMAIL and APPIUM_TEST_PASSWORD environment variables.
 /// </summary>
 public static class LoginHelper
 {
-    private static readonly TimeSpan WebViewTimeout = TimeSpan.FromSeconds(30);
-    private static readonly TimeSpan ElementTimeout = TimeSpan.FromSeconds(15);
+    private static readonly string DiagFile = Path.Combine(
+        AppContext.BaseDirectory, "TestResults", "login-diagnostics.txt");
 
     public static bool HasCredentials =>
         !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPIUM_TEST_EMAIL")) &&
@@ -24,153 +25,232 @@ public static class LoginHelper
         var email = Environment.GetEnvironmentVariable("APPIUM_TEST_EMAIL")!;
         var password = Environment.GetEnvironmentVariable("APPIUM_TEST_PASSWORD")!;
 
-        Console.WriteLine("LoginHelper: Starting MSAL login flow...");
-
         try
         {
             LoginInternal(driver, email, password);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"LoginHelper: Login failed — {ex.Message}");
-            Console.WriteLine("LoginHelper: Tests will run in unauthenticated mode.");
+            Log($"Login failed: {ex.Message}");
+            Log("Tests will run in unauthenticated mode.");
 
-            // Ensure we're back in native context
+            // Try to get back to the app
             try { driver.Context = "NATIVE_APP"; } catch { /* already native */ }
+            try { driver.ActivateApp("eco.trashmob.trashmobmobileapp"); } catch { /* best effort */ }
         }
     }
 
     private static void LoginInternal(AndroidDriver driver, string email, string password)
     {
-        // Check if we're already logged in (MainTabsPage visible)
-        try
+        Log("Starting MSAL login flow...");
+
+        // Check if already logged in
+        if (IsElementPresent(driver, MobileBy.AccessibilityId("HomeTab")))
         {
-            driver.FindElement(MobileBy.AccessibilityId("HomeTab"));
-            Console.WriteLine("LoginHelper: Already logged in, skipping.");
+            Log("Already logged in, skipping.");
             return;
         }
-        catch (NoSuchElementException)
-        {
-            // Not logged in — proceed with login
-        }
 
-        // Tap Sign In button on WelcomePage
+        // Tap Sign In on WelcomePage
         var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
         wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
         var signInButton = (AppiumElement)wait.Until(d =>
             d.FindElement(MobileBy.AccessibilityId("SignInButton")));
         signInButton.Click();
-        Console.WriteLine("LoginHelper: Tapped Sign In button.");
+        Log("Tapped Sign In button.");
 
-        // Wait for MSAL browser to appear and switch to WEBVIEW context
-        Thread.Sleep(3000); // Allow Chrome Custom Tab to load
-
-        var webviewContext = WaitForWebViewContext(driver);
-        if (webviewContext == null)
-        {
-            Console.WriteLine("LoginHelper: No WEBVIEW context found. MSAL may not have a browser available.");
-            // Switch back to native just in case
-            driver.Context = "NATIVE_APP";
-            return;
-        }
-
-        driver.Context = webviewContext;
-        Console.WriteLine($"LoginHelper: Switched to context: {webviewContext}");
-
+        // Dump available contexts and packages for diagnostics
+        Thread.Sleep(3000);
         try
         {
-            // Entra External ID login form — enter email
-            var emailField = WaitForWebElement(driver, By.CssSelector("input[type='email'], input[name='loginfmt'], #email"));
-            emailField.Clear();
-            emailField.SendKeys(email);
-            Console.WriteLine("LoginHelper: Entered email.");
-
-            // Click Next/Submit after email
-            ClickSubmitButton(driver);
-            Console.WriteLine("LoginHelper: Clicked Next after email.");
-
-            Thread.Sleep(2000); // Wait for password page to load
-
-            // Enter password
-            var passwordField = WaitForWebElement(driver, By.CssSelector("input[type='password'], input[name='passwd'], #password"));
-            passwordField.Clear();
-            passwordField.SendKeys(password);
-            Console.WriteLine("LoginHelper: Entered password.");
-
-            // Click Sign In
-            ClickSubmitButton(driver);
-            Console.WriteLine("LoginHelper: Clicked Sign In.");
-
-            // Wait for redirect back to app (MSAL callback closes the browser)
-            Thread.Sleep(5000);
+            var contexts = driver.Contexts;
+            Log($"Available contexts: {string.Join(", ", contexts)}");
+            var currentActivity = driver.CurrentActivity;
+            Log($"Current activity: {currentActivity}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"LoginHelper: Error during web login: {ex.Message}");
-        }
-        finally
-        {
-            // Always switch back to native app context
-            try
-            {
-                driver.Context = "NATIVE_APP";
-            }
-            catch
-            {
-                // Context may already be native if browser closed
-            }
+            Log($"Diagnostics error: {ex.Message}");
         }
 
-        // Wait for MainTabsPage to appear (confirms successful login)
-        try
+        // Strategy 1: Try WEBVIEW context (works if Chrome is installed)
+        if (TryWebViewLogin(driver, email, password))
         {
-            Console.WriteLine("LoginHelper: Waiting for MainTabsPage...");
-            var homeTab = (AppiumElement)wait.Until(d =>
-                d.FindElement(MobileBy.AccessibilityId("HomeTab")));
-            Console.WriteLine("LoginHelper: Login successful — MainTabsPage visible.");
+            return;
         }
-        catch (WebDriverTimeoutException)
+
+        // Strategy 2: Use native UiAutomator2 selectors (works with any browser)
+        Log("Trying native UiAutomator2 login...");
+        TryNativeLogin(driver, email, password);
+
+        // Check if login succeeded
+        driver.Context = "NATIVE_APP";
+        Thread.Sleep(3000);
+
+        // Try to activate our app in case browser is still in foreground
+        try { driver.ActivateApp("eco.trashmob.trashmobmobileapp"); } catch { /* best effort */ }
+        Thread.Sleep(2000);
+
+        if (IsElementPresent(driver, MobileBy.AccessibilityId("HomeTab")))
         {
-            Console.WriteLine("LoginHelper: MainTabsPage did not appear after login. Tests may fail.");
+            Log("Login successful — MainTabsPage visible.");
+        }
+        else
+        {
+            Log("MainTabsPage not visible after login attempt.");
         }
     }
 
-    private static string? WaitForWebViewContext(AndroidDriver driver)
+    private static bool TryWebViewLogin(AndroidDriver driver, string email, string password)
     {
-        var deadline = DateTime.UtcNow + WebViewTimeout;
-        while (DateTime.UtcNow < deadline)
+        var webviewContext = WaitForContext(driver, "WEBVIEW", TimeSpan.FromSeconds(10));
+        if (webviewContext == null)
         {
-            var contexts = driver.Contexts;
-            foreach (var context in contexts)
-            {
-                if (context.Contains("WEBVIEW"))
-                {
-                    return context;
-                }
-            }
-
-            Thread.Sleep(1000);
+            Log("No WEBVIEW context available.");
+            return false;
         }
 
+        try
+        {
+            driver.Context = webviewContext;
+            Log($"Switched to {webviewContext}");
+
+            // Enter email
+            var emailField = WaitForWebElement(driver, By.CssSelector(
+                "input[type='email'], input[name='loginfmt'], #email, input[name='email']"));
+            emailField.Clear();
+            emailField.SendKeys(email);
+            Log("Entered email (WEBVIEW).");
+
+            ClickWebSubmitButton(driver);
+            Thread.Sleep(2000);
+
+            // Enter password
+            var passwordField = WaitForWebElement(driver, By.CssSelector(
+                "input[type='password'], input[name='passwd'], #password"));
+            passwordField.Clear();
+            passwordField.SendKeys(password);
+            Log("Entered password (WEBVIEW).");
+
+            ClickWebSubmitButton(driver);
+            Thread.Sleep(5000);
+
+            driver.Context = "NATIVE_APP";
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log($"WEBVIEW login failed: {ex.Message}");
+            try { driver.Context = "NATIVE_APP"; } catch { /* already native */ }
+            return false;
+        }
+    }
+
+    private static void TryNativeLogin(AndroidDriver driver, string email, string password)
+    {
+        // Ensure we're in native context
+        try { driver.Context = "NATIVE_APP"; } catch { /* already native */ }
+
+        try
+        {
+            // Find any EditText on screen (the email field in the browser login form)
+            var editTexts = driver.FindElements(By.ClassName("android.widget.EditText"));
+            Log($"Found {editTexts.Count} EditText elements on screen.");
+
+            if (editTexts.Count == 0)
+            {
+                Log("No EditText found — browser login form may not be visible.");
+                return;
+            }
+
+            // Type email into the first visible EditText
+            var emailField = editTexts.FirstOrDefault(e => e.Displayed);
+            if (emailField == null)
+            {
+                Log("No visible EditText found.");
+                return;
+            }
+
+            emailField.Click();
+            emailField.Clear();
+            emailField.SendKeys(email);
+            Log("Entered email (native).");
+
+            // Click any visible Button (Next/Submit)
+            ClickNativeButton(driver);
+            Thread.Sleep(3000);
+
+            // Find password field
+            editTexts = driver.FindElements(By.ClassName("android.widget.EditText"));
+            var passwordField = editTexts.FirstOrDefault(e => e.Displayed);
+            if (passwordField != null)
+            {
+                passwordField.Click();
+                passwordField.Clear();
+                passwordField.SendKeys(password);
+                Log("Entered password (native).");
+
+                ClickNativeButton(driver);
+                Thread.Sleep(5000);
+            }
+            else
+            {
+                Log("No password field found.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"Native login error: {ex.Message}");
+        }
+    }
+
+    private static void ClickNativeButton(AndroidDriver driver)
+    {
+        var buttons = driver.FindElements(By.ClassName("android.widget.Button"));
+        var submitButton = buttons.LastOrDefault(b => b.Displayed);
+        if (submitButton != null)
+        {
+            Log($"Clicking button: '{submitButton.Text}'");
+            submitButton.Click();
+        }
+        else
+        {
+            // Fallback: press Enter key
+            Log("No button found, pressing Enter.");
+            driver.PressKeyCode(66); // KEYCODE_ENTER
+        }
+    }
+
+    private static string? WaitForContext(AndroidDriver driver, string contextPrefix, TimeSpan timeout)
+    {
+        var deadline = DateTime.UtcNow + timeout;
+        while (DateTime.UtcNow < deadline)
+        {
+            foreach (var context in driver.Contexts)
+            {
+                if (context.Contains(contextPrefix))
+                    return context;
+            }
+            Thread.Sleep(1000);
+        }
         return null;
     }
 
     private static IWebElement WaitForWebElement(AndroidDriver driver, By locator)
     {
-        var wait = new WebDriverWait(driver, ElementTimeout);
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
         wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
         return wait.Until(d => d.FindElement(locator));
     }
 
-    private static void ClickSubmitButton(AndroidDriver driver)
+    private static void ClickWebSubmitButton(AndroidDriver driver)
     {
-        // Entra login forms use various submit button patterns
         var selectors = new[]
         {
             By.CssSelector("input[type='submit']"),
             By.CssSelector("button[type='submit']"),
-            By.CssSelector("#idSIButton9"),          // Microsoft "Next" button
-            By.CssSelector("#idSIButton4"),           // Microsoft "Sign in" button
+            By.CssSelector("#idSIButton9"),
+            By.CssSelector("#idSIButton4"),
             By.CssSelector(".win-button.button_primary"),
         };
 
@@ -185,13 +265,37 @@ public static class LoginHelper
                     return;
                 }
             }
-            catch (NoSuchElementException)
-            {
-                continue;
-            }
+            catch (NoSuchElementException) { continue; }
         }
 
-        // Fallback: try pressing Enter
-        driver.FindElement(By.CssSelector("input:focus")).SendKeys(Keys.Enter);
+        // Fallback: Enter key
+        try { driver.FindElement(By.CssSelector("input:focus")).SendKeys(Keys.Enter); } catch { /* best effort */ }
+    }
+
+    private static bool IsElementPresent(AndroidDriver driver, By locator)
+    {
+        try
+        {
+            driver.FindElement(locator);
+            return true;
+        }
+        catch (NoSuchElementException)
+        {
+            return false;
+        }
+    }
+
+    private static void Log(string message)
+    {
+        var line = $"[LoginHelper {DateTime.UtcNow:HH:mm:ss}] {message}";
+        Console.WriteLine(line);
+
+        // Also write to file — xUnit swallows Console.WriteLine from fixtures
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(DiagFile)!);
+            File.AppendAllText(DiagFile, line + Environment.NewLine);
+        }
+        catch { /* best effort */ }
     }
 }

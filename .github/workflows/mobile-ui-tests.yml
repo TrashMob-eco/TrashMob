@@ -168,6 +168,14 @@ jobs:
           mkdir -p screenshots
           adb exec-out screencap -p > screenshots/final-state.png || true
 
+      - name: Diagnose emulator state
+        if: always()
+        run: |
+          echo "=== Installed packages ==="
+          adb shell pm list packages 2>/dev/null | grep -iE "browser|chrome|webview" || echo "(none matching)"
+          echo "=== Current activity ==="
+          adb shell dumpsys activity activities 2>/dev/null | grep -E "mResumedActivity|mFocused" | head -5 || true
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
