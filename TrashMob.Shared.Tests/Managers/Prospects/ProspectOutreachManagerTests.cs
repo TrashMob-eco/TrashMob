@@ -252,6 +252,72 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
                 p => p.NextFollowUpDate != null && p.LastContactedDate != null)), Times.Once);
         }
 
+        [Fact]
+        public async Task SendOutreach_WithCustomContent_UsesCustomContentInsteadOfAI()
+        {
+            var prospect = new CommunityProspectBuilder().Build();
+            prospect.ContactEmail = "test@example.com";
+            prospect.PipelineStage = 0;
+            _prospectRepo.SetupGetAsync(prospect);
+            SetupEmptyOutreachHistory();
+
+            _emailManager.Setup(e => e.GetHtmlEmailCopy(It.IsAny<string>()))
+                .Returns("<p>{personalizedContent}</p>");
+
+            var customContent = new OutreachSendRequest
+            {
+                Subject = "My Custom Subject",
+                HtmlBody = "<p>My custom body</p>",
+            };
+
+            var result = await _sut.SendOutreachAsync(prospect.Id, Guid.NewGuid(), customContent);
+
+            Assert.True(result.Success);
+
+            // Verify AI content service was NOT called
+            _contentService.Verify(s => s.GenerateOutreachContentAsync(
+                It.IsAny<CommunityProspect>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
+                Times.Never);
+
+            // Verify email was sent with the custom subject (with [TEST] prefix since test mode is on)
+            _emailManager.Verify(e => e.SendTemplatedEmailAsync(
+                "[TEST] My Custom Subject",
+                It.IsAny<string>(),
+                It.IsAny<int>(),
+                It.IsAny<object>(),
+                It.IsAny<List<Shared.Poco.EmailAddress>>(),
+                It.IsAny<CancellationToken>()), Times.Once);
+
+            // Verify the saved email record contains the custom body injected into template
+            _outreachEmailRepo.Verify(r => r.AddAsync(It.Is<ProspectOutreachEmail>(
+                e => e.HtmlBody.Contains("My custom body"))), Times.Once);
+        }
+
+        [Fact]
+        public async Task SendOutreach_WithEmptyCustomContent_FallsBackToAIGeneration()
+        {
+            var prospect = new CommunityProspectBuilder().Build();
+            prospect.ContactEmail = "test@example.com";
+            prospect.PipelineStage = 0;
+            _prospectRepo.SetupGetAsync(prospect);
+            SetupEmptyOutreachHistory();
+            SetupContentService(prospect.Id, 1);
+
+            _emailManager.Setup(e => e.GetHtmlEmailCopy(It.IsAny<string>()))
+                .Returns("<p>{personalizedContent}</p>");
+
+            var emptyContent = new OutreachSendRequest { Subject = "", HtmlBody = "" };
+
+            var result = await _sut.SendOutreachAsync(prospect.Id, Guid.NewGuid(), emptyContent);
+
+            Assert.True(result.Success);
+
+            // Verify AI content service WAS called as fallback
+            _contentService.Verify(s => s.GenerateOutreachContentAsync(
+                It.IsAny<CommunityProspect>(), 1, It.IsAny<int>(), It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
         #endregion
 
         #region PreviewOutreachAsync

@@ -191,7 +191,7 @@ export const PreviewOutreach = (params: PreviewOutreach_Params) => ({
         }),
 });
 
-export type SendOutreach_Params = { id: string };
+export type SendOutreach_Params = { id: string; subject?: string; htmlBody?: string };
 export type SendOutreach_Response = OutreachSendResultData;
 export const SendOutreach = () => ({
     key: ['/communityprospects', 'outreach', 'send'],
@@ -199,6 +199,8 @@ export const SendOutreach = () => ({
         ApiService('protected').fetchData<SendOutreach_Response>({
             url: `/v2/community-prospects/${params.id}/outreach`,
             method: 'post',
+            data:
+                params.subject || params.htmlBody ? { subject: params.subject, htmlBody: params.htmlBody } : undefined,
         }),
 });
 

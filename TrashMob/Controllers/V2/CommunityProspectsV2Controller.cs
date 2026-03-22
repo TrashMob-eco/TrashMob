@@ -328,18 +328,19 @@ namespace TrashMob.Controllers.V2
         }
 
         /// <summary>
-        /// Sends an outreach email to a prospect.
+        /// Sends an outreach email to a prospect. Optionally accepts custom subject and body to override AI-generated content.
         /// </summary>
         /// <param name="id">The prospect ID.</param>
+        /// <param name="request">Optional custom email content.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns the send result.</response>
         [HttpPost("{id}/outreach")]
         [ProducesResponseType(typeof(OutreachSendResult), StatusCodes.Status200OK)]
-        public async Task<IActionResult> SendOutreach(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> SendOutreach(Guid id, [FromBody] OutreachSendRequest request, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 SendOutreach to prospect {ProspectId}", id);
 
-            var result = await prospectOutreachManager.SendOutreachAsync(id, UserId, cancellationToken);
+            var result = await prospectOutreachManager.SendOutreachAsync(id, UserId, request, cancellationToken);
             return Ok(result);
         }
 

@@ -4,6 +4,8 @@ import { Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import {
     PreviewOutreach,
@@ -32,12 +34,16 @@ export function OutreachPreviewDialog({ prospectId, open, onOpenChange }: Outrea
     const queryClient = useQueryClient();
     const [preview, setPreview] = useState<OutreachPreviewData | null>(null);
     const [loading, setLoading] = useState(false);
+    const [editedSubject, setEditedSubject] = useState('');
+    const [editedBody, setEditedBody] = useState('');
 
     const generatePreview = async () => {
         setLoading(true);
         try {
             const res = await PreviewOutreach({ id: prospectId }).service();
             setPreview(res.data);
+            setEditedSubject(res.data.subject);
+            setEditedBody(res.data.htmlBody);
         } catch {
             toast({ variant: 'destructive', title: 'Failed to generate preview' });
         } finally {
@@ -81,6 +87,9 @@ export function OutreachPreviewDialog({ prospectId, open, onOpenChange }: Outrea
         }
     };
 
+    const isCadenceComplete = preview?.subject?.includes('complete') ?? false;
+    const canSend = preview && preview.cadenceStep <= 4 && !isCadenceComplete;
+
     return (
         <Dialog open={open} onOpenChange={handleOpen}>
             <DialogContent className='max-w-2xl max-h-[80vh] overflow-y-auto'>
@@ -101,17 +110,27 @@ export function OutreachPreviewDialog({ prospectId, open, onOpenChange }: Outrea
                             )}
                         </div>
 
-                        {preview.subject && !preview.subject.includes('complete') ? (
+                        {!isCadenceComplete ? (
                             <>
                                 <div>
-                                    <span className='text-sm font-medium'>Subject</span>
-                                    <p className='text-sm border rounded-md p-2 bg-muted/50'>{preview.subject}</p>
+                                    <label htmlFor='outreach-subject' className='text-sm font-medium'>
+                                        Subject
+                                    </label>
+                                    <Input
+                                        id='outreach-subject'
+                                        value={editedSubject}
+                                        onChange={(e) => setEditedSubject(e.target.value)}
+                                    />
                                 </div>
                                 <div>
-                                    <span className='text-sm font-medium'>Email Body</span>
-                                    <div
-                                        className='border rounded-md p-4 bg-white text-sm prose prose-sm max-w-none'
-                                        dangerouslySetInnerHTML={{ __html: preview.htmlBody }}
+                                    <label htmlFor='outreach-body' className='text-sm font-medium'>
+                                        Email Body
+                                    </label>
+                                    <Textarea
+                                        id='outreach-body'
+                                        value={editedBody}
+                                        onChange={(e) => setEditedBody(e.target.value)}
+                                        className='min-h-[300px] font-mono text-sm'
                                     />
                                 </div>
                             </>
@@ -128,10 +147,16 @@ export function OutreachPreviewDialog({ prospectId, open, onOpenChange }: Outrea
                     <Button variant='outline' onClick={generatePreview} disabled={loading}>
                         Regenerate
                     </Button>
-                    {preview && preview.cadenceStep <= 4 && !preview.subject.includes('complete') ? (
+                    {canSend ? (
                         <Button
-                            onClick={() => sendOutreach.mutate({ id: prospectId })}
-                            disabled={sendOutreach.isPending}
+                            onClick={() =>
+                                sendOutreach.mutate({
+                                    id: prospectId,
+                                    subject: editedSubject,
+                                    htmlBody: editedBody,
+                                })
+                            }
+                            disabled={sendOutreach.isPending || !editedSubject.trim() || !editedBody.trim()}
                         >
                             <Send className='mr-2 h-4 w-4' /> Send
                         </Button>

@@ -57,7 +57,7 @@ namespace TrashMob.Shared.Managers.Prospects
 
         /// <inheritdoc />
         public async Task<OutreachSendResult> SendOutreachAsync(Guid prospectId, Guid userId,
-            CancellationToken cancellationToken = default)
+            OutreachSendRequest customContent = default, CancellationToken cancellationToken = default)
         {
             var settings = GetOutreachSettings();
             if (!settings.OutreachEnabled)
@@ -107,16 +107,31 @@ namespace TrashMob.Shared.Managers.Prospects
 
             try
             {
-                // Generate AI content
-                var preview = await contentService.GenerateOutreachContentAsync(
-                    prospect, nextStep, 0, cancellationToken);
+                // Use custom content if provided, otherwise generate AI content
+                string contentSubject;
+                string contentHtmlBody;
+
+                if (customContent != null
+                    && !string.IsNullOrWhiteSpace(customContent.Subject)
+                    && !string.IsNullOrWhiteSpace(customContent.HtmlBody))
+                {
+                    contentSubject = customContent.Subject;
+                    contentHtmlBody = customContent.HtmlBody;
+                }
+                else
+                {
+                    var preview = await contentService.GenerateOutreachContentAsync(
+                        prospect, nextStep, 0, cancellationToken);
+                    contentSubject = preview.Subject;
+                    contentHtmlBody = preview.HtmlBody;
+                }
 
                 // Get the email template shell and inject personalized content
                 var notificationType = GetNotificationTypeForStep(nextStep);
                 var templateHtml = emailManager.GetHtmlEmailCopy(notificationType.ToString());
-                var fullHtml = templateHtml.Replace("{personalizedContent}", preview.HtmlBody);
+                var fullHtml = templateHtml.Replace("{personalizedContent}", contentHtmlBody);
 
-                var subject = settings.TestMode ? $"[TEST] {preview.Subject}" : preview.Subject;
+                var subject = settings.TestMode ? $"[TEST] {contentSubject}" : contentSubject;
 
                 // Create the outreach email record
                 var outreachEmail = new ProspectOutreachEmail
@@ -223,7 +238,7 @@ namespace TrashMob.Shared.Managers.Prospects
 
             foreach (var prospectId in toProcess)
             {
-                var sendResult = await SendOutreachAsync(prospectId, userId, cancellationToken);
+                var sendResult = await SendOutreachAsync(prospectId, userId, cancellationToken: cancellationToken);
                 result.Results.Add(sendResult);
 
                 if (sendResult.Success)
@@ -280,7 +295,7 @@ namespace TrashMob.Shared.Managers.Prospects
             foreach (var prospect in dueProspects)
             {
                 // Use a system user ID for automated sends
-                var result = await SendOutreachAsync(prospect.Id, Guid.Empty, cancellationToken);
+                var result = await SendOutreachAsync(prospect.Id, Guid.Empty, cancellationToken: cancellationToken);
                 if (result.Success)
                 {
                     processed++;
