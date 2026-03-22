@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import {
     PreviewOutreach,
@@ -126,11 +125,13 @@ export function OutreachPreviewDialog({ prospectId, open, onOpenChange }: Outrea
                                     <label htmlFor='outreach-body' className='text-sm font-medium'>
                                         Email Body
                                     </label>
-                                    <Textarea
+                                    <div
                                         id='outreach-body'
-                                        value={editedBody}
-                                        onChange={(e) => setEditedBody(e.target.value)}
-                                        className='min-h-[300px] font-mono text-sm'
+                                        contentEditable
+                                        suppressContentEditableWarning
+                                        className='border rounded-md p-4 bg-white text-sm prose prose-sm max-w-none min-h-[300px] focus:outline-none focus:ring-2 focus:ring-ring'
+                                        dangerouslySetInnerHTML={{ __html: editedBody }}
+                                        onBlur={(e) => setEditedBody(e.currentTarget.innerHTML)}
                                     />
                                 </div>
                             </>
