@@ -1,18 +1,22 @@
-name: Mobile UI Tests (Appium) [Experimental]
+name: Mobile UI Tests (Appium + Cuttlefish)
 
-# EXPERIMENTAL: Android emulators on GitHub Actions runners are unstable for MAUI + Appium.
-# Known issues: GPU memory errors on macOS ARM, boot timeouts on Ubuntu, broken pipe on install.
-# These tests work locally — run with: appium & dotnet test TrashMobMobile.UITests/
-# Revisit CI when GitHub Actions improves ARM emulator support.
+# Uses Google Cuttlefish emulator (KVM-accelerated) on ubuntu-latest.
+# Cuttlefish is 100% reliable on API 34+ — see jonathanpeppers/cuttlefish.
+# Tests run locally with: appium & dotnet test TrashMobMobile.UITests/
 
 on:
   workflow_dispatch:
 
+env:
+  CUTTLEFISH_VERSION: v1.32.0
+  ANDROID_BRANCH: aosp-android14-gsi
+  ANDROID_DEVICE: aosp_cf_x86_64_only_phone
+
 jobs:
   appium-tests:
-    name: Android Appium Tests
-    runs-on: macos-14
-    timeout-minutes: 60
+    name: Android Appium Tests (Cuttlefish)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout code
@@ -23,50 +27,141 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'microsoft'
-          java-version: '17'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          accept-android-sdk-licenses: true
-
-      - name: Install MAUI workload
+      - name: Install MAUI Android workload
         run: dotnet workload install maui-android
 
-      - name: Install Appium
+      - name: Add Android SDK to PATH
+        run: echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+
+      # --- Cuttlefish emulator setup (based on jonathanpeppers/cuttlefish) ---
+
+      - name: Cache Cuttlefish packages
+        id: cache-cf
+        uses: actions/cache@v5
+        with:
+          path: ~/cuttlefish-packages
+          key: cf-packages-${{ env.CUTTLEFISH_VERSION }}
+
+      - name: Download Cuttlefish packages
+        if: steps.cache-cf.outputs.cache-hit != 'true'
+        run: |
+          RUN_ID=$(gh run list --repo google/android-cuttlefish --workflow .github/workflows/main.yml \
+            --json databaseId,headBranch,status \
+            --jq ".[] | select(.headBranch == \"${{ env.CUTTLEFISH_VERSION }}\") | select(.status == \"completed\") | .databaseId" \
+            | head -1)
+
+          mkdir -p ~/cuttlefish-packages
+          cd ~/cuttlefish-packages
+          gh run download $RUN_ID --repo google/android-cuttlefish --name debs_amd64
+          tar -xf debs_amd64.tar
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Install Cuttlefish
+        run: |
+          sudo apt-get update
+          sudo dpkg -i ~/cuttlefish-packages/cuttlefish-base_*_*64.deb || sudo apt-get install -f -y
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger
+          sudo usermod -aG kvm,cvdnetwork,render $USER
+
+      - name: Get Android build ID
+        id: build-id
+        run: |
+          TARGET="${{ env.ANDROID_DEVICE }}-userdebug"
+          BUILD_ID=$(curl -sL "https://ci.android.com/builds/branches/${{ env.ANDROID_BRANCH }}/status.json" | \
+            jq -r ".targets[] | select(.name == \"$TARGET\") | .last_known_good_build")
+          echo "BUILD_ID=$BUILD_ID" >> $GITHUB_OUTPUT
+          echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
+
+      - name: Cache Android images
+        id: cache-images
+        uses: actions/cache@v5
+        with:
+          path: ~/cuttlefish-downloads
+          key: android-images-${{ env.ANDROID_BRANCH }}-${{ steps.build-id.outputs.BUILD_ID }}
+
+      - name: Download Android images
+        if: steps.cache-images.outputs.cache-hit != 'true'
+        run: |
+          TARGET="${{ env.ANDROID_DEVICE }}-userdebug"
+          BASE_URL="https://ci.android.com/builds/submitted/${BUILD_ID}/${TARGET}/latest/raw"
+
+          mkdir -p ~/cuttlefish-downloads
+          curl -L "${BASE_URL}/${{ env.ANDROID_DEVICE }}-img-${BUILD_ID}.zip" -o ~/cuttlefish-downloads/system-img.zip
+          curl -L "${BASE_URL}/cvd-host_package.tar.gz" -o ~/cuttlefish-downloads/host-package.tar.gz
+
+      - name: Start Cuttlefish emulator
+        run: |
+          CF_HOME=$HOME/cuttlefish
+          mkdir -p $CF_HOME
+          tar xzf ~/cuttlefish-downloads/host-package.tar.gz -C $CF_HOME
+          unzip -q ~/cuttlefish-downloads/system-img.zip -d $CF_HOME
+
+          sg kvm -c "sg cvdnetwork -c 'HOME=$CF_HOME $CF_HOME/bin/launch_cvd \
+            -daemon -memory_mb=4096 -cpus=$(nproc) \
+            -gpu_mode=guest_swiftshader \
+            -enable_sandbox=false -report_anonymous_usage_stats=n'"
+
+          adb wait-for-device
+          timeout 600 bash -c 'until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" = "1" ]; do sleep 5; done'
+
+          # Unlock screen
+          adb shell input keyevent 82
+          sleep 2
+          adb shell input swipe 540 1800 540 400
+          sleep 1
+
+          echo "Cuttlefish emulator ready!"
+          adb shell getprop ro.build.version.release
+          adb devices
+
+      # --- Build and install MAUI app ---
+
+      - name: Build MAUI app
+        run: |
+          dotnet build TrashMobMobile/TrashMobMobile.csproj \
+            -f net10.0-android \
+            -c Release \
+            -t:Install \
+            -p:AndroidKeyStore=false
+
+      # --- Appium + tests ---
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Install and start Appium
         run: |
           npm install -g appium
           appium driver install uiautomator2
 
-      - name: Run Appium tests on emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 31
-          target: google_apis
-          arch: arm64-v8a
-          emulator-boot-timeout: 900
-          disable-animations: true
-          force-avd-creation: true
-          emulator-options: -no-window -gpu auto -noaudio -no-boot-anim
-          script: |
-            echo "=== Building and installing app ==="
-            dotnet publish TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -c Release -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android -p:AndroidKeyStore=false
-            echo "Installing app..."
-            adb install -r -g TrashMobMobile/bin/Release/net10.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.apk || sleep 10 && adb install -r -g TrashMobMobile/bin/Release/net10.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.apk
-            echo "=== Pre-installing Appium helpers ==="
-            APPIUM_HOME=$(appium --show-config 2>/dev/null | grep -o '"APPIUM_HOME":"[^"]*"' | cut -d'"' -f4 || echo "$HOME/.appium")
-            find "$APPIUM_HOME" -name "*.apk" -exec adb install -r -g {} \; || true
-            echo "=== Starting Appium ==="
-            appium --relaxed-security &
-            sleep 15
-            curl -s http://127.0.0.1:4723/status || echo "Appium not responding yet"
+          # Pre-install Appium helper APKs
+          APPIUM_HOME=$(appium --show-config 2>/dev/null | grep -o '"APPIUM_HOME":"[^"]*"' | cut -d'"' -f4 || echo "$HOME/.appium")
+          find "$APPIUM_HOME" -name "*.apk" -exec adb install -r -g {} \; || true
+
+          appium --relaxed-security &
+
+          # Wait for Appium to be ready
+          for i in $(seq 1 12); do
+            if curl -s http://127.0.0.1:4723/status | grep -q "ready"; then
+              echo "Appium is ready"
+              break
+            fi
+            echo "Waiting for Appium... ($i/12)"
             sleep 5
-            echo "=== Running tests ==="
-            dotnet test TrashMobMobile.UITests/ --logger "trx;LogFileName=results.trx" || true
+          done
+
+      - name: Run Appium tests
+        run: dotnet test TrashMobMobile.UITests/ --logger "trx;LogFileName=results.trx" || true
+
+      - name: Capture emulator screenshot
+        if: always()
+        run: |
+          mkdir -p screenshots
+          adb exec-out screencap -p > screenshots/final-state.png || true
 
       - name: Upload test results
         if: always()
@@ -81,5 +176,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: appium-screenshots
-          path: TrashMobMobile.UITests/**/Screenshots/
+          path: |
+            TrashMobMobile.UITests/**/Screenshots/
+            screenshots/
           retention-days: 7
+
+      - name: Stop Cuttlefish
+        if: always()
+        run: |
+          CF_HOME=$HOME/cuttlefish
+          sg kvm -c "sg cvdnetwork -c 'HOME=$CF_HOME $CF_HOME/bin/stop_cvd'" || true
