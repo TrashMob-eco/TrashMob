@@ -45,18 +45,10 @@ export const SponsorDashboard = () => {
         return adoptions.map((adoption) => {
             const logsForAdoption = cleanupLogs.filter((l) => l.sponsoredAdoptionId === adoption.id);
             const lastLog = logsForAdoption.length > 0 ? logsForAdoption[0] : null;
-            let nextDue: Date | null = null;
-            let isOverdue = false;
-
-            if (lastLog) {
-                nextDue = new Date(lastLog.cleanupDate);
-                nextDue.setDate(nextDue.getDate() + adoption.cleanupFrequencyDays);
-                isOverdue = nextDue < now;
-            } else {
-                nextDue = new Date(adoption.startDate);
-                nextDue.setDate(nextDue.getDate() + adoption.cleanupFrequencyDays);
-                isOverdue = nextDue < now;
-            }
+            const baseDate = lastLog ? new Date(lastLog.cleanupDate) : new Date(adoption.startDate);
+            const nextDue = new Date(baseDate);
+            nextDue.setDate(nextDue.getDate() + adoption.cleanupFrequencyDays);
+            const isOverdue = nextDue < now;
 
             return { adoption, lastLog, nextDue, isOverdue };
         });
