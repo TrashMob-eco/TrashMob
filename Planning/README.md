@@ -54,7 +54,7 @@
 | [Project 20 - Gamification](./Projects/Project_20_Gamification.md) | Leaderboards and achievements | ✅ Complete |
 | [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) | Multiple event admins | ✅ Complete |
 | [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Per-attendee event statistics | ✅ Complete |
-| [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | E2E tests for web and mobile | In Progress (Phases 1-3 Complete — 197 E2E tests, authenticated + admin) |
+| [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | E2E tests for web and mobile | In Progress (Phases 1-3 Complete, Phase 4 tests written — CI blocked) |
 | [Project 37 - Unit Test Coverage](./Projects/Project_37_Unit_Test_Coverage.md) | Improve backend unit test coverage | ✅ Complete |
 | [Project 26 - KeyVault RBAC Migration](./Projects/Project_26_KeyVault_RBAC_Migration.md) | Migrate from access policies to RBAC | ✅ Complete |
 | [Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md) | Admin photo review and flagging | ✅ Complete |
@@ -200,7 +200,7 @@
 | [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Phase 3: Security audit — review remaining API endpoints for authorization, input validation, rate limiting |
 | [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Phase 5 remaining: Minor waiver signing dialog (web + mobile), WaiverVersion record with minor scope, compliance export with dependent waivers — all pending legal review of minor waiver text |
 | [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Mobile app route recording/upload device testing on iOS and Android |
-| [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | Phase 4: Mobile test foundation (deferred). 197 web E2E tests complete across 32 files. |
+| [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | Phase 4: 28 Appium tests written, AutomationIds added. CI blocked — GitHub Actions emulators unstable for MAUI+Appium ([Reddit discussion](https://www.reddit.com/r/dotnetMAUI/comments/1s0tiq3/running_maui_appium_ui_tests_on_github_actions/)). Tests run locally. |
 | [Project 30 - Azure Billing Alerts](./Projects/Project_30_Azure_Billing_Alerts.md) | Operational monitoring and alert tuning |
 | [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md) | Phase 5: Reporting & analytics (community-level volunteer vs. sponsored breakdown, cost-per-mile, company comparison, compliance reports) |
 | [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md) | Deferred: Community testimonials (waiting on onboarded communities), AI Sales Agent integration |
