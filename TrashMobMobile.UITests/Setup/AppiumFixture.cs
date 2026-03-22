@@ -32,15 +32,16 @@ public class AppiumFixture : IAsyncLifetime
         options.AddAdditionalAppiumOption("uiautomator2ServerInstallTimeout", 120000);
         options.AddAdditionalAppiumOption("uiautomator2ServerLaunchTimeout", 120000);
         options.AddAdditionalAppiumOption("appWaitForLaunch", false);
-        options.AddAdditionalAppiumOption("adbExecTimeout", 120000);
-        options.AddAdditionalAppiumOption("androidInstallTimeout", 120000);
+        options.AddAdditionalAppiumOption("adbExecTimeout", 180000);
+        options.AddAdditionalAppiumOption("androidInstallTimeout", 180000);
+        options.AddAdditionalAppiumOption("newCommandTimeout", 300);
 
         if (!string.IsNullOrEmpty(apkPath))
         {
             options.App = apkPath;
         }
 
-        Driver = new AndroidDriver(new Uri(serverUrl), options, TimeSpan.FromMinutes(2));
+        Driver = new AndroidDriver(new Uri(serverUrl), options, TimeSpan.FromMinutes(5));
         Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
 
         return Task.CompletedTask;
