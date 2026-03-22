@@ -118,12 +118,13 @@ jobs:
 
       # --- Build and install MAUI app ---
 
-      - name: Build MAUI app
+      - name: Build and install MAUI app
         run: |
           dotnet build TrashMobMobile/TrashMobMobile.csproj \
             -f net10.0-android \
             -c Release \
             -t:Install \
+            -p:TargetFrameworks=net10.0-android \
             -p:AndroidKeyStore=false
 
       # --- Appium + tests ---
