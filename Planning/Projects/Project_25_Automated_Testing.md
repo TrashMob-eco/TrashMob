@@ -301,11 +301,13 @@ E2E tests caught real bugs during development:
 - ✅ Partner request forms
 - ✅ Page coverage for previously untested pages
 
-### Phase 4: Mobile Testing — NOT STARTED (Deferred)
-- ❌ Evaluate Appium vs MAUI testing
-- ❌ Set up mobile test project
-- ❌ Implement auth flow tests
-- ❌ Configure CI (Android first)
+### Phase 4: Mobile Testing — Tests Written, CI Blocked
+- ✅ Evaluate Appium vs MAUI testing → Appium with UiAutomator2 selected
+- ✅ Set up mobile test project (TrashMobMobile.UITests — 28 tests, 8 files)
+- ✅ Add AutomationIds to XAML views (HomeFeed, Explore, Impact, Profile)
+- ✅ Implement tests: app launch, tab navigation, home feed, explore map, impact stats, profile, quick action, screenshots
+- ❌ Configure CI — **blocked** (see Phase 4 CI Investigation below)
+- Tests run locally: `appium & dotnet test TrashMobMobile.UITests/`
 
 ---
 
@@ -328,6 +330,66 @@ E2E tests caught real bugs during development:
 
 ---
 
+## Phase 4 CI Investigation (March 2026)
+
+We spent a full day attempting to run the Appium tests in GitHub Actions. **Tests work locally but CI is blocked by emulator instability.** Documented here so we don't repeat the effort.
+
+**Reddit discussion:** [Running MAUI + Appium UI Tests on GitHub Actions](https://www.reddit.com/r/dotnetMAUI/comments/1s0tiq3/running_maui_appium_ui_tests_on_github_actions/)
+
+### What We Tried (in order)
+
+| # | Runner | API | Arch | GPU | Result |
+|---|--------|-----|------|-----|--------|
+| 1 | ubuntu-latest | 35 | x86_64 | swiftshader | Boot timeout — API 35 too heavy without KVM |
+| 2 | ubuntu-latest | 31 | x86_64 | swiftshader | Booted, but `dotnet build -t:Install` → ADB0010 broken pipe |
+| 3 | ubuntu-latest | 31 | x86_64 | swiftshader | `adb install` also broken pipe — Ubuntu emulator too unstable |
+| 4 | ubuntu-latest | 30 | x86_64 | swiftshader | Same broken pipe on install |
+| 5 | ubuntu-latest | 31 | x86_64 | swiftshader | Appium session created but "Appium Settings app not running after 30s" |
+| 6 | macos-13 | 30 | x86_64 | swiftshader | Runner deprecated — "configuration not supported" |
+| 7 | macos-15 | 30 | x86_64 | swiftshader | Boot timeout — Apple Silicon can't run x86_64 via Rosetta |
+| 8 | macos-14 | 30 | x86_64 | swiftshader | Boot timeout — same Rosetta issue |
+| 9 | macos-14 | 31 | arm64-v8a | swiftshader | Boot timeout — swiftshader is x86-only |
+| 10 | macos-14 | 31 | arm64-v8a | host | `VK_ERROR_OUT_OF_DEVICE_MEMORY` — CI runner has no GPU memory |
+| 11 | macos-14 | 31 | arm64-v8a | auto | Boot timeout — falls back to host GPU, same memory error |
+
+### What Actually Worked (partially)
+
+- **Emulator booting:** Ubuntu + API 30/31 (slow but functional)
+- **App building:** `dotnet publish -c Release -p:TargetFrameworks=net10.0-android`
+- **App installing:** Direct `adb install` on Ubuntu (when emulator was stable — intermittent)
+- **Appium session:** With 5-min timeout + `skipDeviceInitialization: true`
+- **Tests executing:** All 28 ran on Ubuntu but failed due to Appium Settings timeout
+
+### Root Cause
+
+GitHub Actions runners don't provide a stable Android emulator for MAUI + Appium:
+- **Ubuntu:** No KVM hardware acceleration → emulator slow/unstable, adb broken pipes
+- **macOS ARM (14/15):** arm64 emulators exist but GPU rendering crashes (no dedicated GPU memory)
+- **macOS Intel (13):** Deprecated and removed
+
+Lightweight native Android apps work with `reactivecircus/android-emulator-runner`. MAUI apps are heavier (larger APK, longer startup) and Appium adds helper apps that compound the problem.
+
+### Key Appium Capabilities for CI (reference for future attempts)
+
+```csharp
+options.AddAdditionalAppiumOption("uiautomator2ServerInstallTimeout", 120000);
+options.AddAdditionalAppiumOption("uiautomator2ServerLaunchTimeout", 120000);
+options.AddAdditionalAppiumOption("adbExecTimeout", 180000);
+options.AddAdditionalAppiumOption("androidInstallTimeout", 180000);
+options.AddAdditionalAppiumOption("skipDeviceInitialization", true);
+options.AddAdditionalAppiumOption("newCommandTimeout", 300);
+options.AddAdditionalAppiumOption("appWaitForLaunch", false);
+Driver = new AndroidDriver(new Uri(serverUrl), options, TimeSpan.FromMinutes(5));
+```
+
+### Current Status
+
+- **Tests:** 28 Appium tests across 8 files — run locally only
+- **Workflow:** `.github/workflows/mobile-ui-tests.yml` marked `[Experimental]`
+- **Revisit when:** GitHub Actions adds KVM support on Ubuntu, or stable GPU-accelerated ARM emulators on macOS
+
+---
+
 ## Related Documents
 
 - **[Project 5 - CI/CD](./Project_05_Deployment_Pipelines.md)** - Pipeline infrastructure
@@ -337,15 +399,16 @@ E2E tests caught real bugs during development:
 
 ---
 
-**Last Updated:** March 15, 2026
+**Last Updated:** March 22, 2026
 **Owner:** Engineering Team
-**Status:** Phases 1–3 Complete (197 tests, 32 files, 3 user roles)
-**Next Review:** After mobile testing evaluation
+**Status:** Phases 1–3 Complete, Phase 4 Tests Written (CI blocked)
+**Next Review:** When GitHub Actions improves emulator support
 
 ---
 
 ## Changelog
 
+- **2026-03-22:** Phase 4 mobile testing — 28 Appium tests written (8 files), AutomationIds added to XAML views. CI workflow created but blocked by GitHub Actions emulator instability. Documented all CI attempts. Reddit discussion posted. Tests work locally.
 - **2026-03-15:** Major update — Phases 2 and 3 complete. 197 E2E tests across 32 files covering public pages, authenticated user flows, admin pages, and user interactions. Auth infrastructure (Entra login, MSAL session capture, admin user). CI workflow triggers on controller changes. E2E-only changes excluded from build/deploy workflows. Documented all test files, coverage, bugs found, and test scenario mapping.
 - **2026-02-05:** Updated status to "In Progress (Phase 1 Complete)". Playwright framework installed, GitHub Actions workflow running on PRs, page objects and initial tests implemented.
 - **2026-01-31:** Converted open questions to decisions; confirmed all scope items

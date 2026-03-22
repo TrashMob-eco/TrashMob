@@ -10,27 +10,7 @@
       "Bash(ls:*)",
       "Bash(echo:*)",
       "Bash(find:*)",
-      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d[''''body''''][:2000]\\)\")",
-      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d[''''body''''][:3000]\\)\")",
-      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d[''''body''''][500:2000]\\)\")",
-      "Bash(grep -rn \"UseSqlServer\\\\|EnableRetryOnFailure\" d:/repos/TrashMob2/ --include=*.cs)",
-      "Bash(xargs grep:*)",
-      "Bash(grep -r \"1\\\\.0\\\\|v1\\\\|ApiVersion\" /d/repos/TrashMob2/TrashMob --include=*.cs --include=*.ts --include=*.tsx)",
-      "Bash(wc -l /d/repos/TrashMob2/TrashMob/Controllers/*.cs)",
-      "Bash(grep -r \"ApiVersion.*1.*0\\\\|v1\\\\|''''v1''''\" /d/repos/TrashMob2 --include=*.cs --include=*.json --include=*.yaml)",
-      "Bash(grep -l \"KeyedController\" /d/repos/TrashMob2/TrashMob/Controllers/*.cs)",
-      "Bash(grep -h \"^\\\\[Route\" /d/repos/TrashMob2/TrashMob/Controllers/*.cs)",
-      "Bash(grep -h ^[Route /d/repos/TrashMob2/TrashMob/Controllers/V2/UsersV2Controller.cs)",
-      "Bash(xargs basename:*)",
-      "Bash(grep \"^\\\\s*\\\\[Route\" /d/repos/TrashMob2/TrashMob/Controllers/*.cs)",
-      "Bash(sort ls:*)",
-      "Bash(xargs -I{} basename {} .cs)",
-      "Read(//d/repos/TrashMob2/**)",
-      "Bash(xargs -I{} basename {})",
-      "Bash(for f:*)",
-      "Bash(do echo:*)",
-      "Bash(grep -rn \"RejectAdoptionRequest\\\\|WaiverRequiredResponse\\\\|LinkEventRequest\\\\|SendGridEvent\\\\|WaiverCheckResult\\\\|PaperWaiverUploadApiRequest\" d:/repos/TrashMob2/TrashMob/ --include=*.cs)",
-      "Bash(__NEW_LINE_63a359403f4324f2__ python3:*)"
+      "Bash(python upload_cover.py)"
     ]
   }
 }
