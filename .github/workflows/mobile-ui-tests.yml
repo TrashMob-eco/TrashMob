@@ -2,11 +2,6 @@ name: Mobile UI Tests (Appium)
 
 on:
   workflow_dispatch:
-    inputs:
-      test_filter:
-        description: 'Test filter (e.g. "Category=Authenticated", "FullyQualifiedName~AppLaunch", or leave blank for all)'
-        required: false
-        default: ''
 
 jobs:
   appium-tests:
@@ -37,9 +32,6 @@ jobs:
       - name: Install MAUI workload
         run: dotnet workload install maui-android
 
-      - name: Build Android APK
-        run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -c Release -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android -p:AndroidKeyStore=false
-
       - name: Install Appium
         run: |
           npm install -g appium
@@ -51,23 +43,22 @@ jobs:
           api-level: 31
           target: google_apis
           arch: x86_64
-          emulator-boot-timeout: 600
+          emulator-boot-timeout: 900
           disable-animations: true
           force-avd-creation: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           script: |
-            echo "Emulator started"
-            adb devices
-            echo "Installing app on emulator..."
+            echo "=== Building and installing app ==="
+            dotnet publish TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -c Release -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android -p:AndroidKeyStore=false
             APK=$(find TrashMobMobile/bin -name "*-Signed.apk" | head -1)
             echo "Found APK: $APK"
             adb install -r -g "$APK"
-            echo "Starting Appium..."
+            echo "=== Starting Appium ==="
             appium --relaxed-security &
             sleep 10
-            echo "Waiting for Appium to be ready..."
-            for i in $(seq 1 12); do curl -s http://127.0.0.1:4723/status && break || sleep 5; done
-            echo "Running tests..."
+            curl -s http://127.0.0.1:4723/status || echo "Appium not responding yet"
+            sleep 5
+            echo "=== Running tests ==="
             dotnet test TrashMobMobile.UITests/ --logger "trx;LogFileName=results.trx" || true
 
       - name: Upload test results
@@ -75,15 +66,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: appium-test-results
-          path: |
-            TrashMobMobile.UITests/TestResults/
-          retention-days: 14
+          path: TrashMobMobile.UITests/TestResults/
+          retention-days: 7
 
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: appium-screenshots
-          path: |
-            TrashMobMobile.UITests/**/Screenshots/
-          retention-days: 14
+          path: TrashMobMobile.UITests/**/Screenshots/
+          retention-days: 7
