@@ -117,7 +117,6 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
     // Use a single query for all invitations - we'll fetch them individually
     const invitationResults = new Map<string, DependentInvitationData[]>();
     for (const q of invitationQueries) {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
         const { data } = useQuery({
             queryKey: q.key,
             queryFn: q.service,

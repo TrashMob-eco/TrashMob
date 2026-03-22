@@ -45,19 +45,10 @@ export const CompanyDashboard = () => {
         return assignments.map((adoption) => {
             const logsForAdoption = cleanupLogs.filter((l) => l.sponsoredAdoptionId === adoption.id);
             const lastLog = logsForAdoption.length > 0 ? logsForAdoption[0] : null; // logs are ordered desc
-            let nextDue: Date | null = null;
-            let isOverdue = false;
-
-            if (lastLog) {
-                nextDue = new Date(lastLog.cleanupDate);
-                nextDue.setDate(nextDue.getDate() + adoption.cleanupFrequencyDays);
-                isOverdue = nextDue < now;
-            } else {
-                // No cleanups yet — consider overdue from start date
-                nextDue = new Date(adoption.startDate);
-                nextDue.setDate(nextDue.getDate() + adoption.cleanupFrequencyDays);
-                isOverdue = nextDue < now;
-            }
+            const baseDate = lastLog ? new Date(lastLog.cleanupDate) : new Date(adoption.startDate);
+            const nextDue = new Date(baseDate);
+            nextDue.setDate(nextDue.getDate() + adoption.cleanupFrequencyDays);
+            const isOverdue = nextDue < now;
 
             return { adoption, lastLog, nextDue, isOverdue };
         });

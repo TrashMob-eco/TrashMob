@@ -73,7 +73,7 @@ export const PartnerLocationServiceCreate = (props: PartnerServiceCreateProps) =
     const onSubmit: SubmitHandler<FormInputs> = (formValues) => {
         const body = new PartnerLocationServiceData();
         body.partnerLocationId = locationId;
-        body.serviceTypeId = Number(formValues.serviceTypeId) ?? 0;
+        body.serviceTypeId = Number(formValues.serviceTypeId) || 0;
         body.notes = formValues.notes;
         body.isAutoApproved = formValues.isAutoApproved;
         body.isAdvanceNoticeRequired = formValues.isAdvanceNoticeRequired;

@@ -149,7 +149,7 @@ const Waivers: React.FC<WaiversProps> = () => {
                                     checked={field.value}
                                     onCheckedChange={field.onChange}
                                 />
-                                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control -- htmlFor points to Radix Checkbox which renders a button, not a native input */}
+                                {}
                                 <label
                                     htmlFor='i-have-read-and-accept'
                                     className='text-sm font-medium mb-0! leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
