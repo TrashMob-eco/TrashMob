@@ -35,6 +35,8 @@ public class AppiumFixture : IAsyncLifetime
         options.AddAdditionalAppiumOption("adbExecTimeout", 180000);
         options.AddAdditionalAppiumOption("androidInstallTimeout", 180000);
         options.AddAdditionalAppiumOption("newCommandTimeout", 300);
+        // Skip Appium Settings app — not needed for UI tests, and it times out on slow CI emulators
+        options.AddAdditionalAppiumOption("skipDeviceInitialization", true);
 
         if (!string.IsNullOrEmpty(apkPath))
         {
