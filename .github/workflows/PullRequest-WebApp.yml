@@ -47,6 +47,14 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
+    - name: Cache NuGet packages
+      uses: actions/cache@v5
+      with:
+        path: ~/.nuget/packages
+        key: nuget-webapp-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          nuget-webapp-${{ runner.os }}-
+
     - name: Build
       run: dotnet build .\TrashMob.sln --configuration ${{ env.CONFIGURATION }}
 
@@ -62,7 +70,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v6
       with:
-        fetch-depth: 0
+        fetch-depth: 1
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3

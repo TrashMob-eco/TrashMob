@@ -109,9 +109,16 @@ jobs:
           with:
             dotnet-version: ${{ inputs.dotnet_version }}
 
+        - name: Cache NuGet packages
+          uses: actions/cache@v5
+          with:
+            path: ~/.nuget/packages
+            key: nuget-android-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+            restore-keys: |
+              nuget-android-${{ runner.os }}-
+
         - name: Install MAUI Workload
           run: |
-            dotnet nuget locals all --clear
             dotnet workload install maui --ignore-failed-sources
             dotnet workload install android maui wasm-tools --source https://api.nuget.org/v3/index.json
 
