@@ -93,45 +93,30 @@ jobs:
               environment=dev
 
       - name: Assign RBAC roles to MCP Server
-        run: |
-          # Get managed identity principal ID
-          PRINCIPAL_ID=$(az containerapp show \
-            --name ${{ env.CONTAINER_APP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --query identity.principalId \
-            -o tsv)
-
-          # Get Key Vault resource ID
-          KEY_VAULT_ID=$(az keyvault show \
-            --name ${{ env.KEY_VAULT_NAME }} \
-            --query id \
-            -o tsv)
-
-          # Grant Key Vault Secrets User role
-          az role assignment create \
-            --assignee $PRINCIPAL_ID \
-            --role "Key Vault Secrets User" \
-            --scope $KEY_VAULT_ID \
-            2>/dev/null || echo "Role assignment already exists or failed"
-
-          # Get Storage Account resource ID
-          STORAGE_ACCOUNT_ID=$(az storage account show \
-            --name ${{ env.STORAGE_ACCOUNT_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --query id \
-            -o tsv)
-
-          # Grant Storage Blob Data Contributor role
-          az role assignment create \
-            --assignee $PRINCIPAL_ID \
-            --role "Storage Blob Data Contributor" \
-            --scope $STORAGE_ACCOUNT_ID \
-            2>/dev/null || echo "Role assignment already exists or failed"
+        uses: ./.github/actions/grant-rbac
+        with:
+          resource-type: app
+          resource-name: ${{ env.CONTAINER_APP_NAME }}
+          resource-group: ${{ env.RESOURCE_GROUP }}
+          key-vault-name: ${{ env.KEY_VAULT_NAME }}
+          storage-account-name: ${{ env.STORAGE_ACCOUNT_NAME }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Verify MCP Server Health
         run: |
           echo "Waiting for MCP Server to be ready..."
-          sleep 30
+          for i in $(seq 1 6); do
+            STATUS=$(az containerapp show \
+              --name ${{ env.CONTAINER_APP_NAME }} \
+              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --query properties.runningStatus \
+              -o tsv 2>/dev/null || echo "Unknown")
+            echo "Attempt $i/6: Status=$STATUS"
+            if [ "$STATUS" = "Running" ]; then
+              break
+            fi
+            sleep 10
+          done
 
           FQDN=$(az containerapp show \
             --name ${{ env.CONTAINER_APP_NAME }} \
