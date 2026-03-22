@@ -1,4 +1,9 @@
-name: Mobile UI Tests (Appium)
+name: Mobile UI Tests (Appium) [Experimental]
+
+# EXPERIMENTAL: Android emulators on GitHub Actions runners are unstable for MAUI + Appium.
+# Known issues: GPU memory errors on macOS ARM, boot timeouts on Ubuntu, broken pipe on install.
+# These tests work locally — run with: appium & dotnet test TrashMobMobile.UITests/
+# Revisit CI when GitHub Actions improves ARM emulator support.
 
 on:
   workflow_dispatch:
