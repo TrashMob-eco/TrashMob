@@ -37,8 +37,8 @@ jobs:
       - name: Install MAUI workload
         run: dotnet workload install maui-android
 
-      - name: Restore and pre-build
-        run: dotnet restore TrashMobMobile/TrashMobMobile.csproj -p:TargetFrameworks=net10.0-android
+      - name: Build Android APK
+        run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -c Release -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android -p:AndroidKeyStore=false
 
       - name: Install Appium
         run: |
@@ -59,7 +59,9 @@ jobs:
             echo "Emulator started"
             adb devices
             echo "Installing app on emulator..."
-            dotnet build TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -t:Install -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android -p:EmbedAssembliesIntoApk=true --no-restore
+            APK=$(find TrashMobMobile/bin -name "*-Signed.apk" | head -1)
+            echo "Found APK: $APK"
+            adb install -r -g "$APK"
             echo "Starting Appium..."
             appium --relaxed-security &
             sleep 10
