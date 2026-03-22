@@ -1,18 +1,18 @@
-name: Mobile UI Tests (Appium)
+name: Mobile UI Tests (Appium) [Experimental]
+
+# EXPERIMENTAL: Android emulators on GitHub Actions runners are unstable for MAUI + Appium.
+# Known issues: GPU memory errors on macOS ARM, boot timeouts on Ubuntu, broken pipe on install.
+# These tests work locally — run with: appium & dotnet test TrashMobMobile.UITests/
+# Revisit CI when GitHub Actions improves ARM emulator support.
 
 on:
   workflow_dispatch:
-    inputs:
-      test_filter:
-        description: 'Test filter (e.g. "Category=Authenticated", "FullyQualifiedName~AppLaunch", or leave blank for all)'
-        required: false
-        default: ''
 
 jobs:
   appium-tests:
     name: Android Appium Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
+    runs-on: macos-14
+    timeout-minutes: 60
 
     steps:
       - name: Checkout code
@@ -34,54 +34,52 @@ jobs:
         with:
           accept-android-sdk-licenses: true
 
-      - name: Start Android emulator
+      - name: Install MAUI workload
+        run: dotnet workload install maui-android
+
+      - name: Install Appium
+        run: |
+          npm install -g appium
+          appium driver install uiautomator2
+
+      - name: Run Appium tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 31
           target: google_apis
-          arch: x86_64
-          emulator-boot-timeout: 600
+          arch: arm64-v8a
+          emulator-boot-timeout: 900
           disable-animations: true
           force-avd-creation: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          emulator-options: -no-window -gpu auto -noaudio -no-boot-anim
           script: |
-            echo "Emulator started"
-            adb devices
-
-            # Build and install the app
-            dotnet build TrashMobMobile/TrashMobMobile.csproj \
-              -f net10.0-android \
-              -t:Install \
-              -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT
-
-            # Install and start Appium
-            npm install -g appium
-            appium driver install uiautomator2
-            appium &
+            echo "=== Building and installing app ==="
+            dotnet publish TrashMobMobile/TrashMobMobile.csproj -f net10.0-android -c Release -p:AndroidSdkDirectory=$ANDROID_SDK_ROOT -p:TargetFrameworks=net10.0-android -p:AndroidKeyStore=false
+            echo "Installing app..."
+            adb install -r -g TrashMobMobile/bin/Release/net10.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.apk || sleep 10 && adb install -r -g TrashMobMobile/bin/Release/net10.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.apk
+            echo "=== Pre-installing Appium helpers ==="
+            APPIUM_HOME=$(appium --show-config 2>/dev/null | grep -o '"APPIUM_HOME":"[^"]*"' | cut -d'"' -f4 || echo "$HOME/.appium")
+            find "$APPIUM_HOME" -name "*.apk" -exec adb install -r -g {} \; || true
+            echo "=== Starting Appium ==="
+            appium --relaxed-security &
+            sleep 15
+            curl -s http://127.0.0.1:4723/status || echo "Appium not responding yet"
             sleep 5
-
-            # Run the tests
-            TEST_FILTER="${{ github.event.inputs.test_filter }}"
-            if [ -n "$TEST_FILTER" ]; then
-              dotnet test TrashMobMobile.UITests/ --filter "$TEST_FILTER" --logger "trx;LogFileName=results.trx" || true
-            else
-              dotnet test TrashMobMobile.UITests/ --logger "trx;LogFileName=results.trx" || true
-            fi
+            echo "=== Running tests ==="
+            dotnet test TrashMobMobile.UITests/ --logger "trx;LogFileName=results.trx" || true
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: appium-test-results
-          path: |
-            TrashMobMobile.UITests/TestResults/
-          retention-days: 14
+          path: TrashMobMobile.UITests/TestResults/
+          retention-days: 7
 
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: appium-screenshots
-          path: |
-            TrashMobMobile.UITests/**/Screenshots/
-          retention-days: 14
+          path: TrashMobMobile.UITests/**/Screenshots/
+          retention-days: 7
