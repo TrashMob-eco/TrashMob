@@ -23,22 +23,32 @@ namespace TrashMob.Shared.Managers.Prospects
         private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
         private const string SystemPrompt = """
-            You are an email copywriter for TrashMob.eco, a nonprofit that helps communities organize
-            volunteer litter cleanup events. You write professional, warm outreach emails to potential
-            community partners (cities, HOAs, nonprofits, civic organizations).
+            You are an email copywriter for TrashMob.eco, a 501(c)(3) nonprofit that helps communities
+            organize volunteer litter cleanup events. You write outreach emails to potential community
+            partners (cities, HOAs, nonprofits, civic organizations).
 
-            IMPORTANT GUIDELINES:
-            - Do NOT claim TrashMob is free or zero-cost. Communities have subscription plans.
-            - Emphasize the VALUE TrashMob provides: volunteer coordination, event management,
-              impact tracking, waiver handling, partner logistics, and community engagement.
-            - Invite prospects to learn more, not to sign up for a free service.
-            - Keep emails concise and professional. No hard-sell tactics.
-            - Reference the prospect's city/region and type when possible.
-            - Use a friendly but professional tone.
+            ABOUT TRASHMOB:
+            - TrashMob.eco is a registered 501(c)(3) nonprofit, not a commercial vendor.
+            - The platform is built by volunteers who care about clean communities.
+            - Communities use TrashMob to coordinate volunteers, manage events, track environmental
+              impact, handle liability waivers, and engage residents — replacing manual spreadsheets
+              and email chains.
+
+            WRITING GUIDELINES:
+            - Lead with the prospect's problem or goal, not TrashMob's features.
+            - Keep emails SHORT: initial outreach under 150 words, follow-ups under 100 words.
+            - Write 3-4 short paragraphs max. No bullet-point feature dumps.
+            - Pick 1-2 benefits most relevant to the prospect type, not a laundry list.
+            - Use concrete numbers when provided (nearby events, volunteers, etc.).
+            - Do NOT claim the platform is free. Communities have partnership plans at various tiers.
+            - End with a specific call to action: reply to schedule a 15-minute call.
+            - Sign off as "Joe Beernink, Founder, TrashMob.eco" — this is a personal outreach.
+            - Tone: genuine, conversational, mission-driven. Write like a neighbor, not a salesperson.
+            - No corporate buzzwords. No "synergy," "leverage," "streamline," or "comprehensive solution."
 
             You must return ONLY a JSON object with these fields:
-            - "subject": string (email subject line, max 80 characters)
-            - "htmlBody": string (HTML email body content, use <p>, <ul>, <li>, <strong> tags)
+            - "subject": string (email subject line, max 60 characters, no generic phrases like "Partnership Opportunity")
+            - "htmlBody": string (HTML email body, use <p> tags for paragraphs, minimal formatting)
 
             Return ONLY the JSON object, no markdown fences, no other text.
             """;
@@ -139,49 +149,51 @@ namespace TrashMob.Shared.Managers.Prospects
             {
                 1 => $"""
                     Write an initial outreach email to {prospect.Name}, a {prospectType} in {location}.
-                    Contact person: {contactName}.
-                    {(nearbyEventCount > 0 ? $"There are {nearbyEventCount} TrashMob cleanup events happening near {location}." : "")}
+                    Address it to {contactName}.
+                    {(nearbyEventCount > 0 ? $"Mention that {nearbyEventCount} volunteer cleanup events have already happened near {location} through TrashMob." : "")}
 
-                    Introduce TrashMob.eco and explain how partnering can help their community with
-                    volunteer-organized litter cleanups. Emphasize the value of volunteer coordination,
-                    impact tracking, liability waiver management, and logistics support.
-                    Invite them to learn more about community partnership plans.
+                    Open with something specific to {location} or the challenges a {prospectType} faces
+                    with litter or volunteer coordination. Then briefly introduce TrashMob as a nonprofit
+                    that helps solve that problem. Pick the 1-2 benefits most relevant to a {prospectType}.
+                    End by asking if they'd like a 15-minute call to learn more.
+                    Under 150 words.
                     """,
 
                 2 => $"""
-                    Write a brief follow-up email to {prospect.Name}, a {prospectType} in {location}.
-                    We sent an initial outreach email a few days ago.
-                    Contact person: {contactName}.
+                    Write a short follow-up email to {prospect.Name} ({prospectType}) in {location}.
+                    Address it to {contactName}. We emailed a few days ago.
 
-                    Keep it short — just checking in and highlighting one key benefit relevant to a
-                    {prospectType}: volunteer coordination, event management, or community engagement.
+                    Don't repeat the first email. Pick ONE concrete outcome that would matter to a
+                    {prospectType} (e.g., reducing admin time, engaging more residents, tracking impact
+                    for grants/reports) and frame it as a question. Under 100 words.
                     """,
 
                 3 => $"""
-                    Write a value-add email to {prospect.Name}, a {prospectType} in {location}.
-                    We've reached out before but haven't heard back.
-                    Contact person: {contactName}.
-                    {(nearbyEventCount > 0 ? $"There are {nearbyEventCount} TrashMob events in their area." : "")}
+                    Write a value-add email to {prospect.Name} ({prospectType}) in {location}.
+                    Address it to {contactName}. We've reached out twice without a response.
+                    {(nearbyEventCount > 0 ? $"{nearbyEventCount} volunteer cleanups have happened near {location} through TrashMob." : "")}
 
-                    Share how TrashMob.eco complements their existing community programs. Mention
-                    impact tracking, volunteer management, event coordination, and how other communities
-                    have benefited. Position TrashMob as a partner that adds value to what they already do.
+                    Share one specific example of how communities use TrashMob (e.g., a city that
+                    replaced spreadsheet sign-ups, or an HOA that tracked volunteer hours for grant
+                    reporting). Frame it as "here's what others in your position are doing."
+                    Under 100 words.
                     """,
 
                 4 => $"""
-                    Write a final gentle follow-up email to {prospect.Name}, a {prospectType} in {location}.
-                    We've sent several emails without a response.
-                    Contact person: {contactName}.
+                    Write a final follow-up email to {prospect.Name} ({prospectType}) in {location}.
+                    Address it to {contactName}. This is our last outreach.
 
-                    Keep it very brief and respectful. Offer to connect directly if they're interested,
-                    and let them know we're here whenever the timing is right. No pressure.
+                    Two to three sentences max. Acknowledge they're busy, say we'd love to help when
+                    the timing is right, and leave the door open. No guilt, no pressure.
+                    Under 60 words.
                     """,
 
                 _ => $"""
                     Write an outreach email to {prospect.Name}, a {prospectType} in {location}.
-                    Contact person: {contactName}.
+                    Address it to {contactName}.
 
-                    Introduce TrashMob.eco and explain the value of community partnership.
+                    Briefly introduce TrashMob.eco as a nonprofit and explain how it helps communities
+                    like theirs. Under 150 words.
                     """
             };
         }
