@@ -31,7 +31,7 @@ jobs:
                 uses: actions/cache@v5
                 with:
                     path: ./TrashMob/client-app/node_modules
-                    key: deps-node-modules-${{ hashFiles('**\package-lock.json') }}
+                    key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
             -   name: Install dependencies
                 if: steps.cache-npm.outputs.cache-hit != 'true'
                 run: npm ci                   
@@ -60,7 +60,7 @@ jobs:
                 uses: actions/cache@v5
                 with:
                     path: ./TrashMob/client-app/node_modules
-                    key: deps-node-modules-${{ hashFiles('**\package-lock.json') }}
+                    key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
             -   name: Install dependencies
                 if: steps.cache-npm.outputs.cache-hit != 'true'
                 run: npm ci                   

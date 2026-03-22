@@ -93,12 +93,19 @@ jobs:
             ls /Applications | grep Xcode || true
             xcodebuild -version || true
 
+        - name: Cache NuGet packages
+          uses: actions/cache@v5
+          with:
+            path: ~/.nuget/packages
+            key: nuget-ios-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+            restore-keys: |
+              nuget-ios-${{ runner.os }}-
+
         - name: Install MAUI Workload
           env:
             DOTNET_MULTILEVEL_LOOKUP: 0
             DOTNET_ROLL_FORWARD: Disable
           run: |
-            dotnet nuget locals all --clear
             dotnet workload install maui --ignore-failed-sources --source https://api.nuget.org/v3/index.json
             dotnet workload install maui-ios --ignore-failed-sources --source https://api.nuget.org/v3/index.json
 

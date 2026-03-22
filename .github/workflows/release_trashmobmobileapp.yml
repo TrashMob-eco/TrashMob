@@ -13,14 +13,6 @@ on:
     - 'TrashMobMobile/**'
   workflow_dispatch:
 
-env:
-  DOTNET_VERSION: '10.0.x'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '10.0.x'  # set this to the dotnet version to use
-  CONFIGURATION: Release      # Values: Debug, Release
-  ENVIRONMENT: production         # Values: test, production
-  ANDROID_BUNDLE_ID: 'eco.trashmob.trashmobmobileapp'   # Values: 'eco.trashmobdev.trashmobmobileapp', 'eco.trashmob'
-  IOS_BUNDLE_ID: 'eco.trashmob'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
-  IOS_PROFILE_TYPE: 'IOS_APP_STORE'           # Values: 'IOS_APP_DEVELOPMENT', 'IOS_APP_STORE'
 
 jobs:
   generate-build-number:
@@ -60,45 +52,17 @@ jobs:
           echo "releaseNumber=${{ env.GITHUB_RUN_NUMBER_WITH_OFFSET }}" >> $GITHUB_ENV
           echo "releaseNumber=${{ env.GITHUB_RUN_NUMBER_WITH_OFFSET }}" >> $GITHUB_OUTPUT
         
-  exposeEnvironmentVariables:
-    runs-on: ubuntu-latest
-    name: Expose environment variables
-    outputs:
-      environment: ${{ steps.expose_environment_variables.outputs.environment }}
-      configuration: ${{ steps.expose_environment_variables.outputs.configuration }}
-      android_bundle_id: ${{ steps.expose_environment_variables.outputs.android_bundle_id }}
-      ios_bundle_id: ${{ steps.expose_environment_variables.outputs.ios_bundle_id }}
-      dotnet_version: ${{ steps.expose_environment_variables.outputs.dotnet_version }}
-      ios_provisioning_profile_type: ${{ steps.expose_environment_variables.outputs.ios_provisioning_profile_type }}
-    steps:
-      - name: Set environment variable outputs
-        id: expose_environment_variables
-        run: |
-          echo "environment=${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
-          echo "environment=${{ env.ENVIRONMENT }}" >> $GITHUB_OUTPUT
-          echo "configuration=${{ env.CONFIGURATION }}" >> $GITHUB_ENV
-          echo "configuration=${{ env.CONFIGURATION }}" >> $GITHUB_OUTPUT
-          echo "android_bundle_id=${{ env.ANDROID_BUNDLE_ID }}" >> $GITHUB_ENV
-          echo "android_bundle_id=${{ env.ANDROID_BUNDLE_ID }}" >> $GITHUB_OUTPUT
-          echo "ios_bundle_id=${{ env.IOS_BUNDLE_ID }}" >> $GITHUB_ENV
-          echo "ios_bundle_id=${{ env.IOS_BUNDLE_ID }}" >> $GITHUB_OUTPUT
-          echo "dotnet_version=${{ env.DOTNET_VERSION }}" >> $GITHUB_ENV
-          echo "dotnet_version=${{ env.DOTNET_VERSION }}" >> $GITHUB_OUTPUT
-          echo "ios_provisioning_profile_type=${{ env.IOS_PROFILE_TYPE }}" >> $GITHUB_ENV
-          echo "ios_provisioning_profile_type=${{ env.IOS_PROFILE_TYPE }}" >> $GITHUB_OUTPUT
-
-
   callBuildAndroid:
     name: Call Android build workflow
-    needs: [generate-build-number, exposeEnvironmentVariables]
+    needs: [generate-build-number]
     uses: ./.github/workflows/build-android.yml
     with:
-      environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
-      configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
+      environment: production
+      configuration: Release
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
       release_number: ${{ needs.generate-build-number.outputs.releaseNumber }}
-      dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
-      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.android_bundle_id }}
+      dotnet_version: '10.0.x'
+      bundle_id: 'eco.trashmob.trashmobmobileapp'
       version: ${{ github.event.inputs.version }}
       android_key_name: "key"
       define_constants: "USEPROD"
@@ -106,15 +70,15 @@ jobs:
 
   calliOSBuild:
     name: Call iOS build workflow
-    needs: [generate-build-number, exposeEnvironmentVariables]
+    needs: [generate-build-number]
     uses: ./.github/workflows/build-ios.yml
     with:
-      environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
-      configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
+      environment: production
+      configuration: Release
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
-      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.ios_bundle_id }}
-      dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
-      ios_provisioning_profile_type: ${{ needs.exposeEnvironmentVariables.outputs.ios_provisioning_profile_type }}
+      bundle_id: 'eco.trashmob'
+      dotnet_version: '10.0.x'
+      ios_provisioning_profile_type: 'IOS_APP_STORE'
       version: ${{ github.event.inputs.version }}
       define_constants: "USEPROD"
     secrets:
@@ -137,11 +101,11 @@ jobs:
 
   calliOSDeploy:
     name: Call iOS deploy workflow
-    needs: [calliOSBuild, exposeEnvironmentVariables]
+    needs: [calliOSBuild]
     uses: ./.github/workflows/publish-ios.yml
     with:
       artifact_name: ${{ needs.calliOSBuild.outputs.artifact_name }}
-      environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
+      environment: production
     secrets:
       APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
       APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
