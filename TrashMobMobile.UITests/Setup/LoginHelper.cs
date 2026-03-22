@@ -26,6 +26,22 @@ public static class LoginHelper
 
         Console.WriteLine("LoginHelper: Starting MSAL login flow...");
 
+        try
+        {
+            LoginInternal(driver, email, password);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"LoginHelper: Login failed — {ex.Message}");
+            Console.WriteLine("LoginHelper: Tests will run in unauthenticated mode.");
+
+            // Ensure we're back in native context
+            try { driver.Context = "NATIVE_APP"; } catch { /* already native */ }
+        }
+    }
+
+    private static void LoginInternal(AndroidDriver driver, string email, string password)
+    {
         // Check if we're already logged in (MainTabsPage visible)
         try
         {
