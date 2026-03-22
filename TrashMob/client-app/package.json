@@ -122,11 +122,6 @@
         "vitest": "^3.2.4"
     },
     "overrides": {
-        "eslint-plugin-jsx-a11y": {
-            "eslint": "$eslint"
-        },
-        "eslint-plugin-react": {
-            "eslint": "$eslint"
-        }
+        "eslint": "$eslint"
     }
 }
