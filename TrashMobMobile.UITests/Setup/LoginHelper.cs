@@ -14,7 +14,7 @@ using OpenQA.Selenium.Support.UI;
 public static class LoginHelper
 {
     private static readonly string DiagFile = Path.Combine(
-        AppContext.BaseDirectory, "TestResults", "login-diagnostics.txt");
+        AppContext.BaseDirectory, "..", "..", "..", "TestResults", "login-diagnostics.txt");
 
     public static bool HasCredentials =>
         !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPIUM_TEST_EMAIL")) &&
