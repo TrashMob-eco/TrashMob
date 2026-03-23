@@ -54,8 +54,39 @@ public static class LoginHelper
         // Wait for splash screen to pass and WelcomePage to appear
         var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));
         wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-        var signInButton = (AppiumElement)wait.Until(d =>
-            d.FindElement(MobileBy.AccessibilityId("SignInButton")));
+
+        Log("Waiting for WelcomePage to load...");
+        wait.Until(d => d.FindElement(MobileBy.AccessibilityId("WelcomeLogo")));
+        Log("WelcomePage loaded.");
+
+        // Sign In button may be below the fold — scroll down to find it
+        AppiumElement? signInButton = null;
+        for (var attempt = 0; attempt < 3; attempt++)
+        {
+            try
+            {
+                signInButton = (AppiumElement)driver.FindElement(MobileBy.AccessibilityId("SignInButton"));
+                if (signInButton.Displayed)
+                    break;
+            }
+            catch (NoSuchElementException) { /* not visible yet */ }
+
+            // Scroll down
+            Log($"SignInButton not visible, scrolling down (attempt {attempt + 1})...");
+            driver.ExecuteScript("mobile: scrollGesture", new Dictionary<string, object>
+            {
+                { "left", 100 }, { "top", 500 }, { "width", 400 }, { "height", 800 },
+                { "direction", "down" }, { "percent", 0.75 }
+            });
+            Thread.Sleep(500);
+        }
+
+        if (signInButton == null || !signInButton.Displayed)
+        {
+            Log("SignInButton not found after scrolling.");
+            return;
+        }
+
         signInButton.Click();
         Log("Tapped Sign In button.");
 
