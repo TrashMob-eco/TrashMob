@@ -51,8 +51,8 @@ public static class LoginHelper
             return;
         }
 
-        // Tap Sign In on WelcomePage
-        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
+        // Wait for splash screen to pass and WelcomePage to appear
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));
         wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
         var signInButton = (AppiumElement)wait.Until(d =>
             d.FindElement(MobileBy.AccessibilityId("SignInButton")));
