@@ -31,7 +31,7 @@ public class AppiumFixture : IAsyncLifetime
         options.AddAdditionalAppiumOption("noReset", true);
         options.AddAdditionalAppiumOption("uiautomator2ServerInstallTimeout", 120000);
         options.AddAdditionalAppiumOption("uiautomator2ServerLaunchTimeout", 120000);
-        options.AddAdditionalAppiumOption("appWaitForLaunch", true);
+        options.AddAdditionalAppiumOption("appWaitForLaunch", false);
         options.AddAdditionalAppiumOption("adbExecTimeout", 180000);
         options.AddAdditionalAppiumOption("androidInstallTimeout", 180000);
         options.AddAdditionalAppiumOption("newCommandTimeout", 300);
