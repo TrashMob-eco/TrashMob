@@ -85,7 +85,7 @@ jobs:
 
       - name: Create issue for expiring certificates
         if: steps.check.outputs.has_expired == 'true' || steps.check.outputs.has_expiring == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const expired = `${{ steps.check.outputs.expired_list }}`;
