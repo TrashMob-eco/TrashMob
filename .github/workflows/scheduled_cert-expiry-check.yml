@@ -46,7 +46,7 @@ jobs:
           EXPIRED=""
 
           # Read each entry from the JSON config
-          for ROW in $(jq -c '.certificates[]' "$CONFIG_FILE"); do
+          while IFS= read -r ROW; do
             NAME=$(echo "$ROW" | jq -r '.name')
             EXPIRY=$(echo "$ROW" | jq -r '.expiryDate')
             RENEW_URL=$(echo "$ROW" | jq -r '.renewUrl // "N/A"')
@@ -62,7 +62,7 @@ jobs:
             else
               echo "  OK"
             fi
-          done
+          done < <(jq -c '.certificates[]' "$CONFIG_FILE")
 
           if [ -n "$EXPIRED" ]; then
             echo "has_expired=true" >> $GITHUB_OUTPUT
