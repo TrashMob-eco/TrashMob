@@ -48,8 +48,10 @@ public static class LoginHelper
         Log("Waiting for app to be ready...");
         var deadline = DateTime.UtcNow.AddMinutes(2);
         var appState = "unknown";
+        var attempt = 0;
         while (DateTime.UtcNow < deadline)
         {
+            attempt++;
             if (IsElementPresent(driver, MobileBy.AccessibilityId("HomeTab")))
             {
                 appState = "authenticated";
@@ -61,10 +63,26 @@ public static class LoginHelper
                 appState = "welcome";
                 break;
             }
-            Thread.Sleep(3000);
+
+            // Dump page source on first and every 10th attempt for diagnostics
+            if (attempt == 1 || attempt % 10 == 0)
+            {
+                try
+                {
+                    var source = driver.PageSource;
+                    // Log first 500 chars of page source
+                    Log($"Attempt {attempt} page source (first 500 chars): {source[..Math.Min(500, source.Length)]}");
+                }
+                catch (Exception ex)
+                {
+                    Log($"Attempt {attempt} page source error: {ex.Message}");
+                }
+            }
+
+            Thread.Sleep(2000);
         }
 
-        Log($"App state: {appState}");
+        Log($"App state after {attempt} attempts: {appState}");
 
         if (appState == "authenticated")
         {
