@@ -44,40 +44,61 @@ public static class LoginHelper
     {
         Log("Starting MSAL login flow...");
 
-        // Check if already logged in
-        if (IsElementPresent(driver, MobileBy.AccessibilityId("HomeTab")))
+        // Poll for app state — WelcomePage or already authenticated
+        Log("Waiting for app to be ready...");
+        var deadline = DateTime.UtcNow.AddMinutes(2);
+        var appState = "unknown";
+        while (DateTime.UtcNow < deadline)
+        {
+            if (IsElementPresent(driver, MobileBy.AccessibilityId("HomeTab")))
+            {
+                appState = "authenticated";
+                break;
+            }
+            if (IsElementPresent(driver, MobileBy.AccessibilityId("WelcomeLogo"))
+                || IsElementPresent(driver, MobileBy.AccessibilityId("SignInButton")))
+            {
+                appState = "welcome";
+                break;
+            }
+            Thread.Sleep(3000);
+        }
+
+        Log($"App state: {appState}");
+
+        if (appState == "authenticated")
         {
             Log("Already logged in, skipping.");
             return;
         }
 
-        // Wait for splash screen to pass and WelcomePage to appear
-        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));
-        wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+        if (appState == "unknown")
+        {
+            Log("App did not reach a known state within 2 minutes.");
+            return;
+        }
 
-        Log("Waiting for WelcomePage to load...");
-        wait.Until(d => d.FindElement(MobileBy.AccessibilityId("WelcomeLogo")));
-        Log("WelcomePage loaded.");
-
-        // Sign In button may be below the fold — scroll down to find it
+        // Find Sign In button — may need to scroll
         AppiumElement? signInButton = null;
         for (var attempt = 0; attempt < 3; attempt++)
         {
-            try
+            if (IsElementPresent(driver, MobileBy.AccessibilityId("SignInButton")))
             {
                 signInButton = (AppiumElement)driver.FindElement(MobileBy.AccessibilityId("SignInButton"));
                 if (signInButton.Displayed)
                     break;
             }
-            catch (NoSuchElementException) { /* not visible yet */ }
 
-            // Scroll down
             Log($"SignInButton not visible, scrolling down (attempt {attempt + 1})...");
-            driver.ExecuteScript("mobile: scrollGesture", new Dictionary<string, object>
+            try
             {
-                { "left", 100 }, { "top", 500 }, { "width", 400 }, { "height", 800 },
-                { "direction", "down" }, { "percent", 0.75 }
-            });
+                driver.ExecuteScript("mobile: scrollGesture", new Dictionary<string, object>
+                {
+                    { "left", 100 }, { "top", 500 }, { "width", 400 }, { "height", 800 },
+                    { "direction", "down" }, { "percent", 0.75 }
+                });
+            }
+            catch { /* scroll failed — try without */ }
             Thread.Sleep(500);
         }
 
