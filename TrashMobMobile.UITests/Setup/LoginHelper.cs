@@ -98,7 +98,7 @@ public static class LoginHelper
 
         // Find Sign In button — may need to scroll
         AppiumElement? signInButton = null;
-        for (var attempt = 0; attempt < 3; attempt++)
+        for (var scrollAttempt = 0; scrollAttempt < 3; scrollAttempt++)
         {
             if (IsElementPresent(driver, MobileBy.AccessibilityId("SignInButton")))
             {
@@ -107,7 +107,7 @@ public static class LoginHelper
                     break;
             }
 
-            Log($"SignInButton not visible, scrolling down (attempt {attempt + 1})...");
+            Log($"SignInButton not visible, scrolling down (attempt {scrollAttempt + 1})...");
             try
             {
                 driver.ExecuteScript("mobile: scrollGesture", new Dictionary<string, object>
