@@ -68,6 +68,9 @@ public class AppiumFixture : IAsyncLifetime
 
     private static void WaitForAppReady(AndroidDriver driver)
     {
+        // Temporarily disable implicit wait for fast polling
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.Zero;
+
         // Wait up to 2 minutes for the app to show either WelcomePage or MainTabsPage
         var deadline = DateTime.UtcNow.AddMinutes(2);
         while (DateTime.UtcNow < deadline)
@@ -75,18 +78,22 @@ public class AppiumFixture : IAsyncLifetime
             try
             {
                 driver.FindElement(MobileBy.AccessibilityId("WelcomeLogo"));
-                return; // WelcomePage loaded
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
+                return;
             }
-            catch (NoSuchElementException) { }
+            catch { }
 
             try
             {
                 driver.FindElement(MobileBy.AccessibilityId("HomeTab"));
-                return; // Already authenticated
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
+                return;
             }
-            catch (NoSuchElementException) { }
+            catch { }
 
-            Thread.Sleep(3000);
+            Thread.Sleep(2000);
         }
+
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
     }
 }

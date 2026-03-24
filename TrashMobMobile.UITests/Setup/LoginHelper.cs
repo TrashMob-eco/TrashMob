@@ -328,12 +328,18 @@ public static class LoginHelper
     {
         try
         {
+            // Temporarily disable implicit wait for fast polling
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.Zero;
             driver.FindElement(locator);
             return true;
         }
-        catch (NoSuchElementException)
+        catch
         {
             return false;
+        }
+        finally
+        {
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
         }
     }
 
