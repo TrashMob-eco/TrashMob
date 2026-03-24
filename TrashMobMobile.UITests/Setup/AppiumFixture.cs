@@ -1,5 +1,6 @@
 namespace TrashMobMobile.UITests.Setup;
 
+using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
 using Xunit;
@@ -46,8 +47,9 @@ public class AppiumFixture : IAsyncLifetime
         Driver = new AndroidDriver(new Uri(serverUrl), options, TimeSpan.FromMinutes(5));
         Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
 
-        // Wait for app to fully load before attempting login
-        Thread.Sleep(5000);
+        // Wait for app to fully load (splash screen + initial data fetch)
+        // Cuttlefish emulator is slow — the app can take 60-90s to reach WelcomePage
+        WaitForAppReady(Driver);
 
         // Auto-login in CI when test credentials are available
         if (LoginHelper.HasCredentials)
@@ -62,5 +64,29 @@ public class AppiumFixture : IAsyncLifetime
     {
         Driver?.Quit();
         return Task.CompletedTask;
+    }
+
+    private static void WaitForAppReady(AndroidDriver driver)
+    {
+        // Wait up to 2 minutes for the app to show either WelcomePage or MainTabsPage
+        var deadline = DateTime.UtcNow.AddMinutes(2);
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                driver.FindElement(MobileBy.AccessibilityId("WelcomeLogo"));
+                return; // WelcomePage loaded
+            }
+            catch (NoSuchElementException) { }
+
+            try
+            {
+                driver.FindElement(MobileBy.AccessibilityId("HomeTab"));
+                return; // Already authenticated
+            }
+            catch (NoSuchElementException) { }
+
+            Thread.Sleep(3000);
+        }
     }
 }
