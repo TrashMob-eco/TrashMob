@@ -102,7 +102,7 @@ jobs:
 
       - name: Add PR comment
         if: steps.detect.outputs.has_changes == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const changes = `${{ steps.detect.outputs.changes }}`;
