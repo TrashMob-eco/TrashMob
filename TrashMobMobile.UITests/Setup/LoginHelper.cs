@@ -71,7 +71,7 @@ public static class LoginHelper
                 {
                     var source = driver.PageSource;
                     // Log first 500 chars of page source
-                    Log($"Attempt {attempt} page source (first 500 chars): {source[..Math.Min(500, source.Length)]}");
+                    Log($"Attempt {attempt} page source ({source.Length} chars): {source[..Math.Min(2000, source.Length)]}");
                 }
                 catch (Exception ex)
                 {
