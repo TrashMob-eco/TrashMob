@@ -140,6 +140,22 @@ function initAppInsightsSnippet(instrumentationKey: string): void {
     w[sdkName] = appInsights;
 }
 
+/** Fire a Google Ads conversion event for new sign-ups. */
+export function trackSignUpConversion(): void {
+    const w = window as unknown as Record<string, unknown>;
+    const dataLayer = w.dataLayer as unknown[] | undefined;
+    if (!dataLayer) return;
+
+    function gtag(...args: unknown[]) {
+        dataLayer!.push(args);
+    }
+    gtag('event', 'conversion', {
+        send_to: 'AW-18035648449/V0zjCL3Hh48cEMHPiJhD',
+        value: 1.0,
+        currency: 'USD',
+    });
+}
+
 /** Initialize analytics scripts if the user has previously consented. */
 export function initAnalytics(): void {
     const consent = getConsent();
