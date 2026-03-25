@@ -128,7 +128,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Markdig" Version="0.45.0" />
+    <PackageReference Include="Markdig" Version="1.1.1" />
     <PackageReference Include="NetTopologySuite.IO.Esri.Shapefile" Version="1.2.0" />
     <PackageReference Include="QuestPDF" Version="2026.2.3" />
     <PackageReference Include="SendGrid" Version="9.29.3" />
