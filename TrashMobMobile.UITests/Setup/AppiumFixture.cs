@@ -47,8 +47,11 @@ public class AppiumFixture : IAsyncLifetime
         Driver = new AndroidDriver(new Uri(serverUrl), options, TimeSpan.FromMinutes(5));
         Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
 
+        // Ensure the app is in the foreground (noReset=true + appWaitForLaunch=false
+        // may leave us on the launcher home screen)
+        Driver.ActivateApp(AppPackage);
+
         // Wait for app to fully load (splash screen + initial data fetch)
-        // Cuttlefish emulator is slow — the app can take 60-90s to reach WelcomePage
         WaitForAppReady(Driver);
 
         // Auto-login in CI when test credentials are available
