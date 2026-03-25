@@ -5,6 +5,7 @@ import * as msal from '@azure/msal-browser';
 import { getApiConfig, getMsalClientInstance } from '@/store/AuthStore';
 import { GetUserByEmail, GetUserById, GetUserByObjectId } from '@/services/users';
 import { useFeatureMetrics } from './useFeatureMetrics';
+import { trackSignUpConversion } from '@/lib/analytics';
 
 const EMPTY_GUID = Guid.createEmpty().toString();
 
@@ -78,6 +79,13 @@ export const useLogin = () => {
             const user = await fetchUser(email, objectId);
             if (user) {
                 setCurrentUser(user);
+                // Fire Google Ads conversion for newly created accounts
+                if (user.memberSince) {
+                    const ageMs = Date.now() - new Date(user.memberSince).getTime();
+                    if (ageMs < 60_000) {
+                        trackSignUpConversion();
+                    }
+                }
             }
         } catch (error) {
             // On first sign-up, the backend auto-creates the user during auth validation.
