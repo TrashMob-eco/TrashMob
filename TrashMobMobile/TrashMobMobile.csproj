@@ -100,7 +100,7 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.41" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-		<PackageReference Include="Polly" Version="8.6.5" />
+		<PackageReference Include="Polly" Version="8.6.6" />
 		<PackageReference Include="Sentry.Maui" Version="6.1.0" />
 		<PackageReference Include="Sharpnado.Tabs.Maui" Version="4.0.1" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
