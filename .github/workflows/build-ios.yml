@@ -134,7 +134,7 @@ jobs:
           run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ inputs.configuration }} -f net10.0-ios -r ios-arm64
 
         - name: Upload iOS Artifact
-          uses: actions/upload-artifact@v4.6.2
+          uses: actions/upload-artifact@v7.0.0
           with:
             name: artifacts-ios-${{ inputs.build_number }}
             path: TrashMobMobile/bin/${{ inputs.configuration }}/net10.0-ios/ios-arm64/publish//*.ipa
