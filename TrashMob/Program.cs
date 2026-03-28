@@ -263,6 +263,7 @@ public class Program
         builder.Services.AddHttpClient("CiamGraph");
         builder.Services.AddSingleton<ICiamGraphService, CiamGraphService>();
 
+        builder.Services.AddMemoryCache();
         builder.Services.AddHttpClient("Privo");
         builder.Services.AddSingleton<IPrivoService, PrivoService>();
 
