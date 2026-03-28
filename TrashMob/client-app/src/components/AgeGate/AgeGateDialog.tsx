@@ -95,9 +95,9 @@ export function AgeGateDialog({ open, onOpenChange, onConfirm }: AgeGateDialogPr
                                 onChange={(value) => setDob(value)}
                                 placeholder='Select your date of birth'
                                 calendarProps={{
-                                    captionLayout: 'dropdown-buttons',
-                                    fromYear: 1920,
-                                    toYear: new Date().getFullYear(),
+                                    captionLayout: 'dropdown',
+                                    startMonth: new Date(1920, 0),
+                                    endMonth: new Date(new Date().getFullYear(), 11),
                                     defaultMonth: new Date(2000, 0),
                                 }}
                             />
