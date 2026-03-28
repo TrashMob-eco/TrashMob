@@ -16,6 +16,7 @@ jobs:
   appium-tests:
     name: Android Appium Tests (Cuttlefish)
     runs-on: ubuntu-latest
+    environment: test
     timeout-minutes: 30
 
     steps:
@@ -122,10 +123,9 @@ jobs:
         run: |
           dotnet build TrashMobMobile/TrashMobMobile.csproj \
             -f net10.0-android \
-            -c Release \
+            -c Debug \
             -t:Install \
-            -p:TargetFrameworks=net10.0-android \
-            -p:AndroidKeyStore=false
+            -p:TargetFrameworks=net10.0-android
 
       # --- Appium + tests ---
 
@@ -157,12 +157,23 @@ jobs:
 
       - name: Run Appium tests
         run: dotnet test TrashMobMobile.UITests/ --logger "trx;LogFileName=results.trx" || true
+        env:
+          APPIUM_TEST_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          APPIUM_TEST_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
 
       - name: Capture emulator screenshot
         if: always()
         run: |
           mkdir -p screenshots
           adb exec-out screencap -p > screenshots/final-state.png || true
+
+      - name: Diagnose emulator state
+        if: always()
+        run: |
+          echo "=== Installed packages ==="
+          adb shell pm list packages 2>/dev/null | grep -iE "browser|chrome|webview" || echo "(none matching)"
+          echo "=== Current activity ==="
+          adb shell dumpsys activity activities 2>/dev/null | grep -E "mResumedActivity|mFocused" | head -5 || true
 
       - name: Upload test results
         if: always()
