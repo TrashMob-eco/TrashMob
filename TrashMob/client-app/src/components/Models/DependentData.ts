@@ -8,6 +8,7 @@ class DependentData {
     medicalNotes: string = '';
     emergencyContactPhone: string = '';
     isActive: boolean = true;
+    privoConsentStatus: number | null = null;
 }
 
 export default DependentData;

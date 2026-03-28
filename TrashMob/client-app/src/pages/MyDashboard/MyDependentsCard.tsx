@@ -47,6 +47,7 @@ import {
 
 interface MyDependentsCardProps {
     userId: string;
+    isIdentityVerified?: boolean;
 }
 
 const relationships = ['Parent', 'Legal Guardian', 'Grandparent', 'Authorized Supervisor', 'Other'] as const;
@@ -62,7 +63,7 @@ const dependentFormSchema = z.object({
 
 type DependentFormInputs = z.infer<typeof dependentFormSchema>;
 
-export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
+export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentityVerified = false }) => {
     const queryClient = useQueryClient();
     const { toast } = useToast();
     const [showFormDialog, setShowFormDialog] = useState(false);
@@ -294,7 +295,19 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                                 {eligibleDependents.length === 1
                                     ? `${eligibleDependents[0].firstName} is old enough (13+) to create their own TrashMob account.`
                                     : `${eligibleDependents.length} of your dependents are old enough (13+) to create their own TrashMob accounts.`}{' '}
-                                Use the <Mail className='inline h-3 w-3' /> button to send them an invitation!
+                                {isIdentityVerified ? (
+                                    <>
+                                        Use the <Mail className='inline h-3 w-3' /> button to send them an invitation!
+                                    </>
+                                ) : (
+                                    <>
+                                        You must{' '}
+                                        <a href='/myprofile' className='underline font-medium'>
+                                            verify your identity
+                                        </a>{' '}
+                                        first before inviting dependents aged 13-17.
+                                    </>
+                                )}
                             </AlertDescription>
                         </Alert>
                     )}
@@ -383,7 +396,8 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                                             <td className='py-3 px-2 text-right'>
                                                 {dep.dateOfBirth &&
                                                 getAge(dep.dateOfBirth) >= 13 &&
-                                                !getActiveInvitation(dep.id) ? (
+                                                !getActiveInvitation(dep.id) &&
+                                                isIdentityVerified ? (
                                                     <Button
                                                         variant='ghost'
                                                         size='sm'

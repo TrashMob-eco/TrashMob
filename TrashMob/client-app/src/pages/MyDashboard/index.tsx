@@ -654,7 +654,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
 
                         {isSectionVisible('dependents') ? (
                             <section id='dependents'>
-                                <MyDependentsCard userId={userId} />
+                                <MyDependentsCard userId={userId} isIdentityVerified={currentUser.isIdentityVerified} />
                             </section>
                         ) : null}
 
