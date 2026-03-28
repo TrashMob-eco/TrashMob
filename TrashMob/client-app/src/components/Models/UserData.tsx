@@ -40,6 +40,8 @@ class UserData {
     profilePhotoUrl: string = '';
 
     isMinor: boolean = false;
+
+    isIdentityVerified: boolean = false;
 }
 
 export default UserData;

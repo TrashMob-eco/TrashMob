@@ -93,6 +93,10 @@ import { UnsubscribePage } from './pages/unsubscribe';
 /** Dependent Invite */
 import { AcceptInvitePage } from './pages/invite/accept';
 
+/** PRIVO Consent */
+const ChildSignup = lazy(() => import('./pages/child-signup'));
+const PrivoCallback = lazy(() => import('./pages/privo/callback'));
+
 import { NoMatch } from './pages/nomatch';
 
 /** For Communities - Landing page (lazy loaded) */
@@ -796,6 +800,8 @@ const AppContent: FC = () => {
                             <Route path='/volunteeropportunities' element={<VolunteerOpportunities />} />
                             <Route path='/unsubscribe' element={<UnsubscribePage />} />
                             <Route path='/invite/accept' element={<AcceptInvitePage />} />
+                            <Route path='/child-signup' element={<ChildSignup />} />
+                            <Route path='/privo/callback' element={<PrivoCallback />} />
                             <Route path='/' element={<Home />} />
                         </Route>
                         <Route path='*' element={<NoMatch />} />
