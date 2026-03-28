@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:VerifyIdentityViewModel"
+             x:Class="TrashMobMobile.Pages.VerifyIdentityPage"
+             Title="Identity Verification">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+            <!-- Verified State -->
+            <Border IsVisible="{Binding IsVerified}"
+                    Stroke="{StaticResource TertiaryBrush}"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="&#x2705; Identity Verified"
+                           FontSize="20"
+                           FontFamily="LexendSemibold" />
+                    <Label Text="{Binding StatusMessage}"
+                           TextColor="{StaticResource TertiaryTextColor}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Pending State -->
+            <Border IsVisible="{Binding IsPending}"
+                    Stroke="{StaticResource WarningBrush}"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Verification In Progress"
+                           FontSize="20"
+                           FontFamily="LexendSemibold" />
+                    <Label Text="{Binding StatusMessage}"
+                           TextColor="{StaticResource TertiaryTextColor}" />
+                    <Button Text="Check Status"
+                            Command="{Binding RefreshStatusCommand}"
+                            Style="{StaticResource OutlinedButton}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Not Started State -->
+            <VerticalStackLayout IsVisible="{Binding IsVerified, Converter={StaticResource InvertedBoolConverter}}"
+                                 Spacing="12">
+                <VerticalStackLayout IsVisible="{Binding IsPending, Converter={StaticResource InvertedBoolConverter}}">
+                    <Border Stroke="{StaticResource PrimaryBrush}"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="16">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Verify Your Identity"
+                                   FontSize="20"
+                                   FontFamily="LexendSemibold" />
+                            <Label Text="Identity verification is required to add children aged 13-17 as dependents. The process is handled securely by PRIVO."
+                                   TextColor="{StaticResource TertiaryTextColor}" />
+                            <Button Text="Start Verification"
+                                    Command="{Binding StartVerificationCommand}"
+                                    Style="{StaticResource PrimaryLargeButton}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
