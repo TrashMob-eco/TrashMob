@@ -36,9 +36,11 @@ test.describe('Leaderboards', () => {
     test('should display ranking info section', async ({ authenticatedPage: page }) => {
         await page.goto('/leaderboards');
 
-        // Should show "Your Ranking" or "How Rankings Work" info
-        await expect(
-            page.getByText(/ranking/i).first().or(page.getByText(/how rankings work/i)),
-        ).toBeVisible({ timeout: 15000 });
+        // Wait for page to load, then check for ranking-related content
+        await expect(page.getByRole('heading', { name: /leaderboards/i })).toBeVisible({ timeout: 15000 });
+
+        // Should show some ranking-related text on the page
+        const rankingText = page.getByText(/your ranking|how rankings work|rank/i).first();
+        await expect(rankingText).toBeVisible({ timeout: 10000 });
     });
 });

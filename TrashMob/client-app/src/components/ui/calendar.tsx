@@ -9,6 +9,7 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
     const defaultClassNames = getDefaultClassNames();
+    const isDropdown = props.captionLayout === 'dropdown';
 
     return (
         <DayPicker
@@ -18,14 +19,16 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
                 months: cn('relative flex flex-col sm:flex-row gap-4', defaultClassNames.months),
                 month: cn('flex flex-col gap-4', defaultClassNames.month),
                 month_caption: cn('flex justify-center pt-1 relative items-center', defaultClassNames.month_caption),
-                caption_label: cn('text-sm font-medium', defaultClassNames.caption_label),
-                dropdowns: cn('flex items-center gap-2', defaultClassNames.dropdowns),
+                caption_label: cn(
+                    'text-sm font-medium',
+                    isDropdown ? 'sr-only' : defaultClassNames.caption_label,
+                ),
+                dropdowns: cn('flex items-center gap-2'),
                 dropdown: cn(
                     'appearance-none rounded-md border border-input bg-background px-2 py-1 text-sm font-medium shadow-xs focus:outline-none focus:ring-1 focus:ring-ring',
-                    defaultClassNames.dropdown,
                 ),
-                months_dropdown: cn('[&>span]:sr-only', defaultClassNames.months_dropdown),
-                years_dropdown: cn('[&>span]:sr-only', defaultClassNames.years_dropdown),
+                months_dropdown: cn('[&>span]:sr-only'),
+                years_dropdown: cn('[&>span]:sr-only'),
                 nav: cn(
                     'absolute inset-x-0 top-0 z-10 flex w-full items-center justify-between',
                     defaultClassNames.nav,
