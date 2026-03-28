@@ -22,8 +22,7 @@
 
         /// <summary>
         /// Unsubscribe group ID for prospect outreach emails.
-        /// Uses General group until a dedicated SendGrid group is created.
         /// </summary>
-        public const int ProspectOutreach = 24775;
+        public const int ProspectOutreach = 35725;
     }
 }

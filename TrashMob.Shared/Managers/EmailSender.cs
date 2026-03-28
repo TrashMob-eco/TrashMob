@@ -94,6 +94,7 @@ namespace TrashMob.Shared.Managers
                     [
                         SendGridEmailGroupId.EventRelated,
                         SendGridEmailGroupId.General,
+                        SendGridEmailGroupId.ProspectOutreach,
                     ],
                 };
 
