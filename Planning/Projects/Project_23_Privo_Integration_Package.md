@@ -239,44 +239,34 @@ If parent later creates a TrashMob account, it can be linked to their minor's ac
 
 ## 6. API Integration Points
 
-### TrashMob → Privo
+> **Detailed API documentation received from PRIVO on March 24, 2026.** See [Project 23 — PRIVO API Requirements](./Project_23_Privo_API_Requirements.md) for the complete 10-section API specification including endpoints, credentials, feature/attribute identifiers, and webhook payload format.
 
-```
-POST /api/privo/verify-age
-Request: { dateOfBirth: "2012-05-15", userId: "guid" }
-Response: { category: "Minor", privoUserId: "privo-123" }
+### Key API Sections (Summary)
 
-POST /api/privo/request-consent
-Request: {
-  minorUserId: "guid",
-  privoUserId: "privo-123",
-  parentEmail: "parent@email.com",
-  features: ["newsletter", "events", "photos", "leaderboards", ...],
-  redirectUrl: "https://trashmob.eco/consent-complete"
-}
-Response: { consentRequestId: "vpc-456", status: "Pending" }
-
-GET /api/privo/consent-status/{consentRequestId}
-Response: { status: "Verified", verifiedDate: "2026-01-31T...", method: "CreditCard" }
-```
+| Section | Endpoint | Purpose |
+|---------|----------|---------|
+| 1 | `POST /token` | Client access token (30 min expiry, extendable to 12 hrs) |
+| 2 | `POST /s2s/api/v1.0/{svc}/requests` | Adult identity verification request |
+| 3 | `POST /s2s/api/v1.0/{svc}/consents/{id}/verification/session` | Direct verification URL (skip PRIVO pre-screens) |
+| 4 | `GET /s2s/api/v1.0/{svc}/accounts/sid/{sid}` | User info / feature states |
+| 5 | `POST /s2s/api/v1.0/{svc}/requests` | Parent-initiated child consent |
+| 6 | `POST /s2s/api/v1.0/{svc}/requests` | Child-initiated consent |
+| 7 | `GET /s2s/api/v1.0/{svc}/consents/{id}` | Consent status check |
+| 8 | `PATCH /s2s/api/v1.0/{svc}/accounts/sid/{sid}/attributes/{attr}/ial` | Email verification sync |
+| 9 | `POST /s2s/api/v1.0/{svc}/accounts/sid/{sid}/{granter_sid}/features/revoke` | Revoke consent |
+| 10 | Webhook | Real-time consent event notifications |
 
 ### Privo → TrashMob (Webhooks)
 
-```
-POST https://api.trashmob.eco/webhooks/privo
+```json
+// Webhook payload format (from PRIVO docs)
 {
-  "event": "consent_status_changed",
-  "consentRequestId": "vpc-456",
-  "status": "Verified",
-  "timestamp": "2026-01-31T15:30:00Z"
-}
-
-POST https://api.trashmob.eco/webhooks/privo
-{
-  "event": "consent_revoked",
-  "userId": "privo-123",
-  "reason": "Parent requested",
-  "timestamp": "2026-02-15T10:00:00Z"
+  "id": "3c5bb850-8b65-45f3-a31b-80c5k27d5514",
+  "timestamp": "2024-09-11T13:23:34.325581013Z",
+  "sid": "818g84dd-04d7-4793-9342-50c209316c95",
+  "event_types": ["consent_request_created"],
+  "granter_sid": ["ded3cad0-m557-4716-bce5-48098395bd74"],
+  "consent_identifiers": ["1710c4c7-0694-42b7-8096-328f99844aad"]
 }
 ```
 
@@ -397,11 +387,11 @@ The `ValidIssuers` array should accept tokens from **both** issuers since the ac
 
 ## 10. Open Questions for Privo
 
-1. **Consent collection methods:** Which methods will be available? (Credit card, ID, video call?)
+1. ~~**Consent collection methods:** Which methods will be available?~~ — Handled by PRIVO verification widget (see [API Requirements](./Project_23_Privo_API_Requirements.md))
 2. **Webhook retry policy:** How does Privo handle webhook delivery failures?
-3. **Consent expiration:** How far in advance does Privo notify about expiring consents?
-4. **Testing environment:** Does Privo provide a sandbox for integration testing?
-5. **Bulk consent verification:** Can we verify consent status for multiple users in one call?
+3. ~~**Consent expiration:** How far in advance does Privo notify about expiring consents?~~ — Not a concern; waivers expire yearly regardless.
+4. ~~**Testing environment:** Does Privo provide a sandbox for integration testing?~~ — INT environment provided (see [API Requirements](./Project_23_Privo_API_Requirements.md))
+5. ~~**Bulk consent verification:** Can we verify consent status for multiple users in one call?~~ — Not needed for v1; single-user checks sufficient.
 
 ---
 
@@ -421,6 +411,7 @@ Please provide Figma access to the Privo team members for UI/UX review.
 | 1.1 | February 22, 2026 | TrashMob Engineering | Updated auth provider to Entra External ID (CIAM migration complete) |
 | 1.2 | March 2, 2026 | TrashMob Engineering | Added custom authentication extension architecture, Entra configuration details, and troubleshooting notes from production incident |
 | 1.3 | March 2, 2026 | TrashMob Engineering | Documented CIAM vs standard OIDC endpoint signing key differences, IDX10503 root cause, and logging troubleshooting tips |
+| 1.4 | March 27, 2026 | TrashMob Engineering | Updated API section with PRIVO API Requirements doc reference (received March 24, 2026); resolved open questions on consent methods and testing environment |
 
 ---
 

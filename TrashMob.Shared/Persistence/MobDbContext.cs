@@ -188,6 +188,8 @@
 
         public virtual DbSet<DependentInvitation> DependentInvitations { get; set; }
 
+        public virtual DbSet<ParentalConsent> ParentalConsents { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x =>
@@ -1647,6 +1649,8 @@
                     });
 
                 entity.Property(e => e.IsMinor).HasDefaultValue(false);
+                entity.Property(e => e.IsIdentityVerified).HasDefaultValue(false);
+                entity.Property(e => e.PrivoSid).HasMaxLength(256);
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.UsersCreated)
@@ -3761,12 +3765,19 @@
                 entity.Property(e => e.MedicalNotes).HasMaxLength(500);
                 entity.Property(e => e.EmergencyContactPhone).HasMaxLength(20);
                 entity.Property(e => e.IsActive).HasDefaultValue(true);
+                entity.Property(e => e.PrivoSid).HasMaxLength(256);
 
                 entity.HasOne(d => d.ParentUser)
                     .WithMany(p => p.Dependents)
                     .HasForeignKey(d => d.ParentUserId)
                     .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Dependents_User");
+
+                entity.HasOne(d => d.ParentalConsent)
+                    .WithMany()
+                    .HasForeignKey(d => d.ParentalConsentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Dependents_ParentalConsent");
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.DependentsCreated)
@@ -3944,6 +3955,60 @@
 
                 entity.HasIndex(e => new { e.Email, e.InvitationStatusId })
                     .HasDatabaseName("IX_DependentInvitations_Email_Status");
+            });
+
+            modelBuilder.Entity<ParentalConsent>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.PrivoConsentIdentifier).HasMaxLength(256);
+                entity.Property(e => e.PrivoSid).HasMaxLength(256);
+                entity.Property(e => e.PrivoGranterSid).HasMaxLength(256);
+                entity.Property(e => e.ConsentUrl).HasMaxLength(2048);
+                entity.Property(e => e.RevokedReason).HasMaxLength(500);
+                entity.Property(e => e.ConsentType).IsRequired();
+                entity.Property(e => e.Status).IsRequired().HasDefaultValue(ConsentStatus.Pending);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ParentalConsents)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_ParentalConsents_User");
+
+                entity.HasOne(d => d.ParentUser)
+                    .WithMany(p => p.ParentalConsentsAsGranter)
+                    .HasForeignKey(d => d.ParentUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_ParentalConsents_User_Parent");
+
+                entity.HasOne(d => d.Dependent)
+                    .WithMany()
+                    .HasForeignKey(d => d.DependentId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_ParentalConsents_Dependent");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.ParentalConsentsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ParentalConsents_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.ParentalConsentsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ParentalConsents_User_LastUpdatedBy");
+
+                entity.HasIndex(e => e.UserId)
+                    .HasDatabaseName("IX_ParentalConsents_UserId");
+
+                entity.HasIndex(e => e.ParentUserId)
+                    .HasDatabaseName("IX_ParentalConsents_ParentUserId");
+
+                entity.HasIndex(e => e.PrivoConsentIdentifier)
+                    .HasDatabaseName("IX_ParentalConsents_PrivoConsentIdentifier");
+
+                entity.HasIndex(e => e.PrivoSid)
+                    .HasDatabaseName("IX_ParentalConsents_PrivoSid");
             });
         }
     }
