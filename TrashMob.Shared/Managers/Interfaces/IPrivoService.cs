@@ -1,4 +1,4 @@
-namespace TrashMob.Services
+namespace TrashMob.Shared.Managers.Interfaces
 {
     using System;
     using System.Threading;

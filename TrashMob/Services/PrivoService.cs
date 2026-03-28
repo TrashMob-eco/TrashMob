@@ -13,6 +13,7 @@ namespace TrashMob.Services
     using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
+    using TrashMob.Shared.Managers.Interfaces;
 
     /// <summary>
     /// PRIVO consent management and identity verification HTTP client.

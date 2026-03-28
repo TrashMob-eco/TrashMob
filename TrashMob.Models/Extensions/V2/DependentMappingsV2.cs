@@ -23,6 +23,7 @@ namespace TrashMob.Models.Extensions.V2
                 MedicalNotes = entity.MedicalNotes ?? string.Empty,
                 EmergencyContactPhone = entity.EmergencyContactPhone ?? string.Empty,
                 IsActive = entity.IsActive,
+                PrivoConsentStatus = entity.ParentalConsent != null ? (int)entity.ParentalConsent.Status : null,
             };
         }
 

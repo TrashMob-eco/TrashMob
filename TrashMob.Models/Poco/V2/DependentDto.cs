@@ -33,4 +33,7 @@ public class DependentDto
 
     /// <summary>Gets or sets whether the dependent is active.</summary>
     public bool IsActive { get; set; }
+
+    /// <summary>Gets or sets the PRIVO consent status for 13-17 dependents (null if not applicable).</summary>
+    public int? PrivoConsentStatus { get; set; }
 }
