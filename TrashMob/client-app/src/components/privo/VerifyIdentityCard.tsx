@@ -41,6 +41,7 @@ export const VerifyIdentityCard: FC<VerifyIdentityCardProps> = ({ isVerified }) 
     });
 
     const isPending = statusQuery.data?.status === 1;
+    const isStatusLoading = statusQuery.isLoading;
 
     if (isVerified) {
         return (

@@ -83,6 +83,7 @@ import { MyTeamsTable } from '@/pages/MyDashboard/MyTeamsTable';
 import { MyRoutesCard } from '@/pages/MyDashboard/MyRoutesCard';
 import { MyWaiversCard } from '@/pages/MyDashboard/MyWaiversCard';
 import { MyDependentsCard } from '@/pages/MyDashboard/MyDependentsCard';
+import { VerifyIdentityCard } from '@/components/privo/VerifyIdentityCard';
 import { MyImpactCard } from '@/pages/MyDashboard/MyImpactCard';
 import { MyCompaniesTable } from '@/pages/MyDashboard/MyCompaniesTable';
 import { MySponsorsTable } from '@/pages/MyDashboard/MySponsorsTable';
@@ -654,6 +655,11 @@ const MyDashboard: FC<MyDashboardProps> = () => {
 
                         {isSectionVisible('dependents') ? (
                             <section id='dependents'>
+                                {!currentUser.isMinor && (
+                                    <div className='mb-4'>
+                                        <VerifyIdentityCard isVerified={currentUser.isIdentityVerified} />
+                                    </div>
+                                )}
                                 <MyDependentsCard userId={userId} isIdentityVerified={currentUser.isIdentityVerified} />
                             </section>
                         ) : null}
