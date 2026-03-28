@@ -26,7 +26,7 @@ const childSignupSchema = z.object({
 
 type FormValues = z.infer<typeof childSignupSchema>;
 
-type Step = 'parent-email' | 'child-info' | 'pending' | 'no-parent';
+type Step = 'parent-email' | 'child-info' | 'pending' | 'no-parent' | 'parent-not-verified';
 
 export const ChildSignup: FC = () => {
     const { toast } = useToast();
@@ -50,7 +50,11 @@ export const ChildSignup: FC = () => {
             }
         },
         onError: (error: Error) => {
-            toast({ variant: 'destructive', title: 'Unable to proceed', description: error.message });
+            if (error.message?.toLowerCase().includes('verify')) {
+                setStep('parent-not-verified');
+            } else {
+                toast({ variant: 'destructive', title: 'Unable to proceed', description: error.message });
+            }
         },
     });
 
@@ -135,8 +139,9 @@ export const ChildSignup: FC = () => {
                                 <CardTitle>Your Information</CardTitle>
                             </div>
                             <CardDescription>
-                                We&apos;ll send a consent request to {parentEmail}. Once approved, you&apos;ll receive
-                                an email to create your account.
+                                Your parent/guardian at {parentEmail} must have a verified TrashMob account. We&apos;ll
+                                send them a consent request. Once approved, you&apos;ll receive an email to create your
+                                account.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -239,9 +244,62 @@ export const ChildSignup: FC = () => {
                                 We couldn&apos;t find a TrashMob account for <strong>{parentEmail}</strong>.
                             </p>
                             <p className='text-sm text-muted-foreground'>
-                                Your parent/guardian needs to create a TrashMob account first, then they can add you as
-                                a dependent from their dashboard.
+                                Before you can create an account, your parent/guardian needs to:
                             </p>
+                            <ol className='list-decimal list-inside space-y-1 text-sm text-muted-foreground'>
+                                <li>
+                                    Go to{' '}
+                                    <a
+                                        href='https://www.trashmob.eco'
+                                        target='_blank'
+                                        rel='noreferrer'
+                                        className='underline font-medium'
+                                    >
+                                        trashmob.eco
+                                    </a>{' '}
+                                    and create an account
+                                </li>
+                                <li>Log in and go to their Profile page</li>
+                                <li>Complete the &quot;Identity Verification&quot; step</li>
+                                <li>Add you as a dependent from their Dashboard, or come back here and try again</li>
+                            </ol>
+                            <Button variant='outline' onClick={() => setStep('parent-email')}>
+                                Try a Different Email
+                            </Button>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {step === 'parent-not-verified' && (
+                    <Card>
+                        <CardHeader>
+                            <div className='flex items-center gap-2'>
+                                <Mail className='h-5 w-5 text-amber-500' />
+                                <CardTitle>Parent Verification Needed</CardTitle>
+                            </div>
+                        </CardHeader>
+                        <CardContent className='space-y-3'>
+                            <p>
+                                We found an account for <strong>{parentEmail}</strong>, but they haven&apos;t verified
+                                their identity yet.
+                            </p>
+                            <p className='text-sm text-muted-foreground'>Ask your parent/guardian to:</p>
+                            <ol className='list-decimal list-inside space-y-1 text-sm text-muted-foreground'>
+                                <li>
+                                    Log in to{' '}
+                                    <a
+                                        href='https://www.trashmob.eco'
+                                        target='_blank'
+                                        rel='noreferrer'
+                                        className='underline font-medium'
+                                    >
+                                        trashmob.eco
+                                    </a>
+                                </li>
+                                <li>Go to their Profile page</li>
+                                <li>Click &quot;Verify My Identity&quot; and complete the verification process</li>
+                                <li>Once verified, come back here and try again</li>
+                            </ol>
                             <Button variant='outline' onClick={() => setStep('parent-email')}>
                                 Try a Different Email
                             </Button>
