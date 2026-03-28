@@ -108,5 +108,10 @@ namespace TrashMob.Models.Poco.V2
         /// Gets or sets the user's date of birth.
         /// </summary>
         public DateTimeOffset? DateOfBirth { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the user's identity has been verified via PRIVO.
+        /// </summary>
+        public bool IsIdentityVerified { get; set; }
     }
 }

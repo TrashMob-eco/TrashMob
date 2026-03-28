@@ -36,6 +36,7 @@ namespace TrashMob.Models.Extensions.V2
                 DateAgreedToTrashMobWaiver = entity.DateAgreedToTrashMobWaiver,
                 TrashMobWaiverVersion = entity.TrashMobWaiverVersion,
                 DateOfBirth = entity.DateOfBirth,
+                IsIdentityVerified = entity.IsIdentityVerified,
             };
         }
 

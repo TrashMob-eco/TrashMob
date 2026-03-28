@@ -142,6 +142,9 @@
             services.AddScoped<IEventDependentManager, EventDependentManager>();
             services.AddScoped<IDependentInvitationManager, DependentInvitationManager>();
 
+            // PRIVO Consent
+            services.AddScoped<IPrivoConsentManager, PrivoConsentManager>();
+
             // Feature Metrics
             services.AddSingleton<IFeatureMetricsService, FeatureMetricsService>();
 
