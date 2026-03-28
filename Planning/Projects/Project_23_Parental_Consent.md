@@ -209,17 +209,28 @@ public interface IPrivoService
 }
 ```
 
+### PRIVO API Documentation
+
+**Received March 24, 2026** — PRIVO delivered a 10-section API integration specification. See [Project 23 — PRIVO API Requirements](./Project_23_Privo_API_Requirements.md) for the complete reference including:
+- Environment endpoints and credentials (INT + PROD)
+- Feature and attribute identifiers
+- All 10 API sections (token, consent requests, verification URLs, userinfo, revocation, webhooks)
+- Webhook payload format and security requirements
+
 ### Privo Onboarding Requirements
 
 **Before Privo can begin integration work, TrashMob must provide:**
 
 | Requirement | Status | Owner |
 |-------------|--------|-------|
-| **Swim lane diagram** | ❌ Pending | Engineering |
-| **Feature set for parental consent** | ❌ Pending | Product |
-| **Business information** (name, address, website, privacy policy) | ❌ Pending | Business |
-| **Swimlane flow documentation** | ❌ Pending | Engineering |
+| **Swim lane diagram** | ✅ Delivered | Engineering |
+| **Feature set for parental consent** | ✅ Delivered | Product |
+| **Business information** (name, address, website, privacy policy) | ✅ Delivered | Business |
+| **Swimlane flow documentation** | ✅ Delivered | Engineering |
 | **Branding assets** (logos, colors, etc.) | ❌ Pending | Marketing |
+| **PRIVO API integration doc received** | ✅ Received March 24, 2026 | PRIVO |
+| **Webhook endpoint URLs whitelisted** | ❌ Pending | Engineering + PRIVO |
+| **Redirect URLs whitelisted** | ❌ Pending | Engineering + PRIVO |
 
 **Features requiring parental consent:**
 
@@ -1060,14 +1071,13 @@ Privo is a one-time gate at registration. Everything after that flows through th
    **Decision:** Privo is sponsoring the integration — TrashMob is the first Entra External ID + Privo partner. Cost covered by sponsorship agreement.
    **Status:** ✅ Resolved (February 2026)
 
-2. **When will Privo provide their API documentation and test environment?**
-   **Status:** Pending — awaiting onboarding requirements completion
-   **Owner:** Engineering + Privo
-   **Due:** Before Project 1 Phase 3
+2. ~~**When will Privo provide their API documentation and test environment?**~~
+   **Decision:** PRIVO delivered 10-section API integration doc on March 24, 2026. INT environment credentials included. See [PRIVO API Requirements](./Project_23_Privo_API_Requirements.md).
+   **Status:** ✅ Resolved (March 2026)
 
 3. **How should group leaders (coaches, scout masters, teachers) handle minor participation?**
    Group leaders cannot sign waivers for children who are not their legal dependents. For v1, each parent must sign individually with paper waiver fallback. Future: consider delegated authority role where a parent explicitly authorizes a specific adult for their child. Requires legal review.
-   **Status:** Open
+   **Status:** Deferred — not needed for v1
    **Owner:** Product + Legal
 
 4. **How do we handle divorced/separated families and custody disputes?**
@@ -1080,15 +1090,13 @@ Privo is a one-time gate at registration. Everything after that flows through th
    **Status:** Open
    **Owner:** Legal
 
-6. **What happens when a parent account is required but the parent refuses to create one?**
-   The minor cannot participate in events requiring community waivers. Should we allow participation in events that only require the global waiver (already signed via Privo)? This creates a two-tier experience.
-   **Status:** Open
-   **Owner:** Product
+6. ~~**What happens when a parent account is required but the parent refuses to create one?**~~
+   **Decision:** Minor cannot participate. Parent account and PRIVO verification are required.
+   **Status:** ✅ Resolved (March 2026)
 
-7. **Should Privo identity verification be required for all parent accounts, or only for parents of minors?**
-   Currently, any adult can create an account and add dependents without identity verification. If we add Privo verification only when a minor self-registers, a parent who adds their child as a dependent bypasses Privo entirely. Should the dependent flow also trigger Privo verification?
-   **Status:** Open
-   **Owner:** Product + Legal
+7. ~~**Should Privo identity verification be required for all parent accounts, or only for parents of minors?**~~
+   **Decision:** Yes — parent must verify through PRIVO when approving any dependent aged 13-17. The current "add a dependent" flow only handles under-13 (no account needed). The 13-17 flow requires PRIVO verification and will be a distinct path. Need to distinguish between under-13 dependents (no PRIVO, no account) and 13-17 dependents (PRIVO consent required, child gets their own account).
+   **Status:** ✅ Resolved (March 2026)
 
 ---
 

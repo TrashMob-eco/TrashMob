@@ -55,6 +55,16 @@ namespace TrashMob.Models
         public bool IsActive { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets the PRIVO Service Identifier (SiD) for this dependent.
+        /// </summary>
+        public string PrivoSid { get; set; }
+
+        /// <summary>
+        /// Gets or sets the PRIVO parental consent record ID for this dependent.
+        /// </summary>
+        public Guid? ParentalConsentId { get; set; }
+
+        /// <summary>
         /// Gets or sets the parent/guardian user.
         /// </summary>
         public virtual User ParentUser { get; set; }
@@ -73,5 +83,10 @@ namespace TrashMob.Models
         /// Gets or sets the invitations sent for this dependent to create an account.
         /// </summary>
         public virtual ICollection<DependentInvitation> DependentInvitations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the PRIVO parental consent record for this dependent.
+        /// </summary>
+        public virtual ParentalConsent ParentalConsent { get; set; }
     }
 }

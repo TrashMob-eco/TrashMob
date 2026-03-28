@@ -47,6 +47,10 @@ namespace TrashMob.Models
             DependentInvitationsAccepted = new HashSet<DependentInvitation>();
             DependentInvitationsCreated = new HashSet<DependentInvitation>();
             DependentInvitationsUpdated = new HashSet<DependentInvitation>();
+            ParentalConsents = new HashSet<ParentalConsent>();
+            ParentalConsentsAsGranter = new HashSet<ParentalConsent>();
+            ParentalConsentsCreated = new HashSet<ParentalConsent>();
+            ParentalConsentsUpdated = new HashSet<ParentalConsent>();
         }
 
         /// <summary>
@@ -192,6 +196,21 @@ namespace TrashMob.Models
         /// Gets or sets the dependent record ID this minor's user account was created from.
         /// </summary>
         public Guid? DependentId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the PRIVO Service Identifier (SiD) for this user.
+        /// </summary>
+        public string PrivoSid { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this user's identity has been verified via PRIVO.
+        /// </summary>
+        public bool IsIdentityVerified { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the user's identity was verified via PRIVO.
+        /// </summary>
+        public DateTimeOffset? IdentityVerifiedDate { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of events the user is attending.
@@ -806,6 +825,26 @@ namespace TrashMob.Models
         /// Gets or sets the collection of dependent invitations last updated by this user.
         /// </summary>
         public virtual ICollection<DependentInvitation> DependentInvitationsUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of PRIVO consent records where this user is the principal.
+        /// </summary>
+        public virtual ICollection<ParentalConsent> ParentalConsents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of PRIVO consent records where this user is the granter (parent).
+        /// </summary>
+        public virtual ICollection<ParentalConsent> ParentalConsentsAsGranter { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of PRIVO consent records created by this user.
+        /// </summary>
+        public virtual ICollection<ParentalConsent> ParentalConsentsCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of PRIVO consent records last updated by this user.
+        /// </summary>
+        public virtual ICollection<ParentalConsent> ParentalConsentsUpdated { get; set; }
 
         #endregion
     }
