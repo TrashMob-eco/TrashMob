@@ -35,6 +35,7 @@ namespace TrashMob.Shared.Managers.Prospects
               and email chains.
 
             WRITING GUIDELINES:
+            - Do NOT include a greeting or salutation (e.g., "Hi Joe,") — the email template adds one automatically.
             - Lead with the prospect's problem or goal, not TrashMob's features.
             - Keep emails SHORT: initial outreach under 150 words, follow-ups under 100 words.
             - Write 3-4 short paragraphs max. No bullet-point feature dumps.
@@ -209,7 +210,7 @@ namespace TrashMob.Shared.Managers.Prospects
                 _ => $"TrashMob.eco — Community Partnership Opportunity",
             };
 
-            var htmlBody = $"<p>Hello,</p><p>We'd love to explore how TrashMob.eco can support " +
+            var htmlBody = $"<p>We'd love to explore how TrashMob.eco can support " +
                 $"{prospect.Name} with volunteer-organized litter cleanup events in your community.</p>" +
                 $"<p>Visit <a href=\"https://www.trashmob.eco/partnerships\">our partnerships page</a> to learn more.</p>";
 

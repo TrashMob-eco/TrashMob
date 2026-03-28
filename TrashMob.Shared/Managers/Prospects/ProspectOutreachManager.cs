@@ -152,6 +152,7 @@ namespace TrashMob.Shared.Managers.Prospects
                 // Send via SendGrid
                 var dynamicTemplateData = new
                 {
+                    username = prospect.ContactName ?? prospect.Name,
                     subject,
                     emailCopy = fullHtml,
                 };

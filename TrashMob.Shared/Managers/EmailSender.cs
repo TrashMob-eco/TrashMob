@@ -75,6 +75,13 @@ namespace TrashMob.Shared.Managers
                     MailHelper.CreateSingleTemplateEmailToMultipleRecipients(from, tos, email.TemplateId,
                         email.DynamicTemplateData);
 
+                // Explicitly set subject so it appears even if the SendGrid template
+                // does not use a {{subject}} handlebars variable in its subject line.
+                if (!string.IsNullOrWhiteSpace(email.Subject))
+                {
+                    message.Subject = email.Subject;
+                }
+
                 foreach (var attachment in email.Attachments)
                 {
                     message.AddAttachment(attachment.Filename, attachment.Base64Content, attachment.MimeType);
