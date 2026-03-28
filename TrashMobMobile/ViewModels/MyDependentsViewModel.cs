@@ -26,6 +26,9 @@ namespace TrashMobMobile.ViewModels
         [ObservableProperty]
         private string eligibleDependentsMessage = string.Empty;
 
+        [ObservableProperty]
+        private bool isIdentityVerified;
+
         public ObservableCollection<DependentWithInvitation> Dependents { get; } = [];
 
         public async Task Init()
@@ -63,12 +66,15 @@ namespace TrashMobMobile.ViewModels
 
                 AreDependentsFound = Dependents.Count > 0;
                 AreNoDependentsFound = !AreDependentsFound;
+                IsIdentityVerified = userManager.CurrentUser.IsIdentityVerified;
 
                 var eligibleCount = Dependents.Count(d => d.IsEligibleForInvite);
                 HasEligibleDependents = eligibleCount > 0;
                 EligibleDependentsMessage = eligibleCount == 1
-                    ? $"{Dependents.First(d => d.IsEligibleForInvite).Dependent.FirstName} is old enough (13+) to create their own TrashMob account. Tap Invite to send them an invitation!"
-                    : $"{eligibleCount} of your dependents are old enough (13+) to create their own accounts. Tap Invite to send them invitations!";
+                    ? $"{Dependents.First(d => d.IsEligibleForInvite).Dependent.FirstName} is old enough (13+) to create their own TrashMob account."
+                        + (IsIdentityVerified ? " Tap Invite to send them an invitation!" : " Verify your identity first to send invitations.")
+                    : $"{eligibleCount} of your dependents are old enough (13+) to create their own accounts."
+                        + (IsIdentityVerified ? " Tap Invite to send them invitations!" : " Verify your identity first to send invitations.");
             }, "Failed to load dependents. Please try again.");
         }
 
@@ -109,9 +115,30 @@ namespace TrashMobMobile.ViewModels
         }
 
         [RelayCommand]
+        private async Task VerifyIdentity()
+        {
+            await Shell.Current.GoToAsync(nameof(Pages.VerifyIdentityPage));
+        }
+
+        [RelayCommand]
         private async Task InviteDependent(DependentWithInvitation item)
         {
             if (item == null) return;
+
+            if (!userManager.CurrentUser.IsIdentityVerified)
+            {
+                var goToVerify = await Shell.Current.DisplayAlertAsync(
+                    "Identity Verification Required",
+                    "You must verify your identity before inviting dependents aged 13-17. Would you like to verify now?",
+                    "Verify Now", "Cancel");
+
+                if (goToVerify)
+                {
+                    await Shell.Current.GoToAsync(nameof(Pages.VerifyIdentityPage));
+                }
+
+                return;
+            }
 
             var popup = new InviteEmailPopup(item.Dependent.FirstName);
             var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
