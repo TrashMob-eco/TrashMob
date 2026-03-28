@@ -60,7 +60,9 @@ namespace TrashMob.Shared.Managers
                 return;
             }
 
-            var from = new EmailAddress(Constants.TrashMobEmailAddress, Constants.TrashMobEmailName);
+            var fromEmail = !string.IsNullOrWhiteSpace(email.FromEmail) ? email.FromEmail : Constants.TrashMobEmailAddress;
+            var fromName = !string.IsNullOrWhiteSpace(email.FromName) ? email.FromName : Constants.TrashMobEmailName;
+            var from = new EmailAddress(fromEmail, fromName);
 
             List<EmailAddress> tos = [];
             foreach (var address in email.Addresses)
@@ -75,6 +77,13 @@ namespace TrashMob.Shared.Managers
                     MailHelper.CreateSingleTemplateEmailToMultipleRecipients(from, tos, email.TemplateId,
                         email.DynamicTemplateData);
 
+                // Explicitly set subject so it appears even if the SendGrid template
+                // does not use a {{subject}} handlebars variable in its subject line.
+                if (!string.IsNullOrWhiteSpace(email.Subject))
+                {
+                    message.Subject = email.Subject;
+                }
+
                 foreach (var attachment in email.Attachments)
                 {
                     message.AddAttachment(attachment.Filename, attachment.Base64Content, attachment.MimeType);
@@ -87,6 +96,7 @@ namespace TrashMob.Shared.Managers
                     [
                         SendGridEmailGroupId.EventRelated,
                         SendGridEmailGroupId.General,
+                        SendGridEmailGroupId.ProspectOutreach,
                     ],
                 };
 

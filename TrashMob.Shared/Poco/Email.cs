@@ -59,6 +59,16 @@
         public int GroupId { get; set; }
 
         /// <summary>
+        /// Gets or sets an optional custom sender email address. When null, the default TrashMob sender is used.
+        /// </summary>
+        public string FromEmail { get; set; }
+
+        /// <summary>
+        /// Gets or sets an optional custom sender display name. When null, the default TrashMob sender name is used.
+        /// </summary>
+        public string FromName { get; set; }
+
+        /// <summary>
         /// Gets the list of file attachments for this email.
         /// </summary>
         public List<EmailAttachment> Attachments { get; } = new();

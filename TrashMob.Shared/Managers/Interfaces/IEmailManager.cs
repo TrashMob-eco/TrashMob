@@ -36,6 +36,20 @@
             List<EmailAddress> recipients, List<EmailAttachment> attachments, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Sends a templated email with a custom sender address using SendGrid dynamic templates.
+        /// </summary>
+        /// <param name="subject">The email subject.</param>
+        /// <param name="templateId">The SendGrid template ID.</param>
+        /// <param name="groupId">The SendGrid unsubscribe group ID.</param>
+        /// <param name="dynamicTemplateData">The dynamic template data.</param>
+        /// <param name="recipients">The list of recipients.</param>
+        /// <param name="fromEmail">The sender email address.</param>
+        /// <param name="fromName">The sender display name.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        Task SendTemplatedEmailAsync(string subject, string templateId, int groupId, object dynamicTemplateData,
+            List<EmailAddress> recipients, string fromEmail, string fromName, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Gets the HTML email copy for a specific notification type.
         /// </summary>
         /// <param name="notificationType">The notification type name.</param>

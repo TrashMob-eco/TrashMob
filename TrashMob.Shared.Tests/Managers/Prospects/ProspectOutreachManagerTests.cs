@@ -22,6 +22,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         private readonly Mock<IKeyedRepository<CommunityProspect>> _prospectRepo;
         private readonly Mock<IKeyedRepository<ProspectOutreachEmail>> _outreachEmailRepo;
         private readonly Mock<IKeyedRepository<ProspectActivity>> _activityRepo;
+        private readonly Mock<IKeyedRepository<User>> _userRepo;
         private readonly Mock<IOutreachContentService> _contentService;
         private readonly Mock<IEmailManager> _emailManager;
         private readonly Mock<IConfiguration> _configuration;
@@ -33,6 +34,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
             _prospectRepo = new Mock<IKeyedRepository<CommunityProspect>>();
             _outreachEmailRepo = new Mock<IKeyedRepository<ProspectOutreachEmail>>();
             _activityRepo = new Mock<IKeyedRepository<ProspectActivity>>();
+            _userRepo = new Mock<IKeyedRepository<User>>();
             _contentService = new Mock<IOutreachContentService>();
             _emailManager = new Mock<IEmailManager>();
             _configuration = new Mock<IConfiguration>();
@@ -53,6 +55,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
                 _prospectRepo.Object,
                 _outreachEmailRepo.Object,
                 _activityRepo.Object,
+                _userRepo.Object,
                 _contentService.Object,
                 _emailManager.Object,
                 _configuration.Object,
@@ -203,6 +206,8 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
                 It.IsAny<int>(),
                 It.IsAny<object>(),
                 It.Is<List<Shared.Poco.EmailAddress>>(r => r[0].Email == "test@test.com"),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -230,6 +235,8 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
                 It.IsAny<int>(),
                 It.IsAny<object>(),
                 It.Is<List<Shared.Poco.EmailAddress>>(r => r[0].Email == "real@example.com"),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -286,6 +293,8 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
                 It.IsAny<int>(),
                 It.IsAny<object>(),
                 It.IsAny<List<Shared.Poco.EmailAddress>>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()), Times.Once);
 
             // Verify the saved email record contains the custom body injected into template
@@ -465,6 +474,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
                 _prospectRepo.Object,
                 _outreachEmailRepo.Object,
                 _activityRepo.Object,
+                _userRepo.Object,
                 _contentService.Object,
                 _emailManager.Object,
                 _configuration.Object,
