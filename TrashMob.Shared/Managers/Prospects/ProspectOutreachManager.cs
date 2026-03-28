@@ -22,12 +22,16 @@ namespace TrashMob.Shared.Managers.Prospects
         IKeyedRepository<CommunityProspect> prospectRepository,
         IKeyedRepository<ProspectOutreachEmail> outreachEmailRepository,
         IKeyedRepository<ProspectActivity> activityRepository,
+        IKeyedRepository<User> userRepository,
         IOutreachContentService contentService,
         IEmailManager emailManager,
         IConfiguration configuration,
         ILogger<ProspectOutreachManager> logger)
         : IProspectOutreachManager
     {
+        private const string TrashMobDomain = "@trashmob.eco";
+        private const string DefaultOutreachEmail = "joe@trashmob.eco";
+        private const string DefaultOutreachName = "Joe Beernink";
         private const int MaxBatchSize = 20;
 
         /// <inheritdoc />
@@ -162,12 +166,17 @@ namespace TrashMob.Shared.Managers.Prospects
                     new() { Name = prospect.ContactName ?? prospect.Name, Email = recipientEmail },
                 ];
 
+                // Use the sending admin's trashmob.eco email if available, otherwise fall back to Joe
+                var (senderEmail, senderName) = await GetOutreachSenderAsync(userId, cancellationToken);
+
                 await emailManager.SendTemplatedEmailAsync(
                     subject,
                     SendGridEmailTemplateId.GenericEmail,
                     SendGridEmailGroupId.ProspectOutreach,
                     dynamicTemplateData,
                     recipients,
+                    senderEmail,
+                    senderName,
                     cancellationToken);
 
                 // Save the outreach email record
@@ -357,6 +366,25 @@ namespace TrashMob.Shared.Managers.Prospects
                 4 => NotificationTypeEnum.ProspectOutreachFinal,
                 _ => NotificationTypeEnum.ProspectOutreachInitial,
             };
+        }
+
+        private async Task<(string Email, string Name)> GetOutreachSenderAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            if (userId != Guid.Empty)
+            {
+                var user = await userRepository.GetAsync(userId, cancellationToken);
+                if (user != null
+                    && !string.IsNullOrWhiteSpace(user.Email)
+                    && user.Email.EndsWith(TrashMobDomain, StringComparison.OrdinalIgnoreCase))
+                {
+                    var displayName = !string.IsNullOrWhiteSpace(user.GivenName) && !string.IsNullOrWhiteSpace(user.Surname)
+                        ? $"{user.GivenName} {user.Surname}"
+                        : user.UserName;
+                    return (user.Email, displayName);
+                }
+            }
+
+            return (DefaultOutreachEmail, DefaultOutreachName);
         }
     }
 }

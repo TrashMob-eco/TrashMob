@@ -60,7 +60,9 @@ namespace TrashMob.Shared.Managers
                 return;
             }
 
-            var from = new EmailAddress(Constants.TrashMobEmailAddress, Constants.TrashMobEmailName);
+            var fromEmail = !string.IsNullOrWhiteSpace(email.FromEmail) ? email.FromEmail : Constants.TrashMobEmailAddress;
+            var fromName = !string.IsNullOrWhiteSpace(email.FromName) ? email.FromName : Constants.TrashMobEmailName;
+            var from = new EmailAddress(fromEmail, fromName);
 
             List<EmailAddress> tos = [];
             foreach (var address in email.Addresses)
