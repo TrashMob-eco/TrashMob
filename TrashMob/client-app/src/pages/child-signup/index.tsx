@@ -176,11 +176,15 @@ export const ChildSignup: FC = () => {
                                                 <FormLabel>Date of Birth *</FormLabel>
                                                 <FormControl>
                                                     <DatePicker
-                                                        date={field.value}
-                                                        setDate={field.onChange}
-                                                        yearStart={new Date().getFullYear() - 18}
-                                                        yearEnd={new Date().getFullYear()}
-                                                        defaultMonth={new Date(2010, 0)}
+                                                        value={field.value}
+                                                        onChange={field.onChange}
+                                                        placeholder='Select date of birth'
+                                                        calendarProps={{
+                                                            captionLayout: 'dropdown',
+                                                            startMonth: new Date(new Date().getFullYear() - 18, 0),
+                                                            endMonth: new Date(new Date().getFullYear(), 11),
+                                                            defaultMonth: new Date(2010, 0),
+                                                        }}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
