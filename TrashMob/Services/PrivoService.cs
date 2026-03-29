@@ -76,12 +76,12 @@ namespace TrashMob.Services
 
             if (user.DateOfBirth.HasValue)
             {
-                principal["birthdate"] = user.DateOfBirth.Value.ToString("yyyy-MM-dd");
+                principal["birthdate"] = user.DateOfBirth.Value.ToString("yyyyMMdd");
             }
             else
             {
                 // Birthdate is required — use a placeholder adult date if not set
-                principal["birthdate"] = "1990-01-01";
+                principal["birthdate"] = "19900101";
             }
 
             var payload = new Dictionary<string, object>
@@ -174,7 +174,7 @@ namespace TrashMob.Services
                 ["eid"] = child.Id.ToString(),
                 ["given_name"] = child.FirstName ?? string.Empty,
                 ["email"] = child.FirstName ?? string.Empty, // Child may not have email yet
-                ["birthdate"] = child.DateOfBirth.ToString("yyyy-MM-dd"),
+                ["birthdate"] = child.DateOfBirth.ToString("yyyyMMdd"),
                 ["birthdate_precision"] = "yyyymmdd",
             };
 
@@ -212,7 +212,7 @@ namespace TrashMob.Services
                 {
                     ["given_name"] = childFirstName,
                     ["email"] = childEmail,
-                    ["birthdate"] = childBirthDate.ToString("yyyy-MM-dd"),
+                    ["birthdate"] = childBirthDate.ToString("yyyyMMdd"),
                     ["birthdate_precision"] = "yyyymmdd",
                 },
                 ["granter"] = new Dictionary<string, object>
