@@ -36,11 +36,10 @@ test.describe('Leaderboards', () => {
     test('should display ranking info section', async ({ authenticatedPage: page }) => {
         await page.goto('/leaderboards');
 
-        // Wait for page to load, then check for ranking-related content
+        // Wait for page to load
         await expect(page.getByRole('heading', { name: /leaderboards/i })).toBeVisible({ timeout: 15000 });
 
-        // Should show some ranking-related text on the page
-        const rankingText = page.getByText(/your ranking|how rankings work|rank/i).first();
-        await expect(rankingText).toBeVisible({ timeout: 10000 });
+        // "How Rankings Work" is always rendered in the sidebar regardless of data load state
+        await expect(page.getByText('How Rankings Work')).toBeVisible({ timeout: 10000 });
     });
 });

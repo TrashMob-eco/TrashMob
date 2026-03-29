@@ -4,10 +4,12 @@ test.describe('Profile Edit Flow', () => {
     test.describe.configure({ retries: 2 });
     test('should edit and save profile name fields', async ({ authenticatedPage: page }) => {
         await page.goto('/myprofile');
-        await page.waitForLoadState('networkidle').catch(() => {});
 
         const givenNameInput = page.locator('input[name="givenName"]');
         await expect(givenNameInput).toBeVisible({ timeout: 30000 });
+
+        // Wait for React Query to populate the form
+        await expect(givenNameInput).not.toHaveValue('', { timeout: 15000 });
 
         // Save original value
         const originalGivenName = await givenNameInput.inputValue();
@@ -22,11 +24,10 @@ test.describe('Profile Edit Flow', () => {
         // Should show success toast
         await expect(page.getByText('Profile updated!', { exact: true })).toBeVisible({ timeout: 10000 });
 
-        // Restore original value — reload same page and wait for form to repopulate
+        // Restore original value — reload and wait for form to repopulate
         await page.reload({ waitUntil: 'domcontentloaded' });
         await expect(givenNameInput).toBeVisible({ timeout: 15000 });
-        // Wait for React Query to repopulate the form
-        await page.waitForTimeout(2000);
+        await expect(givenNameInput).not.toHaveValue('', { timeout: 15000 });
         await givenNameInput.fill(originalGivenName);
         await page.getByRole('button', { name: /save/i }).click();
         await expect(page.getByText('Profile updated!', { exact: true })).toBeVisible({ timeout: 10000 });
@@ -70,19 +71,20 @@ test.describe('Profile Edit Flow', () => {
 
     test('should persist profile data after page reload', async ({ authenticatedPage: page }) => {
         await page.goto('/myprofile');
-        await page.waitForLoadState('networkidle').catch(() => {});
 
-        const cityInput = page.locator('input[name="city"]');
-        await expect(cityInput).toBeVisible({ timeout: 30000 });
+        const givenNameInput = page.locator('input[name="givenName"]');
+        await expect(givenNameInput).toBeVisible({ timeout: 30000 });
 
-        // Get current city value
-        const currentCity = await cityInput.inputValue();
+        // Wait for React Query to populate the form (input should have a non-empty value)
+        await expect(givenNameInput).not.toHaveValue('', { timeout: 15000 });
+        const currentValue = await givenNameInput.inputValue();
 
-        // Reload and verify it persists
+        // Reload and wait for the form to repopulate
         await page.reload();
-        await expect(cityInput).toBeVisible({ timeout: 15000 });
-        const reloadedCity = await cityInput.inputValue();
+        await expect(givenNameInput).toBeVisible({ timeout: 15000 });
+        await expect(givenNameInput).not.toHaveValue('', { timeout: 15000 });
+        const reloadedValue = await givenNameInput.inputValue();
 
-        expect(reloadedCity).toBe(currentCity);
+        expect(reloadedValue).toBe(currentValue);
     });
 });
