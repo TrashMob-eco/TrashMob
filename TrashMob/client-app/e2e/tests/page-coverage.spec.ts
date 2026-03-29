@@ -63,6 +63,7 @@ authTest.describe('Page Coverage — Authenticated Pages', () => {
     authTest('should load Achievements page', async ({ authenticatedPage: page }) => {
         await page.goto('/achievements');
 
-        await authExpect(page.getByText(/achievement/i).first()).toBeVisible({ timeout: 15000 });
+        // Wait for the h1 heading which renders immediately (before data loads)
+        await authExpect(page.getByRole('heading', { level: 1, name: /achievements/i })).toBeVisible({ timeout: 15000 });
     });
 });

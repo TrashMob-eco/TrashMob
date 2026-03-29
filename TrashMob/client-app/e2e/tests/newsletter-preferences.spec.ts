@@ -36,20 +36,16 @@ test.describe('Newsletter Preferences', () => {
         // Get initial state
         const initialState = await firstSwitch.getAttribute('data-state');
 
-        // Click to toggle
+        // Click to toggle and wait for state to change
         await firstSwitch.click();
-        await page.waitForTimeout(1000);
+        await expect(firstSwitch).not.toHaveAttribute('data-state', initialState!, { timeout: 5000 });
 
-        // State should have changed
         const newState = await firstSwitch.getAttribute('data-state');
         expect(newState).not.toBe(initialState);
 
         // Toggle back to restore original state
         await firstSwitch.click();
-        await page.waitForTimeout(1000);
-
-        const restoredState = await firstSwitch.getAttribute('data-state');
-        expect(restoredState).toBe(initialState);
+        await expect(firstSwitch).toHaveAttribute('data-state', initialState!, { timeout: 5000 });
     });
 
     test('should show Unsubscribe All button', async ({ authenticatedPage: page }) => {
