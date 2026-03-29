@@ -76,7 +76,7 @@ jobs:
       uses: docker/setup-buildx-action@v4
 
     - name: Build TrashMob Web App Container
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v7
       with:
         context: .
         file: TrashMob/Dockerfile
