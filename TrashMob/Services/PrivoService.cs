@@ -84,9 +84,17 @@ namespace TrashMob.Services
                 principal["birthdate"] = "19900101";
             }
 
+            // For adult verification, the adult is both principal and granter
+            var granter = new Dictionary<string, object>
+            {
+                ["email"] = user.Email ?? string.Empty,
+                ["given_name"] = user.GivenName ?? string.Empty,
+            };
+
             var payload = new Dictionary<string, object>
             {
                 ["principal"] = principal,
+                ["granter"] = granter,
                 ["features"] = new[] { "trashmobservice_adult_identity_verification" },
             };
 
