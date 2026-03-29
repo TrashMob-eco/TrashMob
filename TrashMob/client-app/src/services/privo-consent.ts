@@ -4,6 +4,20 @@ import { ApiService } from '.';
 import ParentalConsentData from '../components/Models/ParentalConsentData';
 
 // ============================================================================
+// Feature Flag
+// ============================================================================
+
+export type GetPrivoEnabled_Response = { enabled: boolean };
+export const GetPrivoEnabled = () => ({
+    key: ['/privo/enabled'],
+    service: async () =>
+        ApiService('public').fetchData<GetPrivoEnabled_Response>({
+            url: '/v2/privo/enabled',
+            method: 'get',
+        }),
+});
+
+// ============================================================================
 // Adult Verification (Flow 1)
 // ============================================================================
 

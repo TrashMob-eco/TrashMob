@@ -8,6 +8,7 @@ namespace TrashMob.Controllers.V2
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models.Extensions.V2;
@@ -25,11 +26,25 @@ namespace TrashMob.Controllers.V2
     [Route("api/v{version:apiVersion}/privo")]
     public class PrivoConsentV2Controller(
         IPrivoConsentManager privoConsentManager,
+        IConfiguration configuration,
         ILogger<PrivoConsentV2Controller> logger) : ControllerBase
     {
+        private bool IsPrivoEnabled => configuration.GetValue("Privo:Enabled", false);
         private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId)
             ? parsedUserId
             : Guid.Empty;
+
+        /// <summary>
+        /// Returns whether the PRIVO integration is enabled.
+        /// </summary>
+        /// <response code="200">Returns enabled status.</response>
+        [HttpGet("enabled")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        public IActionResult GetEnabled()
+        {
+            return Ok(new { enabled = IsPrivoEnabled });
+        }
 
         /// <summary>
         /// Initiates adult identity verification via PRIVO (Flow 1).
@@ -39,6 +54,7 @@ namespace TrashMob.Controllers.V2
         /// <response code="200">Verification initiated, redirect to ConsentUrl.</response>
         /// <response code="400">User already verified or validation error.</response>
         /// <response code="401">Not authenticated.</response>
+        /// <response code="503">PRIVO integration not enabled.</response>
         [HttpPost("verify")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
@@ -46,6 +62,8 @@ namespace TrashMob.Controllers.V2
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> InitiateAdultVerification(CancellationToken cancellationToken)
         {
+            if (!IsPrivoEnabled) return StatusCode(503, new { message = "PRIVO integration is not yet enabled." });
+
             logger.LogInformation("V2 InitiateAdultVerification for User={UserId}", UserId);
 
             var consent = await privoConsentManager.InitiateAdultVerificationAsync(UserId, cancellationToken);

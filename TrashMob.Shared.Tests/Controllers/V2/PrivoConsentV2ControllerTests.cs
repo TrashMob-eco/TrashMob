@@ -1,10 +1,12 @@
 namespace TrashMob.Shared.Tests.Controllers.V2
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using TrashMob.Controllers.V2;
@@ -22,7 +24,11 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
         public PrivoConsentV2ControllerTests()
         {
-            controller = new PrivoConsentV2Controller(privoConsentManager.Object, logger.Object);
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string> { ["Privo:Enabled"] = "true" })
+                .Build();
+
+            controller = new PrivoConsentV2Controller(privoConsentManager.Object, config, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),
