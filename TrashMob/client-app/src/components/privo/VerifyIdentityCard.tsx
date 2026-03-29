@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { GetVerificationStatus, InitiateAdultVerification } from '@/services/privo-consent';
+import { GetPrivoEnabled, GetVerificationStatus, InitiateAdultVerification } from '@/services/privo-consent';
 
 interface VerifyIdentityCardProps {
     isVerified: boolean;
@@ -16,11 +16,18 @@ export const VerifyIdentityCard: FC<VerifyIdentityCardProps> = ({ isVerified }) 
     const { toast } = useToast();
     const queryClient = useQueryClient();
 
+    const enabledQuery = useQuery({
+        queryKey: GetPrivoEnabled().key,
+        queryFn: GetPrivoEnabled().service,
+        select: (res) => res.data?.enabled ?? false,
+        staleTime: 5 * 60 * 1000,
+    });
+
     const statusQuery = useQuery({
         queryKey: GetVerificationStatus().key,
         queryFn: GetVerificationStatus().service,
         select: (res) => res.data,
-        enabled: !isVerified,
+        enabled: !isVerified && enabledQuery.data === true,
     });
 
     const verifyMutation = useMutation({
@@ -41,6 +48,10 @@ export const VerifyIdentityCard: FC<VerifyIdentityCardProps> = ({ isVerified }) 
     });
 
     const isPending = statusQuery.data?.status === 1;
+
+    // Don't render until we know the feature is enabled
+    if (enabledQuery.isLoading) return null;
+    if (!enabledQuery.data && !isVerified) return null;
 
     if (isVerified) {
         return (
