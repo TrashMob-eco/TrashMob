@@ -66,20 +66,28 @@ namespace TrashMob.Services
             var token = await GetAccessTokenAsync(cancellationToken);
             if (token == null) return null;
 
+            var principal = new Dictionary<string, object>
+            {
+                ["eid"] = user.Id.ToString(),
+                ["given_name"] = user.GivenName ?? string.Empty,
+                ["email"] = user.Email ?? string.Empty,
+                ["birthdate_precision"] = "yyyymmdd",
+            };
+
+            if (user.DateOfBirth.HasValue)
+            {
+                principal["birthdate"] = user.DateOfBirth.Value.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                // Birthdate is required — use a placeholder adult date if not set
+                principal["birthdate"] = "1990-01-01";
+            }
+
             var payload = new Dictionary<string, object>
             {
-                ["service_identifier"] = ServiceIdentifier,
-                ["principal"] = new Dictionary<string, object>
-                {
-                    ["ext_id"] = user.Id.ToString(),
-                    ["attributes"] = new[]
-                    {
-                        new { identifier = AttrGranterGivenName, value = user.GivenName ?? string.Empty },
-                        new { identifier = AttrGranterFamilyName, value = user.Surname ?? string.Empty },
-                        new { identifier = AttrGranterEmail, value = user.Email ?? string.Empty },
-                        new { identifier = AttrGranterBirthdate, value = user.DateOfBirth?.ToString("yyyy-MM-dd") ?? string.Empty },
-                    },
-                },
+                ["principal"] = principal,
+                ["features"] = new[] { "trashmobservice_adult_identity_verification" },
             };
 
             return await PostConsentRequestAsync(token, payload, cancellationToken);
@@ -163,27 +171,29 @@ namespace TrashMob.Services
 
             var principal = new Dictionary<string, object>
             {
-                ["ext_id"] = child.Id.ToString(),
-                ["attributes"] = new[]
-                {
-                    new { identifier = AttrPrincipalGivenName, value = child.FirstName ?? string.Empty },
-                    new { identifier = AttrPrincipalFamilyName, value = child.LastName ?? string.Empty },
-                    new { identifier = AttrPrincipalBirthdate, value = child.DateOfBirth.ToString("yyyy-MM-dd") },
-                },
+                ["eid"] = child.Id.ToString(),
+                ["given_name"] = child.FirstName ?? string.Empty,
+                ["email"] = child.FirstName ?? string.Empty, // Child may not have email yet
+                ["birthdate"] = child.DateOfBirth.ToString("yyyy-MM-dd"),
+                ["birthdate_precision"] = "yyyymmdd",
             };
+
+            var granter = new Dictionary<string, object>
+            {
+                ["email"] = parent.Email ?? string.Empty,
+            };
+
+            if (!string.IsNullOrEmpty(parent.PrivoSid))
+            {
+                granter["sid"] = parent.PrivoSid;
+            }
 
             var payload = new Dictionary<string, object>
             {
-                ["service_identifier"] = ServiceIdentifier,
                 ["principal"] = principal,
-                ["granter_email"] = parent.Email ?? string.Empty,
+                ["granter"] = granter,
+                ["features"] = new[] { "trashmobservice_account" },
             };
-
-            // If parent has a PRIVO SiD, use it for the granter reference
-            if (!string.IsNullOrEmpty(parent.PrivoSid))
-            {
-                payload["granter_sid"] = parent.PrivoSid;
-            }
 
             return await PostConsentRequestAsync(token, payload, cancellationToken);
         }
@@ -198,17 +208,18 @@ namespace TrashMob.Services
 
             var payload = new Dictionary<string, object>
             {
-                ["service_identifier"] = ServiceIdentifier,
                 ["principal"] = new Dictionary<string, object>
                 {
-                    ["attributes"] = new[]
-                    {
-                        new { identifier = AttrPrincipalGivenName, value = childFirstName },
-                        new { identifier = AttrPrincipalEmail, value = childEmail },
-                        new { identifier = AttrPrincipalBirthdate, value = childBirthDate.ToString("yyyy-MM-dd") },
-                    },
+                    ["given_name"] = childFirstName,
+                    ["email"] = childEmail,
+                    ["birthdate"] = childBirthDate.ToString("yyyy-MM-dd"),
+                    ["birthdate_precision"] = "yyyymmdd",
                 },
-                ["granter_email"] = parentEmail,
+                ["granter"] = new Dictionary<string, object>
+                {
+                    ["email"] = parentEmail,
+                },
+                ["features"] = new[] { "trashmobservice_account" },
             };
 
             return await PostConsentRequestAsync(token, payload, cancellationToken);
