@@ -66,28 +66,39 @@ namespace TrashMob.Services
             var token = await GetAccessTokenAsync(cancellationToken);
             if (token == null) return null;
 
-            var principal = new Dictionary<string, object>
-            {
-                ["eid"] = user.Id.ToString(),
-                ["given_name"] = user.GivenName ?? string.Empty,
-                ["email"] = user.Email ?? string.Empty,
-                ["birthdate_precision"] = "yyyymmdd",
-            };
-
-            if (user.DateOfBirth.HasValue)
-            {
-                principal["birthdate"] = user.DateOfBirth.Value.ToString("yyyyMMdd");
-            }
-            else
-            {
-                // Birthdate is required — use a placeholder adult date if not set
-                principal["birthdate"] = "19900101";
-            }
+            var birthdate = user.DateOfBirth.HasValue
+                ? user.DateOfBirth.Value.ToString("yyyyMMdd")
+                : "19900101";
 
             var payload = new Dictionary<string, object>
             {
-                ["principal"] = principal,
-                ["features"] = new[] { "trashmobservice_adult_identity_verification" },
+                ["granter"] = new Dictionary<string, object>
+                {
+                    ["email"] = user.Email ?? string.Empty,
+                    ["notifications"] = new[]
+                    {
+                        new { is_on = true, notification_type = "consent_request_email" },
+                        new { is_on = true, notification_type = "consent_approved_email" },
+                    },
+                },
+                ["locale"] = "en-US",
+                ["principal"] = new Dictionary<string, object>
+                {
+                    ["given_name"] = user.GivenName ?? string.Empty,
+                    ["birthdate"] = birthdate,
+                    ["birthdate_precision"] = "yyyymmdd",
+                    ["email"] = user.Email ?? string.Empty,
+                    ["email_verified"] = true,
+                    ["eid"] = user.Id.ToString(),
+                    ["attributes"] = new[]
+                    {
+                        new
+                        {
+                            attribute_identifier = AttrGranterFamilyName,
+                            value = new[] { user.Surname ?? string.Empty },
+                        },
+                    },
+                },
             };
 
             return await PostConsentRequestAsync(token, payload, cancellationToken);
@@ -169,18 +180,13 @@ namespace TrashMob.Services
             var token = await GetAccessTokenAsync(cancellationToken);
             if (token == null) return null;
 
-            var principal = new Dictionary<string, object>
-            {
-                ["eid"] = child.Id.ToString(),
-                ["given_name"] = child.FirstName ?? string.Empty,
-                ["email"] = child.FirstName ?? string.Empty, // Child may not have email yet
-                ["birthdate"] = child.DateOfBirth.ToString("yyyyMMdd"),
-                ["birthdate_precision"] = "yyyymmdd",
-            };
-
             var granter = new Dictionary<string, object>
             {
                 ["email"] = parent.Email ?? string.Empty,
+                ["notifications"] = new[]
+                {
+                    new { is_on = true, notification_type = "consent_request_email" },
+                },
             };
 
             if (!string.IsNullOrEmpty(parent.PrivoSid))
@@ -190,9 +196,16 @@ namespace TrashMob.Services
 
             var payload = new Dictionary<string, object>
             {
-                ["principal"] = principal,
                 ["granter"] = granter,
-                ["features"] = new[] { "trashmobservice_account" },
+                ["locale"] = "en-US",
+                ["principal"] = new Dictionary<string, object>
+                {
+                    ["given_name"] = child.FirstName ?? string.Empty,
+                    ["birthdate"] = child.DateOfBirth.ToString("yyyyMMdd"),
+                    ["birthdate_precision"] = "yyyymmdd",
+                    ["eid"] = child.Id.ToString(),
+                    ["email"] = child.LastName ?? string.Empty, // placeholder — child may not have email yet
+                },
             };
 
             return await PostConsentRequestAsync(token, payload, cancellationToken);
@@ -208,6 +221,15 @@ namespace TrashMob.Services
 
             var payload = new Dictionary<string, object>
             {
+                ["granter"] = new Dictionary<string, object>
+                {
+                    ["email"] = parentEmail,
+                    ["notifications"] = new[]
+                    {
+                        new { is_on = true, notification_type = "consent_request_email" },
+                    },
+                },
+                ["locale"] = "en-US",
                 ["principal"] = new Dictionary<string, object>
                 {
                     ["given_name"] = childFirstName,
@@ -215,11 +237,6 @@ namespace TrashMob.Services
                     ["birthdate"] = childBirthDate.ToString("yyyyMMdd"),
                     ["birthdate_precision"] = "yyyymmdd",
                 },
-                ["granter"] = new Dictionary<string, object>
-                {
-                    ["email"] = parentEmail,
-                },
-                ["features"] = new[] { "trashmobservice_account" },
             };
 
             return await PostConsentRequestAsync(token, payload, cancellationToken);
@@ -304,8 +321,8 @@ namespace TrashMob.Services
                 var client = httpClientFactory.CreateClient("Privo");
                 var url = $"{BaseUrl}/s2s/api/v1.0/{ServiceIdentifier}/accounts/sid/{principalSid}/{granterSid}/features/revoke";
 
-                var payload = new { features = AllFeatures };
-                var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+                // Postman shows revoke body is just an array of feature identifiers
+                var content = new StringContent(JsonSerializer.Serialize(AllFeatures), Encoding.UTF8, "application/json");
 
                 var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = content };
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -469,8 +486,12 @@ namespace TrashMob.Services
 
             var result = new PrivoConsentResponse();
 
-            if (root.TryGetProperty("sid", out var sidProp))
-                result.Sid = sidProp.GetString() ?? string.Empty;
+            // Response format from Postman: principal_identifiers.sid, granter_identifiers.sid, consent_identifier
+            if (root.TryGetProperty("principal_identifiers", out var principalIds))
+            {
+                if (principalIds.TryGetProperty("sid", out var sidProp))
+                    result.Sid = sidProp.GetString() ?? string.Empty;
+            }
 
             if (root.TryGetProperty("consent_identifier", out var consentIdProp))
                 result.ConsentIdentifier = consentIdProp.GetString() ?? string.Empty;
@@ -478,8 +499,11 @@ namespace TrashMob.Services
             if (root.TryGetProperty("consent_url", out var consentUrlProp))
                 result.ConsentUrl = consentUrlProp.GetString() ?? string.Empty;
 
-            if (root.TryGetProperty("granter_sid", out var granterSidProp))
-                result.GranterSid = granterSidProp.GetString();
+            if (root.TryGetProperty("granter_identifiers", out var granterIds))
+            {
+                if (granterIds.TryGetProperty("sid", out var granterSidProp))
+                    result.GranterSid = granterSidProp.GetString();
+            }
 
             return result;
         }
