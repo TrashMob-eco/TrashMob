@@ -5,6 +5,7 @@ namespace TrashMob.Shared.Managers
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
@@ -18,6 +19,7 @@ namespace TrashMob.Shared.Managers
         MobDbContext dbContext,
         IPrivoService privoService,
         IDependentInvitationManager dependentInvitationManager,
+        IConfiguration configuration,
         ILogger<PrivoConsentManager> logger) : IPrivoConsentManager
     {
         private const int MinimumMinorAge = 13;
@@ -35,9 +37,19 @@ namespace TrashMob.Shared.Managers
                 throw new InvalidOperationException("User identity is already verified.");
             }
 
-            // Call PRIVO Section 2
+            // Step 1: Call PRIVO Section 2 — create the consent/verification request
             var privoResponse = await privoService.CreateAdultVerificationRequestAsync(user, cancellationToken)
                 ?? throw new InvalidOperationException("Failed to create PRIVO verification request. Please try again.");
+
+            // Step 2: Call PRIVO Section 3 — get the direct verification widget URL
+            // This skips the consent pre-screens and goes directly to identity verification
+            var redirectBaseUrl = configuration["Privo:RedirectBaseUrl"] ?? "https://www.trashmob.eco";
+            var redirectUrl = redirectBaseUrl.TrimEnd('/') + "/privo/callback";
+            var verificationUrl = await privoService.GetDirectVerificationUrlAsync(
+                privoResponse.ConsentIdentifier, redirectUrl, cancellationToken);
+
+            // Use the verification widget URL if available, otherwise fall back to consent URL
+            var consentUrl = verificationUrl ?? privoResponse.ConsentUrl;
 
             // Store SiD on user
             user.PrivoSid = privoResponse.Sid;
@@ -50,9 +62,10 @@ namespace TrashMob.Shared.Managers
                 UserId = userId,
                 PrivoConsentIdentifier = privoResponse.ConsentIdentifier,
                 PrivoSid = privoResponse.Sid,
+                PrivoGranterSid = privoResponse.GranterSid,
                 ConsentType = ConsentType.AdultVerification,
                 Status = ConsentStatus.Pending,
-                ConsentUrl = privoResponse.ConsentUrl,
+                ConsentUrl = consentUrl,
                 CreatedByUserId = userId,
                 CreatedDate = DateTimeOffset.UtcNow,
                 LastUpdatedByUserId = userId,
@@ -63,8 +76,8 @@ namespace TrashMob.Shared.Managers
             await dbContext.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(
-                "Adult verification initiated for User={UserId}, ConsentId={ConsentId}, PrivoSid={PrivoSid}",
-                userId, consent.Id, privoResponse.Sid);
+                "Adult verification initiated for User={UserId}, ConsentId={ConsentId}, PrivoSid={PrivoSid}, VerificationUrl={HasUrl}",
+                userId, consent.Id, privoResponse.Sid, !string.IsNullOrEmpty(verificationUrl));
 
             return consent;
         }
