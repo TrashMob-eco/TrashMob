@@ -424,7 +424,10 @@ namespace TrashMob.Services
                 var client = httpClientFactory.CreateClient("Privo");
                 var url = $"{BaseUrl}/s2s/api/v1.0/{ServiceIdentifier}/requests";
 
-                var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+                var jsonPayload = JsonSerializer.Serialize(payload);
+                logger.LogInformation("PRIVO consent request: POST {Url}, Body={Body}", url, jsonPayload);
+
+                var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
                 var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = content };
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -433,8 +436,8 @@ namespace TrashMob.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
-                    logger.LogWarning("PRIVO consent request returned {StatusCode}: {ErrorBody}",
-                        response.StatusCode, errorBody);
+                    logger.LogWarning("PRIVO consent request returned {StatusCode} {ReasonPhrase}: {ErrorBody}",
+                        (int)response.StatusCode, response.ReasonPhrase, errorBody);
                     return null;
                 }
 
