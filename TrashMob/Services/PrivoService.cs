@@ -2,6 +2,7 @@ namespace TrashMob.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
@@ -337,6 +338,12 @@ namespace TrashMob.Services
             var clientId = configuration["Privo-ClientId"] ?? configuration["Privo:ClientId"];
             var clientSecret = configuration["Privo-ClientSecret"] ?? configuration["Privo:ClientSecret"];
 
+            logger.LogInformation(
+                "PRIVO token acquisition: BaseUrl={BaseUrl}, ClientId={ClientIdPresent}, ClientSecret={ClientSecretPresent}",
+                BaseUrl,
+                string.IsNullOrWhiteSpace(clientId) ? "MISSING" : clientId[..4] + "...",
+                string.IsNullOrWhiteSpace(clientSecret) ? "MISSING" : "***set***");
+
             if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
             {
                 logger.LogWarning("PRIVO service disabled: Privo-ClientId or Privo-ClientSecret not configured");
@@ -348,6 +355,8 @@ namespace TrashMob.Services
                 var client = httpClientFactory.CreateClient("Privo");
                 var tokenUrl = $"{BaseUrl}/token";
 
+                logger.LogInformation("PRIVO token request: POST {TokenUrl}", tokenUrl);
+
                 var formData = new FormUrlEncodedContent(
                 [
                     new KeyValuePair<string, string>("grant_type", "client_credentials"),
@@ -357,19 +366,25 @@ namespace TrashMob.Services
                 ]);
 
                 var response = await client.PostAsync(tokenUrl, formData, cancellationToken);
+                var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    logger.LogWarning("PRIVO token request returned {StatusCode}", response.StatusCode);
+                    logger.LogWarning(
+                        "PRIVO token request failed: {StatusCode} {ReasonPhrase}, URL={TokenUrl}, Response={ResponseBody}",
+                        (int)response.StatusCode, response.ReasonPhrase, tokenUrl, responseBody);
                     return null;
                 }
 
-                var json = await response.Content.ReadAsStringAsync(cancellationToken);
-                using var doc = JsonDocument.Parse(json);
+                logger.LogInformation("PRIVO token response: {StatusCode}, BodyLength={BodyLength}",
+                    (int)response.StatusCode, responseBody.Length);
+
+                using var doc = JsonDocument.Parse(responseBody);
 
                 if (!doc.RootElement.TryGetProperty("access_token", out var tokenProp))
                 {
-                    logger.LogWarning("PRIVO token response missing access_token");
+                    logger.LogWarning("PRIVO token response missing access_token. Keys={Keys}",
+                        string.Join(", ", doc.RootElement.EnumerateObject().Select(p => p.Name)));
                     return null;
                 }
 
@@ -381,7 +396,7 @@ namespace TrashMob.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to acquire PRIVO access token");
+                logger.LogError(ex, "Failed to acquire PRIVO access token from {BaseUrl}/token", BaseUrl);
                 return null;
             }
         }
