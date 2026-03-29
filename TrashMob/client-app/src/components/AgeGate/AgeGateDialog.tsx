@@ -82,8 +82,14 @@ export function AgeGateDialog({ open, onOpenChange, onConfirm }: AgeGateDialogPr
                     </DialogFooter>
                 ) : isMinorUser ? (
                     <DialogFooter>
-                        <Button variant='outline' onClick={() => handleOpenChange(false)}>
-                            Cancel
+                        <Button
+                            variant='outline'
+                            onClick={() => {
+                                setIsMinorUser(false);
+                                setDob(undefined);
+                            }}
+                        >
+                            Go Back
                         </Button>
                         <Button onClick={handleChildSignup}>Request Parental Consent</Button>
                     </DialogFooter>
