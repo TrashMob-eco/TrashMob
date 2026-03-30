@@ -28,6 +28,7 @@ export const VerifyIdentityCard: FC<VerifyIdentityCardProps> = ({ isVerified }) 
         queryFn: GetVerificationStatus().service,
         select: (res) => res.data,
         enabled: !isVerified && enabledQuery.data === true,
+        retry: false,
     });
 
     const verifyMutation = useMutation({
