@@ -250,38 +250,58 @@ namespace TrashMob.Shared.Managers
                 return;
             }
 
-            // Determine new status from event types
             var eventTypes = string.Join(",", payload.EventTypes);
 
-            // For now, treat any webhook on a pending consent as verification
-            // PRIVO will clarify the full event_types list during integration testing
-            consent.Status = ConsentStatus.Verified;
-            consent.VerifiedDate = DateTimeOffset.UtcNow;
-            consent.LastUpdatedDate = DateTimeOffset.UtcNow;
+            // Only mark as verified for completion events — not creation events
+            var isApproved = payload.EventTypes.Any(e =>
+                e.Contains("approved", StringComparison.OrdinalIgnoreCase) ||
+                e.Contains("completed", StringComparison.OrdinalIgnoreCase) ||
+                e.Contains("granted", StringComparison.OrdinalIgnoreCase) ||
+                e.Contains("verified", StringComparison.OrdinalIgnoreCase));
 
-            // Flow-specific processing
-            switch (consent.ConsentType)
+            var isDenied = payload.EventTypes.Any(e =>
+                e.Contains("denied", StringComparison.OrdinalIgnoreCase) ||
+                e.Contains("rejected", StringComparison.OrdinalIgnoreCase) ||
+                e.Contains("declined", StringComparison.OrdinalIgnoreCase));
+
+            if (isApproved)
             {
-                case ConsentType.AdultVerification:
-                    await ProcessAdultVerificationWebhookAsync(consent, cancellationToken);
-                    break;
+                consent.Status = ConsentStatus.Verified;
+                consent.VerifiedDate = DateTimeOffset.UtcNow;
+                consent.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-                case ConsentType.ParentInitiatedChild:
-                    await ProcessParentChildConsentWebhookAsync(consent, cancellationToken);
-                    break;
+                switch (consent.ConsentType)
+                {
+                    case ConsentType.AdultVerification:
+                        await ProcessAdultVerificationWebhookAsync(consent, cancellationToken);
+                        break;
 
-                case ConsentType.ChildInitiated:
-                    // Child-initiated consent approved — the child will receive an account creation email
-                    // triggered by PRIVO or by the parent adding them as a dependent
-                    logger.LogInformation(
-                        "Child-initiated consent verified: ConsentId={ConsentId}", consent.Id);
-                    break;
+                    case ConsentType.ParentInitiatedChild:
+                        await ProcessParentChildConsentWebhookAsync(consent, cancellationToken);
+                        break;
+
+                    case ConsentType.ChildInitiated:
+                        logger.LogInformation("Child-initiated consent verified: ConsentId={ConsentId}", consent.Id);
+                        break;
+                }
+            }
+            else if (isDenied)
+            {
+                consent.Status = ConsentStatus.Denied;
+                consent.LastUpdatedDate = DateTimeOffset.UtcNow;
+            }
+            else
+            {
+                // Creation or other informational events — log but don't change status
+                logger.LogInformation(
+                    "PRIVO webhook: non-completion event for ConsentId={ConsentId}, EventTypes={EventTypes}. No status change.",
+                    consent.Id, eventTypes);
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(
-                "PRIVO webhook processed: ConsentId={ConsentId}, EventTypes={EventTypes}, NewStatus={Status}, WebhookId={WebhookId}",
+                "PRIVO webhook processed: ConsentId={ConsentId}, EventTypes={EventTypes}, Status={Status}, WebhookId={WebhookId}",
                 consent.Id, eventTypes, consent.Status, payload.Id);
         }
 
