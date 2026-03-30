@@ -116,21 +116,33 @@ namespace TrashMob.Services
                 var client = httpClientFactory.CreateClient("Privo");
                 var url = $"{BaseUrl}/s2s/api/v1.0/{ServiceIdentifier}/consents/{consentIdentifier}/verification/session?redirect_url={Uri.EscapeDataString(redirectUrl)}";
 
+                logger.LogInformation("PRIVO GetDirectVerificationUrl: POST {Url}", url);
+
                 var request = new HttpRequestMessage(HttpMethod.Post, url);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
                 var response = await client.SendAsync(request, cancellationToken);
+                var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    logger.LogWarning("PRIVO GetDirectVerificationUrl returned {StatusCode} for consent {ConsentId}",
-                        response.StatusCode, consentIdentifier);
+                    logger.LogWarning("PRIVO GetDirectVerificationUrl returned {StatusCode}: {ResponseBody}",
+                        (int)response.StatusCode, responseBody);
                     return null;
                 }
 
-                var json = await response.Content.ReadAsStringAsync(cancellationToken);
-                using var doc = JsonDocument.Parse(json);
-                return doc.RootElement.TryGetProperty("url", out var urlProp) ? urlProp.GetString() : null;
+                logger.LogInformation("PRIVO GetDirectVerificationUrl response: {ResponseBody}", responseBody);
+
+                using var doc = JsonDocument.Parse(responseBody);
+                var verificationUrl = doc.RootElement.TryGetProperty("url", out var urlProp) ? urlProp.GetString() : null;
+
+                if (string.IsNullOrEmpty(verificationUrl))
+                {
+                    logger.LogWarning("PRIVO GetDirectVerificationUrl: response missing 'url' field. Keys={Keys}",
+                        string.Join(", ", doc.RootElement.EnumerateObject().Select(p => p.Name)));
+                }
+
+                return verificationUrl;
             }
             catch (Exception ex)
             {
