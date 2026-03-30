@@ -112,7 +112,7 @@ namespace TrashMob.Shared.Tests.Services
             Assert.Equal(JsonValueKind.Array, notifications.ValueKind);
             Assert.Equal(2, notifications.GetArrayLength());
             Assert.Equal("consent_request_email", notifications[0].GetProperty("notification_type").GetString());
-            Assert.True(notifications[0].GetProperty("is_on").GetBoolean());
+            Assert.False(notifications[0].GetProperty("is_on").GetBoolean()); // Suppressed for adult self-verification
             Assert.Equal("consent_approved_email", notifications[1].GetProperty("notification_type").GetString());
 
             // Principal: given_name, birthdate, birthdate_precision, email, email_verified, eid, attributes

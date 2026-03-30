@@ -75,9 +75,11 @@ namespace TrashMob.Services
                 ["granter"] = new Dictionary<string, object>
                 {
                     ["email"] = user.Email ?? string.Empty,
+                    // Suppress consent_request_email for adult self-verification —
+                    // the user is redirected to the verification widget directly
                     ["notifications"] = new[]
                     {
-                        new { is_on = true, notification_type = "consent_request_email" },
+                        new { is_on = false, notification_type = "consent_request_email" },
                         new { is_on = true, notification_type = "consent_approved_email" },
                     },
                 },
