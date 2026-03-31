@@ -484,6 +484,7 @@ namespace TrashMob.Services
                 }
 
                 var json = await response.Content.ReadAsStringAsync(cancellationToken);
+                logger.LogInformation("PRIVO consent request response: {ResponseBody}", json);
                 return ParseConsentResponse(json);
             }
             catch (Exception ex)
