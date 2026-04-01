@@ -55,6 +55,15 @@ namespace TrashMob.Shared.Managers.Interfaces
         Task<ParentalConsent> GetConsentByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Polls PRIVO for the current consent status and updates the local record.
+        /// Used as fallback when webhooks are delayed or not configured.
+        /// </summary>
+        /// <param name="userId">The user ID to check.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The updated consent record.</returns>
+        Task<ParentalConsent> RefreshConsentStatusAsync(Guid userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Revokes consent for a specific consent record.
         /// </summary>
         /// <param name="consentId">The consent record ID.</param>
