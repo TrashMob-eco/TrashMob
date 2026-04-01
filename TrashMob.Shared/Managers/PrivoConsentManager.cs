@@ -316,6 +316,65 @@ namespace TrashMob.Shared.Managers
         }
 
         /// <inheritdoc />
+        public async Task<ParentalConsent> RefreshConsentStatusAsync(
+            Guid userId, CancellationToken cancellationToken)
+        {
+            var consent = await dbContext.ParentalConsents
+                .Where(c => c.UserId == userId && c.Status == ConsentStatus.Pending)
+                .OrderByDescending(c => c.CreatedDate)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (consent == null || string.IsNullOrEmpty(consent.PrivoConsentIdentifier))
+            {
+                return consent;
+            }
+
+            // Poll PRIVO Section 7 for current status
+            var privoStatus = await privoService.GetConsentStatusAsync(consent.PrivoConsentIdentifier, cancellationToken);
+
+            logger.LogInformation(
+                "PRIVO status poll: ConsentId={ConsentId}, PrivoStatus={PrivoStatus}",
+                consent.Id, privoStatus ?? "null");
+
+            if (string.IsNullOrEmpty(privoStatus))
+            {
+                return consent;
+            }
+
+            var statusLower = privoStatus.ToLowerInvariant();
+
+            if (statusLower.Contains("approved") || statusLower.Contains("completed") ||
+                statusLower.Contains("granted") || statusLower.Contains("verified"))
+            {
+                consent.Status = ConsentStatus.Verified;
+                consent.VerifiedDate = DateTimeOffset.UtcNow;
+                consent.LastUpdatedDate = DateTimeOffset.UtcNow;
+
+                if (consent.ConsentType == ConsentType.AdultVerification)
+                {
+                    var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == consent.UserId, cancellationToken);
+                    if (user != null)
+                    {
+                        user.IsIdentityVerified = true;
+                        user.IdentityVerifiedDate = DateTimeOffset.UtcNow;
+                        user.LastUpdatedDate = DateTimeOffset.UtcNow;
+                        logger.LogInformation("Adult identity verified via status poll: User={UserId}", user.Id);
+                    }
+                }
+
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+            else if (statusLower.Contains("denied") || statusLower.Contains("rejected") || statusLower.Contains("declined"))
+            {
+                consent.Status = ConsentStatus.Denied;
+                consent.LastUpdatedDate = DateTimeOffset.UtcNow;
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+
+            return consent;
+        }
+
+        /// <inheritdoc />
         public async Task RevokeConsentAsync(
             Guid consentId, Guid requestingUserId, string reason, CancellationToken cancellationToken)
         {

@@ -1,12 +1,17 @@
 import { FC } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { BadgeCheck, ExternalLink, Loader2, ShieldCheck } from 'lucide-react';
+import { BadgeCheck, ExternalLink, Loader2, RefreshCw, ShieldCheck } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { GetPrivoEnabled, GetVerificationStatus, InitiateAdultVerification } from '@/services/privo-consent';
+import {
+    GetPrivoEnabled,
+    GetVerificationStatus,
+    InitiateAdultVerification,
+    RefreshVerificationStatus,
+} from '@/services/privo-consent';
 
 interface VerifyIdentityCardProps {
     isVerified: boolean;
@@ -48,6 +53,29 @@ export const VerifyIdentityCard: FC<VerifyIdentityCardProps> = ({ isVerified }) 
         },
     });
 
+    const refreshMutation = useMutation({
+        mutationKey: RefreshVerificationStatus().key,
+        mutationFn: RefreshVerificationStatus().service,
+        onSuccess: (res) => {
+            const consent = res.data;
+            if (consent?.status === 2) {
+                toast({ variant: 'primary', title: 'Identity verified successfully!' });
+                // Reload to update the full page state including currentUser
+                window.location.reload();
+            } else {
+                toast({
+                    variant: 'default',
+                    title: 'Still pending',
+                    description: 'Verification has not completed yet. Please try again shortly.',
+                });
+                queryClient.invalidateQueries({ queryKey: GetVerificationStatus().key });
+            }
+        },
+        onError: (error: Error) => {
+            toast({ variant: 'destructive', title: 'Status check failed', description: error.message });
+        },
+    });
+
     const isPending = statusQuery.data?.status === 1;
 
     // Don't render until we know the feature is enabled
@@ -84,9 +112,26 @@ export const VerifyIdentityCard: FC<VerifyIdentityCardProps> = ({ isVerified }) 
             </CardHeader>
             <CardContent>
                 {isPending ? (
-                    <div className='flex items-center gap-2'>
-                        <Badge variant='outline'>Pending</Badge>
-                        <span className='text-sm text-muted-foreground'>Verification in progress</span>
+                    <div className='space-y-3'>
+                        <div className='flex items-center gap-2'>
+                            <Badge variant='outline'>Pending</Badge>
+                            <span className='text-sm text-muted-foreground'>Verification in progress</span>
+                        </div>
+                        <p className='text-sm text-muted-foreground'>
+                            If you have completed verification on the PRIVO site, click below to check your status.
+                        </p>
+                        <Button
+                            variant='outline'
+                            onClick={() => refreshMutation.mutate()}
+                            disabled={refreshMutation.isPending}
+                        >
+                            {refreshMutation.isPending ? (
+                                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                            ) : (
+                                <RefreshCw className='mr-2 h-4 w-4' />
+                            )}
+                            Check Status
+                        </Button>
                     </div>
                 ) : (
                     <Button onClick={() => verifyMutation.mutate()} disabled={verifyMutation.isPending}>

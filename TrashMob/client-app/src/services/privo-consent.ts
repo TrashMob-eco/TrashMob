@@ -81,6 +81,16 @@ export const GetVerificationStatus = () => ({
         }),
 });
 
+export type RefreshVerificationStatus_Response = ParentalConsentData;
+export const RefreshVerificationStatus = () => ({
+    key: ['/privo/status/refresh'],
+    service: async () =>
+        ApiService('protected').fetchData<RefreshVerificationStatus_Response>({
+            url: '/v2/privo/status/refresh',
+            method: 'post',
+        }),
+});
+
 // ============================================================================
 // Revoke Consent
 // ============================================================================

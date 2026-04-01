@@ -151,6 +151,33 @@ namespace TrashMob.Controllers.V2
         }
 
         /// <summary>
+        /// Polls PRIVO for current consent status and updates the local record.
+        /// Use when webhook delivery is delayed or not configured.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The updated consent record.</returns>
+        /// <response code="200">Status refreshed.</response>
+        /// <response code="204">No pending consent record for this user.</response>
+        /// <response code="401">Not authenticated.</response>
+        [HttpPost("status/refresh")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(ParentalConsentDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> RefreshVerificationStatus(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 RefreshVerificationStatus for User={UserId}", UserId);
+
+            var consent = await privoConsentManager.RefreshConsentStatusAsync(UserId, cancellationToken);
+            if (consent == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(consent.ToV2Dto());
+        }
+
+        /// <summary>
         /// Revokes consent for a specific consent record.
         /// </summary>
         /// <param name="consentId">The consent record to revoke.</param>
