@@ -1,4 +1,4 @@
-﻿namespace TrashMobMobile
+namespace TrashMobMobile
 {
     using CommunityToolkit.Maui.Alerts;
     using CoreLocation;
@@ -25,6 +25,14 @@
 
             manager.AllowsBackgroundLocationUpdates = true;
             manager.PausesLocationUpdatesAutomatically = false;
+
+            // Use NearestTenMeters accuracy instead of Best — significantly reduces battery
+            // usage while still providing sufficient precision for walking-pace cleanup routes (#3263).
+            manager.DesiredAccuracy = CLLocation.AccuracyNearestTenMeters;
+
+            // 10m distance filter: eliminates redundant updates while stationary (e.g., picking
+            // up litter) and matches the Android distance threshold.
+            manager.DistanceFilter = 10;
 
             var taskCompletionSource = new TaskCompletionSource();
             cancellationToken.Register(() =>
