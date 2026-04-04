@@ -156,7 +156,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
 
             using (var sourceStream = await photo.OpenReadAsync())
-            using (var localFileStream = File.OpenWrite(LocalFilePath))
+            await using (var localFileStream = new FileStream(LocalFilePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true))
             {
                 await sourceStream.CopyToAsync(localFileStream);
             }

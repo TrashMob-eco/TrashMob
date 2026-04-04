@@ -45,7 +45,7 @@ public partial class CreatePickupLocationPage : ContentPage
                 viewModel.LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
 
                 using (var sourceStream = await photo.OpenReadAsync())
-                using (var localFileStream = File.OpenWrite(viewModel.LocalFilePath))
+                await using (var localFileStream = new FileStream(viewModel.LocalFilePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true))
                 {
                     await sourceStream.CopyToAsync(localFileStream);
                 }
