@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { useQuery, useQueries, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -107,27 +107,28 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
         return age;
     };
 
-    // Track invitations per dependent
-    const invitationQueries = (dependents || [])
-        .filter((dep) => dep.dateOfBirth && getAge(dep.dateOfBirth) >= 13)
-        .map((dep) => {
-            const config = GetDependentInvitations({ userId, dependentId: dep.id });
-            return { dependentId: dep.id, ...config };
-        });
+    // Track invitations per dependent using useQueries (handles dynamic array safely)
+    const eligibleForInvite = (dependents || []).filter((dep) => dep.dateOfBirth && getAge(dep.dateOfBirth) >= 13);
 
-    // Use a single query for all invitations - we'll fetch them individually
+    const invitationQueryResults = useQueries({
+        queries: eligibleForInvite.map((dep) => {
+            const config = GetDependentInvitations({ userId, dependentId: dep.id });
+            return {
+                queryKey: config.key,
+                queryFn: config.service,
+                enabled: !!userId && userId !== '00000000-0000-0000-0000-000000000000',
+                select: (res: { data: DependentInvitationData[] }) => res.data,
+            };
+        }),
+    });
+
     const invitationResults = new Map<string, DependentInvitationData[]>();
-    for (const q of invitationQueries) {
-        const { data } = useQuery({
-            queryKey: q.key,
-            queryFn: q.service,
-            enabled: !!userId && userId !== '00000000-0000-0000-0000-000000000000',
-            select: (res: { data: DependentInvitationData[] }) => res.data,
-        });
+    eligibleForInvite.forEach((dep, i) => {
+        const data = invitationQueryResults[i]?.data;
         if (data) {
-            invitationResults.set(q.dependentId, data);
+            invitationResults.set(dep.id, data);
         }
-    }
+    });
 
     const getActiveInvitation = (dependentId: string): DependentInvitationData | undefined => {
         const invitations = invitationResults.get(dependentId);
