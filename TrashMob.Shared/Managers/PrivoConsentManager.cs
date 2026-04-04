@@ -252,50 +252,68 @@ namespace TrashMob.Shared.Managers
 
             var eventTypes = string.Join(",", payload.EventTypes);
 
-            // Only mark as verified for completion events — not creation events
-            var isApproved = payload.EventTypes.Any(e =>
-                e.Contains("approved", StringComparison.OrdinalIgnoreCase) ||
-                e.Contains("completed", StringComparison.OrdinalIgnoreCase) ||
-                e.Contains("granted", StringComparison.OrdinalIgnoreCase) ||
-                e.Contains("verified", StringComparison.OrdinalIgnoreCase));
+            // Skip pure creation/notice events — poll PRIVO for anything else
+            var isCreationOnly = payload.EventTypes.All(e =>
+                e.Contains("created", StringComparison.OrdinalIgnoreCase) ||
+                e.Contains("delivered", StringComparison.OrdinalIgnoreCase));
 
-            var isDenied = payload.EventTypes.Any(e =>
-                e.Contains("denied", StringComparison.OrdinalIgnoreCase) ||
-                e.Contains("rejected", StringComparison.OrdinalIgnoreCase) ||
-                e.Contains("declined", StringComparison.OrdinalIgnoreCase));
-
-            if (isApproved)
+            if (isCreationOnly)
             {
-                consent.Status = ConsentStatus.Verified;
-                consent.VerifiedDate = DateTimeOffset.UtcNow;
-                consent.LastUpdatedDate = DateTimeOffset.UtcNow;
-
-                switch (consent.ConsentType)
-                {
-                    case ConsentType.AdultVerification:
-                        await ProcessAdultVerificationWebhookAsync(consent, cancellationToken);
-                        break;
-
-                    case ConsentType.ParentInitiatedChild:
-                        await ProcessParentChildConsentWebhookAsync(consent, cancellationToken);
-                        break;
-
-                    case ConsentType.ChildInitiated:
-                        logger.LogInformation("Child-initiated consent verified: ConsentId={ConsentId}", consent.Id);
-                        break;
-                }
-            }
-            else if (isDenied)
-            {
-                consent.Status = ConsentStatus.Denied;
-                consent.LastUpdatedDate = DateTimeOffset.UtcNow;
+                logger.LogInformation(
+                    "PRIVO webhook: creation/notice event for ConsentId={ConsentId}, EventTypes={EventTypes}. No status change.",
+                    consent.Id, eventTypes);
             }
             else
             {
-                // Creation or other informational events — log but don't change status
+                // For any substantive event (consent_updated, account_feature_updated, etc.),
+                // poll PRIVO Section 7 to get the authoritative state
                 logger.LogInformation(
-                    "PRIVO webhook: non-completion event for ConsentId={ConsentId}, EventTypes={EventTypes}. No status change.",
+                    "PRIVO webhook: substantive event for ConsentId={ConsentId}, EventTypes={EventTypes}. Polling PRIVO for status.",
                     consent.Id, eventTypes);
+
+                var privoStatus = await privoService.GetConsentStatusAsync(
+                    consent.PrivoConsentIdentifier, cancellationToken);
+
+                logger.LogInformation(
+                    "PRIVO webhook poll result: ConsentId={ConsentId}, PrivoStatus={PrivoStatus}",
+                    consent.Id, privoStatus ?? "null");
+
+                var statusLower = (privoStatus ?? string.Empty).ToLowerInvariant();
+
+                if (statusLower.Contains("approved") || statusLower.Contains("completed") ||
+                    statusLower.Contains("granted") || statusLower.Contains("verified"))
+                {
+                    consent.Status = ConsentStatus.Verified;
+                    consent.VerifiedDate = DateTimeOffset.UtcNow;
+                    consent.LastUpdatedDate = DateTimeOffset.UtcNow;
+
+                    switch (consent.ConsentType)
+                    {
+                        case ConsentType.AdultVerification:
+                            await ProcessAdultVerificationWebhookAsync(consent, cancellationToken);
+                            break;
+
+                        case ConsentType.ParentInitiatedChild:
+                            await ProcessParentChildConsentWebhookAsync(consent, cancellationToken);
+                            break;
+
+                        case ConsentType.ChildInitiated:
+                            logger.LogInformation("Child-initiated consent verified: ConsentId={ConsentId}", consent.Id);
+                            break;
+                    }
+                }
+                else if (statusLower.Contains("denied") || statusLower.Contains("rejected") ||
+                         statusLower.Contains("declined"))
+                {
+                    consent.Status = ConsentStatus.Denied;
+                    consent.LastUpdatedDate = DateTimeOffset.UtcNow;
+                }
+                else
+                {
+                    logger.LogInformation(
+                        "PRIVO webhook: status still {PrivoStatus} for ConsentId={ConsentId}. No change.",
+                        privoStatus, consent.Id);
+                }
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);
