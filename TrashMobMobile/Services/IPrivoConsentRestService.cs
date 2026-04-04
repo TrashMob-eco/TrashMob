@@ -24,6 +24,11 @@ namespace TrashMobMobile.Services
         Task<ParentalConsentDto?> GetVerificationStatusAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Gets the PRIVO feature permissions for the current minor user. Returns null if not a minor.
+        /// </summary>
+        Task<Dictionary<string, string>?> GetMinorPermissionsAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Revokes consent for a specific consent record.
         /// </summary>
         Task RevokeConsentAsync(Guid consentId, string reason, CancellationToken cancellationToken = default);
