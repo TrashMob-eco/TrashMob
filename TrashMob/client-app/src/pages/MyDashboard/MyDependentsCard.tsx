@@ -588,11 +588,7 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
                                     <FormItem>
                                         <FormLabel>Email (optional)</FormLabel>
                                         <FormControl>
-                                            <Input
-                                                type='email'
-                                                placeholder='child@example.com'
-                                                {...field}
-                                            />
+                                            <Input type='email' placeholder='child@example.com' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
