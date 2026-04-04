@@ -60,6 +60,7 @@ const dependentFormSchema = z.object({
     relationship: z.string().min(1, 'Relationship is required'),
     medicalNotes: z.string(),
     emergencyContactPhone: z.string(),
+    email: z.string().email('Must be a valid email').or(z.literal('')),
 });
 
 type DependentFormInputs = z.infer<typeof dependentFormSchema>;
@@ -90,6 +91,7 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
             relationship: 'Parent',
             medicalNotes: '',
             emergencyContactPhone: '',
+            email: '',
         },
     });
 
@@ -264,6 +266,7 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
             relationship: dependent.relationship,
             medicalNotes: dependent.medicalNotes,
             emergencyContactPhone: dependent.emergencyContactPhone,
+            email: dependent.email || '',
         });
         setShowFormDialog(true);
     };
@@ -573,6 +576,19 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
                                         <FormLabel>Emergency Contact Phone</FormLabel>
                                         <FormControl>
                                             <Input type='tel' placeholder='(555) 123-4567' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name='email'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email (optional)</FormLabel>
+                                        <FormControl>
+                                            <Input type='email' placeholder='child@example.com' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

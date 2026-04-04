@@ -7,6 +7,7 @@ class DependentData {
     relationship: string = 'Parent';
     medicalNotes: string = '';
     emergencyContactPhone: string = '';
+    email: string = '';
     isActive: boolean = true;
     privoConsentStatus: number | null = null;
 }
