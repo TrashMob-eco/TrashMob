@@ -96,9 +96,12 @@ public class OfflineDatabase
         var deletedCount = 0;
 
         // Delete uploaded route sessions and their points
-        var uploadedSessions = await db.Table<PendingRouteSession>()
-            .Where(s => s.Status == RouteSessionStatus.Uploaded && s.CreatedAt.CompareTo(cutoff) < 0)
-            .ToListAsync();
+        // Note: filter by date in memory because SQLite cannot translate .CompareTo()
+        var uploadedSessions = (await db.Table<PendingRouteSession>()
+            .Where(s => s.Status == RouteSessionStatus.Uploaded)
+            .ToListAsync())
+            .Where(s => string.Compare(s.CreatedAt, cutoff, StringComparison.Ordinal) < 0)
+            .ToList();
 
         foreach (var session in uploadedSessions)
         {
@@ -108,9 +111,11 @@ public class OfflineDatabase
         }
 
         // Delete uploaded metrics
-        var uploadedMetrics = await db.Table<PendingMetrics>()
-            .Where(m => m.Status == PendingUploadStatus.Uploaded && m.CreatedAt.CompareTo(cutoff) < 0)
-            .ToListAsync();
+        var uploadedMetrics = (await db.Table<PendingMetrics>()
+            .Where(m => m.Status == PendingUploadStatus.Uploaded)
+            .ToListAsync())
+            .Where(m => string.Compare(m.CreatedAt, cutoff, StringComparison.Ordinal) < 0)
+            .ToList();
 
         foreach (var metrics in uploadedMetrics)
         {
@@ -119,9 +124,11 @@ public class OfflineDatabase
         }
 
         // Delete uploaded photos and their local files
-        var uploadedPhotos = await db.Table<PendingPhoto>()
-            .Where(p => p.Status == PendingUploadStatus.Uploaded && p.CreatedAt.CompareTo(cutoff) < 0)
-            .ToListAsync();
+        var uploadedPhotos = (await db.Table<PendingPhoto>()
+            .Where(p => p.Status == PendingUploadStatus.Uploaded)
+            .ToListAsync())
+            .Where(p => string.Compare(p.CreatedAt, cutoff, StringComparison.Ordinal) < 0)
+            .ToList();
 
         foreach (var photo in uploadedPhotos)
         {
