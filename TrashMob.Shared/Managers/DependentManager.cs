@@ -19,6 +19,7 @@ namespace TrashMob.Shared.Managers
             Guid parentUserId, CancellationToken cancellationToken = default)
         {
             return await Repo.Get(d => d.ParentUserId == parentUserId && d.IsActive)
+                .Include(d => d.ParentalConsent)
                 .OrderBy(d => d.FirstName)
                 .ThenBy(d => d.LastName)
                 .ToListAsync(cancellationToken);

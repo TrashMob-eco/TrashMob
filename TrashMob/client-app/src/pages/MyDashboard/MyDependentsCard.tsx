@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format, parseISO } from 'date-fns';
-import { Baby, Pencil, Trash2, Plus, Mail, RotateCw, X } from 'lucide-react';
+import { Baby, Pencil, Trash2, Plus, Mail, RotateCw, X, ShieldCheck } from 'lucide-react';
 import { AxiosResponse } from 'axios';
 
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -44,6 +44,7 @@ import {
     ResendDependentInvitation,
     DependentInvitationData,
 } from '@/services/dependent-invitations';
+import { InitiateChildConsent } from '@/services/privo-consent';
 
 interface MyDependentsCardProps {
     userId: string;
@@ -180,6 +181,24 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
         },
     });
 
+    const startConsentMutation = useMutation({
+        mutationFn: async (dependentId: string) => {
+            return InitiateChildConsent({ dependentId }).service();
+        },
+        onSuccess: (res) => {
+            const consent = res.data;
+            if (consent.consentUrl) {
+                window.location.href = consent.consentUrl;
+            } else {
+                toast({ variant: 'primary', title: 'Consent request created. Please complete consent on the PRIVO page.' });
+                invalidateDependents();
+            }
+        },
+        onError: (error: Error) => {
+            toast({ variant: 'destructive', title: 'Failed to start consent', description: error.message });
+        },
+    });
+
     const addMutation = useMutation({
         mutationFn: AddDependent({ userId }).service,
         onSuccess: () => {
@@ -297,7 +316,9 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
                                     : `${eligibleDependents.length} of your dependents are old enough (13+) to create their own TrashMob accounts.`}{' '}
                                 {isIdentityVerified ? (
                                     <>
-                                        Use the <Mail className='inline h-3 w-3' /> button to send them an invitation!
+                                        Use the <ShieldCheck className='inline h-3 w-3' /> button to start PRIVO
+                                        parental consent, then <Mail className='inline h-3 w-3' /> to send an
+                                        invitation.
                                     </>
                                 ) : (
                                     <>
@@ -305,7 +326,7 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
                                         <a href='/myprofile' className='underline font-medium'>
                                             verify your identity
                                         </a>{' '}
-                                        first before inviting dependents aged 13-17.
+                                        first before adding dependents aged 13-17.
                                     </>
                                 )}
                             </AlertDescription>
@@ -384,9 +405,23 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
                                                         );
                                                     }
                                                     if (dep.dateOfBirth && getAge(dep.dateOfBirth) >= 13) {
+                                                        if (dep.privoConsentStatus === 1) {
+                                                            return (
+                                                                <Badge variant='outline' className='text-xs'>
+                                                                    Consent Pending
+                                                                </Badge>
+                                                            );
+                                                        }
+                                                        if (dep.privoConsentStatus === 2) {
+                                                            return (
+                                                                <Badge variant='secondary' className='text-xs'>
+                                                                    Consent Approved
+                                                                </Badge>
+                                                            );
+                                                        }
                                                         return (
                                                             <Badge variant='secondary' className='text-xs'>
-                                                                Eligible
+                                                                Needs Consent
                                                             </Badge>
                                                         );
                                                     }
@@ -398,17 +433,29 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
                                                 getAge(dep.dateOfBirth) >= 13 &&
                                                 !getActiveInvitation(dep.id) &&
                                                 isIdentityVerified ? (
-                                                    <Button
-                                                        variant='ghost'
-                                                        size='sm'
-                                                        onClick={() => {
-                                                            setInvitingDependent(dep);
-                                                            setInviteEmail('');
-                                                        }}
-                                                        title='Invite to create account'
-                                                    >
-                                                        <Mail className='h-4 w-4 text-primary' />
-                                                    </Button>
+                                                    dep.privoConsentStatus === 2 ? (
+                                                        <Button
+                                                            variant='ghost'
+                                                            size='sm'
+                                                            onClick={() => {
+                                                                setInvitingDependent(dep);
+                                                                setInviteEmail('');
+                                                            }}
+                                                            title='Invite to create account'
+                                                        >
+                                                            <Mail className='h-4 w-4 text-primary' />
+                                                        </Button>
+                                                    ) : dep.privoConsentStatus !== 1 ? (
+                                                        <Button
+                                                            variant='ghost'
+                                                            size='sm'
+                                                            onClick={() => startConsentMutation.mutate(dep.id)}
+                                                            disabled={startConsentMutation.isPending}
+                                                            title='Start parental consent via PRIVO'
+                                                        >
+                                                            <ShieldCheck className='h-4 w-4 text-amber-600' />
+                                                        </Button>
+                                                    ) : null
                                                 ) : null}
                                                 <Button
                                                     variant='ghost'
