@@ -31,6 +31,9 @@ public class DependentDto
     /// <summary>Gets or sets the emergency contact phone.</summary>
     public string EmergencyContactPhone { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the dependent's email address (optional).</summary>
+    public string? Email { get; set; }
+
     /// <summary>Gets or sets whether the dependent is active.</summary>
     public bool IsActive { get; set; }
 
