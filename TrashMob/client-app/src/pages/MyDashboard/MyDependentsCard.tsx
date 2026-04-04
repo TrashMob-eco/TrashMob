@@ -195,7 +195,8 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
             } else {
                 toast({
                     variant: 'primary',
-                    title: 'Consent request created. Please complete consent on the PRIVO page.',
+                    title: 'Consent request sent',
+                    description: 'Check your email for a consent link from PRIVO.',
                 });
                 invalidateDependents();
             }
