@@ -190,7 +190,10 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
             if (consent.consentUrl) {
                 window.location.href = consent.consentUrl;
             } else {
-                toast({ variant: 'primary', title: 'Consent request created. Please complete consent on the PRIVO page.' });
+                toast({
+                    variant: 'primary',
+                    title: 'Consent request created. Please complete consent on the PRIVO page.',
+                });
                 invalidateDependents();
             }
         },
