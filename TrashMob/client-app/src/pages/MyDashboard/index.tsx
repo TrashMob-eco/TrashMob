@@ -26,9 +26,11 @@ import {
     Heart,
     List,
     Map as MapIcon,
+    ShieldCheck,
 } from 'lucide-react';
 import { AxiosResponse } from 'axios';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getEventShareableContent, getEventShareMessage } from '@/lib/sharing-messages';
 import { isCompletedEvent } from '@/lib/event-helpers';
 
@@ -655,12 +657,32 @@ const MyDashboard: FC<MyDashboardProps> = () => {
 
                         {isSectionVisible('dependents') ? (
                             <section id='dependents'>
-                                {!currentUser.isMinor && (
-                                    <div className='mb-4'>
-                                        <VerifyIdentityCard isVerified={currentUser.isIdentityVerified} />
-                                    </div>
+                                {currentUser.isMinor ? (
+                                    <Card>
+                                        <CardHeader>
+                                            <div className='flex items-center gap-2'>
+                                                <ShieldCheck className='h-5 w-5 text-primary' />
+                                                <CardTitle className='text-lg text-primary'>Minor Account</CardTitle>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className='text-sm text-muted-foreground'>
+                                                Your account is linked to a parent or guardian. Some features are
+                                                managed by your parent.
+                                            </p>
+                                        </CardContent>
+                                    </Card>
+                                ) : (
+                                    <>
+                                        <div className='mb-4'>
+                                            <VerifyIdentityCard isVerified={currentUser.isIdentityVerified} />
+                                        </div>
+                                        <MyDependentsCard
+                                            userId={userId}
+                                            isIdentityVerified={currentUser.isIdentityVerified}
+                                        />
+                                    </>
                                 )}
-                                <MyDependentsCard userId={userId} isIdentityVerified={currentUser.isIdentityVerified} />
                             </section>
                         ) : null}
 
