@@ -92,6 +92,20 @@ export const RefreshVerificationStatus = () => ({
 });
 
 // ============================================================================
+// Minor Permissions
+// ============================================================================
+
+export type GetMinorPermissions_Response = Record<string, string>;
+export const GetMinorPermissions = () => ({
+    key: ['/privo/permissions'],
+    service: async () =>
+        ApiService('protected').fetchData<GetMinorPermissions_Response>({
+            url: '/v2/privo/permissions',
+            method: 'get',
+        }),
+});
+
+// ============================================================================
 // Revoke Consent
 // ============================================================================
 

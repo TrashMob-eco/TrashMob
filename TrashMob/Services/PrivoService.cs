@@ -188,6 +188,40 @@ namespace TrashMob.Services
         }
 
         /// <inheritdoc />
+        public async Task<PrivoUserInfo> GetUserInfoByEidAsync(
+            string eid, CancellationToken cancellationToken)
+        {
+            var token = await GetAccessTokenAsync(cancellationToken);
+            if (token == null) return null;
+
+            try
+            {
+                var client = httpClientFactory.CreateClient("Privo");
+                var url = $"{BaseUrl}/s2s/api/v1.0/{ServiceIdentifier}/accounts/eid/{eid}";
+
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.SendAsync(request, cancellationToken);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    logger.LogWarning("PRIVO GetUserInfo returned {StatusCode} for EiD {Eid}",
+                        response.StatusCode, eid);
+                    return null;
+                }
+
+                var json = await response.Content.ReadAsStringAsync(cancellationToken);
+                return ParseUserInfo(json, eid);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to get user info from PRIVO for EiD {Eid}", eid);
+                return null;
+            }
+        }
+
+        /// <inheritdoc />
         public async Task<PrivoConsentResponse> CreateParentInitiatedChildConsentAsync(
             User parent, Dependent child, CancellationToken cancellationToken)
         {

@@ -1,6 +1,7 @@
 namespace TrashMob.Controllers.V2
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
@@ -148,6 +149,32 @@ namespace TrashMob.Controllers.V2
             }
 
             return Ok(consent.ToV2Dto());
+        }
+
+        /// <summary>
+        /// Gets the PRIVO feature permissions for the current user (minors only).
+        /// Results are cached for 1 hour.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Dictionary of feature identifier to state.</returns>
+        /// <response code="200">Permissions returned.</response>
+        /// <response code="204">Not a minor or no PRIVO record.</response>
+        /// <response code="401">Not authenticated.</response>
+        [HttpGet("permissions")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> GetMinorPermissions(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 GetMinorPermissions for User={UserId}", UserId);
+
+            var permissions = await privoConsentManager.GetMinorPermissionsAsync(UserId, cancellationToken);
+            if (permissions == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(permissions);
         }
 
         /// <summary>
