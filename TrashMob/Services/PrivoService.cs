@@ -212,14 +212,7 @@ namespace TrashMob.Services
             {
                 ["granter"] = granter,
                 ["locale"] = "en-US",
-                ["principal"] = new Dictionary<string, object>
-                {
-                    ["given_name"] = child.FirstName ?? string.Empty,
-                    ["birthdate"] = child.DateOfBirth.ToString("yyyyMMdd"),
-                    ["birthdate_precision"] = "yyyymmdd",
-                    ["eid"] = child.Id.ToString(),
-                    ["email"] = child.LastName ?? string.Empty, // placeholder — child may not have email yet
-                },
+                ["principal"] = BuildChildPrincipal(child),
             };
 
             return await PostConsentRequestAsync(token, payload, cancellationToken);
@@ -457,6 +450,24 @@ namespace TrashMob.Services
         #endregion
 
         #region Helpers
+
+        private static Dictionary<string, object> BuildChildPrincipal(Dependent child)
+        {
+            var principal = new Dictionary<string, object>
+            {
+                ["given_name"] = child.FirstName ?? string.Empty,
+                ["birthdate"] = child.DateOfBirth.ToString("yyyyMMdd"),
+                ["birthdate_precision"] = "yyyymmdd",
+                ["eid"] = child.Id.ToString(),
+            };
+
+            if (!string.IsNullOrEmpty(child.Email))
+            {
+                principal["email"] = child.Email;
+            }
+
+            return principal;
+        }
 
         private async Task<PrivoConsentResponse> PostConsentRequestAsync(
             string token, Dictionary<string, object> payload, CancellationToken cancellationToken)
