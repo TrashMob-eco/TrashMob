@@ -278,8 +278,13 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
         };
 
         var upcomingEvents = await mobEventManager.GetUserEventsAsync(upcomingEventFilter, userManager.CurrentUser.Id);
+        var completedEvents = await mobEventManager.GetUserEventsAsync(completedEventFilter, userManager.CurrentUser.Id);
 
-        var filteredUpcoming = ApplyEventFilter(upcomingEvents);
+        // Use actual end time (EventDate + Duration) to classify events, not just start date.
+        // This ensures in-progress events (started but not yet ended) appear as upcoming (#3262).
+        var allEvents = upcomingEvents.Union(completedEvents).DistinctBy(e => e.Id);
+
+        var filteredUpcoming = ApplyEventFilter(allEvents.Where(e => !e.IsCompleted()));
 
         foreach (var mobEvent in filteredUpcoming.OrderByDescending(e => e.EventDate))
         {
@@ -290,9 +295,7 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
             UpcomingEvents.Add(vm);
         }
 
-        var completedEvents = await mobEventManager.GetUserEventsAsync(completedEventFilter, userManager.CurrentUser.Id);
-
-        var filteredCompleted = ApplyEventFilter(completedEvents);
+        var filteredCompleted = ApplyEventFilter(allEvents.Where(e => e.IsCompleted()));
 
         foreach (var mobEvent in filteredCompleted.OrderByDescending(e => e.EventDate))
         {

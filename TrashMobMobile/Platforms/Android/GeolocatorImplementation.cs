@@ -1,4 +1,4 @@
-﻿namespace TrashMobMobile;
+namespace TrashMobMobile;
 
 using Android.Content;
 using Android.Locations;
@@ -59,6 +59,14 @@ public class GeolocatorImplementation : IGeolocator
 
 internal class GeolocationContinuousListener : Java.Lang.Object, ILocationListener
 {
+    // 3-second interval: at walking speed (~1.4 m/s) this yields ~4m between updates,
+    // well within GPS accuracy. Reduces GPS radio wake-ups by 3x vs 1-second polling (#3263).
+    private const long UpdateIntervalMs = 3000;
+
+    // 10m distance filter: eliminates redundant updates while stationary (e.g., picking up
+    // litter) and still captures smooth routes at walking pace.
+    private const float MinDistanceMeters = 10;
+
     public Action<Location>? OnLocationChangedAction { get; set; }
 
     LocationManager? locationManager;
@@ -66,9 +74,21 @@ internal class GeolocationContinuousListener : Java.Lang.Object, ILocationListen
     public GeolocationContinuousListener()
     {
         locationManager = (LocationManager?)Android.App.Application.Context.GetSystemService(Android.Content.Context.LocationService);
-        // Requests location updates each second and notify if location changes more than 5 meters.
-        // 5m balances GPS accuracy (~3-5m) with capturing slow litter-picking movement.
-        locationManager?.RequestLocationUpdates(LocationManager.GpsProvider, 1000, 5, this);
+
+        // Use FusedProvider on Android 12+ for battery-intelligent location (combines GPS,
+        // WiFi, and cell signals). Fall back to raw GPS on older devices.
+        string provider;
+        if (OperatingSystem.IsAndroidVersionAtLeast(31)
+            && locationManager?.IsProviderEnabled(LocationManager.FusedProvider) == true)
+        {
+            provider = LocationManager.FusedProvider;
+        }
+        else
+        {
+            provider = LocationManager.GpsProvider;
+        }
+
+        locationManager?.RequestLocationUpdates(provider, UpdateIntervalMs, MinDistanceMeters, this);
     }
 
     public void OnLocationChanged(Location location)
