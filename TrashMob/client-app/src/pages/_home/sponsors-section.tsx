@@ -1,3 +1,5 @@
+import privoLogo from '@/components/assets/partnerships/logos/PRIVO_25Y.svg';
+
 export const SponsorsSection = () => {
     return (
         <section className='bg-card py-12'>
@@ -11,11 +13,7 @@ export const SponsorsSection = () => {
                         className='opacity-70 hover:opacity-100 transition-opacity'
                         title="PRIVO — Children's Privacy Technology"
                     >
-                        <img
-                            src='https://privo.com/wp-content/uploads/2023/03/PRIVO_Logo_Color.png'
-                            alt='PRIVO'
-                            className='h-10 object-contain'
-                        />
+                        <img src={privoLogo} alt='PRIVO' className='h-12 object-contain' />
                     </a>
                 </div>
             </div>
