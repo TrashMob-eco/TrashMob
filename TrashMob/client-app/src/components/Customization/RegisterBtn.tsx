@@ -16,6 +16,8 @@ import DependentData from '@/components/Models/DependentData';
 import { DependentRegistrationDialog } from '@/components/events/DependentRegistrationDialog';
 import { cn } from '@/lib/utils';
 import { useFeatureMetrics } from '@/hooks/useFeatureMetrics';
+import { usePrivoPermissions } from '@/hooks/usePrivoPermissions';
+import { PrivoFeature } from '@/lib/privo-features';
 
 interface RegisterBtnProps {
     currentUser: UserData;
@@ -42,6 +44,8 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
     const [showDependentDialog, setShowDependentDialog] = useState<boolean>(false);
     const queryClient = useQueryClient();
     const { trackAttendance } = useFeatureMetrics();
+    const { isFeatureEnabled } = usePrivoPermissions(currentUser?.isMinor ?? false);
+    const canRegister = isFeatureEnabled(PrivoFeature.Account);
 
     // Fetch user's dependents to offer registration after attending
     const dependentsQuery = GetMyDependents({ userId });
@@ -156,14 +160,20 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
 
     return (
         <>
-            <Button
-                className={cn({
-                    hidden: !isUserLoaded || isAttending === 'Yes' || registered || isEventCompleted || isEventFull,
-                })}
-                onClick={() => handleAttend(eventId)}
-            >
-                {registered ? 'Attended!' : 'Attend'}
-            </Button>
+            {!canRegister && isUserLoaded && !isEventCompleted && isAttending !== 'Yes' ? (
+                <p className='text-sm text-muted-foreground'>
+                    Event registration is not available. Ask your parent to update your permissions.
+                </p>
+            ) : (
+                <Button
+                    className={cn({
+                        hidden: !isUserLoaded || isAttending === 'Yes' || registered || isEventCompleted || isEventFull,
+                    })}
+                    onClick={() => handleAttend(eventId)}
+                >
+                    {registered ? 'Attended!' : 'Attend'}
+                </Button>
+            )}
             {isEventFull && !isEventCompleted && isAttending !== 'Yes' && !registered ? (
                 <p className='text-sm font-medium text-destructive'>This event is full.</p>
             ) : null}

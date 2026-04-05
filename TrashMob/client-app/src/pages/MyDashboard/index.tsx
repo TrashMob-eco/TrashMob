@@ -33,6 +33,8 @@ import { AxiosResponse } from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getEventShareableContent, getEventShareMessage } from '@/lib/sharing-messages';
 import { isCompletedEvent } from '@/lib/event-helpers';
+import { usePrivoPermissions } from '@/hooks/usePrivoPermissions';
+import { PrivoFeature } from '@/lib/privo-features';
 
 import EventData from '@/components/Models/EventData';
 import PickupLocationData from '@/components/Models/PickupLocationData';
@@ -200,6 +202,7 @@ interface MyDashboardProps {}
 
 const MyDashboard: FC<MyDashboardProps> = () => {
     const { isUserLoaded, currentUser } = useLogin();
+    const { isFeatureEnabled } = usePrivoPermissions(currentUser?.isMinor ?? false);
     const location = useLocation();
     const navigate = useNavigate();
     const userId = currentUser.id;
@@ -387,7 +390,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
             </div>
 
             <div className='container mt-6! pb-12!'>
-                {eventToShare ? (
+                {eventToShare && isFeatureEnabled(PrivoFeature.Social) ? (
                     <ShareDialog
                         content={getEventShareableContent(eventToShare, currentUser?.id)}
                         open={showModal}
@@ -605,7 +608,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         ) : null}
 
                         {/* Routes */}
-                        {isSectionVisible('routes') ? (
+                        {isSectionVisible('routes') && isFeatureEnabled(PrivoFeature.Geolocation) ? (
                             <section id='routes'>
                                 <MyRoutesCard />
                             </section>
@@ -692,7 +695,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             </section>
                         ) : null}
 
-                        {isSectionVisible('newsletters') ? (
+                        {isSectionVisible('newsletters') && isFeatureEnabled(PrivoFeature.Newsletter) ? (
                             <section id='newsletters'>
                                 <MyNewsletterPreferencesCard />
                             </section>

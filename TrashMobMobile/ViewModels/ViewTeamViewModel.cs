@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -11,7 +12,8 @@ public partial class ViewTeamViewModel(
     ITeamManager teamManager,
     IMobEventManager mobEventManager,
     INotificationService notificationService,
-    IUserManager userManager) : BaseViewModel(notificationService)
+    IUserManager userManager,
+    IPrivoPermissionService privoPermissionService) : BaseViewModel(notificationService)
 {
     private readonly ITeamManager teamManager = teamManager;
     private readonly IMobEventManager mobEventManager = mobEventManager;
@@ -56,6 +58,8 @@ public partial class ViewTeamViewModel(
 
         await ExecuteAsync(async () =>
         {
+            await privoPermissionService.GetPermissionsAsync();
+
             await Task.WhenAll(
                 RefreshTeam(),
                 RefreshMembers(),
@@ -169,7 +173,8 @@ public partial class ViewTeamViewModel(
     {
         var userId = userManager.CurrentUser.Id;
         IsUserMember = Members.Any(m => m.UserId == userId);
-        CanJoin = !IsUserMember && Team.IsPublic;
+        CanJoin = !IsUserMember && Team.IsPublic
+            && privoPermissionService.IsFeatureEnabled(PrivoFeatures.Team);
 
         Team.MemberCount = Members.Count;
         Team.MemberCountDisplay = Members.Count == 1 ? "1 member" : $"{Members.Count} members";

@@ -4,13 +4,18 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TrashMobMobile.Config;
 using TrashMobMobile.Services;
 
 public partial class NewsletterPreferencesViewModel(
     INewsletterPreferenceManager newsletterPreferenceManager,
-    INotificationService notificationService) : BaseViewModel(notificationService)
+    INotificationService notificationService,
+    IPrivoPermissionService privoPermissionService) : BaseViewModel(notificationService)
 {
     private readonly INewsletterPreferenceManager newsletterPreferenceManager = newsletterPreferenceManager;
+
+    [ObservableProperty]
+    private bool isNewsletterEnabled = true;
 
     [ObservableProperty]
     private bool arePreferencesFound;
@@ -22,6 +27,15 @@ public partial class NewsletterPreferencesViewModel(
 
     public async Task Init()
     {
+        await privoPermissionService.GetPermissionsAsync();
+
+        IsNewsletterEnabled = privoPermissionService.IsFeatureEnabled(PrivoFeatures.Newsletter);
+
+        if (!IsNewsletterEnabled)
+        {
+            return;
+        }
+
         await ExecuteAsync(async () =>
         {
             var preferences = await newsletterPreferenceManager.GetMyPreferencesAsync();
