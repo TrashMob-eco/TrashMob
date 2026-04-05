@@ -17,13 +17,14 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     public class DependentsV2ControllerTests
     {
         private readonly Mock<IDependentManager> dependentManager = new();
+        private readonly Mock<IDependentWaiverManager> dependentWaiverManager = new();
         private readonly Mock<ILogger<DependentsV2Controller>> logger = new();
         private readonly DependentsV2Controller controller;
         private readonly Guid userId = Guid.NewGuid();
 
         public DependentsV2ControllerTests()
         {
-            controller = new DependentsV2Controller(dependentManager.Object, logger.Object);
+            controller = new DependentsV2Controller(dependentManager.Object, dependentWaiverManager.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),

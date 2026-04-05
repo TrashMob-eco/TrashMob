@@ -35,6 +35,7 @@ import { getEventShareableContent, getEventShareMessage } from '@/lib/sharing-me
 import { isCompletedEvent } from '@/lib/event-helpers';
 import { usePrivoPermissions } from '@/hooks/usePrivoPermissions';
 import { PrivoFeature } from '@/lib/privo-features';
+import { PendingWaiverAlertsCard } from '@/pages/MyDashboard/PendingWaiverAlertsCard';
 
 import EventData from '@/components/Models/EventData';
 import PickupLocationData from '@/components/Models/PickupLocationData';
@@ -398,6 +399,8 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         message={getEventShareMessage(eventToShare, currentUser?.id)}
                     />
                 ) : null}
+
+                {!currentUser?.isMinor && <PendingWaiverAlertsCard userId={userId} />}
 
                 <div className='flex flex-col gap-6 lg:flex-row'>
                     {/* Desktop sidebar - hidden below lg */}

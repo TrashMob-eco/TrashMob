@@ -130,3 +130,29 @@ export const UnregisterEventDependent = (params: UnregisterEventDependent_Params
             method: 'delete',
         }),
 });
+
+// ============================================================================
+// Pending Waiver Requests
+// ============================================================================
+
+export type PendingDependentWaiver = {
+    dependentId: string;
+    dependentFirstName: string;
+    dependentLastName: string;
+    eventId: string;
+    eventName: string;
+    eventDate: string;
+    minorUserId: string;
+    requiredWaivers: Array<{ id: string; name: string; scope: string }>;
+};
+
+export type GetPendingWaiverRequests_Params = { userId: string };
+export type GetPendingWaiverRequests_Response = PendingDependentWaiver[];
+export const GetPendingWaiverRequests = (params: GetPendingWaiverRequests_Params) => ({
+    key: ['/users', params.userId, 'dependents', 'pending-waivers'],
+    service: async () =>
+        ApiService('protected').fetchData<GetPendingWaiverRequests_Response>({
+            url: `/v2/users/${params.userId}/dependents/pending-waivers`,
+            method: 'get',
+        }),
+});
