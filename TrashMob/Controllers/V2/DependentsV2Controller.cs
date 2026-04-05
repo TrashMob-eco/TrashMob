@@ -12,6 +12,7 @@ namespace TrashMob.Controllers.V2
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Web.Resource;
+    using TrashMob.Models;
     using TrashMob.Models.Extensions.V2;
     using TrashMob.Models.Poco.V2;
     using TrashMob.Security;
@@ -27,6 +28,7 @@ namespace TrashMob.Controllers.V2
     [Route("api/v{version:apiVersion}/users/{userId}/dependents")]
     public class DependentsV2Controller(
         IDependentManager dependentManager,
+        IDependentWaiverManager dependentWaiverManager,
         ILogger<DependentsV2Controller> logger) : ControllerBase
     {
         private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
@@ -162,6 +164,46 @@ namespace TrashMob.Controllers.V2
             await dependentManager.SoftDeleteAsync(dependentId, UserId, cancellationToken);
 
             return NoContent();
+        }
+
+        /// <summary>
+        /// Gets all pending waiver requests for the current user's dependents.
+        /// Returns dependents who have waiver-pending event registrations with the waivers that need signing.
+        /// </summary>
+        /// <param name="userId">The parent user ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns pending waiver requests.</response>
+        /// <response code="403">User ID doesn't match authenticated user.</response>
+        [HttpGet("pending-waivers")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [ProducesResponseType(typeof(List<PendingDependentWaiverDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPendingWaiverRequests(Guid userId, CancellationToken cancellationToken)
+        {
+            if (userId != UserId) return Forbid();
+
+            logger.LogInformation("V2 GetPendingWaiverRequests for User={UserId}", UserId);
+
+            var pendingRequests = await dependentWaiverManager
+                .GetPendingWaiverRequestsForParentAsync(UserId, cancellationToken);
+
+            var dtos = pendingRequests.Select(p => new PendingDependentWaiverDto
+            {
+                DependentId = p.DependentId,
+                DependentFirstName = p.DependentFirstName,
+                DependentLastName = p.DependentLastName,
+                EventId = p.EventId,
+                EventName = p.EventName,
+                EventDate = p.EventDate,
+                MinorUserId = p.MinorUserId,
+                RequiredWaivers = p.RequiredWaivers.Select(w => new WaiverVersionSummaryDto
+                {
+                    Id = w.Id,
+                    Name = w.Name ?? string.Empty,
+                    Scope = w.Scope.ToString(),
+                }).ToList(),
+            }).ToList();
+
+            return Ok(dtos);
         }
     }
 }
