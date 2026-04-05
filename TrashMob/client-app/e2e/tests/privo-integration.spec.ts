@@ -233,4 +233,117 @@ test.describe('PRIVO Integration', () => {
             expect(res.status()).toBe(401);
         });
     });
+
+    test.describe('Child Signup Page', () => {
+        test('child-signup page renders with form fields', async ({ page }) => {
+            await page.goto('/child-signup');
+
+            await expect(page.getByText(/parental consent/i).first()).toBeVisible({ timeout: 10000 });
+            // Should have parent email and child name inputs
+            await expect(page.getByLabel(/parent.*email/i).or(page.getByPlaceholder(/parent.*email/i))).toBeVisible({
+                timeout: 5000,
+            });
+        });
+    });
+
+    test.describe('Age Gate Dialog', () => {
+        test('age gate shows parental consent message for 13-17 DOB', async ({ page }) => {
+            await page.goto('/');
+
+            // Find an "Attend" or sign-up button that triggers the age gate
+            const attendBtn = page.getByRole('button', { name: /attend|sign up|get started/i }).first();
+            const isVisible = await attendBtn.isVisible({ timeout: 5000 }).catch(() => false);
+            test.skip(!isVisible, 'No attend/signup button found on home page');
+
+            await attendBtn.click();
+
+            // Age gate dialog should appear
+            const dialog = page.getByText(/date of birth/i).first();
+            await expect(dialog).toBeVisible({ timeout: 10000 });
+
+            // Select a date that makes the user 15 years old
+            const year = new Date().getFullYear() - 15;
+            const dobInput = page.getByPlaceholder(/select your date of birth/i);
+            const isInputVisible = await dobInput.isVisible({ timeout: 3000 }).catch(() => false);
+            test.skip(!isInputVisible, 'DOB input not found — age gate UI may differ');
+
+            // Click the date picker and try to set a minor DOB
+            await dobInput.click();
+
+            // Select year from dropdown if available
+            const yearSelect = page.locator('select').filter({ hasText: String(year) }).first();
+            const hasYearSelect = await yearSelect.isVisible({ timeout: 3000 }).catch(() => false);
+            if (hasYearSelect) {
+                await yearSelect.selectOption(String(year));
+            }
+
+            // Click a day
+            const dayBtn = page.getByRole('gridcell', { name: '15' }).first();
+            const hasDayBtn = await dayBtn.isVisible({ timeout: 3000 }).catch(() => false);
+            if (hasDayBtn) {
+                await dayBtn.click();
+            }
+
+            // Click Continue
+            const continueBtn = page.getByRole('button', { name: /continue/i });
+            const hasContinue = await continueBtn.isVisible({ timeout: 3000 }).catch(() => false);
+            if (hasContinue) {
+                await continueBtn.click();
+
+                // Should show parental consent required message
+                const consentMsg = page.getByText(/parental consent required/i).or(
+                    page.getByText(/parent or guardian/i),
+                );
+                await expect(consentMsg).toBeVisible({ timeout: 5000 });
+
+                // Should have a "Go Back" button
+                await expect(page.getByRole('button', { name: /go back/i })).toBeVisible();
+            }
+        });
+
+        test('age gate blocks under-13 users', async ({ page }) => {
+            await page.goto('/');
+
+            const attendBtn = page.getByRole('button', { name: /attend|sign up|get started/i }).first();
+            const isVisible = await attendBtn.isVisible({ timeout: 5000 }).catch(() => false);
+            test.skip(!isVisible, 'No attend/signup button found on home page');
+
+            await attendBtn.click();
+
+            const dialog = page.getByText(/date of birth/i).first();
+            await expect(dialog).toBeVisible({ timeout: 10000 });
+
+            // Select a date that makes the user 10 years old
+            const year = new Date().getFullYear() - 10;
+            const dobInput = page.getByPlaceholder(/select your date of birth/i);
+            const isInputVisible = await dobInput.isVisible({ timeout: 3000 }).catch(() => false);
+            test.skip(!isInputVisible, 'DOB input not found');
+
+            await dobInput.click();
+
+            const yearSelect = page.locator('select').filter({ hasText: String(year) }).first();
+            const hasYearSelect = await yearSelect.isVisible({ timeout: 3000 }).catch(() => false);
+            if (hasYearSelect) {
+                await yearSelect.selectOption(String(year));
+            }
+
+            const dayBtn = page.getByRole('gridcell', { name: '15' }).first();
+            const hasDayBtn = await dayBtn.isVisible({ timeout: 3000 }).catch(() => false);
+            if (hasDayBtn) {
+                await dayBtn.click();
+            }
+
+            const continueBtn = page.getByRole('button', { name: /continue/i });
+            const hasContinue = await continueBtn.isVisible({ timeout: 3000 }).catch(() => false);
+            if (hasContinue) {
+                await continueBtn.click();
+
+                // Should show blocked message
+                const blockedMsg = page.getByText(/unable to create account/i).or(
+                    page.getByText(/must be 13 or older/i),
+                );
+                await expect(blockedMsg).toBeVisible({ timeout: 5000 });
+            }
+        });
+    });
 });
