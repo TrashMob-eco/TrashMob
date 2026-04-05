@@ -275,7 +275,7 @@ PRIVO sends webhooks when consent events occur. Secure them with an API key head
 }
 ```
 
-**Critical lesson:** Don't try to determine consent status from the `event_types` array. PRIVO sends events like `consent_updated` and `account_feature_updated` — not `consent_approved` as you might expect. Instead, when you receive any non-creation webhook, **poll Section 7** (`GET /consents/{id}`) for the authoritative state:
+**What we learned:** The `event_types` array tells you *what changed*, not the final state. The clean pattern is to treat webhooks as notifications and always poll Section 7 for the authoritative state. This is a more robust approach anyway — it handles retries and out-of-order delivery gracefully:
 
 ```csharp
 // Don't do this:
@@ -305,35 +305,37 @@ Response includes a `features` array with each feature's state (`on`, `off`, `pe
 
 ## Part 3: Lessons Learned
 
-### Things That Tripped Us Up
+The PRIVO team was incredibly helpful throughout our integration — responsive, patient with our questions, and quick to configure their INT environment when we needed changes. Most of the issues we ran into were on our side. Here's what we got wrong so you don't have to.
 
-1. **PRIVO date format is `yyyyMMdd`** — not `yyyy-MM-dd`. The error message ("Bad Date format") doesn't tell you what format is expected.
+### Mistakes We Made (So You Don't Have To)
 
-2. **The `granter` object is required for adult verification** — even though the adult is both principal and granter. Without it, you get "Granter info is required."
+1. **We sent dates as `yyyy-MM-dd` instead of `yyyyMMdd`.** PRIVO's API expects dates without separators. This is documented in the Swagger spec — we just missed it initially.
 
-3. **Section 3 (verification URL) returns 403 if your redirect URL isn't whitelisted** — PRIVO must whitelist your hostname. Only the base URL needs whitelisting; path and query parameters can be set freely.
+2. **We forgot the `granter` object on adult verification requests.** For adult self-verification, the adult is both the principal and the granter. PRIVO's consent model always has a granter — it makes sense once you understand their data model, but it's easy to overlook if you think of verification as a single-party flow.
 
-4. **Don't rely on webhook event types for status** — Poll Section 7 instead. The event type names don't map obviously to consent states.
+3. **We didn't whitelist our redirect URL before testing Section 3.** PRIVO needs to whitelist your hostname for the verification widget redirect. Coordinate with them early — only the base URL needs whitelisting, and you can set path and query parameters freely.
 
-5. **PRIVO's INT environment processes verification in real-time** — but only after they've configured your service. If consent status stays at "processing" for more than a few minutes, something is misconfigured on PRIVO's side.
+4. **We initially tried to infer consent status from webhook event type names.** The cleaner approach (which PRIVO recommends) is to treat webhooks as notifications and poll Section 7 for the authoritative state. This is more robust and handles edge cases like retries and out-of-order delivery.
 
-6. **Creating multiple consent requests for the same EID can cause 403 errors** — If you need to restart testing, delete the PRIVO account first (`DELETE /accounts/eid/{id}`), then create a fresh consent request.
+5. **We created multiple consent requests during testing without cleaning up.** If you're iterating during development, use `DELETE /accounts/eid/{id}` to clean up test data before creating fresh requests. PRIVO's INT environment is shared, so keeping it tidy helps everyone.
 
-7. **Token caching is essential** — PRIVO suggests maintaining a pool of tokens. At minimum, cache with a semaphore to prevent concurrent refresh races.
+6. **We didn't cache tokens initially.** PRIVO's documentation recommends maintaining a token pool — follow that advice. We cache with a 25-minute TTL (5-minute buffer before the 30-minute expiry) and use a semaphore to prevent concurrent refresh races.
 
-8. **CIAM id_tokens lack email claims** — You'll need Microsoft Graph API (`User.Read.All` application permission) to resolve emails from Object IDs. This is a CIAM-specific behavior, not a PRIVO issue.
+7. **We confused a CIAM issue with a PRIVO issue.** Entra External ID (CIAM) id_tokens may not include an `email` claim — that's a Microsoft behavior, not PRIVO. You'll need the Microsoft Graph API (`User.Read.All` application permission) to resolve emails from Object IDs.
 
 ### Architecture Recommendations
 
-1. **Keep PRIVO decoupled from your identity provider.** Don't integrate PRIVO into Custom Authentication Extensions. It's simpler and more maintainable to handle PRIVO in your application layer.
+1. **Keep PRIVO decoupled from your identity provider.** We initially considered integrating PRIVO into Entra's Custom Authentication Extensions, but PRIVO's team helped us see that a post-authentication approach is simpler and more maintainable. PRIVO handles consent, your IdP handles authentication — they don't need to know about each other.
 
-2. **Use your internal IDs as PRIVO External IDs (EIDs).** This gives you a clean mapping between your user records and PRIVO records without storing PRIVO-specific IDs everywhere.
+2. **Use your internal IDs as PRIVO External IDs (EIDs).** PRIVO's EID system is flexible — you can use any unique identifier. We use our User.Id GUIDs, which gives us a clean 1:1 mapping without storing PRIVO-specific IDs in our core user model.
 
-3. **Store PRIVO credentials in a secret manager** (Key Vault, AWS Secrets Manager, etc.) with a feature flag to enable/disable the integration per environment.
+3. **Store PRIVO credentials in a secret manager** (Key Vault, AWS Secrets Manager, etc.) with a feature flag to enable/disable the integration per environment. This lets you develop and test without affecting production.
 
-4. **Build a "Check Status" polling endpoint** as a fallback for webhooks. Webhooks may be delayed or fail, and having a manual polling option prevents support tickets.
+4. **Build a "Check Status" polling endpoint** as a backup for webhooks. PRIVO's webhooks are reliable, but network issues happen. Having a manual polling option (using Section 7) gives users a way to refresh status without waiting.
 
-5. **Gate features on the client side, not just the server.** Fetch permissions once on login, cache for an hour, and hide/show UI elements based on what the parent approved. This gives a better user experience than showing features and then blocking with an error.
+5. **Gate features on the client side, not just the server.** PRIVO's feature permission model (Section 4) returns per-feature states. Fetch these once on login, cache for an hour, and hide/show UI elements based on what the parent approved. This gives a better user experience than showing features and blocking with an error.
+
+6. **Lean on PRIVO's support.** Their team was responsive and knowledgeable throughout our integration. When we were stuck on payload formats or configuration issues, they turned things around quickly. Don't hesitate to reach out — they've seen every integration pattern.
 
 ---
 
@@ -365,4 +367,4 @@ Response includes a `features` array with each feature's state (`on`, `off`, `pe
 
 ---
 
-*This guide was written by the TrashMob.eco engineering team based on our experience as the first organization to integrate Microsoft Entra External ID with PRIVO. For questions or corrections, contact us at https://www.trashmob.eco/contactus.*
+*This guide was written by the TrashMob.eco engineering team based on our experience as the first organization to integrate Microsoft Entra External ID with PRIVO. Special thanks to the PRIVO team for their partnership, patience, and support throughout the integration process. For questions or corrections, contact us at https://www.trashmob.eco/contactus.*
