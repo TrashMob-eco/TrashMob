@@ -41,6 +41,15 @@ namespace TrashMob.Shared.Managers.Interfaces
             string sid, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Gets user info by External ID (Section 4).
+        /// </summary>
+        /// <param name="eid">The external identifier (TrashMob User.Id or Dependent.Id).</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The user info including feature states and attributes.</returns>
+        Task<PrivoUserInfo> GetUserInfoByEidAsync(
+            string eid, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Creates a parent-initiated child consent request (Section 5).
         /// </summary>
         /// <param name="parent">The verified parent user.</param>

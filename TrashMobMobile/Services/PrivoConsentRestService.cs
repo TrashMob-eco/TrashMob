@@ -48,6 +48,21 @@ namespace TrashMobMobile.Services
         }
 
         /// <inheritdoc />
+        public async Task<Dictionary<string, string>?> GetMinorPermissionsAsync(CancellationToken cancellationToken)
+        {
+            using var response = await AuthorizedHttpClient.GetAsync("permissions", cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                return null;
+            }
+
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonSerializer.Deserialize<Dictionary<string, string>>(content, SerializerOptions);
+        }
+
+        /// <inheritdoc />
         public async Task RevokeConsentAsync(Guid consentId, string reason, CancellationToken cancellationToken)
         {
             var requestUri = $"consent/{consentId}/revoke?reason={Uri.EscapeDataString(reason)}";

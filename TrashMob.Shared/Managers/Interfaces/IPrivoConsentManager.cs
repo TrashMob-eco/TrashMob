@@ -1,6 +1,7 @@
 namespace TrashMob.Shared.Managers.Interfaces
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
@@ -53,6 +54,14 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The most recent consent record, or null if none exists.</returns>
         Task<ParentalConsent> GetConsentByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets the PRIVO feature permissions for a minor user. Results are cached for 1 hour.
+        /// </summary>
+        /// <param name="userId">The minor user's ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Dictionary of feature identifier to state (on/off/pending), or null if not a minor or no PRIVO record.</returns>
+        Task<Dictionary<string, string>> GetMinorPermissionsAsync(Guid userId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Polls PRIVO for the current consent status and updates the local record.

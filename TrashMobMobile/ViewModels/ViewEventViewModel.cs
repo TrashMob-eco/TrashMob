@@ -11,6 +11,7 @@ using TrashMob.Models;
 using TrashMob.Models.Poco;
 using TrashMobMobile.Controls;
 using TrashMobMobile.Extensions;
+using TrashMobMobile.Config;
 using TrashMobMobile.Services;
 using TrashMobMobile.Services.Offline;
 
@@ -31,7 +32,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     SyncQueue syncQueue,
     IDependentRestService dependentRestService,
     IParticipationReportRestService participationReportRestService,
-    IWeatherRestService weatherRestService) : BaseViewModel(notificationService)
+    IWeatherRestService weatherRestService,
+    IPrivoPermissionService privoPermissionService) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
@@ -232,6 +234,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     {
         await ExecuteAsync(async () =>
         {
+            await privoPermissionService.GetPermissionsAsync();
+
             UpdateRoutes = updRoutes;
             partnersLoaded = false;
             litterLoaded = false;
@@ -253,7 +257,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             EnableEditEvent = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
             EnableViewEventSummary = mobEvent.IsCompleted();
 
-            EnableStartTrackEventRoute = !mobEvent.IsCompleted();
+            EnableStartTrackEventRoute = !mobEvent.IsCompleted()
+                && privoPermissionService.IsFeatureEnabled(PrivoFeatures.Geolocation);
             EnableStopTrackEventRoute = false;
 
             // If this event is already being tracked, restore recording UI state
@@ -848,7 +853,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         EnableRegister = !mobEvent.IsEventLead(userManager.CurrentUser.Id)
                         && !isAttending
                         && mobEvent.AreNewRegistrationsAllowed()
-                        && !isFull;
+                        && !isFull
+                        && privoPermissionService.IsFeatureEnabled(PrivoFeatures.Account);
         EnableUnregister = !mobEvent.IsEventLead(userManager.CurrentUser.Id)
                           && isAttending
                           && mobEvent.AreUnregistrationsAllowed();
@@ -919,7 +925,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         PhotoCountDisplay = EventPhotos.Count == 1 ? "1 photo" : $"{EventPhotos.Count} photos";
 
         var isAttending = await mobEventManager.IsUserAttendingAsync(mobEvent.Id, currentUserId);
-        CanUploadPhoto = isLead || isAttending;
+        CanUploadPhoto = (isLead || isAttending)
+            && privoPermissionService.IsFeatureEnabled(PrivoFeatures.PhotoUploads);
     }
 
     [RelayCommand]

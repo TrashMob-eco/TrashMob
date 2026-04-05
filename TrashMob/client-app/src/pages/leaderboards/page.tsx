@@ -7,10 +7,14 @@ import { LeaderboardTable } from '@/components/leaderboards/LeaderboardTable';
 import { GetLeaderboard, GetLeaderboardOptions, GetMyRank, GetTeamLeaderboard } from '@/services/leaderboards';
 import { LeaderboardTypeLabels, TimeRangeLabels } from '@/components/Models/LeaderboardData';
 import { useLogin } from '@/hooks/useLogin';
+import { usePrivoPermissions } from '@/hooks/usePrivoPermissions';
+import { PrivoFeature } from '@/lib/privo-features';
 import { Trophy, TrendingUp, Users, Info, Users2 } from 'lucide-react';
 
 export const LeaderboardsPage = () => {
-    const { isUserLoaded } = useLogin();
+    const { isUserLoaded, currentUser } = useLogin();
+    const { isFeatureEnabled } = usePrivoPermissions(currentUser?.isMinor ?? false);
+    const canViewRanking = isFeatureEnabled(PrivoFeature.Leaderboard);
     const [entityType, setEntityType] = useState<'users' | 'teams'>('users');
     const [leaderboardType, setLeaderboardType] = useState('Events');
     const [timeRange, setTimeRange] = useState('Month');
@@ -42,7 +46,7 @@ export const LeaderboardsPage = () => {
     const { data: myRankResponse } = useQuery({
         queryKey: GetMyRank({ type: leaderboardType, timeRange }).key,
         queryFn: GetMyRank({ type: leaderboardType, timeRange }).service,
-        enabled: isUserLoaded && entityType === 'users',
+        enabled: isUserLoaded && entityType === 'users' && canViewRanking,
     });
     const myRank = myRankResponse?.data;
 
@@ -130,7 +134,7 @@ export const LeaderboardsPage = () => {
                 {/* Sidebar with user rank and stats */}
                 <div className='lg:col-span-1 space-y-4'>
                     {/* User's Rank Card (only for volunteers tab) */}
-                    {entityType === 'users' && isUserLoaded && myRank ? (
+                    {entityType === 'users' && isUserLoaded && myRank && canViewRanking ? (
                         <Card>
                             <CardHeader className='pb-3'>
                                 <CardTitle className='text-lg flex items-center gap-2'>

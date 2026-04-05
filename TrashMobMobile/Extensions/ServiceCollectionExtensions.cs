@@ -25,6 +25,7 @@
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
             services.AddSingleton<IDependentRestService, DependentRestService>();
             services.AddSingleton<IPrivoConsentRestService, PrivoConsentRestService>();
+            services.AddSingleton<IPrivoPermissionService, PrivoPermissionService>();
             services.AddSingleton<IEventAttendeeRestService, EventAttendeeRestService>();
             services.AddSingleton<IEventAttendeeMetricsRestService, EventAttendeeMetricsRestService>();
             services.AddSingleton<IEventAttendeeRouteRestService, EventAttendeeRouteRestService>();

@@ -1,10 +1,12 @@
 namespace TrashMob.Shared.Managers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using TrashMob.Models;
@@ -19,9 +21,11 @@ namespace TrashMob.Shared.Managers
         MobDbContext dbContext,
         IPrivoService privoService,
         IDependentInvitationManager dependentInvitationManager,
+        IMemoryCache memoryCache,
         IConfiguration configuration,
         ILogger<PrivoConsentManager> logger) : IPrivoConsentManager
     {
+        private static readonly TimeSpan PermissionsCacheDuration = TimeSpan.FromHours(1);
         private const int MinimumMinorAge = 13;
         private const int AdultAge = 18;
 
@@ -331,6 +335,38 @@ namespace TrashMob.Shared.Managers
                 .Where(c => c.UserId == userId)
                 .OrderByDescending(c => c.CreatedDate)
                 .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<Dictionary<string, string>> GetMinorPermissionsAsync(
+            Guid userId, CancellationToken cancellationToken)
+        {
+            var cacheKey = $"privo_permissions_{userId}";
+
+            if (memoryCache.TryGetValue(cacheKey, out Dictionary<string, string> cached))
+            {
+                return cached;
+            }
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+            if (user == null || !user.IsMinor || user.DependentId == null)
+            {
+                return null;
+            }
+
+            // Look up by the dependent's EID (Dependent.Id)
+            var userInfo = await privoService.GetUserInfoByEidAsync(user.DependentId.Value.ToString(), cancellationToken);
+            if (userInfo?.Features == null)
+            {
+                return null;
+            }
+
+            logger.LogInformation(
+                "PRIVO permissions fetched for minor User={UserId}, Features={FeatureCount}",
+                userId, userInfo.Features.Count);
+
+            memoryCache.Set(cacheKey, userInfo.Features, PermissionsCacheDuration);
+            return userInfo.Features;
         }
 
         /// <inheritdoc />

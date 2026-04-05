@@ -14,6 +14,8 @@ import { TeamsMap } from '@/components/teams/teams-map';
 import TeamData from '@/components/Models/TeamData';
 import { GetPublicTeams } from '@/services/teams';
 import { useLogin } from '@/hooks/useLogin';
+import { usePrivoPermissions } from '@/hooks/usePrivoPermissions';
+import { PrivoFeature } from '@/lib/privo-features';
 
 type ViewMode = 'list' | 'map';
 
@@ -91,7 +93,8 @@ const columns: ColumnDef<TeamData>[] = [
 ];
 
 export const TeamsPage = () => {
-    const { isUserLoaded } = useLogin();
+    const { isUserLoaded, currentUser } = useLogin();
+    const { isFeatureEnabled } = usePrivoPermissions(currentUser?.isMinor ?? false);
     const [viewMode, setViewMode] = useState<ViewMode>('list');
 
     const { data: teams, isLoading } = useQuery({
@@ -129,7 +132,7 @@ export const TeamsPage = () => {
                                 <Map className='h-4 w-4 mr-1' /> Map
                             </Button>
                         </div>
-                        {isUserLoaded ? (
+                        {isUserLoaded && isFeatureEnabled(PrivoFeature.Team) ? (
                             <Button asChild>
                                 <Link to='/teams/create'>
                                     <Plus className='h-4 w-4 mr-2' /> Create Team
