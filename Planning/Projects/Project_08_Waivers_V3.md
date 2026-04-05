@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1-4, 5a-5e, 6 Complete; Phase 5 minor waiver signing pending legal review) |
+| **Status** | Complete (minor waiver text pending legal review — all infrastructure, UI, and integration built) |
 | **Priority** | High |
 | **Risk** | Very High |
 | **Size** | Very Large |
@@ -245,6 +245,11 @@ Covers the scenario where a registered adult brings children to events — child
 - ✅ Create DependentWaiver model, repository, manager
 - ✅ Add migration for new tables with proper indexes and FKs
 - ✅ Create API controllers with authorization
+- ✅ Minor waiver routing: minors blocked from signing UserWaivers, registration creates waiver-pending state (Project 23, PR #3279)
+- ✅ Parent notification email when minor registers with unsigned waivers (PR #3279)
+- ✅ Parent dashboard pending waiver alerts with per-dependent/per-event detail (PR #3280)
+- ✅ Auto-complete: minor registration confirmed when parent signs last required DependentWaiver (PR #3280)
+- ✅ `GetRequiredWaiversForDependentEventAsync` — checks Global + Community waivers for dependents (PR #3280)
 - ☐ Create minor-specific waiver text (add to WaiverVersion with a MinorWaiver flag or separate scope) — pending legal approval
 
 #### Phase 5b - Minor Waiver Content

@@ -30,7 +30,7 @@
 | Project | Description | Status |
 |---------|-------------|--------|
 | [Project 2 - Home Page Improvements](./Projects/Project_02_Home_Page.md) | Dynamic content, ads, sponsors | Ready for Design Review |
-| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | In Progress (Phases 1-4, 5a-5e, 6 Complete; minor waiver signing pending legal) |
+| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | Complete (minor waiver text pending legal review — all infrastructure built) |
 | [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | PRIVO integration for minors | In Progress (Phases 0-3 Complete — PRIVO INT verified; Flow 3 + production remaining) |
 
 #### Medium Priority (Enhancements)
@@ -216,7 +216,7 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Phases 3-5: Manual test matrix on physical devices, regression testing, load testing, accessibility audit (TalkBack/VoiceOver), supported device docs |
 | [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | Phase 4: Deployment health dashboards; Phase 5: Cost optimization & auto-scaling; Phase 6: Security scanning (OWASP ZAP, CodeQL, Trivy) |
 | [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Phase 3: Security audit — review remaining API endpoints for authorization, input validation, rate limiting |
-| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Phase 5 remaining: Minor waiver signing dialog (web + mobile), WaiverVersion record with minor scope, compliance export with dependent waivers — all pending legal review of minor waiver text |
+| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Minor waiver text pending legal review. Once approved: create WaiverVersion with minor scope + surface in signing dialogs. Minor waiver routing, parent alerts, and auto-complete are built. |
 | [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Mobile app route recording/upload device testing on iOS and Android |
 | [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | Phase 4: 28 Appium tests written, AutomationIds added. CI blocked — GitHub Actions emulators unstable for MAUI+Appium ([Reddit discussion](https://www.reddit.com/r/dotnetMAUI/comments/1s0tiq3/running_maui_appium_ui_tests_on_github_actions/)). Tests run locally. |
 | [Project 30 - Azure Billing Alerts](./Projects/Project_30_Azure_Billing_Alerts.md) | Operational monitoring and alert tuning |
