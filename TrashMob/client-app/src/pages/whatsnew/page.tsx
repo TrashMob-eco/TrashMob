@@ -197,16 +197,15 @@ const completedFeatures = [
         description:
             'Partners can sponsor professional cleanup crews for adopted locations. Track sponsor-funded cleanups alongside volunteer efforts with dedicated company management.',
     },
+    {
+        icon: <ShieldCheck className='h-5 w-5' />,
+        title: 'Parental Consent & Minor Safety',
+        description:
+            'COPPA-compliant identity verification and parental consent powered by PRIVO. Parents verify their identity, approve features for 13-17 year old dependents, and sign waivers on their behalf.',
+    },
 ];
 
 const upcomingFeatures = [
-    {
-        icon: <ShieldCheck className='h-5 w-5' />,
-        title: 'Parental Consent',
-        description:
-            'Enhanced protections for minor volunteers (13-17) including guardian consent workflows, age-appropriate feature restrictions, and COPPA-compliant data handling.',
-        status: 'In Progress',
-    },
     {
         icon: <Bell className='h-5 w-5' />,
         title: 'In-App Messaging',
