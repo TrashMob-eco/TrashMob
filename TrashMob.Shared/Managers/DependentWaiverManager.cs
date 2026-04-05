@@ -14,7 +14,9 @@ namespace TrashMob.Shared.Managers
     public class DependentWaiverManager(
         IKeyedRepository<DependentWaiver> repository,
         IKeyedRepository<Dependent> dependentRepository,
-        IKeyedRepository<WaiverVersion> waiverVersionRepository)
+        IKeyedRepository<WaiverVersion> waiverVersionRepository,
+        IBaseRepository<CommunityWaiver> communityWaiverRepository,
+        IBaseRepository<EventPartnerLocationService> eventPartnerLocationServiceRepository)
         : KeyedManager<DependentWaiver>(repository), IDependentWaiverManager
     {
         public async Task<ServiceResult<DependentWaiver>> SignWaiverAsync(
@@ -94,6 +96,74 @@ namespace TrashMob.Shared.Managers
             return await Repo.Get(dw => dw.DependentId == dependentId)
                 .OrderByDescending(dw => dw.AcceptedDate)
                 .ToListAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<WaiverVersion>> GetRequiredWaiversForDependentEventAsync(
+            Guid dependentId, Guid eventId, CancellationToken cancellationToken = default)
+        {
+            var now = DateTimeOffset.UtcNow;
+
+            // Get the dependent's current valid waivers
+            var signedWaiverVersionIds = await Repo.Get(dw =>
+                    dw.DependentId == dependentId && dw.ExpiryDate >= now)
+                .Select(dw => dw.WaiverVersionId)
+                .ToListAsync(cancellationToken);
+
+            var signedSet = signedWaiverVersionIds.ToHashSet();
+
+            // Get the current global waiver
+            var globalWaiver = await waiverVersionRepository
+                .Get(w =>
+                    w.IsActive &&
+                    w.Scope == WaiverScope.Global &&
+                    w.EffectiveDate <= now &&
+                    (w.ExpiryDate == null || w.ExpiryDate > now))
+                .OrderByDescending(w => w.EffectiveDate)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            // Get partner IDs for the event
+            var partnerIds = await eventPartnerLocationServiceRepository
+                .Get(epls => epls.EventId == eventId)
+                .Include(epls => epls.PartnerLocation)
+                .Select(epls => epls.PartnerLocation.PartnerId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+
+            // Get required community waiver versions
+            var communityWaiverVersionIds = await communityWaiverRepository
+                .Get(cw => partnerIds.Contains(cw.CommunityId) && cw.IsRequired)
+                .Select(cw => cw.WaiverVersionId)
+                .ToListAsync(cancellationToken);
+
+            var communityWaivers = communityWaiverVersionIds.Count != 0
+                ? await waiverVersionRepository.Get(w =>
+                        communityWaiverVersionIds.Contains(w.Id) &&
+                        w.IsActive &&
+                        w.EffectiveDate <= now &&
+                        (w.ExpiryDate == null || w.ExpiryDate > now))
+                    .ToListAsync(cancellationToken)
+                : [];
+
+            // Combine and filter out already signed
+            List<WaiverVersion> requiredWaivers = [];
+
+            if (globalWaiver is not null && !signedSet.Contains(globalWaiver.Id))
+            {
+                requiredWaivers.Add(globalWaiver);
+            }
+
+            requiredWaivers.AddRange(communityWaivers.Where(w => !signedSet.Contains(w.Id)));
+
+            return requiredWaivers;
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> HasValidWaiversForEventAsync(
+            Guid dependentId, Guid eventId, CancellationToken cancellationToken = default)
+        {
+            var required = await GetRequiredWaiversForDependentEventAsync(dependentId, eventId, cancellationToken);
+            return !required.Any();
         }
 
         public async Task<(int Total, int Valid, int Expired, Dictionary<string, int> RelationshipBreakdown)> GetComplianceStatsAsync(CancellationToken cancellationToken = default)
