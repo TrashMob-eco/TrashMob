@@ -55,20 +55,35 @@ namespace TrashMob.Shared.Managers.Events
         /// <inheritdoc />
         public override async Task<int> Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken)
         {
-            // Auto-unregister any dependents this parent registered for the event
+            // Auto-unregister under-13 dependents when parent cancels (they have no account
+            // and cannot attend without the parent). 13-17 minors with their own accounts
+            // are NOT auto-unregistered — another adult may be supervising.
             var dependentRegistrations = await eventDependentRepository
                 .Get(ed => ed.EventId == parentId && ed.ParentUserId == secondId)
+                .Include(ed => ed.Dependent)
                 .ToListAsync(cancellationToken);
 
             foreach (var registration in dependentRegistrations)
             {
-                await eventDependentRepository.DeleteAsync(registration);
+                var age = CalculateDependentAge(registration.Dependent);
+                if (age < 13)
+                {
+                    await eventDependentRepository.DeleteAsync(registration);
+                }
             }
 
             var eventAttendee = await Repository.Get(ea => ea.EventId == parentId && ea.UserId == secondId)
                 .FirstOrDefaultAsync(cancellationToken);
 
             return await Repository.DeleteAsync(eventAttendee);
+        }
+
+        private static int CalculateDependentAge(Dependent dependent)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var age = today.Year - dependent.DateOfBirth.Year;
+            if (dependent.DateOfBirth > today.AddYears(-age)) age--;
+            return age;
         }
 
         /// <inheritdoc />

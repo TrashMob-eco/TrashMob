@@ -110,7 +110,7 @@ This combined approach minimizes risk by building PRIVO integration directly int
 ### Phase 3 — Minor Protections (→ Project 1, Phase 7) ✅
 - [x] Communication restrictions for minors (no direct messaging — no DM system exists; MessageRequestController is admin-only)
 - [x] Limited profile visibility (first name + last initial via `ToDisplayUser()` name masking)
-- [x] Adult presence enforcement at events (parent must be registered attendee; auto-unregister dependents on parent cancel)
+- [x] Adult presence enforcement at events (parent must be registered attendee; auto-unregister under-13 dependents on parent cancel)
 - [x] Parent notification system (email sent when dependents registered for events)
 - [x] Minor-specific UI indicators (Minor badges on web attendee table and mobile attendee list)
 - [x] PRIVO feature permission gating (8 features gated on web + mobile based on parent-approved permissions)
@@ -1007,7 +1007,7 @@ Phases are restructured to separate Privo-independent work (can start now) from 
 
 - [x] Communication restrictions (no DMs for minors — no DM system exists; MessageRequestController is admin-only)
 - [x] Profile visibility limits (first name + last initial via `ToDisplayUser()` and leaderboard cache masking)
-- [x] Adult presence enforcement at events (parent must be registered attendee; auto-unregister dependents on parent cancel)
+- [x] Adult presence enforcement at events (parent must be registered attendee; auto-unregister under-13 dependents on parent cancel)
 - [x] Parent notification system (email sent when dependents registered for events)
 - [x] Minor-specific UI indicators ("Minor" badge on web event attendee table and mobile attendee list; `IsMinor` in `DisplayUser` DTO)
 
