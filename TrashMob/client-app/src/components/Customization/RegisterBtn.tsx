@@ -71,7 +71,17 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
     const addEventAttendee = useMutation({
         mutationKey: AddEventAttendee().key,
         mutationFn: AddEventAttendee().service,
-        onSuccess: () => {
+        onSuccess: (response) => {
+            const data = (response as { data?: { status?: string } })?.data;
+
+            if (data?.status === 'waiver_pending') {
+                // Minor registered with pending waivers — parent must sign
+                setWaiverPending(true);
+                setRegistered(true);
+                queryClient.invalidateQueries(GetAllEventsBeingAttendedByUser({ userId }).key);
+                return;
+            }
+
             // Track attendance registration
             trackAttendance('Register', eventId);
 
@@ -114,12 +124,20 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
         });
     }
 
+    const [waiverPending, setWaiverPending] = useState(false);
+
     const handleAttend = (eventId: string) => {
         const accounts = getMsalClientInstance().getAllAccounts();
 
         // Check if user is logged in — if not, show age gate before redirecting to sign-up
         if (accounts === null || accounts.length === 0) {
             setShowAgeGate(true);
+            return;
+        }
+
+        // Minors cannot sign waivers — register directly, backend handles waiver-pending
+        if (currentUser?.isMinor) {
+            addAttendee(eventId);
             return;
         }
 
@@ -160,7 +178,11 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
 
     return (
         <>
-            {!canRegister && isUserLoaded && !isEventCompleted && isAttending !== 'Yes' ? (
+            {waiverPending ? (
+                <p className='text-sm text-amber-600 font-medium'>
+                    Registered — waiting for your parent to sign the required waivers.
+                </p>
+            ) : !canRegister && isUserLoaded && !isEventCompleted && isAttending !== 'Yes' ? (
                 <p className='text-sm text-muted-foreground'>
                     Event registration is not available. Ask your parent to update your permissions.
                 </p>

@@ -96,6 +96,13 @@ namespace TrashMob.Controllers.V2
         {
             logger.LogInformation("V2 AcceptWaiver WaiverVersion={WaiverVersionId}", request.WaiverVersionId);
 
+            // Minors cannot sign their own waivers — parent/guardian must sign DependentWaivers
+            var currentUser = await userManager.GetAsync(UserId, cancellationToken);
+            if (currentUser is { IsMinor: true })
+            {
+                return BadRequest("Minors cannot sign waivers. Your parent or guardian must sign waivers on your behalf from their dashboard.");
+            }
+
             if (request.WaiverVersionId == Guid.Empty)
             {
                 return BadRequest("Waiver version ID is required.");
