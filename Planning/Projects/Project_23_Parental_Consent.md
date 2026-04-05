@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 0 and Phase 3 complete; Privo integration Phases 1-2 remaining) |
+| **Status** | In Progress (Phases 0-3 Complete — PRIVO INT verified; Flow 3 child-initiated + production deployment remaining) |
 | **Priority** | High |
 | **Risk** | High |
 | **Size** | Large |
@@ -25,9 +25,9 @@ The Privo/parental consent work is implemented as part of the [Project 1 — Aut
 | Project 23 Phase | Implemented In | Requires Privo? | Description |
 |-----------------|----------------|-----------------|-------------|
 | Phase 0 (Parent-First Flow) ✅ | **Standalone** | **No** | Parent invites minor to create account, account linking via parent email, invitation system |
-| Phase 1 (Age Verification) | **Project 1, Phase 3** | **Yes** | Custom Authentication Extension for age gate via Privo API |
-| Phase 2 (Parental Consent) | **Project 1, Phase 3** | **Yes** | Privo VPC workflow, consent tracking, minor-first registration flow |
-| Phase 3 (Minor Protections) ✅ | **Project 1, Phase 7** | **No** | Communication restrictions, limited profile visibility, adult presence enforcement |
+| Phase 1 (Age Verification) ✅ | **Standalone** | **Yes** | Age gate (web + mobile), PRIVO adult identity verification, Section 2/3 widget flow |
+| Phase 2 (Parental Consent) ✅ | **Standalone** | **Yes** | PRIVO consent workflow (Flow 2: parent adds child), webhook processing, feature permissions, consent status tracking |
+| Phase 3 (Minor Protections) ✅ | **Project 1, Phase 7** | **No** | Communication restrictions, limited profile visibility, adult presence enforcement, PRIVO feature permission gating |
 | Phase 4 (Family Features) | **Deferred** | **No** | Parent dashboard, multiple minor management (future project) |
 
 This combined approach minimizes risk by building Privo integration directly into the new Entra External ID auth system rather than retrofitting it into B2C.
@@ -52,36 +52,60 @@ This combined approach minimizes risk by building Privo integration directly int
 
 ## Scope
 
-### Phase 1 — Age Verification (→ Project 1, Phase 3)
+### Phase 1 — Age Verification & Adult Identity Verification ✅
 
-**Architecture: Hybrid Age Gate (two-layer verification)**
+**Completed April 2026.** Implemented as a standalone PRIVO integration (not via Custom Authentication Extension).
 
-#### Layer 1: In-App Pre-Screen (Web + Mobile, before Entra redirect)
-- [ ] **Web (React):** DOB input component shown when user clicks "Sign Up" — before `loginRedirect()`
-- [ ] **Mobile (MAUI):** DOB input page/modal shown before `AcquireTokenInteractive()` in `AuthService`
-- [ ] Under-13 blocked immediately with friendly message (COPPA: no PII collected from children)
-- [ ] 13-17 flagged as minor, DOB passed to Entra sign-up via MSAL `extraQueryParameters` or `state`
-- [ ] 18+ proceeds to standard Entra sign-up
+#### Layer 1: In-App Age Gate (Web + Mobile)
+- [x] **Web (React):** AgeGateDialog with month/year dropdown DatePicker, DOB validation
+- [x] **Mobile (MAUI):** AgeGateViewModel with DOB input, 13+ validation
+- [x] Under-13 blocked with friendly message (COPPA: no PII collected)
+- [x] 13-17 shows "Parental Consent Required" with option to navigate to child-signup flow
+- [x] 18+ proceeds to standard Entra sign-up
 
-#### Layer 2: Custom Authentication Extension (Azure Function, server-side)
-- [ ] `OnAttributeCollectionSubmit` re-verifies DOB (defense-in-depth — can't be bypassed)
-- [ ] Integrates with Privo API for age verification
-- [ ] Under-13 → `showBlockPage`, 13-17 → set `isMinor` flag, 18+ → continue
-- [ ] Document Custom Authentication Extension setup (sponsorship deliverable)
+#### Adult Identity Verification via PRIVO
+- [x] `PrivoService` — HTTP client for all 10 PRIVO API sections, token caching (25-min), structured logging
+- [x] `PrivoConsentManager` — orchestrates verification flow, stores `ParentalConsent` records
+- [x] `PrivoConsentV2Controller` — `POST /v2/privo/verify` initiates Flow 1, redirects to PRIVO widget (Section 3)
+- [x] `VerifyIdentityCard` — dashboard component shows verification status, "Verify My Identity" button
+- [x] PRIVO callback page — handles redirect back from PRIVO verification widget
+- [x] Webhook handler — receives PRIVO events, polls Section 7 for authoritative state, auto-updates verification
+- [x] "Check Status" button — manual polling fallback when webhooks are delayed
+- [x] User model: `IsIdentityVerified`, `IdentityVerifiedDate`, `PrivoSid` fields
+- [x] Verified end-to-end on PRIVO INT environment (April 2026)
 
-#### Pre-requisite: Verify Token Claims & Profile Completeness
-See **Project 1, Phase 3 Investigation** for full task list. Key questions:
-- Are `given_name`/`family_name` optional claims working for all sign-in methods?
-- How are existing users without `DateOfBirth` handled? (Plan: grandfather as adults)
-- Should profile page prompt for missing fields?
+### Phase 2 — Parental Consent ✅
 
-### Phase 2 — Parental Consent (→ Project 1, Phase 3)
-- [ ] Implement Privo VPC (Verifiable Parental Consent) webhook
-- [ ] Parent notification workflow via Privo
-- [ ] Consent status tracking in database (ParentalConsent entity)
-- [ ] Pending account limitations for minors awaiting consent
-- [ ] Consent artifact retention per COPPA requirements
-- [ ] Document Privo VPC integration (sponsorship deliverable)
+**Completed April 2026.** Full PRIVO consent workflow for 13-17 dependents.
+
+#### Flow 2: Verified Parent Adds 13-17 Child
+- [x] Parent adds dependent with optional email field
+- [x] Shield button on 13+ dependents triggers PRIVO consent (Section 5)
+- [x] PRIVO sends consent email to parent → parent approves on PRIVO site
+- [x] Webhook fires → auto-polls PRIVO → consent status updates to "Approved"
+- [x] Consent status badges: "Needs Consent", "Consent Pending", "Consent Approved"
+- [x] After consent approved, Mail icon appears to send account invitation to child
+- [x] Child creates Entra account → auto-linked to parent via `TryAcceptByEmailAsync`
+
+#### Flow 3: Child-Initiated Signup (partially complete)
+- [x] `/child-signup` page — child enters parent email, name, DOB
+- [x] Backend: `InitiateChildConsentAsync` — checks parent exists, calls PRIVO Section 6
+- [ ] End-to-end testing of child-initiated flow on INT
+
+#### PRIVO Feature Permissions
+- [x] `GET /v2/privo/permissions` — fetches PRIVO feature states by EID (Section 4), cached 1 hour
+- [x] `usePrivoPermissions` React hook — `isFeatureEnabled(featureId)` for web gating
+- [x] `IPrivoPermissionService` — mobile permission cache with `IsFeatureEnabled()` helper
+- [x] Web: 7 gating points (leaderboards, newsletter, routes, sharing, teams, photos, registration)
+- [x] Mobile: 5 ViewModels gated (ViewEvent, ViewTeam, Leaderboards, Newsletter, CreateLitterReport)
+- [x] Mobile: pre-fetch permissions on login, clear cache on logout
+- [x] Minor Account card — minors see restricted dashboard (no Add Dependent, no identity verification)
+
+#### Consent Infrastructure
+- [x] `ParentalConsent` entity with PRIVO identifiers, consent type/status enums
+- [x] Webhook handler polls PRIVO on `consent_updated`/`account_feature_updated` events
+- [x] Consent revocation endpoint (`POST /v2/privo/consent/{id}/revoke`)
+- [x] 16 Playwright E2E tests covering API, UI, webhooks, callback page, age gate
 
 ### Phase 3 — Minor Protections (→ Project 1, Phase 7) ✅
 - [x] Communication restrictions for minors (no direct messaging — no DM system exists; MessageRequestController is admin-only)
@@ -89,7 +113,9 @@ See **Project 1, Phase 3 Investigation** for full task list. Key questions:
 - [x] Adult presence enforcement at events (parent must be registered attendee; auto-unregister dependents on parent cancel)
 - [x] Parent notification system (email sent when dependents registered for events)
 - [x] Minor-specific UI indicators (Minor badges on web attendee table and mobile attendee list)
-- [ ] Complete Privo documentation package (sponsorship deliverable — deferred to Phase 1-2)
+- [x] PRIVO feature permission gating (8 features gated on web + mobile based on parent-approved permissions)
+- [x] Minor Account dashboard card (minors see restricted UI — no Add Dependent, no identity verification)
+- [ ] Complete Privo documentation package (sponsorship deliverable — in progress)
 
 ### Phase 4 — Family Features (Deferred)
 - Parent can manage multiple minors (future)
@@ -229,8 +255,11 @@ public interface IPrivoService
 | **Swimlane flow documentation** | ✅ Delivered | Engineering |
 | **Branding assets** (logos, colors, etc.) | ❌ Pending | Marketing |
 | **PRIVO API integration doc received** | ✅ Received March 24, 2026 | PRIVO |
-| **Webhook endpoint URLs whitelisted** | ❌ Pending | Engineering + PRIVO |
-| **Redirect URLs whitelisted** | ❌ Pending | Engineering + PRIVO |
+| **Webhook endpoint configured (INT)** | ✅ Configured April 2026 | Engineering + PRIVO |
+| **Redirect URLs whitelisted (INT)** | ✅ `dev.trashmob.eco` whitelisted April 2026 | Engineering + PRIVO |
+| **Webhook API key exchanged (INT)** | ✅ Generated and shared April 2026 | Engineering |
+| **INT environment verified end-to-end** | ✅ Adult verification + child consent April 2026 | Engineering |
+| **Production credentials** | ❌ Pending PRIVO sign-off | PRIVO |
 
 **Features requiring parental consent:**
 

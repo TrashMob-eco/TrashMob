@@ -31,7 +31,7 @@
 |---------|-------------|--------|
 | [Project 2 - Home Page Improvements](./Projects/Project_02_Home_Page.md) | Dynamic content, ads, sponsors | Ready for Design Review |
 | [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | In Progress (Phases 1-4, 5a-5e, 6 Complete; minor waiver signing pending legal) |
-| [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors (combined with Project 1) | In Progress (Phase 0, 3 Complete; Phases 1-2 blocked on Privo) |
+| [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors | In Progress (Phases 0-3 Complete — PRIVO INT verified; Flow 3 + production remaining) |
 
 #### Medium Priority (Enhancements)
 
