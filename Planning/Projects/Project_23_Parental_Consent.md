@@ -20,9 +20,9 @@ Support parent-managed dependents or direct minor registration with age verifica
 
 ## Combined Approach with Project 1
 
-The Privo/parental consent work is implemented as part of the [Project 1 — Auth Revamp](./Project_01_Auth_Revamp.md) phased rollout:
+The PRIVO/parental consent work is implemented as part of the [Project 1 — Auth Revamp](./Project_01_Auth_Revamp.md) phased rollout:
 
-| Project 23 Phase | Implemented In | Requires Privo? | Description |
+| Project 23 Phase | Implemented In | Requires PRIVO? | Description |
 |-----------------|----------------|-----------------|-------------|
 | Phase 0 (Parent-First Flow) ✅ | **Standalone** | **No** | Parent invites minor to create account, account linking via parent email, invitation system |
 | Phase 1 (Age Verification) ✅ | **Standalone** | **Yes** | Age gate (web + mobile), PRIVO adult identity verification, Section 2/3 widget flow |
@@ -30,7 +30,7 @@ The Privo/parental consent work is implemented as part of the [Project 1 — Aut
 | Phase 3 (Minor Protections) ✅ | **Project 1, Phase 7** | **No** | Communication restrictions, limited profile visibility, adult presence enforcement, PRIVO feature permission gating |
 | Phase 4 (Family Features) | **Deferred** | **No** | Parent dashboard, multiple minor management (future project) |
 
-This combined approach minimizes risk by building Privo integration directly into the new Entra External ID auth system rather than retrofitting it into B2C.
+This combined approach minimizes risk by building PRIVO integration directly into the new Entra External ID auth system rather than retrofitting it into B2C.
 
 ---
 
@@ -40,7 +40,7 @@ This combined approach minimizes risk by building Privo integration directly int
 - **Direct minor registration** with age verification via Privo.com
 - **COPPA compliance** via Privo.com Verifiable Parental Consent (VPC)
 - **Enhanced protections** (no DMs, limited profile visibility, adult presence requirements)
-- **Document** the Entra External ID + Privo integration process (sponsorship deliverable)
+- **Document** the Entra External ID + PRIVO integration process (sponsorship deliverable)
 
 ### Secondary Goals
 - Parent-managed dependents flow for families
@@ -115,7 +115,7 @@ This combined approach minimizes risk by building Privo integration directly int
 - [x] Minor-specific UI indicators (Minor badges on web attendee table and mobile attendee list)
 - [x] PRIVO feature permission gating (8 features gated on web + mobile based on parent-approved permissions)
 - [x] Minor Account dashboard card (minors see restricted UI — no Add Dependent, no identity verification)
-- [ ] Complete Privo documentation package (sponsorship deliverable — in progress)
+- [ ] Complete PRIVO documentation package (sponsorship deliverable — in progress)
 
 ### Phase 4 — Family Features (Deferred)
 - Parent can manage multiple minors (future)
@@ -172,10 +172,10 @@ This combined approach minimizes risk by building Privo integration directly int
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
 | **COPPA violation** | Low | Critical | Privo.com compliance; legal review; regular audits |
-| **False age claims** | Medium | High | Privo age verification; periodic re-verification |
+| **False age claims** | Medium | High | PRIVO age verification; periodic re-verification |
 | **Parent consent fraud** | Low | High | Privo VPC process; consent validation |
 | **Minor safety incident** | Low | Critical | Adult presence requirement; clear policies; training |
-| **Complex implementation** | High | Medium | Phased rollout; Privo expertise; thorough testing |
+| **Complex implementation** | High | Medium | Phased rollout; PRIVO expertise; thorough testing |
 
 ---
 
@@ -183,7 +183,7 @@ This combined approach minimizes risk by building Privo integration directly int
 
 ### Integration Architecture
 
-The Privo integration uses a **Hybrid Age Gate (Option C)** — a two-layer approach combining an in-app pre-screen with Entra External ID Custom Authentication Extensions.
+The PRIVO integration uses a **Hybrid Age Gate (Option C)** — a two-layer approach combining an in-app pre-screen with Entra External ID Custom Authentication Extensions.
 
 **Layer 1 (In-App Pre-Screen):** React DOB input shown before `loginRedirect()`. Blocks under-13s immediately without collecting any PII (COPPA compliance). Passes DOB context to Entra via MSAL `extraQueryParameters` or `state`.
 
@@ -793,7 +793,7 @@ The parent already has a TrashMob account and initiates the process.
 
 **This flow can be built today without Privo.** The trust chain is: authenticated parent → explicitly adds dependent → invites them. The gap is that without Privo, there's no verification the adult is actually the legal parent (self-attestation only).
 
-#### Flow B: Minor-First (Requires Privo)
+#### Flow B: Minor-First (Requires PRIVO)
 
 The minor initiates registration independently.
 
@@ -986,14 +986,14 @@ Phases are restructured to separate Privo-independent work (can start now) from 
 - [x] Invite flow from My Dependents page
 - [x] Invitation status display
 
-### Phase 1: Age Gate (→ Project 1, Phase 3 — Requires Privo)
+### Phase 1: Age Gate (→ Project 1, Phase 3 — Requires PRIVO)
 - In-app DOB pre-screen on **both web (React) and mobile (MAUI)** — blocks under-13s before Entra redirect (no PII collected)
 - Custom Authentication Extension (Azure Function) on `OnAttributeCollectionSubmit` — server-side defense-in-depth
 - Privo API integration for age verification (13-17 triggers minor flow)
 - Under-13 blocking at both layers
 - Minor flag in database
 
-### Phase 2: Parental Consent (→ Project 1, Phase 3 — Requires Privo)
+### Phase 2: Parental Consent (→ Project 1, Phase 3 — Requires PRIVO)
 - Privo VPC workflow implementation
 - Parent notification via Privo
 - Consent status tracking (ParentalConsent entity)
@@ -1023,7 +1023,7 @@ Phases are restructured to separate Privo-independent work (can start now) from 
 
 The following documentation must be produced as part of the Privo sponsorship agreement:
 
-1. **Entra External ID tenant setup guide** — How to create and configure an external tenant for Privo integration (Project 1, Phase 0)
+1. **Entra External ID tenant setup guide** — How to create and configure an external tenant for PRIVO integration (Project 1, Phase 0)
 2. **Custom Authentication Extension guide** — How to build the Azure Function and wire it to the sign-up user flow (Phase 1)
 3. **Privo VPC integration guide** — How to implement the Verifiable Parental Consent webhook and consent tracking (Phase 2)
 4. **Complete integration package** — End-to-end guide combining all of the above (Phase 3)

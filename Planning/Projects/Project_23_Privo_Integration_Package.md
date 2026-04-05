@@ -412,6 +412,54 @@ Please provide Figma access to the Privo team members for UI/UX review.
 | 1.2 | March 2, 2026 | TrashMob Engineering | Added custom authentication extension architecture, Entra configuration details, and troubleshooting notes from production incident |
 | 1.3 | March 2, 2026 | TrashMob Engineering | Documented CIAM vs standard OIDC endpoint signing key differences, IDX10503 root cause, and logging troubleshooting tips |
 | 1.4 | March 27, 2026 | TrashMob Engineering | Updated API section with PRIVO API Requirements doc reference (received March 24, 2026); resolved open questions on consent methods and testing environment |
+| 2.0 | April 5, 2026 | TrashMob Engineering | Integration complete on INT: adult verification (Flow 1), parent-child consent (Flow 2), webhook processing, feature permissions, waiver routing, E2E tests. First Entra External ID + PRIVO integration verified. |
+
+---
+
+## 11. Integration Completion Summary
+
+**Completed April 2026.** TrashMob is the first organization to integrate Microsoft Entra External ID with PRIVO.
+
+### What Was Built
+
+| Component | Description |
+|-----------|-------------|
+| `PrivoService` | HTTP client for all 10 PRIVO API sections with OAuth token caching |
+| `PrivoConsentManager` | Orchestrates verification and consent workflows |
+| `PrivoConsentV2Controller` | REST API endpoints for verification, consent, status, permissions |
+| `PrivoWebhooksV2Controller` | Webhook handler with API key auth, polls Section 7 for state |
+| `usePrivoPermissions` | React hook for client-side feature gating |
+| `IPrivoPermissionService` | Mobile permission cache with 1-hour TTL |
+| 16 E2E Tests | Playwright tests covering API, UI, webhooks, callback, age gate |
+
+### Verified Flows
+
+| Flow | Status | Notes |
+|------|--------|-------|
+| Adult Identity Verification | Verified on INT | Widget redirect, webhook auto-update |
+| Parent Adds 13-17 Child | Verified on INT | Consent email, webhook, account linking |
+| Child-Initiated Signup | Built, pending E2E test | Backend + UI complete |
+| Feature Permission Gating | Verified | 8 features gated on web + mobile |
+| Minor Waiver Routing | Built | Waivers route to parent, auto-complete on sign |
+
+### Key Vault Secrets (INT)
+
+| Secret | Purpose |
+|--------|---------|
+| `Privo-ClientId` | PRIVO INT OAuth client ID |
+| `Privo-ClientSecret` | PRIVO INT OAuth client secret |
+| `Privo-ApiKey` | Webhook authentication key |
+| `Privo--Enabled` | Feature flag (true for dev) |
+
+### Production Deployment Checklist
+
+- [ ] PRIVO provides production credentials
+- [ ] Set `Privo-ClientId`, `Privo-ClientSecret`, `Privo-ApiKey` in prod Key Vault
+- [ ] Set `Privo--Enabled` = true in prod Key Vault
+- [ ] Whitelist `https://www.trashmob.eco` as redirect URL with PRIVO
+- [ ] Configure production webhook endpoint with PRIVO
+- [ ] Verify token acquisition against production endpoint
+- [ ] Test adult verification end-to-end on production
 
 ---
 

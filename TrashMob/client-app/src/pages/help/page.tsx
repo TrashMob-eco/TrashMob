@@ -638,6 +638,80 @@ const tabContents = [
             },
         ],
     },
+    {
+        category: 'Minors & Consent',
+        desc: 'Youth volunteers and parental consent',
+        icon: gloves,
+        questions: [
+            {
+                question: 'How does parental consent work for minors?',
+                answer: `
+                    <p>TrashMob partners with <a href="https://privo.com" target="_blank" rel="noopener noreferrer">PRIVO</a> to provide COPPA-compliant parental consent for volunteers aged 13-17. Here's how it works:</p>
+                    <ol class="list-decimal pl-8 space-y-2 mt-2">
+                        <li><strong>Parent verifies identity</strong> — Click "Verify My Identity" on your dashboard. You'll be redirected to PRIVO's secure verification widget.</li>
+                        <li><strong>Add your child as a dependent</strong> — Enter their name, date of birth, and email address from your dashboard.</li>
+                        <li><strong>Approve PRIVO consent</strong> — Click the shield icon next to your child's name. PRIVO will email you a consent link to review and approve features.</li>
+                        <li><strong>Child creates account</strong> — After consent is approved, send your child an invitation. They create their own account using the link.</li>
+                        <li><strong>Sign waivers</strong> — When your child registers for events, you'll receive an email to sign the required waivers on their behalf.</li>
+                    </ol>
+                `,
+            },
+            {
+                question: 'What features can parents control?',
+                answer: `
+                    <p>Through PRIVO, parents approve which features their child can access:</p>
+                    <ul class="list-disc pl-8 space-y-1 mt-2">
+                        <li><strong>Event Registration</strong> — Register for and attend cleanup events</li>
+                        <li><strong>Leaderboards</strong> — Appear on volunteer rankings</li>
+                        <li><strong>Social Sharing</strong> — Share events to social media</li>
+                        <li><strong>Newsletter</strong> — Receive email updates</li>
+                        <li><strong>Geolocation</strong> — Route tracking during events</li>
+                        <li><strong>Teams</strong> — Join volunteer teams</li>
+                        <li><strong>Photo Uploads</strong> — Upload event photos</li>
+                    </ul>
+                    <p class="mt-2">Features not approved by the parent are hidden from the child's account.</p>
+                `,
+            },
+            {
+                question: 'How do waivers work for minors?',
+                answer: `
+                    <p>Minors cannot sign their own waivers. When a minor registers for an event:</p>
+                    <ol class="list-decimal pl-8 space-y-1 mt-2">
+                        <li>The registration is created with a <strong>"waiver pending"</strong> status</li>
+                        <li>The parent receives an email asking them to sign the required waivers</li>
+                        <li>The parent signs waivers from their dashboard (including community-specific waivers)</li>
+                        <li>Once all waivers are signed, the child's registration is automatically confirmed</li>
+                    </ol>
+                    <p class="mt-2">Parents will see a red alert on their dashboard when waivers need signing.</p>
+                `,
+            },
+            {
+                question: 'What protections are in place for minors?',
+                answer: `
+                    <ul class="list-disc pl-8 space-y-1">
+                        <li>Names displayed as first name + last initial only (e.g., "John S.")</li>
+                        <li>No direct messaging capability</li>
+                        <li>At least one adult must be present at events with minors</li>
+                        <li>Parents notified when their child registers for events</li>
+                        <li>Feature access controlled by parent through PRIVO</li>
+                        <li>Full name visible only to event leads for check-in</li>
+                    </ul>
+                `,
+            },
+            {
+                question: 'Can children under 13 participate?',
+                answer: `
+                    <p>Children under 13 cannot create their own accounts (per COPPA). However, a parent or guardian can:</p>
+                    <ul class="list-disc pl-8 space-y-1 mt-2">
+                        <li>Add them as a <strong>dependent</strong> on the parent's profile</li>
+                        <li>Register them for events alongside the parent</li>
+                        <li>Sign waivers on their behalf</li>
+                    </ul>
+                    <p class="mt-2">The parent must be physically present at any event where their under-13 child is attending.</p>
+                `,
+            },
+        ],
+    },
 ];
 
 export const Help: React.FC = () => {
