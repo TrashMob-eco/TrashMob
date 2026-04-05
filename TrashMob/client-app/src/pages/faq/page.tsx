@@ -229,7 +229,7 @@ const faqs = [
             },
             {
                 question: 'Does an adult need to be present at events with minors?',
-                answer: 'Yes. At least one adult must be registered for any event that has minor participants. If a parent cancels their own event registration, their dependent children are automatically unregistered.',
+                answer: 'Yes. At least one adult must be registered for any event that has minor participants. If a parent cancels their registration, any under-13 dependents they registered are automatically removed (since they cannot attend without the parent). Minors aged 13-17 with their own accounts are not automatically unregistered.',
             },
             {
                 question: 'How is minor data protected?',

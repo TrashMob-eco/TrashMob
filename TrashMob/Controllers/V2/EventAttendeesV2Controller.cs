@@ -151,6 +151,10 @@ namespace TrashMob.Controllers.V2
                 try
                 {
                     await eventAttendeeManager.AddAsync(eventAttendee, UserId, cancellationToken);
+
+                    // Always notify parent when their minor registers for an event
+                    await NotifyParentChildRegisteredAsync(user, eventId, cancellationToken);
+
                     return Ok();
                 }
                 catch (InvalidOperationException ex)
@@ -375,6 +379,50 @@ namespace TrashMob.Controllers.V2
 
             logger.LogInformation(
                 "Parent waiver notification sent: Parent={ParentId}, Minor={MinorId}, Event={EventId}",
+                parent.Id, minorUser.Id, eventId);
+        }
+
+        private async Task NotifyParentChildRegisteredAsync(User minorUser, Guid eventId, CancellationToken cancellationToken)
+        {
+            if (minorUser.ParentUserId == null) return;
+
+            var parent = await userManager.GetAsync(minorUser.ParentUserId.Value, cancellationToken);
+            if (parent == null || string.IsNullOrWhiteSpace(parent.Email)) return;
+
+            var events = await eventAttendeeManager.GetEventsUserIsAttendingAsync(minorUser.Id, cancellationToken: cancellationToken);
+            var eventInfo = events.FirstOrDefault(e => e.Id == eventId);
+
+            var childName = $"{minorUser.GivenName ?? minorUser.UserName}";
+            var eventName = eventInfo?.Name ?? "an event";
+            var eventDate = eventInfo?.EventDate.ToLocalTime().ToString("D") ?? "TBD";
+
+            var subject = $"{childName} has registered for {eventName}";
+            var message = $"<p>{childName} has registered for <strong>{eventName}</strong> on {eventDate}.</p>" +
+                          $"<p>All required waivers are already signed. No action is needed from you.</p>" +
+                          $"<p>You can view your child's registrations on your <a href=\"https://www.trashmob.eco/mydashboard\">TrashMob dashboard</a>.</p>";
+
+            List<EmailAddress> recipients =
+            [
+                new() { Name = parent.DisplayFirstName, Email = parent.Email },
+            ];
+
+            var dynamicTemplateData = new
+            {
+                username = parent.DisplayFirstName,
+                emailCopy = message,
+                subject,
+            };
+
+            await emailManager.SendTemplatedEmailAsync(
+                subject,
+                SendGridEmailTemplateId.GenericEmail,
+                SendGridEmailGroupId.General,
+                dynamicTemplateData,
+                recipients,
+                cancellationToken);
+
+            logger.LogInformation(
+                "Parent registration notification sent: Parent={ParentId}, Minor={MinorId}, Event={EventId}",
                 parent.Id, minorUser.Id, eventId);
         }
     }
