@@ -1,7 +1,7 @@
 # TrashMob.eco — 2026 Planning Documentation
 
-**Version:** 1.4
-**Date:** March 27, 2026
+**Version:** 1.5
+**Date:** April 5, 2026
 **Owner:** Director of Product & Engineering
 
 ---
@@ -21,7 +21,7 @@
 
 | Project | Description | Status |
 |---------|-------------|--------|
-| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Azure B2C → Entra External ID migration | In Progress (Phases 0-5a Complete, Production Live; Phase 6 Partial, Phase 7 Remaining) |
+| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Azure B2C → Entra External ID migration | In Progress (Phases 0-5a, 7 Complete; Phase 6 Partial) |
 | [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Stabilize MAUI apps, error handling | In Progress (Phases 1-2, 6 Complete; Phases 3-5 Substantial) |
 | [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | CI/CD modernization, Docker | In Progress (Phases 1-3 Complete; Phase 4 Partial) |
 
@@ -30,8 +30,8 @@
 | Project | Description | Status |
 |---------|-------------|--------|
 | [Project 2 - Home Page Improvements](./Projects/Project_02_Home_Page.md) | Dynamic content, ads, sponsors | Ready for Design Review |
-| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | Complete (minor waiver text pending legal review — all infrastructure built) |
-| [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | PRIVO integration for minors | In Progress (Phases 0-3 Complete — PRIVO INT verified; Flow 3 + production remaining) |
+| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | Complete (minor waiver text pending legal — all infrastructure built) |
+| [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | PRIVO integration for minors | Complete on INT (awaiting PRIVO production credentials) |
 
 #### Medium Priority (Enhancements)
 
@@ -195,7 +195,8 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | Status | Count | Projects |
 |--------|-------|----------|
 | ✅ **Complete** (archived) | 33 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 24, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53 |
-| **In Progress** | 15 | Projects 1, 4, 5, 6, 8, 15, 23, 25, 30, 36, 41, 45, 46, 49, 57 |
+| ✅ **Complete** (pending external) | 2 | Project 8 (legal review), Project 23 (PRIVO prod credentials) |
+| **In Progress** | 13 | Projects 1, 4, 5, 6, 15, 25, 30, 36, 41, 45, 46, 49, 57 |
 | **Planning** | 2 | Projects 56, 58 |
 | **Ready for Review** | 1 | Project 2 |
 | **Not Started** | 6 | Projects 12, 31, 43, 52, 54, 55, 59 |
@@ -211,12 +212,12 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 
 | Project | What's Left |
 |---------|-------------|
-| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Phase 7: Minor protections — core protections complete (name masking, adult presence, parent notifications, minor badges). Remaining: PRIVO documentation package |
-| [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Phases 0, 3 complete. Phases 1-2 (PRIVO age verification & parental consent) blocked on Privo API onboarding |
+| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Phase 6: Partial — remaining auth edge cases. Phases 0-5a, 7 complete. |
+| [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Complete on INT. Awaiting PRIVO production credentials for go-live. Flow 3 (child-initiated) pending E2E test. |
 | [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Phases 3-5: Manual test matrix on physical devices, regression testing, load testing, accessibility audit (TalkBack/VoiceOver), supported device docs |
 | [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | Phase 4: Deployment health dashboards; Phase 5: Cost optimization & auto-scaling; Phase 6: Security scanning (OWASP ZAP, CodeQL, Trivy) |
 | [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Phase 3: Security audit — review remaining API endpoints for authorization, input validation, rate limiting |
-| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Minor waiver text pending legal review. Once approved: create WaiverVersion with minor scope + surface in signing dialogs. Minor waiver routing, parent alerts, and auto-complete are built. |
+| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | All infrastructure complete. Minor waiver text pending legal review — once approved, create WaiverVersion with minor scope. |
 | [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Mobile app route recording/upload device testing on iOS and Android |
 | [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | Phase 4: 28 Appium tests written, AutomationIds added. CI blocked — GitHub Actions emulators unstable for MAUI+Appium ([Reddit discussion](https://www.reddit.com/r/dotnetMAUI/comments/1s0tiq3/running_maui_appium_ui_tests_on_github_actions/)). Tests run locally. |
 | [Project 30 - Azure Billing Alerts](./Projects/Project_30_Azure_Billing_Alerts.md) | Operational monitoring and alert tuning |
@@ -323,6 +324,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** March 27, 2026
+**Last Updated:** April 5, 2026
 **Maintained By:** Product & Engineering Team
-**Next Review:** End of Q1 2026
+**Next Review:** End of Q2 2026
