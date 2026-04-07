@@ -49,7 +49,6 @@
 | [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md) | Pre-event waiver validation, configurable check-in notifications, attendance roster for event leads | Not Started |
 | [Project 56 - Board Metrics Dashboard](./Projects/Project_56_Board_Metrics_Dashboard.md) | Unified admin dashboard consolidating App Insights, GA4, Sentry, Clarity, Azure costs, and QuickBooks for board meetings | Planning |
 | [Project 57 - Participation Report](./Projects/Project_57_Participation_Report.md) | Official volunteer participation report email with PDF for school/court/employer verification | In Progress (Phases 1-3 Complete) |
-| [Project 59 - Event Weather Forecast](./Projects/Project_59_Event_Weather_Forecast.md) | Weather forecast on event details page (web + mobile) using Open-Meteo API | Complete (Phases 1-3); Phase 4 (severe weather alerts) deferred |
 
 #### High Priority (Marketing & Growth)
 
@@ -70,7 +69,7 @@
 
 ---
 
-## Archived (Complete) Projects — 33 Total
+## Archived (Complete) Projects — 34 Total
 
 Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). These are delivered and in production.
 
@@ -109,6 +108,7 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | [Project 50 - News & Blog](./Projects/Archive/Project_50_News_Blog.md) | Blog-style news page powered by Strapi CMS with pagination and categories |
 | [Project 51 - Contact Management](./Projects/Archive/Project_51_Contact_Management.md) | Donor tracking, grant management, contact CRM for nonprofit fundraising |
 | [Project 53 - Mobile Offline Persistence](./Projects/Archive/Project_53_Mobile_Offline_Persistence.md) | Client-side persistence for routes, metrics, and photos with background sync |
+| [Project 59 - Event Weather Forecast](./Projects/Archive/Project_59_Event_Weather_Forecast.md) | Weather forecast on event details page (web + mobile) using Open-Meteo API |
 
 ### Complete with Deferred Items
 
@@ -146,7 +146,7 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 
 ### Event Experience
 - [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md)
-- [Project 59 - Event Weather Forecast](./Projects/Project_59_Event_Weather_Forecast.md)
+- [Project 59 - Event Weather Forecast](./Projects/Archive/Project_59_Event_Weather_Forecast.md) ✅
 
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Archive/Project_07_Event_Weights.md) ✅
@@ -194,9 +194,8 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** (archived) | 33 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 24, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53 |
+| ✅ **Complete** (archived) | 34 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 24, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53, 59 |
 | ✅ **Complete** (pending external) | 2 | Project 8 (legal review), Project 23 (PRIVO prod credentials) |
-| ✅ **Complete** (deferred items) | 1 | Project 59 (Phase 4 severe weather alerts deferred) |
 | **In Progress** | 13 | Projects 1, 4, 5, 6, 15, 25, 30, 36, 41, 45, 46, 49, 57 |
 | **Planning** | 2 | Projects 56, 58 |
 | **Ready for Review** | 1 | Project 2 |
@@ -252,7 +251,6 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | [Project 52 - Volunteer Rewards](./Projects/Project_52_Volunteer_Rewards.md) | Partner reward sourcing, criteria, distribution, fraud prevention (future) |
 | [Project 54 - Community Adoption Outreach](./Projects/Project_54_Community_Adoption_Outreach.md) | AI-powered sponsor/adopter discovery and outreach for community managers |
 | [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md) | Pre-event waiver validation, configurable check-in notifications, attendance roster |
-| [Project 59 - Event Weather Forecast](./Projects/Project_59_Event_Weather_Forecast.md) | Weather forecast on event details (web + mobile) via Open-Meteo API |
 
 ---
 
