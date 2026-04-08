@@ -22,6 +22,9 @@ public static class MauiProgram
 #if ANDROID || IOS || MACCATALYST
                 handlers.AddHandler<Microsoft.Maui.Controls.Maps.Map, CustomMapHandler>();
 #endif
+#if ANDROID
+                handlers.AddHandler<Microsoft.Maui.Controls.DatePicker, TrashMobMobile.Platforms.Android.SafeDatePickerHandler>();
+#endif
             })
             .UseMauiCommunityToolkit(options => { options.SetShouldSuppressExceptionsInBehaviors(true); })
             .ConfigureFonts(fonts =>
