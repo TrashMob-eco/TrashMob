@@ -11,10 +11,11 @@ import { Divider } from './Divider';
 interface SiteHeaderProps {
     currentUser: UserData;
     isUserLoaded: boolean;
+    isAuthChecking?: boolean;
 }
 
 export const SiteHeader = (props: SiteHeaderProps) => {
-    const { currentUser, isUserLoaded } = props;
+    const { currentUser, isUserLoaded, isAuthChecking } = props;
     const [show, setShow] = React.useState<boolean>(false);
 
     return (
@@ -47,7 +48,11 @@ export const SiteHeader = (props: SiteHeaderProps) => {
                         )}
                     >
                         <MainNav className='flex-1 py-4! lg:py-0!' isUserLoaded={isUserLoaded} />
-                        <UserNav currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                        <UserNav
+                            currentUser={currentUser}
+                            isUserLoaded={isUserLoaded}
+                            isAuthChecking={isAuthChecking}
+                        />
                     </div>
                 </div>
             </div>

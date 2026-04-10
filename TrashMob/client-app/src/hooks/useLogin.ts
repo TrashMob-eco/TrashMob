@@ -12,6 +12,7 @@ const EMPTY_GUID = Guid.createEmpty().toString();
 export const useLogin = () => {
     const [callbackId, setCallbackId] = useState('');
     const [currentUser, setCurrentUser] = useState<UserData>(new UserData());
+    const [isAuthChecking, setIsAuthChecking] = useState(true);
     const isUserLoaded = !!currentUser.id && currentUser.id !== EMPTY_GUID;
     const { trackAuth } = useFeatureMetrics();
 
@@ -37,6 +38,7 @@ export const useLogin = () => {
     async function initialLogin() {
         const accounts = getMsalClientInstance().getAllAccounts();
         if (accounts === null || accounts.length <= 0) {
+            setIsAuthChecking(false);
             return;
         }
         try {
@@ -44,9 +46,11 @@ export const useLogin = () => {
                 scopes: getApiConfig().scopes,
                 account: accounts[0],
             });
-            verifyAccount(tokenResponse);
+            await verifyAccount(tokenResponse);
         } catch (err: any) {
             console.warn('acquireTokenSilent failed:', err);
+        } finally {
+            setIsAuthChecking(false);
         }
     }
 
@@ -120,6 +124,7 @@ export const useLogin = () => {
 
     return {
         isUserLoaded,
+        isAuthChecking,
         currentUser,
         handleUserUpdated,
     };
