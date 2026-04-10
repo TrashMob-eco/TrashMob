@@ -18,13 +18,14 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     {
         private readonly Mock<IDependentManager> dependentManager = new();
         private readonly Mock<IDependentWaiverManager> dependentWaiverManager = new();
+        private readonly Mock<IKeyedManager<User>> userManager = new();
         private readonly Mock<ILogger<DependentsV2Controller>> logger = new();
         private readonly DependentsV2Controller controller;
         private readonly Guid userId = Guid.NewGuid();
 
         public DependentsV2ControllerTests()
         {
-            controller = new DependentsV2Controller(dependentManager.Object, dependentWaiverManager.Object, logger.Object);
+            controller = new DependentsV2Controller(dependentManager.Object, dependentWaiverManager.Object, userManager.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),
@@ -69,6 +70,9 @@ namespace TrashMob.Shared.Tests.Controllers.V2
                 DateOfBirth = new DateOnly(2015, 1, 1),
                 Relationship = "Child",
             };
+
+            userManager.Setup(m => m.GetAsync(userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new User { Id = userId, IsIdentityVerified = true });
 
             dependentManager.Setup(m => m.AddAsync(It.IsAny<Dependent>(), userId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Dependent

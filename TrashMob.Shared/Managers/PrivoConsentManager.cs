@@ -41,6 +41,11 @@ namespace TrashMob.Shared.Managers
                 throw new InvalidOperationException("User identity is already verified.");
             }
 
+            if (!user.DateOfBirth.HasValue)
+            {
+                throw new InvalidOperationException("Please set your date of birth on your profile before verifying your identity.");
+            }
+
             // Step 1: Call PRIVO Section 2 — create the consent/verification request
             var privoResponse = await privoService.CreateAdultVerificationRequestAsync(user, cancellationToken)
                 ?? throw new InvalidOperationException("Failed to create PRIVO verification request. Please try again.");
