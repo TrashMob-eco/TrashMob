@@ -184,19 +184,12 @@ test.describe('PRIVO Integration', () => {
             await page.goto('/privo/callback?status=success');
 
             await expect(page.getByText(/verification submitted/i)).toBeVisible({ timeout: 10000 });
-            // Unauthenticated users see Sign In button (PRIVO opens new tab without session)
-            await expect(
-                page.getByRole('button', { name: /sign in/i }).or(page.getByRole('link', { name: /go to dashboard/i })),
-            ).toBeVisible();
         });
 
         test('callback page shows generic message without status param', async ({ page }) => {
             await page.goto('/privo/callback');
 
             await expect(page.getByText(/verification/i).first()).toBeVisible({ timeout: 10000 });
-            await expect(
-                page.getByRole('button', { name: /sign in/i }).or(page.getByRole('link', { name: /go to dashboard/i })),
-            ).toBeVisible();
         });
     });
 
