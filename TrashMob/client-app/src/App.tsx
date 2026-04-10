@@ -539,14 +539,14 @@ const AuthSideAdminLayout = () => {
 
 // Inner component that uses MSAL hooks - must be rendered inside MsalProvider
 const AppContent: FC = () => {
-    const { currentUser, isUserLoaded } = useLogin();
+    const { currentUser, isUserLoaded, isAuthChecking } = useLogin();
 
     return (
         <div className='flex flex-col min-h-screen'>
             <BrowserRouter>
                 <ScrollToTop />
                 <DefaultPageHead />
-                <SiteHeader currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <SiteHeader currentUser={currentUser} isUserLoaded={isUserLoaded} isAuthChecking={isAuthChecking} />
                 <div className='container-fluid px-0'>
                     <Routes>
                         <Route element={<AuthLayout />}>
