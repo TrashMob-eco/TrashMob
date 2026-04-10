@@ -1,14 +1,24 @@
 import { FC } from 'react';
 import { useSearchParams, Link } from 'react-router';
-import { BadgeCheck } from 'lucide-react';
+import { BadgeCheck, LogIn } from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useLogin } from '@/hooks/useLogin';
+import { getApiConfig, getMsalClientInstance } from '@/store/AuthStore';
 
 export const PrivoCallback: FC = () => {
     const [searchParams] = useSearchParams();
     const status = searchParams.get('status');
+    const { isUserLoaded } = useLogin();
+
+    const handleSignIn = () => {
+        const apiConfig = getApiConfig();
+        getMsalClientInstance().loginRedirect({
+            scopes: apiConfig.scopes,
+        });
+    };
 
     return (
         <div>
@@ -27,18 +37,33 @@ export const PrivoCallback: FC = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className='space-y-3'>
-                        <p className='text-sm text-muted-foreground'>
-                            Please sign in to check your verification status. Once verified, you will be able to add
-                            children aged 13-17 as dependents from your dashboard.
-                        </p>
-                        <div className='flex gap-2'>
-                            <Button asChild>
-                                <Link to='/mydashboard'>Go to Dashboard</Link>
-                            </Button>
-                            <Button variant='outline' asChild>
-                                <Link to='/'>Home</Link>
-                            </Button>
-                        </div>
+                        {isUserLoaded ? (
+                            <>
+                                <p className='text-sm text-muted-foreground'>
+                                    Your verification is being processed. Check your dashboard for the current status.
+                                </p>
+                                <div className='flex gap-2'>
+                                    <Button asChild>
+                                        <Link to='/mydashboard'>Go to Dashboard</Link>
+                                    </Button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <p className='text-sm text-muted-foreground'>
+                                    PRIVO opened this page in a new tab. Please sign in to continue to your dashboard.
+                                </p>
+                                <div className='flex gap-2'>
+                                    <Button onClick={handleSignIn}>
+                                        <LogIn className='mr-2 h-4 w-4' />
+                                        Sign In
+                                    </Button>
+                                    <Button variant='outline' asChild>
+                                        <Link to='/'>Home</Link>
+                                    </Button>
+                                </div>
+                            </>
+                        )}
                     </CardContent>
                 </Card>
             </div>
