@@ -155,7 +155,7 @@ namespace TrashMob.Shared.Tests.Services
         }
 
         [Fact]
-        public async Task AdultVerification_MissingBirthdate_UsesFallback()
+        public async Task AdultVerification_MissingBirthdate_ReturnsNull()
         {
             var service = CreateServiceWithCapture();
             var user = new User
@@ -165,12 +165,9 @@ namespace TrashMob.Shared.Tests.Services
                 DateOfBirth = null,
             };
 
-            await service.CreateAdultVerificationRequestAsync(user, CancellationToken.None);
+            var result = await service.CreateAdultVerificationRequestAsync(user, CancellationToken.None);
 
-            using var doc = JsonDocument.Parse(capturedRequestBody);
-            var birthdate = doc.RootElement.GetProperty("principal").GetProperty("birthdate").GetString();
-
-            Assert.Equal("19900101", birthdate);
+            Assert.Null(result);
         }
 
         [Fact]
@@ -277,7 +274,12 @@ namespace TrashMob.Shared.Tests.Services
         public async Task RequestUrl_IncludesServiceIdentifier()
         {
             var service = CreateServiceWithCapture();
-            var user = new User { Id = Guid.NewGuid(), Email = "test@example.com" };
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                Email = "test@example.com",
+                DateOfBirth = new DateTimeOffset(1990, 1, 1, 0, 0, 0, TimeSpan.Zero),
+            };
 
             await service.CreateAdultVerificationRequestAsync(user, CancellationToken.None);
 

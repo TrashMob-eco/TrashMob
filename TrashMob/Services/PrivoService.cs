@@ -66,9 +66,13 @@ namespace TrashMob.Services
             var token = await GetAccessTokenAsync(cancellationToken);
             if (token == null) return null;
 
-            var birthdate = user.DateOfBirth.HasValue
-                ? user.DateOfBirth.Value.ToString("yyyyMMdd")
-                : "19900101";
+            if (!user.DateOfBirth.HasValue)
+            {
+                logger.LogWarning("PRIVO adult verification: User {UserId} has no date of birth set", user.Id);
+                return null;
+            }
+
+            var birthdate = user.DateOfBirth.Value.ToString("yyyyMMdd");
 
             var payload = new Dictionary<string, object>
             {
@@ -498,6 +502,19 @@ namespace TrashMob.Services
             if (!string.IsNullOrEmpty(child.Email))
             {
                 principal["email"] = child.Email;
+            }
+
+            // Add last name as an attribute (matches adult verification pattern)
+            if (!string.IsNullOrEmpty(child.LastName))
+            {
+                principal["attributes"] = new[]
+                {
+                    new
+                    {
+                        attribute_identifier = AttrPrincipalFamilyName,
+                        value = new[] { child.LastName },
+                    },
+                };
             }
 
             return principal;

@@ -29,6 +29,7 @@ namespace TrashMob.Controllers.V2
     public class DependentsV2Controller(
         IDependentManager dependentManager,
         IDependentWaiverManager dependentWaiverManager,
+        IKeyedManager<User> userManager,
         ILogger<DependentsV2Controller> logger) : ControllerBase
     {
         private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
@@ -80,6 +81,13 @@ namespace TrashMob.Controllers.V2
             if (userId != UserId)
             {
                 return Forbid();
+            }
+
+            // Require identity verification before adding dependents
+            var user = await userManager.GetAsync(userId, cancellationToken);
+            if (user is not { IsIdentityVerified: true })
+            {
+                return BadRequest("You must verify your identity before adding dependents. Visit your profile to verify.");
             }
 
             var entity = dto.ToEntity();

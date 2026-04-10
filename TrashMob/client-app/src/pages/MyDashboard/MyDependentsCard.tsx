@@ -307,7 +307,15 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
                     <div className='flex flex-row items-center'>
                         <Baby className='inline-block h-5 w-5 mr-2 text-primary' />
                         <CardTitle className='grow text-primary'>My Dependents ({dependentCount})</CardTitle>
-                        <Button variant='outline' size='sm' onClick={openAddDialog}>
+                        <Button
+                            variant='outline'
+                            size='sm'
+                            onClick={openAddDialog}
+                            disabled={!isIdentityVerified}
+                            title={
+                                isIdentityVerified ? 'Add a dependent' : 'Verify your identity first to add dependents'
+                            }
+                        >
                             <Plus className='h-4 w-4 mr-1' />
                             Add Dependent
                         </Button>
