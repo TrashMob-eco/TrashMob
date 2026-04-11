@@ -115,8 +115,8 @@
         "postcss": "^8.4.47",
         "prettier": "3.8.1",
         "tailwindcss": "^4.1.11",
-        "typescript": "^5.8.2",
-        "typescript-eslint": "^8.57.1",
+        "typescript": "^6.0.0",
+        "typescript-eslint": "^8.58.1",
         "vitest": "^4.1.0"
     },
     "overrides": {
