@@ -18,6 +18,7 @@ import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import UserData from '@/components/Models/UserData';
 import { VerifyIdentityCard } from '@/components/privo/VerifyIdentityCard';
+import { MyDependentsCard } from '@/pages/MyDashboard/MyDependentsCard';
 
 const profileSchema = z.object({
     userName: z
@@ -228,6 +229,12 @@ export const MyProfile = () => {
             <HeroSection Title='My Profile' Description='Manage your account information' />
             <div className='container mx-auto py-5 space-y-4'>
                 {!currentUser?.isMinor && <VerifyIdentityCard isVerified={currentUser?.isIdentityVerified ?? false} />}
+                {!currentUser?.isMinor && (
+                    <MyDependentsCard
+                        userId={currentUser?.id ?? ''}
+                        isIdentityVerified={currentUser?.isIdentityVerified ?? false}
+                    />
+                )}
                 <Card>
                     <CardHeader>
                         <CardTitle>Profile Information</CardTitle>
