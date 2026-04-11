@@ -1,0 +1,4 @@
+google-ads==28.4.1
+protobuf>=4.25.0
+azure-identity>=1.17.0
+azure-keyvault-secrets>=4.8.0
