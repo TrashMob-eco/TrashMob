@@ -58,7 +58,6 @@ import { ShareDialog } from '@/components/sharing';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { EventsMap } from '@/components/events/event-map';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EventsTable } from './events-table/table';
 
