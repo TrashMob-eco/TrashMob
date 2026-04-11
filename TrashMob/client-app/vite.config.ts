@@ -13,47 +13,33 @@ export default defineConfig(() => {
             outDir: 'build',
             rollupOptions: {
                 output: {
-                    manualChunks: {
-                        // Core React
-                        'vendor-react': ['react', 'react-dom', 'react-router'],
-                        // Auth
-                        'vendor-msal': ['@azure/msal-browser', '@azure/msal-react'],
-                        // Data fetching
-                        'vendor-query': ['@tanstack/react-query', 'axios'],
-                        // Google Maps
-                        'vendor-maps': ['@vis.gl/react-google-maps'],
-                        // UI components
-                        'vendor-radix': [
-                            '@radix-ui/react-alert-dialog',
-                            '@radix-ui/react-checkbox',
-                            '@radix-ui/react-collapsible',
-                            '@radix-ui/react-dialog',
-                            '@radix-ui/react-dropdown-menu',
-                            '@radix-ui/react-hover-card',
-                            '@radix-ui/react-icons',
-                            '@radix-ui/react-label',
-                            '@radix-ui/react-navigation-menu',
-                            '@radix-ui/react-popover',
-                            '@radix-ui/react-progress',
-                            '@radix-ui/react-radio-group',
-                            '@radix-ui/react-select',
-                            '@radix-ui/react-separator',
-                            '@radix-ui/react-slot',
-                            '@radix-ui/react-switch',
-                            '@radix-ui/react-tabs',
-                            '@radix-ui/react-toast',
-                            '@radix-ui/react-toggle',
-                            '@radix-ui/react-toggle-group',
-                            '@radix-ui/react-tooltip',
-                        ],
-                        // Icons
-                        'vendor-icons': ['lucide-react'],
-                        // Forms
-                        'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
-                        // Tables
-                        'vendor-tables': ['@tanstack/react-table'],
-                        // Utilities
-                        'vendor-utils': ['lodash', 'moment', 'clsx', 'class-variance-authority'],
+                    manualChunks(id) {
+                        if (
+                            id.includes('node_modules/react/') ||
+                            id.includes('node_modules/react-dom/') ||
+                            id.includes('node_modules/react-router/')
+                        )
+                            return 'vendor-react';
+                        if (id.includes('node_modules/@azure/msal-')) return 'vendor-msal';
+                        if (id.includes('node_modules/@tanstack/react-query') || id.includes('node_modules/axios/'))
+                            return 'vendor-query';
+                        if (id.includes('node_modules/@vis.gl/react-google-maps')) return 'vendor-maps';
+                        if (id.includes('node_modules/@radix-ui/')) return 'vendor-radix';
+                        if (id.includes('node_modules/lucide-react/')) return 'vendor-icons';
+                        if (
+                            id.includes('node_modules/react-hook-form/') ||
+                            id.includes('node_modules/@hookform/') ||
+                            id.includes('node_modules/zod/')
+                        )
+                            return 'vendor-forms';
+                        if (id.includes('node_modules/@tanstack/react-table')) return 'vendor-tables';
+                        if (
+                            id.includes('node_modules/lodash/') ||
+                            id.includes('node_modules/moment/') ||
+                            id.includes('node_modules/clsx/') ||
+                            id.includes('node_modules/class-variance-authority/')
+                        )
+                            return 'vendor-utils';
                     },
                 },
             },
