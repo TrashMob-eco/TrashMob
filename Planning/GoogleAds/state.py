@@ -42,7 +42,7 @@ def _load_from_keyvault() -> GoogleAdsClient | None:
                 raise
 
         print("Loaded credentials from Azure Key Vault.")
-        return GoogleAdsClient.load_from_dict(config, version="v18")
+        return GoogleAdsClient.load_from_dict(config, version="v22")
     except ImportError:
         return None
     except Exception as ex:
@@ -61,7 +61,7 @@ def get_client() -> GoogleAdsClient:
         print("Copy google-ads.yaml.template to google-ads.yaml and fill in your credentials,")
         print("or install azure-identity and azure-keyvault-secrets packages.")
         sys.exit(1)
-    return GoogleAdsClient.load_from_storage(_YAML_PATH, version="v18")
+    return GoogleAdsClient.load_from_storage(_YAML_PATH, version="v22")
 
 
 def load_state() -> dict:

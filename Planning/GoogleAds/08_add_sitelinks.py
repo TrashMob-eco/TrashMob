@@ -27,10 +27,10 @@ def main():
             op = client.get_type("AssetOperation")
             asset = op.create
 
+            asset.final_urls.append(sl_def["final_url"])
             asset.sitelink_asset.link_text = sl_def["link_text"]
             asset.sitelink_asset.description1 = sl_def["description1"]
             asset.sitelink_asset.description2 = sl_def["description2"]
-            asset.sitelink_asset.final_urls.append(sl_def["final_url"])
 
             operations.append(op)
             op_keys.append(key)
