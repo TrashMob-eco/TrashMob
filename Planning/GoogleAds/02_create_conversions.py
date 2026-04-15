@@ -7,7 +7,7 @@ from state import get_client, load_state, print_error, save_state
 
 # Map friendly names to enum values
 CATEGORY_MAP = {
-    "SIGNUP": "SIGN_UP",
+    "SIGNUP": "SIGNUP",
     "SUBMIT_LEAD_FORM": "SUBMIT_LEAD_FORM",
     "OTHER": "DEFAULT",
 }

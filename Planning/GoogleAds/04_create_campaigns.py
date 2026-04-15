@@ -44,14 +44,16 @@ def main():
         campaign.campaign_budget = budget_resource
 
         # Maximize Conversions bidding (removes $2 CPC cap for Ad Grants)
-        campaign.maximize_conversions.target_cpa_micros = 0
+        # Setting the field triggers the oneof; no target_cpa needed
+        campaign.maximize_conversions.cpc_bid_ceiling_micros = 0
 
-        # Network settings
+        # Network settings — Ad Grants accounts cannot explicitly target search network
         campaign.network_settings.target_google_search = True
-        campaign.network_settings.target_search_network = True
+        campaign.network_settings.target_search_network = False
         campaign.network_settings.target_content_network = False
         campaign.network_settings.target_partner_search_network = False
 
+        campaign.contains_eu_political_advertising = 3  # DOES_NOT_CONTAIN_EU_POLITICAL_ADVERTISING
         campaign.start_date = today
 
         print(f"Creating campaign: {campaign_def['name']}...")
