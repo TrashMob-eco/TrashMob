@@ -528,7 +528,9 @@ export const EditEventSummary = () => {
                                 </div>
                             </CardContent>
                             <CardFooter className='justify-between'>
-                                <Button type='button' variant='outline' onClick={() => navigate('/mydashboard')}>Cancel</Button>
+                                <Button type='button' variant='outline' onClick={() => navigate('/mydashboard')}>
+                                    Cancel
+                                </Button>
                                 {isOwner ? (
                                     <Button type='submit' disabled={isSubmitting}>
                                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}
