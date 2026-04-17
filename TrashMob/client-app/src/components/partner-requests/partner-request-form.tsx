@@ -22,6 +22,7 @@ import PartnerRequestData from '@/components/Models/PartnerRequestData';
 import * as Constants from '@/components/Models/Constants';
 import { CharacterCounter } from '@/components/ui/character-counter';
 import { CreatePartnerRequest } from '@/services/partners';
+import { trackPartnerInquiryConversion } from '@/lib/analytics';
 import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
 import { Marker } from '@vis.gl/react-google-maps';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
@@ -108,6 +109,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
         mutationKey: CreatePartnerRequest().key,
         mutationFn: CreatePartnerRequest().service,
         onSuccess: () => {
+            trackPartnerInquiryConversion();
             toast({
                 variant: 'primary',
                 title: 'Request Submitted',

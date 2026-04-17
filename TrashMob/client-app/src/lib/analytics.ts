@@ -140,8 +140,7 @@ function initAppInsightsSnippet(instrumentationKey: string): void {
     w[sdkName] = appInsights;
 }
 
-/** Fire a Google Ads conversion event for new sign-ups. */
-export function trackSignUpConversion(): void {
+function fireGoogleAdsConversion(sendTo: string, value?: number): void {
     const w = window as unknown as Record<string, unknown>;
     const dataLayer = w.dataLayer as unknown[] | undefined;
     if (!dataLayer) return;
@@ -149,11 +148,32 @@ export function trackSignUpConversion(): void {
     function gtag(...args: unknown[]) {
         dataLayer!.push(args);
     }
-    gtag('event', 'conversion', {
-        send_to: 'AW-18035648449/V0zjCL3Hh48cEMHPiJhD',
-        value: 1.0,
-        currency: 'USD',
-    });
+    const params: Record<string, unknown> = { send_to: sendTo };
+    if (value !== undefined) {
+        params.value = value;
+        params.currency = 'USD';
+    }
+    gtag('event', 'conversion', params);
+}
+
+/** Fire a Google Ads conversion event for new sign-ups. */
+export function trackSignUpConversion(): void {
+    fireGoogleAdsConversion('AW-18035648449/V0zjCL3Hh48cEMHPiJhD', 1.0);
+}
+
+/** Fire a Google Ads conversion event for event RSVPs. */
+export function trackRsvpConversion(): void {
+    fireGoogleAdsConversion('AW-18035648449/uhNBCKDbpJwcEMHPiJhD');
+}
+
+/** Fire a Google Ads conversion event for event creation by organizers. */
+export function trackEventCreatedConversion(): void {
+    fireGoogleAdsConversion('AW-18035648449/zEXMCKbbpJwcEMHPiJhD');
+}
+
+/** Fire a Google Ads conversion event for city partner inquiries. */
+export function trackPartnerInquiryConversion(): void {
+    fireGoogleAdsConversion('AW-18035648449/98NDCKPbpJwcEMHPiJhD');
 }
 
 /** Initialize analytics scripts if the user has previously consented. */
