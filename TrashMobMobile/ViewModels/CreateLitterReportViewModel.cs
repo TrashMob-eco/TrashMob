@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
+using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -14,6 +15,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     public const int MaxImages = 5;
     private readonly ILitterReportManager litterReportManager;
     private readonly IMapRestService mapRestService;
+    private readonly IPrivoPermissionService privoPermissionService;
 
     [ObservableProperty]
     private bool canAddImages;
@@ -35,11 +37,12 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     private bool reportIsValid;
 
     public CreateLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService,
-        INotificationService notificationService)
+        INotificationService notificationService, IPrivoPermissionService privoPermissionService)
         : base(notificationService)
     {
         this.litterReportManager = litterReportManager;
         this.mapRestService = mapRestService;
+        this.privoPermissionService = privoPermissionService;
         LitterReportViewModel = new LitterReportViewModel
         {
             LitterReportStatusId = NewLitterReportStatus,
@@ -149,6 +152,12 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             return;
         }
 
+        if (!privoPermissionService.IsFeatureEnabled(PrivoFeatures.PhotoUploads))
+        {
+            await NotificationService.NotifyError("Photo uploads are not enabled for your account.");
+            return;
+        }
+
         var photo = await MediaPicker.Default.CapturePhotoAsync();
 
         if (photo != null)
@@ -156,7 +165,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
 
             using (var sourceStream = await photo.OpenReadAsync())
-            using (var localFileStream = File.OpenWrite(LocalFilePath))
+            await using (var localFileStream = new FileStream(LocalFilePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true))
             {
                 await sourceStream.CopyToAsync(localFileStream);
             }

@@ -2,6 +2,7 @@ namespace TrashMob.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
@@ -13,6 +14,7 @@ namespace TrashMob.Services
     using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
+    using TrashMob.Shared.Managers.Interfaces;
 
     /// <summary>
     /// PRIVO consent management and identity verification HTTP client.
@@ -64,16 +66,44 @@ namespace TrashMob.Services
             var token = await GetAccessTokenAsync(cancellationToken);
             if (token == null) return null;
 
+            if (!user.DateOfBirth.HasValue)
+            {
+                logger.LogWarning("PRIVO adult verification: User {UserId} has no date of birth set", user.Id);
+                return null;
+            }
+
+            var birthdate = user.DateOfBirth.Value.ToString("yyyyMMdd");
+
             var payload = new Dictionary<string, object>
             {
-                ["service_identifier"] = ServiceIdentifier,
-                ["ext_id"] = user.Id.ToString(),
-                ["attributes"] = new[]
+                ["granter"] = new Dictionary<string, object>
                 {
-                    new { identifier = AttrGranterGivenName, value = user.GivenName ?? string.Empty },
-                    new { identifier = AttrGranterFamilyName, value = user.Surname ?? string.Empty },
-                    new { identifier = AttrGranterEmail, value = user.Email ?? string.Empty },
-                    new { identifier = AttrGranterBirthdate, value = user.DateOfBirth?.ToString("yyyy-MM-dd") ?? string.Empty },
+                    ["email"] = user.Email ?? string.Empty,
+                    // Suppress consent_request_email for adult self-verification —
+                    // the user is redirected to the verification widget directly
+                    ["notifications"] = new[]
+                    {
+                        new { is_on = false, notification_type = "consent_request_email" },
+                        new { is_on = true, notification_type = "consent_approved_email" },
+                    },
+                },
+                ["locale"] = "en-US",
+                ["principal"] = new Dictionary<string, object>
+                {
+                    ["given_name"] = user.GivenName ?? string.Empty,
+                    ["birthdate"] = birthdate,
+                    ["birthdate_precision"] = "yyyymmdd",
+                    ["email"] = user.Email ?? string.Empty,
+                    ["email_verified"] = true,
+                    ["eid"] = user.Id.ToString(),
+                    ["attributes"] = new[]
+                    {
+                        new
+                        {
+                            attribute_identifier = AttrGranterFamilyName,
+                            value = new[] { user.Surname ?? string.Empty },
+                        },
+                    },
                 },
             };
 
@@ -92,21 +122,33 @@ namespace TrashMob.Services
                 var client = httpClientFactory.CreateClient("Privo");
                 var url = $"{BaseUrl}/s2s/api/v1.0/{ServiceIdentifier}/consents/{consentIdentifier}/verification/session?redirect_url={Uri.EscapeDataString(redirectUrl)}";
 
+                logger.LogInformation("PRIVO GetDirectVerificationUrl: POST {Url}", url);
+
                 var request = new HttpRequestMessage(HttpMethod.Post, url);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
                 var response = await client.SendAsync(request, cancellationToken);
+                var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    logger.LogWarning("PRIVO GetDirectVerificationUrl returned {StatusCode} for consent {ConsentId}",
-                        response.StatusCode, consentIdentifier);
+                    logger.LogWarning("PRIVO GetDirectVerificationUrl returned {StatusCode}: {ResponseBody}",
+                        (int)response.StatusCode, responseBody);
                     return null;
                 }
 
-                var json = await response.Content.ReadAsStringAsync(cancellationToken);
-                using var doc = JsonDocument.Parse(json);
-                return doc.RootElement.TryGetProperty("url", out var urlProp) ? urlProp.GetString() : null;
+                logger.LogInformation("PRIVO GetDirectVerificationUrl response: {ResponseBody}", responseBody);
+
+                using var doc = JsonDocument.Parse(responseBody);
+                var verificationUrl = doc.RootElement.TryGetProperty("url", out var urlProp) ? urlProp.GetString() : null;
+
+                if (string.IsNullOrEmpty(verificationUrl))
+                {
+                    logger.LogWarning("PRIVO GetDirectVerificationUrl: response missing 'url' field. Keys={Keys}",
+                        string.Join(", ", doc.RootElement.EnumerateObject().Select(p => p.Name)));
+                }
+
+                return verificationUrl;
             }
             catch (Exception ex)
             {
@@ -150,30 +192,66 @@ namespace TrashMob.Services
         }
 
         /// <inheritdoc />
+        public async Task<PrivoUserInfo> GetUserInfoByEidAsync(
+            string eid, CancellationToken cancellationToken)
+        {
+            var token = await GetAccessTokenAsync(cancellationToken);
+            if (token == null) return null;
+
+            try
+            {
+                var client = httpClientFactory.CreateClient("Privo");
+                var url = $"{BaseUrl}/s2s/api/v1.0/{ServiceIdentifier}/accounts/eid/{eid}";
+
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.SendAsync(request, cancellationToken);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    logger.LogWarning("PRIVO GetUserInfo returned {StatusCode} for EiD {Eid}",
+                        response.StatusCode, eid);
+                    return null;
+                }
+
+                var json = await response.Content.ReadAsStringAsync(cancellationToken);
+                return ParseUserInfo(json, eid);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to get user info from PRIVO for EiD {Eid}", eid);
+                return null;
+            }
+        }
+
+        /// <inheritdoc />
         public async Task<PrivoConsentResponse> CreateParentInitiatedChildConsentAsync(
             User parent, Dependent child, CancellationToken cancellationToken)
         {
             var token = await GetAccessTokenAsync(cancellationToken);
             if (token == null) return null;
 
-            var payload = new Dictionary<string, object>
+            var granter = new Dictionary<string, object>
             {
-                ["service_identifier"] = ServiceIdentifier,
-                ["ext_id"] = child.Id.ToString(),
-                ["granter_email"] = parent.Email ?? string.Empty,
-                ["attributes"] = new[]
+                ["email"] = parent.Email ?? string.Empty,
+                ["notifications"] = new[]
                 {
-                    new { identifier = AttrPrincipalGivenName, value = child.FirstName ?? string.Empty },
-                    new { identifier = AttrPrincipalFamilyName, value = child.LastName ?? string.Empty },
-                    new { identifier = AttrPrincipalBirthdate, value = child.DateOfBirth.ToString("yyyy-MM-dd") },
+                    new { is_on = true, notification_type = "consent_request_email" },
                 },
             };
 
-            // If parent has a PRIVO SiD, use it for the granter reference
             if (!string.IsNullOrEmpty(parent.PrivoSid))
             {
-                payload["granter_sid"] = parent.PrivoSid;
+                granter["sid"] = parent.PrivoSid;
             }
+
+            var payload = new Dictionary<string, object>
+            {
+                ["granter"] = granter,
+                ["locale"] = "en-US",
+                ["principal"] = BuildChildPrincipal(child),
+            };
 
             return await PostConsentRequestAsync(token, payload, cancellationToken);
         }
@@ -188,13 +266,21 @@ namespace TrashMob.Services
 
             var payload = new Dictionary<string, object>
             {
-                ["service_identifier"] = ServiceIdentifier,
-                ["granter_email"] = parentEmail,
-                ["attributes"] = new[]
+                ["granter"] = new Dictionary<string, object>
                 {
-                    new { identifier = AttrPrincipalGivenName, value = childFirstName },
-                    new { identifier = AttrPrincipalEmail, value = childEmail },
-                    new { identifier = AttrPrincipalBirthdate, value = childBirthDate.ToString("yyyy-MM-dd") },
+                    ["email"] = parentEmail,
+                    ["notifications"] = new[]
+                    {
+                        new { is_on = true, notification_type = "consent_request_email" },
+                    },
+                },
+                ["locale"] = "en-US",
+                ["principal"] = new Dictionary<string, object>
+                {
+                    ["given_name"] = childFirstName,
+                    ["email"] = childEmail,
+                    ["birthdate"] = childBirthDate.ToString("yyyyMMdd"),
+                    ["birthdate_precision"] = "yyyymmdd",
                 },
             };
 
@@ -280,8 +366,8 @@ namespace TrashMob.Services
                 var client = httpClientFactory.CreateClient("Privo");
                 var url = $"{BaseUrl}/s2s/api/v1.0/{ServiceIdentifier}/accounts/sid/{principalSid}/{granterSid}/features/revoke";
 
-                var payload = new { features = AllFeatures };
-                var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+                // Postman shows revoke body is just an array of feature identifiers
+                var content = new StringContent(JsonSerializer.Serialize(AllFeatures), Encoding.UTF8, "application/json");
 
                 var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = content };
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -336,6 +422,12 @@ namespace TrashMob.Services
             var clientId = configuration["Privo-ClientId"] ?? configuration["Privo:ClientId"];
             var clientSecret = configuration["Privo-ClientSecret"] ?? configuration["Privo:ClientSecret"];
 
+            logger.LogInformation(
+                "PRIVO token acquisition: BaseUrl={BaseUrl}, ClientId={ClientIdPresent}, ClientSecret={ClientSecretPresent}",
+                BaseUrl,
+                string.IsNullOrWhiteSpace(clientId) ? "MISSING" : clientId[..4] + "...",
+                string.IsNullOrWhiteSpace(clientSecret) ? "MISSING" : "***set***");
+
             if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
             {
                 logger.LogWarning("PRIVO service disabled: Privo-ClientId or Privo-ClientSecret not configured");
@@ -347,6 +439,8 @@ namespace TrashMob.Services
                 var client = httpClientFactory.CreateClient("Privo");
                 var tokenUrl = $"{BaseUrl}/token";
 
+                logger.LogInformation("PRIVO token request: POST {TokenUrl}", tokenUrl);
+
                 var formData = new FormUrlEncodedContent(
                 [
                     new KeyValuePair<string, string>("grant_type", "client_credentials"),
@@ -356,19 +450,25 @@ namespace TrashMob.Services
                 ]);
 
                 var response = await client.PostAsync(tokenUrl, formData, cancellationToken);
+                var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    logger.LogWarning("PRIVO token request returned {StatusCode}", response.StatusCode);
+                    logger.LogWarning(
+                        "PRIVO token request failed: {StatusCode} {ReasonPhrase}, URL={TokenUrl}, Response={ResponseBody}",
+                        (int)response.StatusCode, response.ReasonPhrase, tokenUrl, responseBody);
                     return null;
                 }
 
-                var json = await response.Content.ReadAsStringAsync(cancellationToken);
-                using var doc = JsonDocument.Parse(json);
+                logger.LogInformation("PRIVO token response: {StatusCode}, BodyLength={BodyLength}",
+                    (int)response.StatusCode, responseBody.Length);
+
+                using var doc = JsonDocument.Parse(responseBody);
 
                 if (!doc.RootElement.TryGetProperty("access_token", out var tokenProp))
                 {
-                    logger.LogWarning("PRIVO token response missing access_token");
+                    logger.LogWarning("PRIVO token response missing access_token. Keys={Keys}",
+                        string.Join(", ", doc.RootElement.EnumerateObject().Select(p => p.Name)));
                     return null;
                 }
 
@@ -380,7 +480,7 @@ namespace TrashMob.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to acquire PRIVO access token");
+                logger.LogError(ex, "Failed to acquire PRIVO access token from {BaseUrl}/token", BaseUrl);
                 return null;
             }
         }
@@ -388,6 +488,37 @@ namespace TrashMob.Services
         #endregion
 
         #region Helpers
+
+        private static Dictionary<string, object> BuildChildPrincipal(Dependent child)
+        {
+            var principal = new Dictionary<string, object>
+            {
+                ["given_name"] = child.FirstName ?? string.Empty,
+                ["birthdate"] = child.DateOfBirth.ToString("yyyyMMdd"),
+                ["birthdate_precision"] = "yyyymmdd",
+                ["eid"] = child.Id.ToString(),
+            };
+
+            if (!string.IsNullOrEmpty(child.Email))
+            {
+                principal["email"] = child.Email;
+            }
+
+            // Add last name as an attribute (matches adult verification pattern)
+            if (!string.IsNullOrEmpty(child.LastName))
+            {
+                principal["attributes"] = new[]
+                {
+                    new
+                    {
+                        attribute_identifier = AttrPrincipalFamilyName,
+                        value = new[] { child.LastName },
+                    },
+                };
+            }
+
+            return principal;
+        }
 
         private async Task<PrivoConsentResponse> PostConsentRequestAsync(
             string token, Dictionary<string, object> payload, CancellationToken cancellationToken)
@@ -397,7 +528,10 @@ namespace TrashMob.Services
                 var client = httpClientFactory.CreateClient("Privo");
                 var url = $"{BaseUrl}/s2s/api/v1.0/{ServiceIdentifier}/requests";
 
-                var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+                var jsonPayload = JsonSerializer.Serialize(payload);
+                logger.LogInformation("PRIVO consent request: POST {Url}, Body={Body}", url, jsonPayload);
+
+                var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
                 var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = content };
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -406,12 +540,13 @@ namespace TrashMob.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
-                    logger.LogWarning("PRIVO consent request returned {StatusCode}: {ErrorBody}",
-                        response.StatusCode, errorBody);
+                    logger.LogWarning("PRIVO consent request returned {StatusCode} {ReasonPhrase}: {ErrorBody}",
+                        (int)response.StatusCode, response.ReasonPhrase, errorBody);
                     return null;
                 }
 
                 var json = await response.Content.ReadAsStringAsync(cancellationToken);
+                logger.LogInformation("PRIVO consent request response: {ResponseBody}", json);
                 return ParseConsentResponse(json);
             }
             catch (Exception ex)
@@ -428,8 +563,12 @@ namespace TrashMob.Services
 
             var result = new PrivoConsentResponse();
 
-            if (root.TryGetProperty("sid", out var sidProp))
-                result.Sid = sidProp.GetString() ?? string.Empty;
+            // Response format from Postman: principal_identifiers.sid, granter_identifiers.sid, consent_identifier
+            if (root.TryGetProperty("principal_identifiers", out var principalIds))
+            {
+                if (principalIds.TryGetProperty("sid", out var sidProp))
+                    result.Sid = sidProp.GetString() ?? string.Empty;
+            }
 
             if (root.TryGetProperty("consent_identifier", out var consentIdProp))
                 result.ConsentIdentifier = consentIdProp.GetString() ?? string.Empty;
@@ -437,8 +576,11 @@ namespace TrashMob.Services
             if (root.TryGetProperty("consent_url", out var consentUrlProp))
                 result.ConsentUrl = consentUrlProp.GetString() ?? string.Empty;
 
-            if (root.TryGetProperty("granter_sid", out var granterSidProp))
-                result.GranterSid = granterSidProp.GetString();
+            if (root.TryGetProperty("granter_identifiers", out var granterIds))
+            {
+                if (granterIds.TryGetProperty("sid", out var granterSidProp))
+                    result.GranterSid = granterSidProp.GetString();
+            }
 
             return result;
         }

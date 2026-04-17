@@ -23,13 +23,22 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     {
         private readonly Mock<IEventAttendeeManager> eventAttendeeManager = new();
         private readonly Mock<IUserWaiverManager> userWaiverManager = new();
+        private readonly Mock<IDependentWaiverManager> dependentWaiverManager = new();
+        private readonly Mock<IKeyedManager<User>> userManager = new();
+        private readonly Mock<IEmailManager> emailManager = new();
         private readonly Mock<ILogger<EventAttendeesV2Controller>> logger = new();
         private readonly EventAttendeesV2Controller controller;
         private readonly Guid currentUserId = Guid.NewGuid();
 
         public EventAttendeesV2ControllerTests()
         {
-            controller = new EventAttendeesV2Controller(eventAttendeeManager.Object, userWaiverManager.Object, logger.Object);
+            controller = new EventAttendeesV2Controller(
+                eventAttendeeManager.Object,
+                userWaiverManager.Object,
+                dependentWaiverManager.Object,
+                userManager.Object,
+                emailManager.Object,
+                logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),

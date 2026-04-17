@@ -50,6 +50,11 @@ namespace TrashMob.Models
         public string EmergencyContactPhone { get; set; }
 
         /// <summary>
+        /// Gets or sets the dependent's email address (optional). Used for PRIVO consent and account invitation.
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
         /// Gets or sets whether this dependent profile is active (soft-delete support).
         /// </summary>
         public bool IsActive { get; set; } = true;

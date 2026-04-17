@@ -42,6 +42,8 @@ import { Calendar, Share2, ClipboardList } from 'lucide-react';
 import makeUrls from '@/lib/add-to-calendar';
 import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
 import { useLogin } from '@/hooks/useLogin';
+import { usePrivoPermissions } from '@/hooks/usePrivoPermissions';
+import { PrivoFeature } from '@/lib/privo-features';
 
 export interface EventDetailsProps {}
 
@@ -79,6 +81,7 @@ const useGetEventLeads = (eventId: string) => {
 export const EventDetails: FC<EventDetailsProps> = () => {
     const { eventId } = useParams<{ eventId: string }>() as { eventId: string };
     const { currentUser, isUserLoaded } = useLogin();
+    const { isFeatureEnabled } = usePrivoPermissions(currentUser?.isMinor ?? false);
     console.log({ currentUser, isUserLoaded });
     const { data: event, isSuccess } = useGetEvent(eventId);
     const { data: eventType } = useGetEventType(event?.eventTypeId || 0);
@@ -272,7 +275,11 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                         <hr className='mb-5' />
                         <EventPhotoGallery
                             eventId={eventId}
-                            canUpload={!!currentUser && (isAttending === 'Yes' || isEventLead)}
+                            canUpload={
+                                !!currentUser &&
+                                (isAttending === 'Yes' || isEventLead) &&
+                                isFeatureEnabled(PrivoFeature.PhotoUploads)
+                            }
                             canDelete={isEventLead}
                             currentUserId={currentUser?.id}
                             onUploadClick={() => setShowPhotoUploader(true)}

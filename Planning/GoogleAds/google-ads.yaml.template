@@ -1,0 +1,9 @@
+# Copy this file to google-ads.yaml and fill in your credentials.
+# NEVER commit google-ads.yaml — it contains secrets.
+
+developer_token: INSERT_DEVELOPER_TOKEN
+client_id: INSERT_CLIENT_ID
+client_secret: INSERT_CLIENT_SECRET
+refresh_token: INSERT_REFRESH_TOKEN
+# login_customer_id: INSERT_MCC_ID_IF_NEEDED
+use_proto_plus: True

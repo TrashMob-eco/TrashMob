@@ -11,6 +11,7 @@ using TrashMob.Models;
 using TrashMob.Models.Poco;
 using TrashMobMobile.Controls;
 using TrashMobMobile.Extensions;
+using TrashMobMobile.Config;
 using TrashMobMobile.Services;
 using TrashMobMobile.Services.Offline;
 
@@ -31,7 +32,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     SyncQueue syncQueue,
     IDependentRestService dependentRestService,
     IParticipationReportRestService participationReportRestService,
-    IWeatherRestService weatherRestService) : BaseViewModel(notificationService)
+    IWeatherRestService weatherRestService,
+    IPrivoPermissionService privoPermissionService) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
@@ -232,6 +234,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     {
         await ExecuteAsync(async () =>
         {
+            await privoPermissionService.GetPermissionsAsync();
+
             UpdateRoutes = updRoutes;
             partnersLoaded = false;
             litterLoaded = false;
@@ -253,7 +257,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             EnableEditEvent = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
             EnableViewEventSummary = mobEvent.IsCompleted();
 
-            EnableStartTrackEventRoute = !mobEvent.IsCompleted();
+            EnableStartTrackEventRoute = !mobEvent.IsCompleted()
+                && privoPermissionService.IsFeatureEnabled(PrivoFeatures.Geolocation);
             EnableStopTrackEventRoute = false;
 
             // If this event is already being tracked, restore recording UI state
@@ -848,7 +853,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         EnableRegister = !mobEvent.IsEventLead(userManager.CurrentUser.Id)
                         && !isAttending
                         && mobEvent.AreNewRegistrationsAllowed()
-                        && !isFull;
+                        && !isFull
+                        && privoPermissionService.IsFeatureEnabled(PrivoFeatures.Account);
         EnableUnregister = !mobEvent.IsEventLead(userManager.CurrentUser.Id)
                           && isAttending
                           && mobEvent.AreUnregistrationsAllowed();
@@ -919,7 +925,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         PhotoCountDisplay = EventPhotos.Count == 1 ? "1 photo" : $"{EventPhotos.Count} photos";
 
         var isAttending = await mobEventManager.IsUserAttendingAsync(mobEvent.Id, currentUserId);
-        CanUploadPhoto = isLead || isAttending;
+        CanUploadPhoto = (isLead || isAttending)
+            && privoPermissionService.IsFeatureEnabled(PrivoFeatures.PhotoUploads);
     }
 
     [RelayCommand]
@@ -959,11 +966,11 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 return;
             }
 
-            // Copy to cache and compress
+            // Copy to cache and compress (offload file I/O to thread pool to avoid ANR #3267)
             var cachedPath = Path.Combine(FileSystem.CacheDirectory, result.FileName);
 
             using (var sourceStream = await result.OpenReadAsync())
-            using (var cacheStream = File.Create(cachedPath))
+            await using (var cacheStream = new FileStream(cachedPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true))
             {
                 await sourceStream.CopyToAsync(cacheStream);
             }
@@ -986,11 +993,13 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 _ => EventPhotoType.During,
             };
 
-            // Check storage cap before queueing
+            // Check storage cap before queueing — offload directory scan to thread pool
+            // to avoid blocking the UI thread and causing ANR (#3267)
             var pendingDir = Path.Combine(FileSystem.AppDataDirectory, "pending_photos");
             Directory.CreateDirectory(pendingDir);
 
-            var totalSize = new DirectoryInfo(pendingDir).EnumerateFiles().Sum(f => f.Length);
+            var totalSize = await Task.Run(() =>
+                new DirectoryInfo(pendingDir).EnumerateFiles().Sum(f => f.Length));
             if (totalSize >= 500L * 1024 * 1024)
             {
                 // Clean up the cached copy since we won't persist it
@@ -1005,7 +1014,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             // Move from CacheDirectory to AppDataDirectory so OS won't delete before upload
             var persistedPath = Path.Combine(pendingDir, $"{Guid.NewGuid()}.jpg");
-            File.Move(cachedPath, persistedPath);
+            await Task.Run(() => File.Move(cachedPath, persistedPath));
 
             // Save to SQLite first so data survives upload failure
             var pending = await syncQueue.EnqueuePhotoAsync(

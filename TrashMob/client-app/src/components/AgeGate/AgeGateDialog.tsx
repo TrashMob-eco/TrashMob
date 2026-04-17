@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import {
     Dialog,
     DialogContent,
@@ -9,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { DatePicker } from '@/components/ui/datepicker';
-import { isUnder13 } from '@/lib/age-utils';
+import { isUnder13, isMinor } from '@/lib/age-utils';
 
 interface AgeGateDialogProps {
     open: boolean;
@@ -18,14 +19,21 @@ interface AgeGateDialogProps {
 }
 
 export function AgeGateDialog({ open, onOpenChange, onConfirm }: AgeGateDialogProps) {
+    const navigate = useNavigate();
     const [dob, setDob] = useState<Date | undefined>();
     const [blocked, setBlocked] = useState(false);
+    const [isMinorUser, setIsMinorUser] = useState(false);
 
     function handleContinue() {
         if (!dob) return;
 
         if (isUnder13(dob)) {
             setBlocked(true);
+            return;
+        }
+
+        if (isMinor(dob)) {
+            setIsMinorUser(true);
             return;
         }
 
@@ -36,19 +44,33 @@ export function AgeGateDialog({ open, onOpenChange, onConfirm }: AgeGateDialogPr
         if (!nextOpen) {
             setDob(undefined);
             setBlocked(false);
+            setIsMinorUser(false);
         }
         onOpenChange(nextOpen);
+    }
+
+    function handleChildSignup() {
+        handleOpenChange(false);
+        navigate('/child-signup');
     }
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{blocked ? 'Unable to Create Account' : 'Create Account'}</DialogTitle>
+                    <DialogTitle>
+                        {blocked
+                            ? 'Unable to Create Account'
+                            : isMinorUser
+                              ? 'Parental Consent Required'
+                              : 'Create Account'}
+                    </DialogTitle>
                     <DialogDescription>
                         {blocked
                             ? 'You must be 13 or older to join TrashMob. Thank you for your interest in keeping our communities clean!'
-                            : 'Please enter your date of birth to continue. This is required for age verification.'}
+                            : isMinorUser
+                              ? 'Since you are under 18, your parent or guardian must provide consent before you can create an account.'
+                              : 'Please enter your date of birth to continue. This is required for age verification.'}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -58,6 +80,19 @@ export function AgeGateDialog({ open, onOpenChange, onConfirm }: AgeGateDialogPr
                             Go Back
                         </Button>
                     </DialogFooter>
+                ) : isMinorUser ? (
+                    <DialogFooter>
+                        <Button
+                            variant='outline'
+                            onClick={() => {
+                                setIsMinorUser(false);
+                                setDob(undefined);
+                            }}
+                        >
+                            Go Back
+                        </Button>
+                        <Button onClick={handleChildSignup}>Request Parental Consent</Button>
+                    </DialogFooter>
                 ) : (
                     <>
                         <div className='py-2'>
@@ -66,9 +101,9 @@ export function AgeGateDialog({ open, onOpenChange, onConfirm }: AgeGateDialogPr
                                 onChange={(value) => setDob(value)}
                                 placeholder='Select your date of birth'
                                 calendarProps={{
-                                    captionLayout: 'dropdown-buttons',
-                                    fromYear: 1920,
-                                    toYear: new Date().getFullYear(),
+                                    captionLayout: 'dropdown',
+                                    startMonth: new Date(1920, 0),
+                                    endMonth: new Date(new Date().getFullYear(), 11),
                                     defaultMonth: new Date(2000, 0),
                                 }}
                             />

@@ -759,6 +759,9 @@ namespace TrashMob.Migrations
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("EmergencyContactPhone")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
@@ -1337,6 +1340,9 @@ namespace TrashMob.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset>("SignUpDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("WaiverPendingDate")
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("EventId", "UserId");

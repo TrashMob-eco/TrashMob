@@ -1,10 +1,10 @@
 import { FC, useState } from 'react';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { useQuery, useQueries, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format, parseISO } from 'date-fns';
-import { Baby, Pencil, Trash2, Plus, Mail, RotateCw, X } from 'lucide-react';
+import { Baby, Pencil, Trash2, Plus, Mail, RotateCw, X, ShieldCheck } from 'lucide-react';
 import { AxiosResponse } from 'axios';
 
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -44,9 +44,11 @@ import {
     ResendDependentInvitation,
     DependentInvitationData,
 } from '@/services/dependent-invitations';
+import { InitiateChildConsent } from '@/services/privo-consent';
 
 interface MyDependentsCardProps {
     userId: string;
+    isIdentityVerified?: boolean;
 }
 
 const relationships = ['Parent', 'Legal Guardian', 'Grandparent', 'Authorized Supervisor', 'Other'] as const;
@@ -58,11 +60,12 @@ const dependentFormSchema = z.object({
     relationship: z.string().min(1, 'Relationship is required'),
     medicalNotes: z.string(),
     emergencyContactPhone: z.string(),
+    email: z.string().email('Must be a valid email').or(z.literal('')),
 });
 
 type DependentFormInputs = z.infer<typeof dependentFormSchema>;
 
-export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
+export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentityVerified = false }) => {
     const queryClient = useQueryClient();
     const { toast } = useToast();
     const [showFormDialog, setShowFormDialog] = useState(false);
@@ -88,6 +91,7 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
             relationship: 'Parent',
             medicalNotes: '',
             emergencyContactPhone: '',
+            email: '',
         },
     });
 
@@ -106,27 +110,28 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
         return age;
     };
 
-    // Track invitations per dependent
-    const invitationQueries = (dependents || [])
-        .filter((dep) => dep.dateOfBirth && getAge(dep.dateOfBirth) >= 13)
-        .map((dep) => {
-            const config = GetDependentInvitations({ userId, dependentId: dep.id });
-            return { dependentId: dep.id, ...config };
-        });
+    // Track invitations per dependent using useQueries (handles dynamic array safely)
+    const eligibleForInvite = (dependents || []).filter((dep) => dep.dateOfBirth && getAge(dep.dateOfBirth) >= 13);
 
-    // Use a single query for all invitations - we'll fetch them individually
+    const invitationQueryResults = useQueries({
+        queries: eligibleForInvite.map((dep) => {
+            const config = GetDependentInvitations({ userId, dependentId: dep.id });
+            return {
+                queryKey: config.key,
+                queryFn: config.service,
+                enabled: !!userId && userId !== '00000000-0000-0000-0000-000000000000',
+                select: (res: { data: DependentInvitationData[] }) => res.data,
+            };
+        }),
+    });
+
     const invitationResults = new Map<string, DependentInvitationData[]>();
-    for (const q of invitationQueries) {
-        const { data } = useQuery({
-            queryKey: q.key,
-            queryFn: q.service,
-            enabled: !!userId && userId !== '00000000-0000-0000-0000-000000000000',
-            select: (res: { data: DependentInvitationData[] }) => res.data,
-        });
+    eligibleForInvite.forEach((dep, i) => {
+        const data = invitationQueryResults[i]?.data;
         if (data) {
-            invitationResults.set(q.dependentId, data);
+            invitationResults.set(dep.id, data);
         }
-    }
+    });
 
     const getActiveInvitation = (dependentId: string): DependentInvitationData | undefined => {
         const invitations = invitationResults.get(dependentId);
@@ -176,6 +181,28 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
         },
         onError: () => {
             toast({ variant: 'destructive', title: 'Failed to resend invitation.' });
+        },
+    });
+
+    const startConsentMutation = useMutation({
+        mutationFn: async (dependentId: string) => {
+            return InitiateChildConsent({ dependentId }).service();
+        },
+        onSuccess: (res) => {
+            const consent = res.data;
+            if (consent.consentUrl) {
+                window.location.href = consent.consentUrl;
+            } else {
+                toast({
+                    variant: 'primary',
+                    title: 'Consent request sent',
+                    description: 'Check your email for a consent link from PRIVO.',
+                });
+                invalidateDependents();
+            }
+        },
+        onError: (error: Error) => {
+            toast({ variant: 'destructive', title: 'Failed to start consent', description: error.message });
         },
     });
 
@@ -240,6 +267,7 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
             relationship: dependent.relationship,
             medicalNotes: dependent.medicalNotes,
             emergencyContactPhone: dependent.emergencyContactPhone,
+            email: dependent.email || '',
         });
         setShowFormDialog(true);
     };
@@ -279,7 +307,15 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                     <div className='flex flex-row items-center'>
                         <Baby className='inline-block h-5 w-5 mr-2 text-primary' />
                         <CardTitle className='grow text-primary'>My Dependents ({dependentCount})</CardTitle>
-                        <Button variant='outline' size='sm' onClick={openAddDialog}>
+                        <Button
+                            variant='outline'
+                            size='sm'
+                            onClick={openAddDialog}
+                            disabled={!isIdentityVerified}
+                            title={
+                                isIdentityVerified ? 'Add a dependent' : 'Verify your identity first to add dependents'
+                            }
+                        >
                             <Plus className='h-4 w-4 mr-1' />
                             Add Dependent
                         </Button>
@@ -294,7 +330,21 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                                 {eligibleDependents.length === 1
                                     ? `${eligibleDependents[0].firstName} is old enough (13+) to create their own TrashMob account.`
                                     : `${eligibleDependents.length} of your dependents are old enough (13+) to create their own TrashMob accounts.`}{' '}
-                                Use the <Mail className='inline h-3 w-3' /> button to send them an invitation!
+                                {isIdentityVerified ? (
+                                    <>
+                                        Use the <ShieldCheck className='inline h-3 w-3' /> button to start PRIVO
+                                        parental consent, then <Mail className='inline h-3 w-3' /> to send an
+                                        invitation.
+                                    </>
+                                ) : (
+                                    <>
+                                        You must{' '}
+                                        <a href='/myprofile' className='underline font-medium'>
+                                            verify your identity
+                                        </a>{' '}
+                                        first before adding dependents aged 13-17.
+                                    </>
+                                )}
                             </AlertDescription>
                         </Alert>
                     )}
@@ -371,9 +421,23 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                                                         );
                                                     }
                                                     if (dep.dateOfBirth && getAge(dep.dateOfBirth) >= 13) {
+                                                        if (dep.privoConsentStatus === 1) {
+                                                            return (
+                                                                <Badge variant='outline' className='text-xs'>
+                                                                    Consent Pending
+                                                                </Badge>
+                                                            );
+                                                        }
+                                                        if (dep.privoConsentStatus === 2) {
+                                                            return (
+                                                                <Badge variant='secondary' className='text-xs'>
+                                                                    Consent Approved
+                                                                </Badge>
+                                                            );
+                                                        }
                                                         return (
                                                             <Badge variant='secondary' className='text-xs'>
-                                                                Eligible
+                                                                Needs Consent
                                                             </Badge>
                                                         );
                                                     }
@@ -383,18 +447,31 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                                             <td className='py-3 px-2 text-right'>
                                                 {dep.dateOfBirth &&
                                                 getAge(dep.dateOfBirth) >= 13 &&
-                                                !getActiveInvitation(dep.id) ? (
-                                                    <Button
-                                                        variant='ghost'
-                                                        size='sm'
-                                                        onClick={() => {
-                                                            setInvitingDependent(dep);
-                                                            setInviteEmail('');
-                                                        }}
-                                                        title='Invite to create account'
-                                                    >
-                                                        <Mail className='h-4 w-4 text-primary' />
-                                                    </Button>
+                                                !getActiveInvitation(dep.id) &&
+                                                isIdentityVerified ? (
+                                                    dep.privoConsentStatus === 2 ? (
+                                                        <Button
+                                                            variant='ghost'
+                                                            size='sm'
+                                                            onClick={() => {
+                                                                setInvitingDependent(dep);
+                                                                setInviteEmail('');
+                                                            }}
+                                                            title='Invite to create account'
+                                                        >
+                                                            <Mail className='h-4 w-4 text-primary' />
+                                                        </Button>
+                                                    ) : dep.privoConsentStatus !== 1 ? (
+                                                        <Button
+                                                            variant='ghost'
+                                                            size='sm'
+                                                            onClick={() => startConsentMutation.mutate(dep.id)}
+                                                            disabled={startConsentMutation.isPending}
+                                                            title='Start parental consent via PRIVO'
+                                                        >
+                                                            <ShieldCheck className='h-4 w-4 text-amber-600' />
+                                                        </Button>
+                                                    ) : null
                                                 ) : null}
                                                 <Button
                                                     variant='ghost'
@@ -508,6 +585,19 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId }) => {
                                         <FormLabel>Emergency Contact Phone</FormLabel>
                                         <FormControl>
                                             <Input type='tel' placeholder='(555) 123-4567' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name='email'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email (optional)</FormLabel>
+                                        <FormControl>
+                                            <Input type='email' placeholder='child@example.com' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

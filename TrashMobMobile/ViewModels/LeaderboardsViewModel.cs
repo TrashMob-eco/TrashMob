@@ -3,12 +3,14 @@ namespace TrashMobMobile.ViewModels;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TrashMobMobile.Config;
 using TrashMobMobile.Services;
 
 public partial class LeaderboardsViewModel(
     ILeaderboardManager leaderboardManager,
     INotificationService notificationService,
-    IUserManager userManager) : BaseViewModel(notificationService)
+    IUserManager userManager,
+    IPrivoPermissionService privoPermissionService) : BaseViewModel(notificationService)
 {
     private readonly ILeaderboardManager leaderboardManager = leaderboardManager;
     private readonly IUserManager userManager = userManager;
@@ -44,6 +46,9 @@ public partial class LeaderboardsViewModel(
     private bool areEntriesFound;
 
     [ObservableProperty]
+    private bool isLeaderboardEnabled = true;
+
+    [ObservableProperty]
     private bool areNoEntriesFound = true;
 
     [ObservableProperty]
@@ -57,6 +62,15 @@ public partial class LeaderboardsViewModel(
 
     public async Task Init()
     {
+        await privoPermissionService.GetPermissionsAsync();
+
+        IsLeaderboardEnabled = privoPermissionService.IsFeatureEnabled(PrivoFeatures.Leaderboard);
+
+        if (!IsLeaderboardEnabled)
+        {
+            return;
+        }
+
         await LoadLeaderboard();
     }
 

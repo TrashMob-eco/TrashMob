@@ -18,16 +18,16 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="8.0.0">
+    <PackageReference Include="coverlet.collector" Version="8.0.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" />
-    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.41" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.50" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.50" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
     <PackageReference Include="CommunityToolkit.Maui" Version="14.0.1" />
-    <PackageReference Include="Sentry.Maui" Version="6.1.0" />
-    <PackageReference Include="Polly" Version="8.6.5" />
+    <PackageReference Include="Sentry.Maui" Version="6.2.0" />
+    <PackageReference Include="Polly" Version="8.6.6" />
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
     <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
   </ItemGroup>

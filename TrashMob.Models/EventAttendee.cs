@@ -28,6 +28,12 @@ namespace TrashMob.Models
         public DateTimeOffset? CanceledDate { get; set; }
 
         /// <summary>
+        /// Gets or sets the date when waiver-pending status was set (minor waiting for parent to sign).
+        /// Null means waivers are satisfied or not required.
+        /// </summary>
+        public DateTimeOffset? WaiverPendingDate { get; set; }
+
+        /// <summary>
         /// Gets or sets whether this attendee is an event lead with management permissions.
         /// Maximum 5 co-leads per event enforced at API level.
         /// </summary>

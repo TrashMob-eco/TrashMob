@@ -35,6 +35,8 @@ import {
     RemoveTeamMember,
 } from '@/services/teams';
 import { useLogin } from '@/hooks/useLogin';
+import { usePrivoPermissions } from '@/hooks/usePrivoPermissions';
+import { PrivoFeature } from '@/lib/privo-features';
 import { useToast } from '@/hooks/use-toast';
 import { ReportPhotoButton } from '@/components/ReportPhotoButton';
 import { ShareDialog } from '@/components/sharing';
@@ -59,6 +61,7 @@ export const TeamDetailPage = () => {
     const { teamId } = useParams<{ teamId: string }>() as { teamId: string };
     const queryClient = useQueryClient();
     const { currentUser, isUserLoaded } = useLogin();
+    const { isFeatureEnabled } = usePrivoPermissions(currentUser?.isMinor ?? false);
     const { toast } = useToast();
     const [showShareDialog, setShowShareDialog] = useState(false);
 
@@ -385,14 +388,20 @@ export const TeamDetailPage = () => {
                     {/* Sidebar */}
                     <div className='space-y-6'>
                         {/* Share Card */}
-                        <Card>
-                            <CardContent className='pt-6'>
-                                <Button variant='outline' className='w-full' onClick={() => setShowShareDialog(true)}>
-                                    <Share2 className='h-4 w-4 mr-2' />
-                                    Share Team
-                                </Button>
-                            </CardContent>
-                        </Card>
+                        {isFeatureEnabled(PrivoFeature.Social) && (
+                            <Card>
+                                <CardContent className='pt-6'>
+                                    <Button
+                                        variant='outline'
+                                        className='w-full'
+                                        onClick={() => setShowShareDialog(true)}
+                                    >
+                                        <Share2 className='h-4 w-4 mr-2' />
+                                        Share Team
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        )}
 
                         {/* Actions */}
                         {isUserLoaded ? (
@@ -401,7 +410,7 @@ export const TeamDetailPage = () => {
                                     <CardTitle>Actions</CardTitle>
                                 </CardHeader>
                                 <CardContent className='space-y-3'>
-                                    {!isMember ? (
+                                    {!isMember && isFeatureEnabled(PrivoFeature.Team) ? (
                                         <Button
                                             className='w-full'
                                             onClick={handleJoin}

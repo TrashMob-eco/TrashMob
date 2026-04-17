@@ -34,4 +34,18 @@ public partial class App : Application
     }
 
     public static User? CurrentUser { get; set; }
+
+    /// <summary>
+    /// Override to return the existing window when the app is already running,
+    /// preventing "already associated with an active Activity" crashes (#3266).
+    /// </summary>
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        if (Windows.Count > 0)
+        {
+            return Windows[0];
+        }
+
+        return base.CreateWindow(activationState);
+    }
 }

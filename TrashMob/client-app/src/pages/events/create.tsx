@@ -33,6 +33,7 @@ import { ReverseGeocode, ReverseGeocode_Params } from '@/services/maps';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import { useFeatureMetrics } from '@/hooks/useFeatureMetrics';
+import { trackEventCreatedConversion } from '@/lib/analytics';
 import { useLocation, useNavigate } from 'react-router';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
@@ -130,6 +131,7 @@ export const CreateEventPage = () => {
                     eventTypeId: variable.eventTypeId,
                     fromLitterReport: !!fromLitterReport,
                 });
+                trackEventCreatedConversion();
             }
 
             // If this event was created from a litter report, associate them

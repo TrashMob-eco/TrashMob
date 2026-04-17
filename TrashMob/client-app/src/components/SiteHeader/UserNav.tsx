@@ -19,11 +19,12 @@ import React from 'react';
 interface UserNavProps {
     currentUser: UserData;
     isUserLoaded: boolean;
+    isAuthChecking?: boolean;
     className?: string;
 }
 
 export const UserNav = (props: UserNavProps) => {
-    const { currentUser, isUserLoaded, className } = props;
+    const { currentUser, isUserLoaded, isAuthChecking, className } = props;
     const [showAgeGate, setShowAgeGate] = useState(false);
 
     function signIn(e: React.MouseEvent) {
@@ -59,7 +60,7 @@ export const UserNav = (props: UserNavProps) => {
 
     return (
         <div className={cn('flex flex-row items-center gap-2 basis-full lg:basis-0', className)}>
-            {!isUserLoaded && (
+            {!isUserLoaded && !isAuthChecking && (
                 <>
                     <Button variant='outline' className='text-current border-primary' onClick={signIn}>
                         Sign in

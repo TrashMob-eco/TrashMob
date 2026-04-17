@@ -11,6 +11,7 @@ using TrashMobMobile.Services;
 public class AuthService : IAuthService
 {
     private readonly IUserManager userManager;
+    private readonly IPrivoPermissionService privoPermissionService;
 
     private string accessToken = string.Empty;
 
@@ -19,9 +20,10 @@ public class AuthService : IAuthService
 
     private string userEmail = string.Empty;
 
-    public AuthService(IUserManager userManager)
+    public AuthService(IUserManager userManager, IPrivoPermissionService privoPermissionService)
     {
         this.userManager = userManager;
+        this.privoPermissionService = privoPermissionService;
         InitializeClient();
     }
 
@@ -71,6 +73,7 @@ public class AuthService : IAuthService
             }
 
             App.CurrentUser = null;
+            privoPermissionService.ClearCache();
         }
         catch (Exception ex)
         {
@@ -325,6 +328,7 @@ public class AuthService : IAuthService
                 userEmail = email;
                 var user = await userManager.GetUserByEmailAsync(email);
                 App.CurrentUser = user;
+                await PreFetchPermissionsIfMinorAsync();
             }
 
             return new SignInResult { Succeeded = true };
@@ -376,6 +380,7 @@ public class AuthService : IAuthService
             userEmail = context.EmailAddress;
             var user = await userManager.GetUserByEmailAsync(context.EmailAddress);
             App.CurrentUser = user;
+            await PreFetchPermissionsIfMinorAsync();
             return;
         }
 
@@ -385,6 +390,22 @@ public class AuthService : IAuthService
         {
             var user = await userManager.GetUserByObjectIdAsync(oidClaim.Value);
             App.CurrentUser = user;
+            await PreFetchPermissionsIfMinorAsync();
+        }
+    }
+
+    private async Task PreFetchPermissionsIfMinorAsync()
+    {
+        if (App.CurrentUser?.IsMinor == true)
+        {
+            try
+            {
+                await privoPermissionService.GetPermissionsAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to pre-fetch PRIVO permissions: {ex.Message}");
+            }
         }
     }
 

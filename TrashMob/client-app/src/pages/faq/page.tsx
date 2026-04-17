@@ -199,6 +199,45 @@ const faqs = [
         ],
     },
     {
+        category: 'Minors & Parental Consent',
+        desc: 'Youth volunteers and safety',
+        icon: attendees,
+        questions: [
+            {
+                question: 'Can minors (under 18) use TrashMob?',
+                answer: 'Yes! Volunteers aged 13-17 can participate with parental consent. Children under 13 cannot create their own accounts but can be registered for events by a parent or guardian as dependents.',
+            },
+            {
+                question: 'How does parental consent work?',
+                answer: 'TrashMob partners with <a href="https://privo.com" target="_blank" rel="noopener noreferrer">PRIVO</a>, an FTC-approved children\'s privacy service, to manage identity verification and parental consent. Parents verify their identity through PRIVO, then approve specific features for their child. This ensures COPPA compliance and protects minor volunteers.',
+            },
+            {
+                question: 'What is PRIVO?',
+                answer: "PRIVO is a leading children's privacy technology company that provides FTC-approved identity verification and parental consent services. TrashMob is the first organization to integrate Microsoft Entra External ID with PRIVO for secure youth volunteer management.",
+            },
+            {
+                question: 'What do parents need to do?',
+                answer: "Parents need to: (1) Create a TrashMob account, (2) Verify their identity through PRIVO, (3) Add their child as a dependent, (4) Approve PRIVO consent for the child's features, and (5) Sign waivers on behalf of the child for each event. Parents are notified via email whenever their child registers for an event.",
+            },
+            {
+                question: 'Can minors sign their own waivers?',
+                answer: 'No. All waivers for minors must be signed by a parent or guardian. When a minor registers for an event, their registration is placed in a "waiver pending" status until the parent signs the required waivers (including any community-specific waivers).',
+            },
+            {
+                question: 'What features can minors access?',
+                answer: 'Feature access for minors is controlled by what their parent approved through PRIVO. Available features include event registration, leaderboards, social sharing, newsletter subscriptions, geolocation tracking, team membership, and photo uploads. Parents can enable or disable each feature individually.',
+            },
+            {
+                question: 'Does an adult need to be present at events with minors?',
+                answer: 'Yes. At least one adult must be registered for any event that has minor participants. If a parent cancels their registration, any under-13 dependents they registered are automatically removed (since they cannot attend without the parent). Minors aged 13-17 with their own accounts are not automatically unregistered.',
+            },
+            {
+                question: 'How is minor data protected?',
+                answer: 'Minor profiles display only first name and last initial publicly. Minors cannot send or receive direct messages. Their full name is visible only to event leads for check-in purposes. All minor data handling follows COPPA guidelines.',
+            },
+        ],
+    },
+    {
         category: 'TrashMob Organization',
         desc: 'About and volunteering',
         icon: volunteer,

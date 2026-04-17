@@ -294,7 +294,9 @@ export const PartnerEdit = () => {
                         )}
                     />
                     <div className='col-span-12 flex justify-end gap-2'>
-                        <Button variant='secondary'>Cancel</Button>
+                        <Button type='button' variant='secondary' onClick={() => window.history.back()}>
+                            Cancel
+                        </Button>
                         <Button type='submit' disabled={isSubmitting}>
                             {isSubmitting ? <Loader2 className='animate-spin' /> : null}
                             Save

@@ -26,11 +26,16 @@ import {
     Heart,
     List,
     Map as MapIcon,
+    ShieldCheck,
 } from 'lucide-react';
 import { AxiosResponse } from 'axios';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getEventShareableContent, getEventShareMessage } from '@/lib/sharing-messages';
 import { isCompletedEvent } from '@/lib/event-helpers';
+import { usePrivoPermissions } from '@/hooks/usePrivoPermissions';
+import { PrivoFeature } from '@/lib/privo-features';
+import { PendingWaiverAlertsCard } from '@/pages/MyDashboard/PendingWaiverAlertsCard';
 
 import EventData from '@/components/Models/EventData';
 import PickupLocationData from '@/components/Models/PickupLocationData';
@@ -53,7 +58,6 @@ import { ShareDialog } from '@/components/sharing';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { EventsMap } from '@/components/events/event-map';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EventsTable } from './events-table/table';
 
@@ -83,6 +87,7 @@ import { MyTeamsTable } from '@/pages/MyDashboard/MyTeamsTable';
 import { MyRoutesCard } from '@/pages/MyDashboard/MyRoutesCard';
 import { MyWaiversCard } from '@/pages/MyDashboard/MyWaiversCard';
 import { MyDependentsCard } from '@/pages/MyDashboard/MyDependentsCard';
+import { VerifyIdentityCard } from '@/components/privo/VerifyIdentityCard';
 import { MyImpactCard } from '@/pages/MyDashboard/MyImpactCard';
 import { MyCompaniesTable } from '@/pages/MyDashboard/MyCompaniesTable';
 import { MySponsorsTable } from '@/pages/MyDashboard/MySponsorsTable';
@@ -197,6 +202,7 @@ interface MyDashboardProps {}
 
 const MyDashboard: FC<MyDashboardProps> = () => {
     const { isUserLoaded, currentUser } = useLogin();
+    const { isFeatureEnabled } = usePrivoPermissions(currentUser?.isMinor ?? false);
     const location = useLocation();
     const navigate = useNavigate();
     const userId = currentUser.id;
@@ -384,7 +390,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
             </div>
 
             <div className='container mt-6! pb-12!'>
-                {eventToShare ? (
+                {eventToShare && isFeatureEnabled(PrivoFeature.Social) ? (
                     <ShareDialog
                         content={getEventShareableContent(eventToShare, currentUser?.id)}
                         open={showModal}
@@ -392,6 +398,8 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         message={getEventShareMessage(eventToShare, currentUser?.id)}
                     />
                 ) : null}
+
+                {!currentUser?.isMinor && <PendingWaiverAlertsCard userId={userId} />}
 
                 <div className='flex flex-col gap-6 lg:flex-row'>
                     {/* Desktop sidebar - hidden below lg */}
@@ -602,7 +610,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         ) : null}
 
                         {/* Routes */}
-                        {isSectionVisible('routes') ? (
+                        {isSectionVisible('routes') && isFeatureEnabled(PrivoFeature.Geolocation) ? (
                             <section id='routes'>
                                 <MyRoutesCard />
                             </section>
@@ -654,7 +662,32 @@ const MyDashboard: FC<MyDashboardProps> = () => {
 
                         {isSectionVisible('dependents') ? (
                             <section id='dependents'>
-                                <MyDependentsCard userId={userId} />
+                                {currentUser.isMinor ? (
+                                    <Card>
+                                        <CardHeader>
+                                            <div className='flex items-center gap-2'>
+                                                <ShieldCheck className='h-5 w-5 text-primary' />
+                                                <CardTitle className='text-lg text-primary'>Minor Account</CardTitle>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className='text-sm text-muted-foreground'>
+                                                Your account is linked to a parent or guardian. Some features are
+                                                managed by your parent.
+                                            </p>
+                                        </CardContent>
+                                    </Card>
+                                ) : (
+                                    <>
+                                        <div className='mb-4'>
+                                            <VerifyIdentityCard isVerified={currentUser.isIdentityVerified} />
+                                        </div>
+                                        <MyDependentsCard
+                                            userId={userId}
+                                            isIdentityVerified={currentUser.isIdentityVerified}
+                                        />
+                                    </>
+                                )}
                             </section>
                         ) : null}
 
@@ -664,7 +697,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             </section>
                         ) : null}
 
-                        {isSectionVisible('newsletters') ? (
+                        {isSectionVisible('newsletters') && isFeatureEnabled(PrivoFeature.Newsletter) ? (
                             <section id='newsletters'>
                                 <MyNewsletterPreferencesCard />
                             </section>

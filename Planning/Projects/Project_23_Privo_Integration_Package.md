@@ -1,9 +1,9 @@
-# TrashMob.eco — Privo Integration Package
+# TrashMob.eco — PRIVO Integration Package
 
-**Document Version:** 1.0
-**Date:** January 31, 2026
-**Prepared for:** Privo.com Integration Team
-**Contact:** *(Contact addresses stored in secure location - not in public repo)*
+**Document Version:** 3.0
+**Date:** April 5, 2026
+**Prepared for:** PRIVO Integration Team
+**Status:** Integration complete on INT — awaiting production credentials
 
 ---
 
@@ -13,393 +13,462 @@
 |-------|-------|
 | **Company Name** | TrashMob.eco |
 | **Website** | https://www.trashmob.eco |
-| **Business Type** | Non-profit volunteer coordination platform |
+| **Business Type** | Non-profit volunteer coordination platform (501(c)(3)) |
 | **Primary Service** | Connecting volunteers with community cleanup events |
 | **Target Audience** | Adults (18+) and minors (13-17) with parental consent |
 | **Privacy Policy** | https://www.trashmob.eco/privacypolicy |
 | **Terms of Service** | https://www.trashmob.eco/termsofservice |
 
-### Company Address
-*(To be provided by Business Team)*
+---
 
-### Primary Contacts
-*(To be provided by Business Team)*
+## 2. Implemented Flows
+
+### Flow 1: Adult Identity Verification
+
+The parent verifies their identity before they can add 13-17 dependents.
+
+```
+   Parent                  TrashMob                    PRIVO
+     │                        │                          │
+     │  1. Click "Verify      │                          │
+     │     My Identity"       │                          │
+     │───────────────────────>│                          │
+     │                        │                          │
+     │                        │  2. POST /token           │
+     │                        │─────────────────────────>│
+     │                        │  3. Access token          │
+     │                        │<─────────────────────────│
+     │                        │                          │
+     │                        │  4. POST /requests        │
+     │                        │  (Section 2: adult data,  │
+     │                        │   EID=User.Id)            │
+     │                        │─────────────────────────>│
+     │                        │  5. SiD, ConsentId        │
+     │                        │<─────────────────────────│
+     │                        │                          │
+     │                        │  6. POST /verification/   │
+     │                        │  session (Section 3)      │
+     │                        │─────────────────────────>│
+     │                        │  7. Verification URL      │
+     │                        │<─────────────────────────│
+     │                        │                          │
+     │  8. Redirect to        │                          │
+     │     PRIVO widget ──────────────────────────────> │
+     │                        │                          │
+     │  9. Complete ID        │                          │
+     │     verification ─────────────────────────────> │
+     │                        │                          │
+     │  10. Redirect back     │                          │
+     │      to TrashMob <────────────────────────────── │
+     │                        │                          │
+     │                        │  11. Webhook:             │
+     │                        │  consent_updated          │
+     │                        │<─────────────────────────│
+     │                        │                          │
+     │                        │  12. GET /consents/{id}   │
+     │                        │  (Section 7: verify       │
+     │                        │   state = "approved")     │
+     │                        │─────────────────────────>│
+     │                        │  13. State confirmed      │
+     │                        │<─────────────────────────│
+     │                        │                          │
+     │  14. "Identity         │                          │
+     │      Verified" shown   │                          │
+     │<───────────────────────│                          │
+```
+
+**Key implementation details:**
+- TrashMob uses `User.Id` (GUID) as the PRIVO External ID (EID)
+- Token cached 25 minutes (5-min buffer under 30-min PRIVO expiry) with semaphore-protected refresh
+- `consent_request_email` suppressed for adult self-verification (parent redirects directly to widget)
+- `consent_approved_email` enabled so parent gets confirmation after verification
+- Webhook handler polls Section 7 for authoritative state (does not rely on event type names)
+- "Check Status" button available as manual polling fallback
+
+### Flow 2: Verified Parent Adds 13-17 Child
+
+After identity verification, the parent adds a child as a dependent and approves PRIVO consent.
+
+```
+   Parent                  TrashMob                    PRIVO
+     │                        │                          │
+     │  1. Add dependent      │                          │
+     │  (name, DOB, email)    │                          │
+     │───────────────────────>│                          │
+     │                        │  2. Create Dependent      │
+     │                        │     record locally        │
+     │                        │                          │
+     │  3. Click shield icon  │                          │
+     │  (start consent)       │                          │
+     │───────────────────────>│                          │
+     │                        │                          │
+     │                        │  4. POST /requests        │
+     │                        │  (Section 5: child data,  │
+     │                        │   granter=parent SiD,     │
+     │                        │   EID=Dependent.Id)       │
+     │                        │─────────────────────────>│
+     │                        │  5. Child SiD, ConsentId  │
+     │                        │<─────────────────────────│
+     │                        │                          │
+     │                        │                     6. PRIVO sends
+     │                        │                        consent email
+     │  7. "Check email"      │                        to parent
+     │     toast shown        │                          │
+     │<───────────────────────│                          │
+     │                        │                          │
+     │  8. Parent clicks      │                          │
+     │     email link ────────────────────────────────> │
+     │                        │                          │
+     │  9. Review features,   │                          │
+     │     click "I Agree" ──────────────────────────> │
+     │                        │                          │
+     │                        │  10. Webhook:             │
+     │                        │  consent_updated +        │
+     │                        │  account_feature_updated  │
+     │                        │<─────────────────────────│
+     │                        │                          │
+     │                        │  11. Poll Section 7       │
+     │                        │  → state = "approved"     │
+     │                        │                          │
+     │  12. "Consent Approved"│                          │
+     │      badge shown       │                          │
+     │<───────────────────────│                          │
+     │                        │                          │
+     │  13. Send invitation   │                          │
+     │      email to child    │                          │
+     │───────────────────────>│                          │
+     │                        │  14. Email sent to child  │
+     │                        │      with account link    │
+     │                        │                          │
+     │                    CHILD                          │
+     │                        │                          │
+     │  15. Child creates     │                          │
+     │      Entra account     │                          │
+     │      using invite link │                          │
+     │                        │  16. Auto-link to parent  │
+     │                        │  (TryAcceptByEmailAsync)  │
+     │                        │  IsMinor=true,            │
+     │                        │  ParentUserId set         │
+```
+
+**Key implementation details:**
+- Child email is optional on the Dependent record — omitted from PRIVO request if empty
+- PRIVO sends the consent email (not TrashMob) — `consent_request_email: true` for child flow
+- Consent status tracked per-dependent: "Needs Consent" → "Consent Pending" → "Consent Approved"
+- Invitation email uses secure token (SHA-256 hashed, 30-day expiry)
+- Child account auto-linked to parent when email matches pending invitation
+
+### Post-Registration: Minor Event Attendance
+
+When a minor with their own account registers for an event:
+
+```
+   Minor                   TrashMob                    Parent
+     │                        │                          │
+     │  1. Click "Attend"     │                          │
+     │───────────────────────>│                          │
+     │                        │                          │
+     │                        │  2. Check PRIVO           │
+     │                        │  permissions              │
+     │                        │  (Account feature)        │
+     │                        │                          │
+     │                        │  3. Check DependentWaivers│
+     │                        │  (Global + Community      │
+     │                        │   waivers for event)      │
+     │                        │                          │
+     │                     IF WAIVERS MISSING:           │
+     │                        │                          │
+     │                        │  4. Create registration   │
+     │                        │  with WaiverPendingDate   │
+     │                        │                          │
+     │  5. "Waiting for       │  6. Send email:           │
+     │     parent to sign     │  "Sign waivers for        │
+     │     waivers"           │   [child] attending       │
+     │<───────────────────────│   [event]"                │
+     │                        │─────────────────────────>│
+     │                        │                          │
+     │                        │  7. Parent signs          │
+     │                        │  DependentWaivers         │
+     │                        │<─────────────────────────│
+     │                        │                          │
+     │                        │  8. Auto-complete:        │
+     │                        │  Clear WaiverPendingDate  │
+     │                        │                          │
+     │                     IF ALL WAIVERS SIGNED:        │
+     │                        │                          │
+     │                        │  9. Register normally     │
+     │                        │                          │
+     │                        │  10. Notify parent:       │
+     │                        │  "[child] registered      │
+     │                        │   for [event]"            │
+     │                        │─────────────────────────>│
+```
 
 ---
 
-## 2. Authentication Flow — Swim Lane Diagram
+## 3. PRIVO Feature Permissions
 
-### Current Architecture: Microsoft Entra External ID (CIAM)
-> **Note:** TrashMob completed migration from Azure AD B2C to Microsoft Entra External ID in February 2026 (Project 1).
-> The Privo integration points remain the same — Privo hooks into the Custom Authentication Extension on the sign-up user flow.
+PRIVO controls which features a minor can access. Parents approve features during the consent flow.
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                              MINOR REGISTRATION FLOW WITH PRIVO                                      │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────┘
+### Feature Identifiers
 
-   USER (Minor)          TrashMob Web/Mobile       Entra External ID      Privo.com            Parent
-        │                        │                      │                     │                   │
-        │  1. Click "Sign Up"    │                      │                     │                   │
-        │───────────────────────>│                      │                     │                   │
-        │                        │                      │                     │                   │
-        │                        │  2. Redirect to CIAM │                     │                   │
-        │                        │─────────────────────>│                     │                   │
-        │                        │                      │                     │                   │
-        │  3. Enter Email/Password                      │                     │                   │
-        │<─────────────────────────────────────────────>│                     │                   │
-        │                        │                      │                     │                   │
-        │                        │  4. Auth Success     │                     │                   │
-        │                        │<─────────────────────│                     │                   │
-        │                        │                      │                     │                   │
-        │  5. Enter Date of Birth│                      │                     │                   │
-        │<───────────────────────│                      │                     │                   │
-        │───────────────────────>│                      │                     │                   │
-        │                        │                      │                     │                   │
-        │                        │  6. Verify Age       │                     │                   │
-        │                        │───────────────────────────────────────────>│                   │
-        │                        │                      │                     │                   │
-        │                        │  7. Age Result       │                     │                   │
-        │                        │<───────────────────────────────────────────│                   │
-        │                        │                      │                     │                   │
-        │                        │                      │                     │                   │
-┌───────┴────────────────────────┴──────────────────────┴─────────────────────┴───────────────────┴───┐
-│                                    AGE VERIFICATION RESULTS                                          │
-├─────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│  UNDER 13: Block registration, show explanation, suggest parent creates account for them            │
-│  13-17 (MINOR): Continue to Parental Consent Flow (below)                                           │
-│  18+ (ADULT): Continue to standard registration, skip Privo consent                                 │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────┘
-        │                        │                      │                     │                   │
-        │                        │                      │                     │                   │
-═══════════════════════════════════════════════════════════════════════════════════════════════════════
-                              PARENTAL CONSENT FLOW (13-17 MINORS ONLY)
-═══════════════════════════════════════════════════════════════════════════════════════════════════════
-        │                        │                      │                     │                   │
-        │  8. Enter Parent Email │                      │                     │                   │
-        │<───────────────────────│                      │                     │                   │
-        │───────────────────────>│                      │                     │                   │
-        │                        │                      │                     │                   │
-        │                        │  9. Request VPC      │                     │                   │
-        │                        │───────────────────────────────────────────>│                   │
-        │                        │                      │                     │                   │
-        │                        │  10. VPC Request ID  │                     │                   │
-        │                        │<───────────────────────────────────────────│                   │
-        │                        │                      │                     │                   │
-        │  11. "Pending" Status  │                      │                     │                   │
-        │      Limited Access    │                      │                     │                   │
-        │<───────────────────────│                      │                     │                   │
-        │                        │                      │                     │                   │
-        │                        │                      │  12. Send Consent   │                   │
-        │                        │                      │      Email          │                   │
-        │                        │                      │     ─────────────────────────────────────>│
-        │                        │                      │                     │                   │
-        │                        │                      │                     │  13. Parent       │
-        │                        │                      │                     │      Clicks Link  │
-        │                        │                      │                     │<──────────────────│
-        │                        │                      │                     │                   │
-        │                        │                      │                     │  14. Verify       │
-        │                        │                      │                     │      Identity     │
-        │                        │                      │                     │      (CC/ID/Video)│
-        │                        │                      │                     │<─────────────────>│
-        │                        │                      │                     │                   │
-        │                        │  15. Webhook:        │                     │                   │
-        │                        │      Consent Status  │                     │                   │
-        │                        │<───────────────────────────────────────────│                   │
-        │                        │                      │                     │                   │
-┌───────┴────────────────────────┴──────────────────────┴─────────────────────┴───────────────────┴───┐
-│                                    CONSENT RESULTS                                                   │
-├─────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│  VERIFIED: Minor account fully activated with protections (no DMs, limited profile visibility)      │
-│  DENIED: Minor account disabled, data deleted per COPPA                                             │
-│  TIMEOUT (7 days): Minor account disabled, can retry with new parent email                          │
-│  REVOKED (later): Immediate account suspension, data retained per legal requirements                │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────┘
-        │                        │                      │                     │                   │
-        │  16. Full Access       │                      │                     │                   │
-        │      (with protections)│                      │                     │                   │
-        │<───────────────────────│                      │                     │                   │
-        │                        │                      │                     │                   │
-        │                        │  17. Send Location   │                     │                   │
-        │                        │      to Privo        │                     │                   │
-        │                        │───────────────────────────────────────────>│                   │
-        │                        │                      │                     │                   │
-```
+| Identifier | Feature | Gated On |
+|------------|---------|----------|
+| `trashmobservice_account` | Event registration | Web: RegisterBtn, Mobile: ViewEventViewModel |
+| `trashmobservice_leaderboard` | Public leaderboards | Web: LeaderboardsPage, Mobile: LeaderboardsViewModel |
+| `trashmobservice_social` | Social media sharing | Web: ShareDialog, Team detail |
+| `trashmobservice_newsletter` | Newsletter subscriptions | Web: MyDashboard, Mobile: NewsletterPreferencesViewModel |
+| `trashmobservice_notifications` | In-app notifications | Placeholder (not fully implemented) |
+| `trashmobservice_geolocation` | Route tracking / GPS | Web: MyRoutesCard, Mobile: ViewEventViewModel |
+| `trashmobservice_team` | Join / create teams | Web: TeamsPage, Team detail, Mobile: ViewTeamViewModel |
+| `trashmobservice_photo_uploads` | Photo uploads | Web: EventPhotoUploader, Mobile: ViewEventViewModel, CreateLitterReportViewModel |
 
----
+### How Permissions Are Enforced
 
-## 3. Feature Set Requiring Parental Consent
-
-The following features require Verifiable Parental Consent (VPC) for users aged 13-17:
-
-### Core Platform Features
-
-| Feature | Description | Data Collected |
-|---------|-------------|----------------|
-| **Newsletter subscriptions** | Email communications about events and updates | Email address |
-| **In-app notifications** | Push and in-app alerts about events | Device tokens |
-| **Event sign-up** | Register to attend cleanup events | Name, email, attendance |
-| **Create an event** | Organize cleanup events | Name, location, contact |
-| **Photo uploads** | Upload before/during/after event photos | Images, metadata |
-| **Profile photo** | Set a profile picture | Image |
-| **Join a team** | Become member of a cleanup team | Membership data |
-
-### Location & Tracking Features (Sensitive)
-
-| Feature | Description | Data Collected |
-|---------|-------------|----------------|
-| **Geolocation sharing** | Share location for nearby events | GPS coordinates |
-| **Route tracing** | Track cleanup route during events | GPS path, timestamps |
-| **Litter report submission** | Report litter locations | GPS coordinates, photos |
-
-### Public Visibility Features
-
-| Feature | Description | Data Collected |
-|---------|-------------|----------------|
-| **Public leaderboards** | Appear on volunteer rankings | Name (first + last initial), stats |
-| **Attendee metrics** | Individual contributions visible | Bags, weight, time |
-| **Social media sharing** | Share events to social platforms | Name, event participation |
-
-### Communication Features
-
-| Feature | Description | Data Collected |
-|---------|-------------|----------------|
-| **Contact info to event leads** | Email shared with event organizers | Email address |
-| **Instant messaging** | **BLOCKED for minors** | N/A |
-
-### Legal Features
-
-| Feature | Description | Data Collected |
-|---------|-------------|----------------|
-| **Waiver signing** | Parent signs liability waiver on behalf of minor | Digital signature, consent record |
+1. **Backend**: `GET /v2/privo/permissions` calls PRIVO Section 4 (`/accounts/eid/{eid}`), returns feature states, cached 1 hour server-side
+2. **Web**: `usePrivoPermissions` React hook with 1-hour `staleTime` — `isFeatureEnabled(featureId)` returns `true` for adults, checks cache for minors
+3. **Mobile**: `IPrivoPermissionService` singleton with 1-hour client-side cache — `IsFeatureEnabled(featureId)`, pre-fetched on login, cleared on logout
+4. **Fail-closed**: Missing permission keys treated as disabled
 
 ---
 
 ## 4. Minor Protection Rules
 
-Once parental consent is verified, minors have access with the following protections:
-
 ### Profile Visibility
 - Name displayed as **first name + last initial only** (e.g., "John S.")
-- Profile photo **not visible** to other users (only to event leads)
-- No location sharing in profile
+- Full name visible only to event leads for check-in purposes
 
 ### Communication Restrictions
-- **No direct messaging** (instant messaging blocked entirely)
-- **No direct contact** with other users
-- All communications routed through parent (notifications CC'd to parent email)
+- **No direct messaging** (no DM system exists; blocked by design)
+- Parent receives email when minor registers for events
 
 ### Event Participation
 - At least **one adult must be present** at any event with minor participants
-- Parent receives notification when minor registers for an event
-- Event leads can see full name for check-in purposes only
+- Under-13 dependents auto-unregistered if parent cancels (13-17 minors with own accounts are not)
+- Parent notified via email on every minor event registration
 
-### Data Handling
-- Annual consent re-verification (Privo handles timing)
-- Right to deletion upon parent request
-- Consent artifacts retained per COPPA legal requirements
+### Waiver Handling
+- **Minors cannot sign their own waivers** — blocked at API level (`POST /v2/waivers/accept` returns 400 for minors)
+- All waivers (TrashMob global + community-specific) route to parent for signature
+- Registration held in "waiver pending" status until parent signs all required waivers
+- Auto-completes when parent signs last required `DependentWaiver`
+- Parent sees red alert on dashboard when waivers need signing
 
-### Parent Account Requirements
-
-**Important:** Parents do NOT need a TrashMob account to approve their minor's registration. Privo email approval is sufficient.
-
-| Scenario | Parent Account Required? | Notes |
-|----------|-------------------------|-------|
-| Minor registration approval | ❌ No | Privo email link sufficient |
-| Consent revocation | ❌ No | Can revoke via Privo |
-| View minor's activity | ✅ Yes | Requires parent dashboard |
-| Approve event participation | ✅ Yes | Future feature (Phase 4) |
-| Receive event notifications | ❌ No | Email sent regardless |
-
-If parent later creates a TrashMob account, it can be linked to their minor's account via email match, unlocking additional features like activity monitoring.
+### Minor Dashboard
+- Minors see "Minor Account" card instead of dependents management
+- No "Add Dependent" button, no identity verification prompt
+- Feature access controlled by PRIVO permission gating
 
 ---
 
-## 5. Integration Data Flows
+## 5. Technical Architecture
 
-### Data Sent to Privo
+### Backend Components
 
-| Trigger | Data | Purpose |
-|---------|------|---------|
-| **Registration** | Date of birth, user ID | Age verification |
-| **Minor detected** | Minor user ID, parent email | VPC request |
-| **Post-signup** | User location (city, region) | Compliance jurisdiction |
-| **Consent check** | User ID, consent request ID | Validate active consent |
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `PrivoService` | `TrashMob/Services/PrivoService.cs` | HTTP client for all 10 PRIVO API sections, OAuth token caching (25-min, semaphore) |
+| `PrivoConsentManager` | `TrashMob.Shared/Managers/PrivoConsentManager.cs` | Orchestrates verification/consent workflows, webhook processing, status polling |
+| `PrivoConsentV2Controller` | `TrashMob/Controllers/V2/PrivoConsentV2Controller.cs` | API: verify, consent, status, refresh, permissions, revoke |
+| `PrivoWebhooksV2Controller` | `TrashMob/Controllers/V2/PrivoWebhooksV2Controller.cs` | Webhook handler with `X-Api-Key` auth via `PrivoApiKeyAuthenticationFilter` |
+| `DependentWaiverManager` | `TrashMob.Shared/Managers/DependentWaiverManager.cs` | Dependent waiver checks (Global + Community), auto-complete pending registrations |
+| `ParentalConsent` entity | `TrashMob.Models/ParentalConsent.cs` | Stores PRIVO consent records (SiD, ConsentId, status, type) |
 
-### Data Received from Privo
+### Frontend Components
 
-| Event | Data | Action |
-|-------|------|--------|
-| **Age verification result** | Age category (Under13, Minor, Adult) | Route registration flow |
-| **VPC request created** | Consent request ID | Store for tracking |
-| **Consent status webhook** | Status (Verified, Denied, Revoked) | Update user access |
-| **Consent expiration** | Expiration warning | Trigger re-verification |
+| Component | Platform | Purpose |
+|-----------|----------|---------|
+| `VerifyIdentityCard` | Web | Dashboard card: verify button, pending status, check status |
+| `MyDependentsCard` | Web | Consent badges, shield button, invite flow |
+| `PendingWaiverAlertsCard` | Web | Red alert banner for parent waiver signing |
+| `RegisterBtn` | Web | Minor path: skip waiver dialog, show pending message |
+| `usePrivoPermissions` | Web | React hook for feature gating |
+| `PrivoPermissionService` | Mobile | Singleton permission cache |
+| `PrivoConsentRestService` | Mobile | REST client for PRIVO API endpoints |
+
+### API Endpoints
+
+| Method | Route | Auth | Purpose |
+|--------|-------|------|---------|
+| `POST` | `/v2/privo/verify` | User | Initiate adult identity verification (Flow 1) |
+| `POST` | `/v2/privo/consent/child/{dependentId}` | User | Initiate child consent (Flow 2) |
+| `POST` | `/v2/privo/consent/child-initiated` | Anonymous | Child-initiated consent (Flow 3) |
+| `GET` | `/v2/privo/status` | User | Current verification/consent status |
+| `POST` | `/v2/privo/status/refresh` | User | Poll PRIVO Section 7 and update local record |
+| `GET` | `/v2/privo/permissions` | User | PRIVO feature permissions (cached 1 hr) |
+| `GET` | `/v2/privo/enabled` | Public | Feature flag check |
+| `POST` | `/v2/privo/consent/{id}/revoke` | User | Revoke consent |
+| `POST` | `/v2/webhooks/privo/consent` | API Key | PRIVO webhook receiver |
+
+### Webhook Processing
+
+TrashMob receives webhooks at `POST /v2/webhooks/privo/consent` with `X-Api-Key` header authentication.
+
+**Processing logic:**
+1. Validate API key against Key Vault secret `Privo-ApiKey`
+2. Match `consent_identifiers` to local `ParentalConsent` record
+3. Skip pure creation events (`consent_request_created`, `consent_notice_delivered`)
+4. For substantive events (`consent_updated`, `account_feature_updated`): poll Section 7 for authoritative state
+5. Update local record based on polled state (`approved` → Verified, `denied` → Denied)
+6. For adult verification: set `User.IsIdentityVerified = true`
 
 ---
 
-## 6. API Integration Points
+## 6. PRIVO API Usage
 
-> **Detailed API documentation received from PRIVO on March 24, 2026.** See [Project 23 — PRIVO API Requirements](./Project_23_Privo_API_Requirements.md) for the complete 10-section API specification including endpoints, credentials, feature/attribute identifiers, and webhook payload format.
+### Sections Used
 
-### Key API Sections (Summary)
+| Section | Used For | TrashMob Implementation |
+|---------|----------|------------------------|
+| 1 (Token) | OAuth client credentials | Cached 25 min, auto-refresh on 401 |
+| 2 (Adult Consent Request) | Adult identity verification | EID = User.Id, granter = principal (same person) |
+| 3 (Verification URL) | Direct widget redirect | Skip pre-verification UI |
+| 4 (UserInfo) | Feature permissions | Query by EID, cached 1 hour |
+| 5 (Parent Child Consent) | Parent adds 13-17 dependent | Granter by SiD, principal EID = Dependent.Id |
+| 7 (Consent Status) | Poll for state changes | Used by webhook handler and Check Status button |
+| 9 (Revoke) | Consent revocation | Available via API, not yet exposed in UI |
+| 10 (Webhooks) | Real-time event notifications | `X-Api-Key` authentication |
 
-| Section | Endpoint | Purpose |
-|---------|----------|---------|
-| 1 | `POST /token` | Client access token (30 min expiry, extendable to 12 hrs) |
-| 2 | `POST /s2s/api/v1.0/{svc}/requests` | Adult identity verification request |
-| 3 | `POST /s2s/api/v1.0/{svc}/consents/{id}/verification/session` | Direct verification URL (skip PRIVO pre-screens) |
-| 4 | `GET /s2s/api/v1.0/{svc}/accounts/sid/{sid}` | User info / feature states |
-| 5 | `POST /s2s/api/v1.0/{svc}/requests` | Parent-initiated child consent |
-| 6 | `POST /s2s/api/v1.0/{svc}/requests` | Child-initiated consent |
-| 7 | `GET /s2s/api/v1.0/{svc}/consents/{id}` | Consent status check |
-| 8 | `PATCH /s2s/api/v1.0/{svc}/accounts/sid/{sid}/attributes/{attr}/ial` | Email verification sync |
-| 9 | `POST /s2s/api/v1.0/{svc}/accounts/sid/{sid}/{granter_sid}/features/revoke` | Revoke consent |
-| 10 | Webhook | Real-time consent event notifications |
+### Sections Not Currently Used
 
-### Privo → TrashMob (Webhooks)
+| Section | Reason |
+|---------|--------|
+| 6 (Child-Initiated) | Backend built, pending E2E testing |
+| 8 (Email IAL) | `email_verified: true` sent in consent request; IAL value not yet provided by PRIVO |
+
+### Request Payload Format (Adult Verification)
 
 ```json
-// Webhook payload format (from PRIVO docs)
 {
-  "id": "3c5bb850-8b65-45f3-a31b-80c5k27d5514",
-  "timestamp": "2024-09-11T13:23:34.325581013Z",
-  "sid": "818g84dd-04d7-4793-9342-50c209316c95",
-  "event_types": ["consent_request_created"],
-  "granter_sid": ["ded3cad0-m557-4716-bce5-48098395bd74"],
-  "consent_identifiers": ["1710c4c7-0694-42b7-8096-328f99844aad"]
+  "granter": {
+    "email": "parent@example.com",
+    "notifications": [
+      { "is_on": false, "notification_type": "consent_request_email" },
+      { "is_on": true, "notification_type": "consent_approved_email" }
+    ]
+  },
+  "locale": "en-US",
+  "principal": {
+    "given_name": "Joe",
+    "birthdate": "19900101",
+    "birthdate_precision": "yyyymmdd",
+    "email": "parent@example.com",
+    "email_verified": true,
+    "eid": "ee1b2ad7-fd41-40b5-a056-d157e815c2d8",
+    "attributes": [
+      {
+        "attribute_identifier": "trashmobservice_att_granter_family_name",
+        "value": ["Beernink"]
+      }
+    ]
+  }
+}
+```
+
+### Request Payload Format (Parent-Child Consent)
+
+```json
+{
+  "granter": {
+    "email": "parent@example.com",
+    "sid": "c315f9b7-5a9c-485b-b670-e83d84be8d9d",
+    "notifications": [
+      { "is_on": true, "notification_type": "consent_request_email" }
+    ]
+  },
+  "locale": "en-US",
+  "principal": {
+    "given_name": "ChildFirstName",
+    "birthdate": "20130101",
+    "birthdate_precision": "yyyymmdd",
+    "eid": "acbf334e-ee32-4134-9c9b-9489aa83659a",
+    "email": "child@example.com"
+  }
 }
 ```
 
 ---
 
-## 7. Branding Assets
+## 7. Technical Environment
 
-### Logo Files
-*(To be provided by Marketing Team)*
-- Primary logo (SVG, PNG)
-- Icon/favicon (SVG, PNG)
-- White/dark variants
+| Environment | Web URL | API Base | Webhook Endpoint |
+|-------------|---------|----------|-----------------|
+| **Development** | https://dev.trashmob.eco | https://dev.trashmob.eco/api | https://dev.trashmob.eco/api/v2/webhooks/privo/consent |
+| **Production** | https://www.trashmob.eco | https://www.trashmob.eco/api | https://www.trashmob.eco/api/v2/webhooks/privo/consent |
+
+### Authentication Provider
+- **Microsoft Entra External ID (CIAM)** — production since February 22, 2026
+- PRIVO integration occurs **after** IdP authentication (not during sign-up)
+- Age gate is in-app (React `AgeGateDialog` / MAUI `AgeGateViewModel`), not via Custom Authentication Extension
+
+### Key Vault Secrets
+
+| Secret | Purpose | Environment |
+|--------|---------|-------------|
+| `Privo-ClientId` | OAuth client ID | Per environment |
+| `Privo-ClientSecret` | OAuth client secret | Per environment |
+| `Privo-ApiKey` | Webhook authentication key | Per environment |
+| `Privo--Enabled` | Feature flag | `true` for dev, `false` for prod (until go-live) |
+
+---
+
+## 8. Branding
 
 ### Brand Colors
 | Color | Hex | Usage |
 |-------|-----|-------|
-| **Primary Green** | #00a651 | Primary actions, headers |
-| **Dark Green** | #006633 | Secondary elements |
+| **Primary Green** | #005B4B | Headers, primary actions |
+| **Lime** | #ABC313 | Accents, highlights |
 | **White** | #FFFFFF | Backgrounds |
-| **Dark Gray** | #333333 | Text |
+| **Dark Gray** | #333333 | Body text |
 
-### Typography
-- **Headings:** System fonts (Arial, Helvetica, sans-serif)
-- **Body:** System fonts
-
-### Consent Page Customization
-TrashMob requests the following customizations on Privo's consent collection pages:
-- TrashMob logo in header
-- Brand colors on buttons and accents
-- Clear explanation of what the minor can do on TrashMob
-- Link back to https://www.trashmob.eco
+### PRIVO on TrashMob
+- Home page "Trusted By" section displays PRIVO 25th anniversary logo with link to privo.com
+- FAQ page includes "What is PRIVO?" question with link
+- Help page explains PRIVO's role in parental consent flow
+- News article: "TrashMob Partners with PRIVO to Protect Young Volunteers"
 
 ---
 
-## 8. Technical Environment
+## 9. Testing
 
-| Environment | URL | Purpose |
-|-------------|-----|---------|
-| **Production** | https://www.trashmob.eco | Live users |
-| **Development** | https://dev.trashmob.eco | Testing & integration |
+### Automated Tests (16 Playwright E2E scenarios)
 
-### Webhook Endpoints
-- **Production:** `https://api.trashmob.eco/webhooks/privo`
-- **Development:** `https://dev-api.trashmob.eco/webhooks/privo`
+| Category | Tests | What's Covered |
+|----------|-------|----------------|
+| API Endpoints | 4 | enabled, status, permissions, refresh |
+| Adult Verification UI | 2 | Card visibility, button initiation |
+| Dependent Consent UI | 2 | Status display, shield button |
+| Minor Account Restrictions | 1 | Correct card by user type |
+| Callback Page | 2 | Renders with/without status param |
+| Webhook Security | 2 | Rejects missing/wrong API key |
+| Child Signup Page | 1 | Form renders |
+| Age Gate Dialog | 2 | 13-17 consent message, under-13 block |
 
-### Authentication Provider
-- **Current:** Microsoft Entra External ID (CIAM) — production cutover completed February 22, 2026
-- **Previous:** Azure AD B2C (decommissioned)
-- **Impact on Privo:** None — Privo integration occurs after IdP authentication
-- **CIAM Note:** CIAM id_tokens do not include an `email` claim. The backend resolves emails via Microsoft Graph API (`User.Read.All` application permission). The auth handler uses a 4-step user resolution: email lookup → ObjectId lookup → Graph API email resolution → auto-create.
+### Manual Test Scenarios
 
-### Current Age Gate: Custom Authentication Extension
-
-TrashMob currently uses an Entra External ID **Custom Authentication Extension** (`OnAttributeCollectionSubmit`) to enforce an under-13 age gate during sign-up. This is the integration point that Privo would replace/extend.
-
-**Architecture:**
-- **Container App:** `ca-authext-tm-pr-westus2` (Azure Container Apps, production)
-- **Source code:** `TrashMob.AuthExtension/` — minimal ASP.NET Core API
-- **Endpoint:** `POST /api/authext/attributecollectionsubmit`
-- **Behavior:** Parses `dateOfBirth` from the sign-up attributes, calculates age, and returns `continueWithDefaultBehavior` (13+) or `showBlockPage` (under 13)
-- **Bicep template:** `Deploy/containerAppAuthExtension.bicep`
-- **GitHub Actions:** `.github/workflows/release_ca-authext-tm-pr-westus2.yml`
-
-**Entra Configuration (CIAM tenant `b5fc8717-29eb-496e-8e09-cf90d344ce9f`):**
-
-The custom extension requires precise Entra configuration. The following was validated during a production incident investigation (March 2026):
-
-| Component | Value | Notes |
-|-----------|-------|-------|
-| **Custom Extension ID** | `71e35239-0b1e-4a19-9f13-4a3c77417306` | Registered under Identity > Custom Extensions |
-| **Extension Type** | `onAttributeCollectionSubmitCustomExtension` | Fires during sign-up attribute collection |
-| **App Registration** | `TrashMob Eco Prod Auth` (`e11e65ba-e457-4a95-8a54-c96582ebb837`) | The app registration the extension authenticates as |
-| **Application ID URI** | `api://ca-authext-tm-pr-westus2.greenground-fd8fc385.westus2.azurecontainerapps.io/e11e65ba-...` | Must match `authenticationConfiguration.resourceId` on the custom extension |
-| **accessTokenAcceptedVersion** | `2` | Required for custom auth extensions |
-| **App Role** | `CustomAuthenticationExtension.Receive.Payload` (value: `customauthenticationextension.api.endpoint`) | Must be defined on the app registration |
-| **Role Assignment** | Azure AD Auth Extensions SP (`99045fe1-7639-4a75-9d4a-577b6ca3810f`) → app role on `e11e65ba` SP | Required for Entra to acquire a token to call the endpoint |
-| **AllowedAppId** | `99045fe1-7639-4a75-9d4a-577b6ca3810f` | First-party Microsoft SP; validated via `azp` claim in JWT |
-
-**Container App Environment Variables:**
-
-| Variable | Value | Source |
-|----------|-------|--------|
-| `AuthExtension__TenantId` | CIAM tenant ID (`b5fc8717-...`) | GitHub secret `ENTRA_TENANT_ID` |
-| `AuthExtension__ClientId` | App registration client ID (`e11e65ba-...`) | GitHub secret `AUTH_EXTENSION_CLIENT_ID` |
-| `AuthExtension__AllowedAppId` | `99045fe1-7639-4a75-9d4a-577b6ca3810f` | Hardcoded in Bicep and `Program.cs` |
-
-**OIDC Authority — CIAM vs Standard Endpoint:**
-
-CIAM tenants have **two** OIDC discovery endpoints with **different signing keys**:
-- `https://login.microsoftonline.com/{tenantId}/v2.0` — standard Azure AD endpoint; has a subset of signing keys
-- `https://{tenantId}.ciamlogin.com/{tenantId}/v2.0` — CIAM-specific endpoint; has the **complete** set of signing keys
-
-The JWT `Authority` in `Program.cs` **must** use the `ciamlogin.com` endpoint. Entra signs tokens for custom auth extensions with keys that may only exist in the CIAM OIDC discovery document (e.g., kid `z6-fLv223PW4n6R3gxvdvXigZXk` in the prod tenant). Using `login.microsoftonline.com` as the Authority causes `IDX10503` signature validation failures because the app fetches keys from the wrong JWKS endpoint.
-
-The `ValidIssuers` array should accept tokens from **both** issuers since the actual `iss` claim in the token can use either format.
-
-**Troubleshooting Notes (March 2026 Incident):**
-- **AADSTS1003021** (`CustomExtensionPermissionNotGrantedToServicePrincipal`): The `CustomAuthenticationExtension.Receive.Payload` permission was not granted on the correct app registration. The custom extension's `authenticationConfiguration.resourceId` determines which app registration is used — verify this matches the app that has the permission granted.
-- **AADSTS1100001** (non-retryable error from custom extension API): Multiple causes found:
-  1. The app registration was missing the required app role definition (`customauthenticationextension.api.endpoint`), and the Azure AD Auth Extensions SP (`99045fe1`) had no role assignment. Both must be configured: (1) define the app role on the app registration, (2) assign that role to the `99045fe1` service principal.
-  2. The JWT `Authority` was set to `login.microsoftonline.com` which does not expose all CIAM signing keys. Tokens signed with CIAM-only keys failed signature validation (`IDX10503`), returning 401 to Entra, which surfaced as AADSTS1100001 to the user. Fix: use `{tenantId}.ciamlogin.com` as the Authority.
-- **Container App receives no requests:** If Entra cannot acquire a token (due to missing app role or role assignment), it fails internally and never makes the HTTP call to the endpoint. Container App logs will show zero requests even though the extension is configured.
-- **Container App returns 401 but no logs visible:** The default `appsettings.json` sets `Microsoft.AspNetCore` log level to `Warning`, which suppresses request-level logs. Add env vars `Logging__LogLevel__Microsoft.AspNetCore=Information` and `Logging__LogLevel__Microsoft.AspNetCore.Authentication=Debug` to see JWT validation details. The `OnAuthenticationFailed` event in `Program.cs` also logs the specific error.
+See [Project 23 — PRIVO Test Scenarios](./Project_23_Privo_Test_Scenarios.md) for 25 detailed test scenarios across 8 flow categories.
 
 ---
 
-## 9. Timeline & Milestones
+## 10. Production Deployment Checklist
 
-| Milestone | Target Date | Owner |
-|-----------|-------------|-------|
-| Privo contract signed | TBD | Business Team |
-| Branding assets delivered | TBD | Marketing |
-| Development environment ready | TBD | Engineering |
-| Integration testing complete | TBD | Engineering + Privo |
-| Production go-live | TBD | All |
-
----
-
-## 10. Open Questions for Privo
-
-1. ~~**Consent collection methods:** Which methods will be available?~~ — Handled by PRIVO verification widget (see [API Requirements](./Project_23_Privo_API_Requirements.md))
-2. **Webhook retry policy:** How does Privo handle webhook delivery failures?
-3. ~~**Consent expiration:** How far in advance does Privo notify about expiring consents?~~ — Not a concern; waivers expire yearly regardless.
-4. ~~**Testing environment:** Does Privo provide a sandbox for integration testing?~~ — INT environment provided (see [API Requirements](./Project_23_Privo_API_Requirements.md))
-5. ~~**Bulk consent verification:** Can we verify consent status for multiple users in one call?~~ — Not needed for v1; single-user checks sufficient.
+- [ ] PRIVO provides production credentials (Client ID, Client Secret)
+- [ ] Set `Privo-ClientId` and `Privo-ClientSecret` in prod Key Vault (`kv-tm-pr-westus2`)
+- [ ] Generate and set `Privo-ApiKey` in prod Key Vault, share with PRIVO
+- [ ] Set `Privo--Enabled` = `true` in prod Key Vault
+- [ ] PRIVO whitelists `https://www.trashmob.eco` as redirect URL
+- [ ] PRIVO configures production webhook endpoint: `https://www.trashmob.eco/api/v2/webhooks/privo/consent`
+- [ ] Verify token acquisition against production endpoint
+- [ ] Test adult verification end-to-end on production
+- [ ] Test parent-child consent end-to-end on production
 
 ---
 
-## Appendix A: Figma Access
+## 11. Open Questions
 
-Please provide Figma access to the Privo team members for UI/UX review.
-
-*(Contact addresses stored in secure location - not in public repo)*
+1. **Webhook retry policy:** How does PRIVO handle webhook delivery failures? (Fallback: Check Status polling works)
+2. **Section 8 IAL value:** What IAL value should TrashMob use when syncing email verification status?
 
 ---
 
@@ -408,14 +477,18 @@ Please provide Figma access to the Privo team members for UI/UX review.
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | January 31, 2026 | TrashMob Engineering | Initial draft |
-| 1.1 | February 22, 2026 | TrashMob Engineering | Updated auth provider to Entra External ID (CIAM migration complete) |
-| 1.2 | March 2, 2026 | TrashMob Engineering | Added custom authentication extension architecture, Entra configuration details, and troubleshooting notes from production incident |
-| 1.3 | March 2, 2026 | TrashMob Engineering | Documented CIAM vs standard OIDC endpoint signing key differences, IDX10503 root cause, and logging troubleshooting tips |
-| 1.4 | March 27, 2026 | TrashMob Engineering | Updated API section with PRIVO API Requirements doc reference (received March 24, 2026); resolved open questions on consent methods and testing environment |
+| 1.1 | February 22, 2026 | TrashMob Engineering | Updated auth provider to Entra External ID |
+| 1.2 | March 2, 2026 | TrashMob Engineering | Added custom authentication extension architecture |
+| 1.3 | March 2, 2026 | TrashMob Engineering | Documented CIAM OIDC endpoint signing key differences |
+| 1.4 | March 27, 2026 | TrashMob Engineering | Added PRIVO API Requirements reference |
+| 2.0 | April 5, 2026 | TrashMob Engineering | Integration complete on INT |
+| 3.0 | April 5, 2026 | TrashMob Engineering | Complete rewrite to reflect actual implementation: accurate flow diagrams, API usage, feature permissions, waiver routing, production checklist |
 
 ---
 
 **Related Documents:**
 - [Project 23 — Parental Consent for Minors](./Project_23_Parental_Consent.md)
-- [Project 1 — Auth Revamp](./Project_01_Auth_Revamp.md)
+- [Project 23 — PRIVO API Requirements](./Project_23_Privo_API_Requirements.md)
+- [Project 23 — PRIVO Test Scenarios](./Project_23_Privo_Test_Scenarios.md)
+- [Project 23 — PRIVO Proposed Flows](./Project_23_Privo_Proposed_Flows.md)
 - [Project 8 — Waivers V3](./Project_08_Waivers_V3.md)

@@ -1,4 +1,4 @@
-namespace TrashMob.Services
+namespace TrashMob.Shared.Managers.Interfaces
 {
     using System;
     using System.Threading;
@@ -39,6 +39,15 @@ namespace TrashMob.Services
         /// <returns>The user info, or null if not found.</returns>
         Task<PrivoUserInfo> GetUserInfoBySidAsync(
             string sid, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets user info by External ID (Section 4).
+        /// </summary>
+        /// <param name="eid">The external identifier (TrashMob User.Id or Dependent.Id).</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The user info including feature states and attributes.</returns>
+        Task<PrivoUserInfo> GetUserInfoByEidAsync(
+            string eid, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Creates a parent-initiated child consent request (Section 5).

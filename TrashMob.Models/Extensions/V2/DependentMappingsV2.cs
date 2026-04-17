@@ -22,7 +22,9 @@ namespace TrashMob.Models.Extensions.V2
                 Relationship = entity.Relationship ?? string.Empty,
                 MedicalNotes = entity.MedicalNotes ?? string.Empty,
                 EmergencyContactPhone = entity.EmergencyContactPhone ?? string.Empty,
+                Email = entity.Email,
                 IsActive = entity.IsActive,
+                PrivoConsentStatus = entity.ParentalConsent != null ? (int)entity.ParentalConsent.Status : null,
             };
         }
 
@@ -41,6 +43,7 @@ namespace TrashMob.Models.Extensions.V2
                 Relationship = dto.Relationship,
                 MedicalNotes = dto.MedicalNotes,
                 EmergencyContactPhone = dto.EmergencyContactPhone,
+                Email = dto.Email,
                 IsActive = dto.IsActive,
             };
         }

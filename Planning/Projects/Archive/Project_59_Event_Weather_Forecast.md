@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | Complete (Phases 1-3); Phase 4 (severe weather alerts) deferred |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Small |
@@ -32,42 +32,42 @@ Volunteers planning to attend a cleanup event need to know what weather conditio
 
 Create a backend weather proxy endpoint that fetches and caches forecast data. Using a backend proxy avoids exposing API keys to clients and enables server-side caching.
 
-- [ ] Select weather API provider (Open-Meteo recommended — free, no API key, 10k requests/day, 7-day forecast)
-- [ ] Create `IWeatherService` interface in `TrashMob.Shared/Services/`
-- [ ] Implement `OpenMeteoWeatherService` using Open-Meteo's forecast API (`https://api.open-meteo.com/v1/forecast`)
-- [ ] Request parameters: `latitude`, `longitude`, `start_date`, `end_date`, hourly variables (`temperature_2m`, `precipitation_probability`, `weather_code`, `wind_speed_10m`)
-- [ ] Create `WeatherForecastDto` in `TrashMob.Models/Poco/V2/`: `Temperature` (°F), `ConditionCode`, `ConditionText`, `PrecipitationChance` (%), `WindSpeed` (mph), `IconUrl`, `IsAvailable`
-- [ ] Create `WeatherV2Controller` with `GET /v2/weather/forecast?lat={lat}&lng={lng}&date={date}&durationHours={hours}` (public, no auth)
-- [ ] Add in-memory cache (`IMemoryCache`) with 1-hour TTL per coordinate+date key
-- [ ] Return "unavailable" response for dates beyond forecast range (typically 7–16 days) — no error, just `isAvailable: false`
-- [ ] Register services in `ServiceBuilder.cs`
-- [ ] Add unit tests for service and controller
+- [x] Select weather API provider (Open-Meteo recommended — free, no API key, 10k requests/day, 7-day forecast)
+- [x] Create `IWeatherService` interface in `TrashMob.Shared/Services/`
+- [x] Implement `OpenMeteoWeatherService` using Open-Meteo's forecast API (`https://api.open-meteo.com/v1/forecast`)
+- [x] Request parameters: `latitude`, `longitude`, `start_date`, `end_date`, hourly variables (`temperature_2m`, `precipitation_probability`, `weather_code`, `wind_speed_10m`)
+- [x] Create `WeatherForecastDto` in `TrashMob.Models/Poco/V2/`: `Temperature` (°F), `ConditionCode`, `ConditionText`, `PrecipitationChance` (%), `WindSpeed` (mph), `IconUrl`, `IsAvailable`
+- [x] Create `WeatherV2Controller` with `GET /v2/weather/forecast?lat={lat}&lng={lng}&date={date}&durationHours={hours}` (public, no auth)
+- [x] Add in-memory cache (`IMemoryCache`) with 1-hour TTL per coordinate+date key
+- [x] Return "unavailable" response for dates beyond forecast range (typically 7–16 days) — no error, just `isAvailable: false`
+- [x] Register services in `ServiceBuilder.cs`
+- [x] Add unit tests for service and controller
 
 ### Phase 2 — Web Event Details Integration
 
 Add a weather card to the event details page between the event info and the description/map.
 
-- [ ] Create `WeatherForecast` service in `src/services/weather.ts` (public endpoint, factory pattern)
-- [ ] Create `WeatherCard` component in `src/components/events/weather-card.tsx`
+- [x] Create `WeatherForecast` service in `src/services/weather.ts` (public endpoint, factory pattern)
+- [x] Create `WeatherCard` component in `src/components/events/weather-card.tsx`
   - Show: temperature, condition icon, condition text, precipitation chance, wind speed
   - Show "Forecast not yet available" for events >7 days out
   - Compact card design matching existing event detail cards
   - Use Lucide weather-related icons (Sun, Cloud, CloudRain, Wind, etc.)
-- [ ] Add `WeatherCard` to `eventdetails/$eventId/page.tsx` below the event info section
-- [ ] React Query with `staleTime: 60 * 60 * 1000` (1 hour) to match backend cache
-- [ ] Only render when event has latitude/longitude and event date is in the future
+- [x] Add `WeatherCard` to `eventdetails/$eventId/page.tsx` below the event info section
+- [x] React Query with `staleTime: 60 * 60 * 1000` (1 hour) to match backend cache
+- [x] Only render when event has latitude/longitude and event date is in the future
 
 ### Phase 3 — Mobile Event Details Integration
 
 Add weather display to the mobile ViewEvent tab details page.
 
-- [ ] Create `IWeatherRestService` interface and `WeatherRestService` implementation
-- [ ] Create `WeatherForecastModel` in `TrashMobMobile/Models/`
-- [ ] Add weather properties to `ViewEventViewModel`: `Temperature`, `WeatherCondition`, `PrecipitationChance`, `WindSpeed`, `IsWeatherAvailable`
-- [ ] Add `GetWeatherForecastAsync()` call in `ViewEventViewModel.Init()` (parallel with other non-dependent calls)
-- [ ] Add weather section to `TabDetails.xaml` below the event info card — weather icon, temperature, condition text, precipitation, wind
-- [ ] Show "Forecast not yet available" placeholder for events beyond forecast range
-- [ ] Register `IWeatherRestService` in `MauiProgram.cs`
+- [x] Create `IWeatherRestService` interface and `WeatherRestService` implementation
+- [x] Create `WeatherForecastModel` in `TrashMobMobile/Models/`
+- [x] Add weather properties to `ViewEventViewModel`: `Temperature`, `WeatherCondition`, `PrecipitationChance`, `WindSpeed`, `IsWeatherAvailable`
+- [x] Add `GetWeatherForecastAsync()` call in `ViewEventViewModel.Init()` (parallel with other non-dependent calls)
+- [x] Add weather section to `TabDetails.xaml` below the event info card — weather icon, temperature, condition text, precipitation, wind
+- [x] Show "Forecast not yet available" placeholder for events beyond forecast range
+- [x] Register `IWeatherRestService` in `MauiProgram.cs`
 
 ### Phase 4 — Severe Weather Alerts (Deferred)
 
