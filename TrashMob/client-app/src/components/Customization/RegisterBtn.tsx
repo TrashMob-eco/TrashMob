@@ -15,6 +15,7 @@ import { GetMyDependents } from '@/services/dependents';
 import DependentData from '@/components/Models/DependentData';
 import { DependentRegistrationDialog } from '@/components/events/DependentRegistrationDialog';
 import { cn } from '@/lib/utils';
+import { trackRsvpConversion } from '@/lib/analytics';
 import { useFeatureMetrics } from '@/hooks/useFeatureMetrics';
 import { usePrivoPermissions } from '@/hooks/usePrivoPermissions';
 import { PrivoFeature } from '@/lib/privo-features';
@@ -84,6 +85,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
 
             // Track attendance registration
             trackAttendance('Register', eventId);
+            trackRsvpConversion();
 
             // Invalidate user's list of attended events, triggering refetch
             queryClient.invalidateQueries(GetAllEventsBeingAttendedByUser({ userId }).key);
