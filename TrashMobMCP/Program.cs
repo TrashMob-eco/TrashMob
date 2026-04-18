@@ -29,6 +29,7 @@ public class Program
         builder.Logging.SetMinimumLevel(LogLevel.Information);
 
         var app = builder.Build();
+        app.UseMiddleware<ApiKeyAuthMiddleware>();
         app.MapMcp();
         app.Run();
     }
