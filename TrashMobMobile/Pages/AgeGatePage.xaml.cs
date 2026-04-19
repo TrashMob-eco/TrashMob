@@ -20,6 +20,14 @@ public partial class AgeGatePage : ContentPage
 
     private async void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(AgeGateViewModel.IsMinor) && viewModel.IsMinor)
+        {
+            viewModel.IsMinor = false;
+            var dob = viewModel.DateOfBirth.ToString("yyyy-MM-dd");
+            await Shell.Current.GoToAsync($"{nameof(ChildSignupPage)}?DateOfBirth={dob}");
+            return;
+        }
+
         if (e.PropertyName == nameof(AgeGateViewModel.IsAgeVerified) && viewModel.IsAgeVerified)
         {
             viewModel.IsAgeVerified = false;

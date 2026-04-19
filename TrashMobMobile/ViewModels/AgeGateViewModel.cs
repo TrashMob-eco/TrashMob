@@ -21,6 +21,9 @@ public partial class AgeGateViewModel(INotificationService notificationService) 
     [ObservableProperty]
     private bool isAgeVerified;
 
+    [ObservableProperty]
+    private bool isMinor;
+
     public DateTime MaxDate => DateTime.Today;
     public DateTime MinDate => DateTime.Today.AddYears(-120);
 
@@ -33,6 +36,12 @@ public partial class AgeGateViewModel(INotificationService notificationService) 
         {
             IsBlocked = true;
             BlockMessage = "You must be 13 or older to join TrashMob. Thank you for your interest in keeping our communities clean!";
+            return;
+        }
+
+        if (age < 18)
+        {
+            IsMinor = true;
             return;
         }
 
