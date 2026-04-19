@@ -17,13 +17,18 @@ namespace TrashMobMobile.Services
 
         public async Task<List<Dependent>> GetDependentsAsync(Guid userId, CancellationToken cancellationToken = default)
         {
+            var dtos = await GetDependentDtosAsync(userId, cancellationToken);
+            return dtos.Select(d => d.ToEntity()).ToList();
+        }
+
+        public async Task<List<DependentDto>> GetDependentDtosAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
             var requestUri = userId + "/dependents";
 
             using var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var dtos = JsonConvert.DeserializeObject<List<DependentDto>>(content) ?? [];
-            return dtos.Select(d => d.ToEntity()).ToList();
+            return JsonConvert.DeserializeObject<List<DependentDto>>(content) ?? [];
         }
 
         public async Task<Dependent> AddDependentAsync(Guid userId, Dependent dependent, CancellationToken cancellationToken = default)
@@ -192,6 +197,19 @@ namespace TrashMobMobile.Services
 
             using var response = await client.DeleteAsync(requestUri, cancellationToken);
             response.EnsureSuccessStatusCode();
+        }
+
+        // Pending Waiver Requests
+
+        public async Task<List<PendingDependentWaiverDto>> GetPendingWaiverRequestsAsync(
+            Guid userId, CancellationToken cancellationToken = default)
+        {
+            var requestUri = userId + "/dependents/pending-waivers";
+
+            using var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonConvert.DeserializeObject<List<PendingDependentWaiverDto>>(content) ?? [];
         }
     }
 }

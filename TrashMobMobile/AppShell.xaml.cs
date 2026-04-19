@@ -48,5 +48,6 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(AgeGatePage), typeof(AgeGatePage));
         Routing.RegisterRoute(nameof(VerifyIdentityPage), typeof(VerifyIdentityPage));
         Routing.RegisterRoute(nameof(SyncStatusPage), typeof(SyncStatusPage));
+        Routing.RegisterRoute(nameof(DependentWaiverPage), typeof(DependentWaiverPage));
     }
 }

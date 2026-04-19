@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
+using TrashMob.Models.Poco.V2;
 using Sentry;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
@@ -14,7 +15,8 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
                                           ILitterReportManager litterReportManager,
                                           INotificationService notificationService,
                                           IUserManager userManager,
-                                          IWaiverManager waiverManager)
+                                          IWaiverManager waiverManager,
+                                          IDependentRestService dependentRestService)
     : BaseViewModel(notificationService)
 {
     private readonly ILitterReportManager litterReportManager = litterReportManager;
@@ -22,6 +24,7 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IStatsRestService statsRestService = statsRestService;
     private readonly IWaiverManager waiverManager = waiverManager;
+    private readonly IDependentRestService dependentRestService = dependentRestService;
     private EventViewModel? completedSelectedEvent;
     private LitterReportViewModel? selectedLitterReport;
 
@@ -35,6 +38,11 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
     public ObservableCollection<EventViewModel> CompletedEvents { get; set; } = [];
 
     public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
+
+    public ObservableCollection<PendingDependentWaiverDto> PendingWaiverAlerts { get; set; } = [];
+
+    [ObservableProperty]
+    private bool hasPendingWaiverAlerts;
 
     public ObservableCollection<string> UpcomingDateRanges { get; set; } = [];
 
@@ -212,7 +220,7 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
             SelectedCreatedDateRange = DateRanges.LastMonth;
 
-            await Task.WhenAll(RefreshEvents(), RefreshStatistics(), RefreshLitterReports());
+            await Task.WhenAll(RefreshEvents(), RefreshStatistics(), RefreshLitterReports(), RefreshPendingWaiverAlerts());
         }, "An error has occurred while loading the dashboard. Please wait and try again in a moment.");
     }
 
@@ -358,6 +366,42 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
         AreLitterReportsFound = LitterReports.Any();
         AreNoLitterReportsFound = !LitterReports.Any();
+    }
+
+    private async Task RefreshPendingWaiverAlerts()
+    {
+        PendingWaiverAlerts.Clear();
+
+        // Only check for non-minor users (parents)
+        if (userManager.CurrentUser.IsMinor) return;
+
+        try
+        {
+            var alerts = await dependentRestService.GetPendingWaiverRequestsAsync(userManager.CurrentUser.Id);
+            foreach (var alert in alerts)
+            {
+                PendingWaiverAlerts.Add(alert);
+            }
+        }
+        catch
+        {
+            // Non-critical — don't break the dashboard if this fails
+        }
+
+        HasPendingWaiverAlerts = PendingWaiverAlerts.Count > 0;
+    }
+
+    [RelayCommand]
+    private async Task SignDependentWaivers(PendingDependentWaiverDto item)
+    {
+        if (item == null) return;
+
+        var waiverIds = string.Join(",", item.RequiredWaivers.Select(w => w.Id));
+        await Shell.Current.GoToAsync(
+            $"{nameof(DependentWaiverPage)}?DependentId={item.DependentId}" +
+            $"&DependentName={Uri.EscapeDataString(item.DependentFirstName)}" +
+            $"&EventName={Uri.EscapeDataString(item.EventName)}" +
+            $"&WaiverVersionIds={waiverIds}");
     }
 
     [RelayCommand]

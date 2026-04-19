@@ -7,15 +7,18 @@ namespace TrashMobMobile.ViewModels
     /// </summary>
     public class DependentWithInvitation
     {
-        public DependentWithInvitation(Dependent dependent, DependentInvitation? activeInvitation = null)
+        public DependentWithInvitation(Dependent dependent, DependentInvitation? activeInvitation = null, int? privoConsentStatus = null)
         {
             Dependent = dependent;
             ActiveInvitation = activeInvitation;
+            PrivoConsentStatus = privoConsentStatus;
         }
 
         public Dependent Dependent { get; }
 
         public DependentInvitation? ActiveInvitation { get; set; }
+
+        public int? PrivoConsentStatus { get; set; }
 
         public int Age
         {
@@ -29,7 +32,16 @@ namespace TrashMobMobile.ViewModels
             }
         }
 
-        public bool IsEligibleForInvite => Age >= 13 && !HasActiveInvitation && !HasAcceptedInvitation;
+        /// <summary>PRIVO consent has been approved for this dependent.</summary>
+        public bool IsConsentApproved => PrivoConsentStatus == 2;
+
+        /// <summary>PRIVO consent is pending approval.</summary>
+        public bool IsConsentPending => PrivoConsentStatus == 1;
+
+        /// <summary>Dependent is 13+ and needs PRIVO consent initiated.</summary>
+        public bool NeedsConsent => Age >= 13 && !IsConsentApproved && !IsConsentPending && !HasAcceptedInvitation;
+
+        public bool IsEligibleForInvite => Age >= 13 && IsConsentApproved && !HasActiveInvitation && !HasAcceptedInvitation;
 
         public bool HasActiveInvitation =>
             ActiveInvitation != null &&
@@ -45,7 +57,9 @@ namespace TrashMobMobile.ViewModels
             {
                 if (HasAcceptedInvitation) return "Account Created";
                 if (HasActiveInvitation) return "Invited";
-                if (IsEligibleForInvite) return "Eligible";
+                if (IsConsentPending) return "Consent Pending";
+                if (NeedsConsent) return "Needs Consent";
+                if (IsEligibleForInvite) return "Ready to Invite";
                 return string.Empty;
             }
         }

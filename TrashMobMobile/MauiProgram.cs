@@ -104,6 +104,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AgeGatePage>();
         builder.Services.AddTransient<VerifyIdentityPage>();
         builder.Services.AddTransient<SyncStatusPage>();
+        builder.Services.AddTransient<DependentWaiverPage>();
 
         // ViewModels
         builder.Services.AddTransient<CreatePickupLocationViewModel>();
@@ -148,6 +149,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AgeGateViewModel>();
         builder.Services.AddTransient<VerifyIdentityViewModel>();
         builder.Services.AddTransient<SyncStatusViewModel>();
+        builder.Services.AddTransient<DependentWaiverViewModel>();
 
 #if USETEST
         builder.Logging.AddDebug();

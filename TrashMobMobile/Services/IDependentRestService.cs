@@ -1,11 +1,17 @@
 namespace TrashMobMobile.Services
 {
     using TrashMob.Models;
+    using TrashMob.Models.Poco.V2;
 
     public interface IDependentRestService
     {
         // Dependent CRUD (api/users/{userId}/dependents)
         Task<List<Dependent>> GetDependentsAsync(Guid userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets dependents as DTOs (preserves PrivoConsentStatus).
+        /// </summary>
+        Task<List<DependentDto>> GetDependentDtosAsync(Guid userId, CancellationToken cancellationToken = default);
 
         Task<Dependent> AddDependentAsync(Guid userId, Dependent dependent, CancellationToken cancellationToken = default);
 
@@ -35,5 +41,8 @@ namespace TrashMobMobile.Services
         Task<int> GetEventDependentCountAsync(Guid eventId, CancellationToken cancellationToken = default);
 
         Task UnregisterDependentFromEventAsync(Guid eventId, Guid dependentId, CancellationToken cancellationToken = default);
+
+        // Pending Waiver Requests (api/users/{userId}/dependents/pending-waivers)
+        Task<List<PendingDependentWaiverDto>> GetPendingWaiverRequestsAsync(Guid userId, CancellationToken cancellationToken = default);
     }
 }
