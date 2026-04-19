@@ -69,5 +69,34 @@ namespace TrashMobMobile.Services
             using var response = await AuthorizedHttpClient.PostAsync(requestUri, null, cancellationToken);
             response.EnsureSuccessStatusCode();
         }
+
+        /// <inheritdoc />
+        public async Task<ParentalConsentDto?> InitiateChildInitiatedConsentAsync(
+            InitiateChildConsentRequest request, CancellationToken cancellationToken)
+        {
+            var json = JsonSerializer.Serialize(request, SerializerOptions);
+            using var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            using var response = await AnonymousHttpClient.PostAsync("consent/child-initiated", content, cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                return null;
+            }
+
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                if (errorContent.Contains("verify", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException("PARENT_NOT_VERIFIED");
+                }
+
+                response.EnsureSuccessStatusCode();
+            }
+
+            response.EnsureSuccessStatusCode();
+            var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonSerializer.Deserialize<ParentalConsentDto>(responseContent, SerializerOptions);
+        }
     }
 }

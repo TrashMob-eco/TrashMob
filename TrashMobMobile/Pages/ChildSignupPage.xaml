@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="vm:ChildSignupViewModel"
+             x:Class="TrashMobMobile.Pages.ChildSignupPage"
+             Shell.NavBarIsVisible="False">
+    <ScrollView>
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="16"
+                             VerticalOptions="Center">
+
+            <!-- Logo -->
+            <Image Source="{AppThemeBinding Light=bannerlogo_light.png, Dark=bannerlogo_dark.png}"
+                   MaximumHeightRequest="72"
+                   HorizontalOptions="Center"
+                   Margin="0,24,0,0" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+            <!-- Form state -->
+            <VerticalStackLayout Spacing="16" IsVisible="{Binding IsFormVisible}">
+                <Label Text="Create Account (Under 18)"
+                       FontFamily="LexendSemibold"
+                       FontSize="Large"
+                       HorizontalTextAlignment="Center" />
+
+                <Label Text="Since you are under 18, we need your parent or guardian's consent. Please fill in the information below and we'll send them a consent request."
+                       FontSize="Body"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                       Margin="20,0" />
+
+                <VerticalStackLayout Spacing="4" Margin="20,0">
+                    <Label Text="Parent/Guardian Email *" FontFamily="LexendSemibold" FontSize="Caption" />
+                    <Entry Text="{Binding ParentEmail}"
+                           Placeholder="parent@example.com"
+                           Keyboard="Email" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="4" Margin="20,0">
+                    <Label Text="Your First Name *" FontFamily="LexendSemibold" FontSize="Caption" />
+                    <Entry Text="{Binding ChildFirstName}"
+                           Placeholder="First name" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="4" Margin="20,0">
+                    <Label Text="Your Email *" FontFamily="LexendSemibold" FontSize="Caption" />
+                    <Entry Text="{Binding ChildEmail}"
+                           Placeholder="your@email.com"
+                           Keyboard="Email" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="4" Margin="20,0">
+                    <Label Text="Date of Birth" FontFamily="LexendSemibold" FontSize="Caption" />
+                    <DatePicker Date="{Binding DateOfBirth}"
+                                HorizontalOptions="Start"
+                                Format="d"
+                                IsEnabled="False" />
+                </VerticalStackLayout>
+
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="12">
+                    <Button Text="Cancel"
+                            MaximumWidthRequest="140"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            BorderWidth="1"
+                            Command="{Binding GoBackCommand}" />
+
+                    <Button Text="Request Consent"
+                            MaximumWidthRequest="200"
+                            Command="{Binding SubmitConsentRequestCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- Consent Pending state -->
+            <VerticalStackLayout Spacing="16" IsVisible="{Binding IsConsentPending}">
+                <Label Text="Consent Requested"
+                       FontFamily="LexendSemibold"
+                       FontSize="Large"
+                       HorizontalTextAlignment="Center" />
+
+                <Label HorizontalTextAlignment="Center"
+                       FontSize="Body"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                       Margin="20,0">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="We've sent a consent request to your parent/guardian at " />
+                            <Span Text="{Binding ResultParentEmail}" FontAttributes="Bold" />
+                            <Span Text="." />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Label Text="Once they approve, you'll receive an email with a link to create your TrashMob account. This usually takes a few minutes."
+                       FontSize="Caption"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                       Margin="20,0" />
+
+                <Button Text="Done"
+                        MaximumWidthRequest="200"
+                        Command="{Binding GoHomeCommand}" />
+            </VerticalStackLayout>
+
+            <!-- Parent Not Found state -->
+            <VerticalStackLayout Spacing="16" IsVisible="{Binding IsParentNotFound}">
+                <Label Text="Parent Account Needed"
+                       FontFamily="LexendSemibold"
+                       FontSize="Large"
+                       HorizontalTextAlignment="Center" />
+
+                <Label HorizontalTextAlignment="Center"
+                       FontSize="Body"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                       Margin="20,0">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="We couldn't find a TrashMob account for " />
+                            <Span Text="{Binding ResultParentEmail}" FontAttributes="Bold" />
+                            <Span Text="." />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Label Text="Before you can create an account, your parent/guardian needs to:&#10;&#10;1. Go to trashmob.eco and create an account&#10;2. Log in and go to their Profile page&#10;3. Complete the Identity Verification step&#10;4. Come back here and try again"
+                       FontSize="Caption"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                       Margin="20,0" />
+
+                <Button Text="Try a Different Email"
+                        MaximumWidthRequest="200"
+                        Command="{Binding TryDifferentEmailCommand}" />
+            </VerticalStackLayout>
+
+            <!-- Parent Not Verified state -->
+            <VerticalStackLayout Spacing="16" IsVisible="{Binding IsParentNotVerified}">
+                <Label Text="Parent Verification Needed"
+                       FontFamily="LexendSemibold"
+                       FontSize="Large"
+                       HorizontalTextAlignment="Center" />
+
+                <Label HorizontalTextAlignment="Center"
+                       FontSize="Body"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                       Margin="20,0">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="We found an account for " />
+                            <Span Text="{Binding ResultParentEmail}" FontAttributes="Bold" />
+                            <Span Text=", but they haven't verified their identity yet." />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Label Text="Ask your parent/guardian to:&#10;&#10;1. Log in to trashmob.eco&#10;2. Go to their Profile page&#10;3. Click 'Verify My Identity' and complete the process&#10;4. Once verified, come back here and try again"
+                       FontSize="Caption"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                       Margin="20,0" />
+
+                <Button Text="Try a Different Email"
+                        MaximumWidthRequest="200"
+                        Command="{Binding TryDifferentEmailCommand}" />
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

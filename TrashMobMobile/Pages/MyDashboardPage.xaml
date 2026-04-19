@@ -8,11 +8,64 @@
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              xmlns:tabs="http://sharpnado.com"
              xmlns:views="clr-namespace:TrashMobMobile.Views.MyDashboard"
+             xmlns:poco="clr-namespace:TrashMob.Models.Poco.V2;assembly=TrashMob.Models"
              Title="My Dashboard">
 
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+
+                <!-- Pending Waiver Alerts -->
+                <Border Padding="12" Margin="5,5"
+                        BackgroundColor="{AppThemeBinding Light=#fef2f2, Dark=#450a0a}"
+                        StrokeShape="RoundRectangle 10"
+                        Stroke="{AppThemeBinding Light=#fca5a5, Dark=#dc2626}"
+                        StrokeThickness="1"
+                        IsVisible="{Binding HasPendingWaiverAlerts}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Waiver Signatures Required"
+                               FontFamily="LexendSemibold" FontSize="14"
+                               TextColor="{AppThemeBinding Light=#991b1b, Dark=#fca5a5}" />
+                        <Label Text="Your child has registered for an event that requires your signature on a waiver."
+                               FontSize="13"
+                               TextColor="{AppThemeBinding Light=#991b1b, Dark=#fecaca}" />
+                        <CollectionView ItemsSource="{Binding PendingWaiverAlerts}" SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="poco:PendingDependentWaiverDto">
+                                    <Border Padding="10" Margin="0,4"
+                                            BackgroundColor="{AppThemeBinding Light=#ffffff, Dark=#1c1917}"
+                                            StrokeShape="RoundRectangle 8"
+                                            Stroke="{AppThemeBinding Light=#fca5a5, Dark=#7f1d1d}"
+                                            StrokeThickness="1">
+                                        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto">
+                                            <Label Grid.Row="0" Grid.Column="0"
+                                                   FontFamily="LexendSemibold" FontSize="13">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding DependentFirstName}" />
+                                                        <Span Text=" — " />
+                                                        <Span Text="{Binding EventName}" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <Label Grid.Row="1" Grid.Column="0" FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                                                   Text="{Binding RequiredWaivers.Count, StringFormat='{0} waiver(s) to sign'}" />
+                                            <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                                                    Text="Sign"
+                                                    Style="{StaticResource PrimaryLargeButton}"
+                                                    HeightRequest="36" Padding="12,0" FontSize="Small"
+                                                    VerticalOptions="Center"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MyDashboardViewModel}}, Path=SignDependentWaiversCommand}"
+                                                    CommandParameter="{Binding .}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
                 <Border Style="{x:StaticResource RoundBorder}" Margin="5,5">
                     <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *">
                         <Label Text="Here's what you have done so far!" Grid.Row="0" Grid.Column="0"

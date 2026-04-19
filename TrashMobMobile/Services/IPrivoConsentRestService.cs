@@ -32,5 +32,14 @@ namespace TrashMobMobile.Services
         /// Revokes consent for a specific consent record.
         /// </summary>
         Task RevokeConsentAsync(Guid consentId, string reason, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Initiates a child-driven consent request (Flow 3). No authentication required.
+        /// Returns null if the parent account was not found (204).
+        /// Throws InvalidOperationException with "PARENT_NOT_VERIFIED" if parent exists but is not verified.
+        /// </summary>
+        Task<ParentalConsentDto?> InitiateChildInitiatedConsentAsync(
+            InitiateChildConsentRequest request,
+            CancellationToken cancellationToken = default);
     }
 }
