@@ -107,8 +107,14 @@
                                                         <DataTrigger TargetType="Border" Binding="{Binding HasActiveInvitation}" Value="True">
                                                             <Setter Property="BackgroundColor" Value="#dbeafe" />
                                                         </DataTrigger>
-                                                        <DataTrigger TargetType="Border" Binding="{Binding IsEligibleForInvite}" Value="True">
+                                                        <DataTrigger TargetType="Border" Binding="{Binding IsConsentPending}" Value="True">
                                                             <Setter Property="BackgroundColor" Value="#fef3c7" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding NeedsConsent}" Value="True">
+                                                            <Setter Property="BackgroundColor" Value="#fef3c7" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding IsEligibleForInvite}" Value="True">
+                                                            <Setter Property="BackgroundColor" Value="#dbeafe" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -125,8 +131,14 @@
                                                             <DataTrigger TargetType="Label" Binding="{Binding HasActiveInvitation}" Value="True">
                                                                 <Setter Property="TextColor" Value="#1e40af" />
                                                             </DataTrigger>
-                                                            <DataTrigger TargetType="Label" Binding="{Binding IsEligibleForInvite}" Value="True">
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsConsentPending}" Value="True">
                                                                 <Setter Property="TextColor" Value="#92400e" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding NeedsConsent}" Value="True">
+                                                                <Setter Property="TextColor" Value="#92400e" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsEligibleForInvite}" Value="True">
+                                                                <Setter Property="TextColor" Value="#1e40af" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -137,7 +149,17 @@
 
                                     <!-- Action buttons -->
                                     <HorizontalStackLayout Spacing="8" HorizontalOptions="End">
-                                        <!-- Invite button (eligible dependents) -->
+                                        <!-- Consent button (needs PRIVO consent) -->
+                                        <Button Text="Consent"
+                                                Style="{StaticResource PrimaryLargeButton}"
+                                                HeightRequest="36"
+                                                Padding="12,0"
+                                                FontSize="Small"
+                                                IsVisible="{Binding NeedsConsent}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MyDependentsViewModel}}, Path=StartConsentCommand}"
+                                                CommandParameter="{Binding .}" />
+
+                                        <!-- Invite button (consent approved, ready to invite) -->
                                         <Button Text="Invite"
                                                 Style="{StaticResource PrimaryLargeButton}"
                                                 HeightRequest="36"

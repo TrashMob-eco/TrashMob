@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="vm:DependentWaiverViewModel"
+             x:Class="TrashMobMobile.Pages.DependentWaiverPage"
+             Title="Sign Waivers">
+    <ScrollView>
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="16">
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+            <!-- List state: show waivers to sign -->
+            <VerticalStackLayout Spacing="12" IsVisible="{Binding IsListVisible}">
+
+                <Label FontFamily="LexendSemibold" FontSize="Large"
+                       HorizontalTextAlignment="Center">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Waivers for " />
+                            <Span Text="{Binding DependentName}" FontAttributes="Bold" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Label Text="{Binding EventName}"
+                       FontSize="Body"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                <Label Text="{Binding ProgressText}"
+                       FontSize="Caption"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                <CollectionView ItemsSource="{Binding Waivers}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:DependentWaiverItem">
+                            <Border Padding="16" Margin="0,0,0,8"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+                                    StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+                                    StrokeThickness="1">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                        <Label Text="{Binding Name}"
+                                               FontFamily="LexendSemibold" FontSize="14" />
+                                        <Label Text="{Binding StatusText}" FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="1" Text="Sign"
+                                            Style="{StaticResource PrimaryLargeButton}"
+                                            HeightRequest="36" Padding="12,0" FontSize="Small"
+                                            IsVisible="{Binding IsSigned, Converter={StaticResource InvertedBoolConverter}}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DependentWaiverViewModel}}, Path=SelectWaiverCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    <Label Grid.Column="1" Text="✓" FontSize="24" TextColor="#16a34a"
+                                           VerticalOptions="Center" HorizontalOptions="Center"
+                                           IsVisible="{Binding IsSigned}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Button Text="Done" MaximumWidthRequest="200"
+                        Command="{Binding DoneCommand}"
+                        IsVisible="{Binding AllWaiversSigned}" />
+            </VerticalStackLayout>
+
+            <!-- Signing state: show waiver text and sign form -->
+            <VerticalStackLayout Spacing="12" IsVisible="{Binding IsSigningWaiver}">
+
+                <Label Text="{Binding WaiverName}"
+                       FontFamily="LexendSemibold" FontSize="Large"
+                       HorizontalTextAlignment="Center" />
+
+                <Border Padding="12"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+                        StrokeShape="RoundRectangle 8"
+                        Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+                        StrokeThickness="1">
+                    <Label Text="{Binding WaiverText}" TextType="Html" FontSize="Small" />
+                </Border>
+
+                <HorizontalStackLayout Spacing="8" Margin="0,8,0,0">
+                    <CheckBox IsChecked="{Binding HasAgreed}" />
+                    <Label Text="I have read and agree to the waiver above."
+                           VerticalOptions="Center" FontSize="Small" />
+                </HorizontalStackLayout>
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Type your full legal name to sign:" FontSize="Small"
+                           FontFamily="LexendSemibold" />
+                    <Entry Text="{Binding TypedLegalName}" Placeholder="Full Legal Name" />
+                </VerticalStackLayout>
+
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="12">
+                    <Button Text="Back"
+                            MaximumWidthRequest="140"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            BorderWidth="1"
+                            Command="{Binding BackToListCommand}" />
+
+                    <Button Text="Sign Waiver"
+                            MaximumWidthRequest="200"
+                            Command="{Binding SignWaiverCommand}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
