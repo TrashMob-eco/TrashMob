@@ -21,7 +21,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <!-- Override transitive vulnerability from Microsoft.Identity.Web (GHSA-37gx-xxp4-5rgx, GHSA-w3x6-4m5h-cxqf) -->
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.6" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.7" />
+    <!-- Override transitive vulnerability in Microsoft.AspNetCore.DataProtection 10.0.0 (GHSA-9mv3-2cwr-p262) -->
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.7" />
   </ItemGroup>
 
   <ItemGroup>
