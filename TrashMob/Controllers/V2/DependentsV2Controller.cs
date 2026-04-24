@@ -130,11 +130,16 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            var entity = dto.ToEntity();
-            entity.Id = dependentId;
-            entity.ParentUserId = userId;
+            existing.FirstName = dto.FirstName;
+            existing.LastName = dto.LastName;
+            existing.DateOfBirth = dto.DateOfBirth;
+            existing.Relationship = dto.Relationship;
+            existing.MedicalNotes = dto.MedicalNotes;
+            existing.EmergencyContactPhone = dto.EmergencyContactPhone;
+            existing.Email = dto.Email;
+            existing.IsActive = dto.IsActive;
 
-            var result = await dependentManager.UpdateAsync(entity, UserId, cancellationToken);
+            var result = await dependentManager.UpdateAsync(existing, UserId, cancellationToken);
 
             return Ok(result.ToV2Dto());
         }

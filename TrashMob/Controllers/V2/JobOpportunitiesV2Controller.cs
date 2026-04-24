@@ -117,10 +117,12 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            var entity = dto.ToEntity();
-            entity.Id = id;
+            existing.Title = dto.Title;
+            existing.TagLine = dto.TagLine;
+            existing.FullDescription = dto.FullDescription;
+            existing.IsActive = dto.IsActive;
 
-            var updated = await jobOpportunityManager.UpdateAsync(entity, UserId, cancellationToken);
+            var updated = await jobOpportunityManager.UpdateAsync(existing, UserId, cancellationToken);
 
             return Ok(updated.ToV2Dto());
         }
