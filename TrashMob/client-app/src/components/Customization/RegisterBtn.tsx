@@ -85,7 +85,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
 
             // Track attendance registration
             trackAttendance('Register', eventId);
-            trackRsvpConversion();
+            trackRsvpConversion(currentUser.email ? { email: currentUser.email } : undefined);
 
             // Invalidate user's list of attended events, triggering refetch
             queryClient.invalidateQueries(GetAllEventsBeingAttendedByUser({ userId }).key);

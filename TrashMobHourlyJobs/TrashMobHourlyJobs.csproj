@@ -13,6 +13,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.5" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.0" />
+    <!-- Override transitive vulnerability in OpenTelemetry.Api 1.15.0 (GHSA-g94r-2vxg-569j) -->
+    <PackageReference Include="OpenTelemetry.Api" Version="1.15.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TrashMob.Shared\TrashMob.Shared.csproj" />
