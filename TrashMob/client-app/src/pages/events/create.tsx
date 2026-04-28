@@ -131,7 +131,7 @@ export const CreateEventPage = () => {
                     eventTypeId: variable.eventTypeId,
                     fromLitterReport: !!fromLitterReport,
                 });
-                trackEventCreatedConversion();
+                trackEventCreatedConversion(currentUser.email ? { email: currentUser.email } : undefined);
             }
 
             // If this event was created from a litter report, associate them
