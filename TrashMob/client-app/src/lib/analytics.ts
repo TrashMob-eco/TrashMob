@@ -140,7 +140,12 @@ function initAppInsightsSnippet(instrumentationKey: string): void {
     w[sdkName] = appInsights;
 }
 
-function fireGoogleAdsConversion(sendTo: string, value?: number): void {
+interface EnhancedConversionUserData {
+    email?: string;
+    phone_number?: string;
+}
+
+function fireGoogleAdsConversion(sendTo: string, value?: number, userData?: EnhancedConversionUserData): void {
     const w = window as unknown as Record<string, unknown>;
     const dataLayer = w.dataLayer as unknown[] | undefined;
     if (!dataLayer) return;
@@ -148,6 +153,13 @@ function fireGoogleAdsConversion(sendTo: string, value?: number): void {
     function gtag(...args: unknown[]) {
         dataLayer!.push(args);
     }
+
+    // Set user-provided data for enhanced conversions BEFORE firing the event.
+    // gtag.js hashes these values client-side (SHA-256) before sending to Google.
+    if (userData && (userData.email || userData.phone_number)) {
+        gtag('set', 'user_data', userData);
+    }
+
     const params: Record<string, unknown> = { send_to: sendTo };
     if (value !== undefined) {
         params.value = value;
@@ -157,23 +169,23 @@ function fireGoogleAdsConversion(sendTo: string, value?: number): void {
 }
 
 /** Fire a Google Ads conversion event for new sign-ups. */
-export function trackSignUpConversion(): void {
-    fireGoogleAdsConversion('AW-18035648449/V0zjCL3Hh48cEMHPiJhD', 1.0);
+export function trackSignUpConversion(userData?: EnhancedConversionUserData): void {
+    fireGoogleAdsConversion('AW-18035648449/V0zjCL3Hh48cEMHPiJhD', 1.0, userData);
 }
 
 /** Fire a Google Ads conversion event for event RSVPs. */
-export function trackRsvpConversion(): void {
-    fireGoogleAdsConversion('AW-18035648449/uhNBCKDbpJwcEMHPiJhD');
+export function trackRsvpConversion(userData?: EnhancedConversionUserData): void {
+    fireGoogleAdsConversion('AW-18035648449/uhNBCKDbpJwcEMHPiJhD', undefined, userData);
 }
 
 /** Fire a Google Ads conversion event for event creation by organizers. */
-export function trackEventCreatedConversion(): void {
-    fireGoogleAdsConversion('AW-18035648449/zEXMCKbbpJwcEMHPiJhD');
+export function trackEventCreatedConversion(userData?: EnhancedConversionUserData): void {
+    fireGoogleAdsConversion('AW-18035648449/zEXMCKbbpJwcEMHPiJhD', undefined, userData);
 }
 
 /** Fire a Google Ads conversion event for city partner inquiries. */
-export function trackPartnerInquiryConversion(): void {
-    fireGoogleAdsConversion('AW-18035648449/98NDCKPbpJwcEMHPiJhD');
+export function trackPartnerInquiryConversion(userData?: EnhancedConversionUserData): void {
+    fireGoogleAdsConversion('AW-18035648449/98NDCKPbpJwcEMHPiJhD', undefined, userData);
 }
 
 /** Initialize analytics scripts if the user has previously consented. */

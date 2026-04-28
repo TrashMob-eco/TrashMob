@@ -87,7 +87,7 @@ export const useLogin = () => {
                 if (user.memberSince) {
                     const ageMs = Date.now() - new Date(user.memberSince).getTime();
                     if (ageMs < 60_000) {
-                        trackSignUpConversion();
+                        trackSignUpConversion(email ? { email } : undefined);
                     }
                 }
             }

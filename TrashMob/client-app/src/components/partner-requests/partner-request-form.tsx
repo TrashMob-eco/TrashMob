@@ -108,8 +108,11 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
     const createPartnerRequest = useMutation({
         mutationKey: CreatePartnerRequest().key,
         mutationFn: CreatePartnerRequest().service,
-        onSuccess: () => {
-            trackPartnerInquiryConversion();
+        onSuccess: (_, variables) => {
+            trackPartnerInquiryConversion({
+                email: variables.email || undefined,
+                phone_number: variables.phone || undefined,
+            });
             toast({
                 variant: 'primary',
                 title: 'Request Submitted',
