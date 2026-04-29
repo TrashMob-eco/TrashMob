@@ -55,6 +55,10 @@ test.describe('Profile Edit Flow', () => {
         const usernameInput = page.locator('input[name="userName"]');
         await expect(usernameInput).toBeVisible({ timeout: 15000 });
 
+        // Wait for React Query to populate the form before editing — otherwise a
+        // late-arriving form.reset() will overwrite the test's fill().
+        await expect(usernameInput).not.toHaveValue('', { timeout: 15000 });
+
         // Save original
         const originalUsername = await usernameInput.inputValue();
 
