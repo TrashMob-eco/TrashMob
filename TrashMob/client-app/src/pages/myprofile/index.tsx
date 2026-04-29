@@ -228,7 +228,12 @@ export const MyProfile = () => {
         <div>
             <HeroSection Title='My Profile' Description='Manage your account information' />
             <div className='container mx-auto py-5 space-y-4'>
-                {!currentUser?.isMinor && <VerifyIdentityCard isVerified={currentUser?.isIdentityVerified ?? false} />}
+                {!currentUser?.isMinor && (
+                    <VerifyIdentityCard
+                        isVerified={currentUser?.isIdentityVerified ?? false}
+                        hasDateOfBirth={!!currentUser?.dateOfBirth}
+                    />
+                )}
                 {!currentUser?.isMinor && (
                     <MyDependentsCard
                         userId={currentUser?.id ?? ''}
