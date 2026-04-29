@@ -132,6 +132,22 @@ namespace TrashMob.Shared.Tests.Middleware
         }
 
         [Fact]
+        public async Task InvokeAsync_IncludesDetail_ForMappedException_InProduction()
+        {
+            // Mapped exceptions like InvalidOperationException are intentional validation
+            // errors thrown by application code, so their messages are safe to expose.
+            var context = new DefaultHttpContext { Response = { Body = new MemoryStream() } };
+            var middleware = CreateMiddleware(
+                _ => throw new InvalidOperationException("Please set your date of birth on your profile."),
+                isDevelopment: false);
+
+            await middleware.InvokeAsync(context);
+
+            var problem = await GetProblemDetailsFromResponse(context);
+            Assert.Equal("Please set your date of birth on your profile.", problem.Detail);
+        }
+
+        [Fact]
         public async Task InvokeAsync_SetsContentType_ToProblemJson()
         {
             var context = new DefaultHttpContext { Response = { Body = new MemoryStream() } };

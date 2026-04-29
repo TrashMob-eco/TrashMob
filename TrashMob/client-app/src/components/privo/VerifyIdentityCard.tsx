@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { Link } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BadgeCheck, ExternalLink, Loader2, RefreshCw, ShieldCheck } from 'lucide-react';
 
@@ -15,9 +16,10 @@ import {
 
 interface VerifyIdentityCardProps {
     isVerified: boolean;
+    hasDateOfBirth: boolean;
 }
 
-export const VerifyIdentityCard: FC<VerifyIdentityCardProps> = ({ isVerified }) => {
+export const VerifyIdentityCard: FC<VerifyIdentityCardProps> = ({ isVerified, hasDateOfBirth }) => {
     const { toast } = useToast();
     const queryClient = useQueryClient();
 
@@ -111,7 +113,16 @@ export const VerifyIdentityCard: FC<VerifyIdentityCardProps> = ({ isVerified }) 
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                {isPending ? (
+                {!hasDateOfBirth ? (
+                    <div className='space-y-3'>
+                        <p className='text-sm text-muted-foreground'>
+                            PRIVO needs your date of birth to verify your identity. Please add it to your profile first.
+                        </p>
+                        <Button asChild variant='outline'>
+                            <Link to='/myprofile'>Go to My Profile</Link>
+                        </Button>
+                    </div>
+                ) : isPending ? (
                     <div className='space-y-3'>
                         <div className='flex items-center gap-2'>
                             <Badge variant='outline'>Pending</Badge>

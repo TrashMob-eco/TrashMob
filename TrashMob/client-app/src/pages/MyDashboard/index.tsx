@@ -680,7 +680,10 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                 ) : (
                                     <>
                                         <div className='mb-4'>
-                                            <VerifyIdentityCard isVerified={currentUser.isIdentityVerified} />
+                                            <VerifyIdentityCard
+                                                isVerified={currentUser.isIdentityVerified}
+                                                hasDateOfBirth={!!currentUser.dateOfBirth}
+                                            />
                                         </div>
                                         <MyDependentsCard
                                             userId={userId}
