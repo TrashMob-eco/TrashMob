@@ -29,6 +29,17 @@ namespace TrashMob.Middleware
             [typeof(InvalidOperationException)] = (HttpStatusCode.Conflict, "Conflict"),
         };
 
+        // Mapped exceptions are intentional validation errors thrown by application code,
+        // so their messages are safe to expose to API clients in any environment.
+        private static readonly HashSet<Type> ExposeMessageInProduction =
+        [
+            typeof(ArgumentException),
+            typeof(ArgumentNullException),
+            typeof(KeyNotFoundException),
+            typeof(UnauthorizedAccessException),
+            typeof(InvalidOperationException),
+        ];
+
         public async Task InvokeAsync(HttpContext context)
         {
             try
@@ -55,12 +66,15 @@ namespace TrashMob.Middleware
 
             var statusCodeInt = (int)statusCode;
 
+            var includeMessage = environment.IsDevelopment()
+                || ExposeMessageInProduction.Contains(exception.GetType());
+
             var problemDetails = new ProblemDetails
             {
                 Type = $"https://httpstatuses.io/{statusCodeInt}",
                 Status = statusCodeInt,
                 Title = title,
-                Detail = environment.IsDevelopment() ? exception.Message : null,
+                Detail = includeMessage ? exception.Message : null,
                 Instance = context.Request.Path,
             };
 
