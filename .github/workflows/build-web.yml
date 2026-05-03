@@ -17,7 +17,7 @@ on:
    
 jobs:
     eslint-prettier:
-        runs-on: windows-2022
+        runs-on: windows-2025
         if: ${{ !github.event.pull_request.draft }}
         defaults:
             run:
@@ -46,7 +46,7 @@ jobs:
                 run: git diff --exit-code || (echo "ESLint fixed some files. Please commit the changes." && exit 1)
  
     tests:
-        runs-on: windows-2022
+        runs-on: windows-2025
         if: ${{ !github.event.pull_request.draft }}
         defaults:
             run:
