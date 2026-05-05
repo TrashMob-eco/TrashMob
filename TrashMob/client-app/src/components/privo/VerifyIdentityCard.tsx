@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BadgeCheck, ExternalLink, Loader2, RefreshCw, ShieldCheck } from 'lucide-react';
 
@@ -22,6 +22,8 @@ interface VerifyIdentityCardProps {
 export const VerifyIdentityCard: FC<VerifyIdentityCardProps> = ({ isVerified, hasDateOfBirth }) => {
     const { toast } = useToast();
     const queryClient = useQueryClient();
+    const location = useLocation();
+    const isOnProfilePage = location.pathname.startsWith('/myprofile');
 
     const enabledQuery = useQuery({
         queryKey: GetPrivoEnabled().key,
@@ -115,12 +117,22 @@ export const VerifyIdentityCard: FC<VerifyIdentityCardProps> = ({ isVerified, ha
             <CardContent>
                 {!hasDateOfBirth ? (
                     <div className='space-y-3'>
-                        <p className='text-sm text-muted-foreground'>
-                            PRIVO needs your date of birth to verify your identity. Please add it to your profile first.
-                        </p>
-                        <Button asChild variant='outline'>
-                            <Link to='/myprofile'>Go to My Profile</Link>
-                        </Button>
+                        {isOnProfilePage ? (
+                            <p className='text-sm text-muted-foreground'>
+                                PRIVO needs your date of birth to verify your identity. Please set it in the Profile
+                                Information section below, then save your profile.
+                            </p>
+                        ) : (
+                            <>
+                                <p className='text-sm text-muted-foreground'>
+                                    PRIVO needs your date of birth to verify your identity. Please add it to your
+                                    profile first.
+                                </p>
+                                <Button asChild variant='outline'>
+                                    <Link to='/myprofile#date-of-birth'>Go to My Profile</Link>
+                                </Button>
+                            </>
+                        )}
                     </div>
                 ) : isPending ? (
                     <div className='space-y-3'>
