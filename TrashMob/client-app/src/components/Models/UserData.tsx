@@ -35,7 +35,7 @@ class UserData {
 
     surname: string = '';
 
-    dateOfBirth: string = '';
+    dateOfBirth: string | null = null;
 
     profilePhotoUrl: string = '';
 

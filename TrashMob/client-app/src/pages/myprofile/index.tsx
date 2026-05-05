@@ -193,8 +193,9 @@ export const MyProfile = () => {
             body.userName = values.userName;
             body.givenName = values.givenName ?? '';
             body.surname = values.surname ?? '';
-            // Convert YYYY-MM-DD from <input type="date"> to ISO 8601 for DateTimeOffset?
-            body.dateOfBirth = values.dateOfBirth ? `${values.dateOfBirth}T00:00:00Z` : '';
+            // Convert YYYY-MM-DD from <input type="date"> to ISO 8601 for DateTimeOffset?.
+            // Empty string must become null — System.Text.Json rejects "" for nullable DateTimeOffset.
+            body.dateOfBirth = values.dateOfBirth ? `${values.dateOfBirth}T00:00:00Z` : null;
             body.city = values.city ?? '';
             body.region = values.region ?? '';
             body.country = values.country ?? '';
