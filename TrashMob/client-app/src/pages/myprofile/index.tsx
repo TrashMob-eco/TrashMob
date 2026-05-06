@@ -27,11 +27,20 @@ const profileSchema = z.object({
         .max(64, 'Username must be at most 64 characters.'),
     givenName: z.string().max(64, 'First name must be at most 64 characters.'),
     surname: z.string().max(64, 'Last name must be at most 64 characters.'),
+    dateOfBirth: z.string(),
     city: z.string(),
     region: z.string(),
     country: z.string(),
     postalCode: z.string(),
 });
+
+// Backend returns ISO 8601 (e.g. "2026-04-24T00:00:00+00:00"); HTML date input wants YYYY-MM-DD.
+const toDateInputValue = (iso: string | null | undefined): string => {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toISOString().slice(0, 10);
+};
 
 export const MyProfile = () => {
     const navigate = useNavigate();
@@ -122,6 +131,7 @@ export const MyProfile = () => {
             userName: '',
             givenName: '',
             surname: '',
+            dateOfBirth: '',
             city: '',
             region: '',
             country: '',
@@ -136,6 +146,7 @@ export const MyProfile = () => {
             userName: user.userName,
             givenName: user.givenName || '',
             surname: user.surname || '',
+            dateOfBirth: toDateInputValue(user.dateOfBirth),
             city: user.city || '',
             region: user.region || '',
             country: user.country || '',
@@ -177,12 +188,14 @@ export const MyProfile = () => {
             body.prefersMetric = currentUser.prefersMetric;
             body.travelLimitForLocalEvents = currentUser.travelLimitForLocalEvents;
             body.isSiteAdmin = currentUser.isSiteAdmin;
-            body.dateOfBirth = currentUser.dateOfBirth;
             body.profilePhotoUrl = currentUser.profilePhotoUrl;
 
             body.userName = values.userName;
             body.givenName = values.givenName ?? '';
             body.surname = values.surname ?? '';
+            // Convert YYYY-MM-DD from <input type="date"> to ISO 8601 for DateTimeOffset?.
+            // Empty string must become null — System.Text.Json rejects "" for nullable DateTimeOffset.
+            body.dateOfBirth = values.dateOfBirth ? `${values.dateOfBirth}T00:00:00Z` : null;
             body.city = values.city ?? '';
             body.region = values.region ?? '';
             body.country = values.country ?? '';
@@ -365,6 +378,23 @@ export const MyProfile = () => {
                                                 <FormControl>
                                                     <Input {...field} />
                                                 </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name='dateOfBirth'
+                                        render={({ field }) => (
+                                            <FormItem id='date-of-birth' className='col-span-12 sm:col-span-6'>
+                                                <FormLabel>Date of Birth</FormLabel>
+                                                <FormControl>
+                                                    <Input type='date' {...field} />
+                                                </FormControl>
+                                                <FormDescription>
+                                                    Required for identity verification (PRIVO).
+                                                </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
