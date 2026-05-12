@@ -455,7 +455,7 @@ export const MyDependentsCard: FC<MyDependentsCardProps> = ({ userId, isIdentity
                                                             size='sm'
                                                             onClick={() => {
                                                                 setInvitingDependent(dep);
-                                                                setInviteEmail('');
+                                                                setInviteEmail(dep.email || '');
                                                             }}
                                                             title='Invite to create account'
                                                         >
