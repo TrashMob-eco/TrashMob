@@ -160,6 +160,7 @@
 
             // Community Prospects
             services.AddScoped<ICommunityProspectManager, CommunityProspectManager>();
+            services.AddScoped<IProspectContactManager, ProspectContactManager>();
             services.AddScoped<IProspectActivityManager, ProspectActivityManager>();
             services.AddScoped<IClaudeDiscoveryService, ClaudeDiscoveryService>();
             services.AddScoped<IProspectScoringManager, ProspectScoringManager>();

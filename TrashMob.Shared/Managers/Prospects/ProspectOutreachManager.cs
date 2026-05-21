@@ -89,11 +89,40 @@ namespace TrashMob.Shared.Managers.Prospects
                 };
             }
 
-            var primaryContact = prospect.Contacts?
-                .FirstOrDefault(c => c.IsPrimary && c.ContactStatus == (int)ProspectContactStatus.Active)
-                ?? prospect.Contacts?.FirstOrDefault(c => c.IsPrimary);
-            var prospectEmail = primaryContact?.Email;
-            var prospectContactName = primaryContact?.Name;
+            // Pick the target contact: explicit override (Project 60 Phase 2) takes precedence,
+            // else fall back to the prospect's primary active contact.
+            ProspectContact targetContact;
+            if (customContent?.ProspectContactId is { } overrideId)
+            {
+                targetContact = prospect.Contacts?.FirstOrDefault(c => c.Id == overrideId);
+                if (targetContact is null)
+                {
+                    return new OutreachSendResult
+                    {
+                        Success = false,
+                        ErrorMessage = "Specified ProspectContactId does not belong to this prospect.",
+                    };
+                }
+
+                if (targetContact.ContactStatus != (int)ProspectContactStatus.Active
+                    && targetContact.ContactStatus != (int)ProspectContactStatus.RightPerson)
+                {
+                    return new OutreachSendResult
+                    {
+                        Success = false,
+                        ErrorMessage = $"Contact is in status {(ProspectContactStatus)targetContact.ContactStatus} and cannot receive outreach.",
+                    };
+                }
+            }
+            else
+            {
+                targetContact = prospect.Contacts?
+                    .FirstOrDefault(c => c.IsPrimary && c.ContactStatus == (int)ProspectContactStatus.Active)
+                    ?? prospect.Contacts?.FirstOrDefault(c => c.IsPrimary);
+            }
+
+            var prospectEmail = targetContact?.Email;
+            var prospectContactName = targetContact?.Name;
 
             var recipientEmail = settings.TestMode ? settings.TestRecipientEmail : prospectEmail;
             if (string.IsNullOrWhiteSpace(recipientEmail))
@@ -148,7 +177,7 @@ namespace TrashMob.Shared.Managers.Prospects
                 {
                     Id = Guid.NewGuid(),
                     ProspectId = prospectId,
-                    ProspectContactId = primaryContact?.Id,
+                    ProspectContactId = targetContact?.Id,
                     CadenceStep = nextStep,
                     Subject = subject,
                     HtmlBody = fullHtml,
@@ -194,7 +223,7 @@ namespace TrashMob.Shared.Managers.Prospects
                 {
                     Id = Guid.NewGuid(),
                     ProspectId = prospectId,
-                    ProspectContactId = primaryContact?.Id,
+                    ProspectContactId = targetContact?.Id,
                     ActivityType = "EmailSent",
                     Subject = $"Outreach Step {nextStep}: {subject}",
                     Details = settings.TestMode

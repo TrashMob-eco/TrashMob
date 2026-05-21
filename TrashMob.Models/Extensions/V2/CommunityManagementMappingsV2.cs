@@ -585,6 +585,7 @@ namespace TrashMob.Models.Extensions.V2
             {
                 Id = entity.Id,
                 ProspectId = entity.ProspectId,
+                ProspectContactId = entity.ProspectContactId,
                 ActivityType = entity.ActivityType,
                 Subject = entity.Subject,
                 Details = entity.Details,
@@ -602,6 +603,7 @@ namespace TrashMob.Models.Extensions.V2
             {
                 Id = dto.Id,
                 ProspectId = dto.ProspectId,
+                ProspectContactId = dto.ProspectContactId,
                 ActivityType = dto.ActivityType ?? string.Empty,
                 Subject = dto.Subject,
                 Details = dto.Details,
