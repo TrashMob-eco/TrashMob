@@ -25,14 +25,6 @@ namespace TrashMob.Models
 
         public string Website { get; set; }
 
-        public string ContactEmail { get; set; }
-
-        public string ContactName { get; set; }
-
-        public string ContactTitle { get; set; }
-
-        public string ContactPhone { get; set; }
-
         public int PipelineStage { get; set; }
 
         public int FitScore { get; set; }
@@ -44,6 +36,8 @@ namespace TrashMob.Models
         public DateTimeOffset? NextFollowUpDate { get; set; }
 
         public Guid? ConvertedPartnerId { get; set; }
+
+        public virtual ICollection<ProspectContact> Contacts { get; set; } = [];
 
         public virtual ICollection<ProspectActivity> Activities { get; set; } = [];
 

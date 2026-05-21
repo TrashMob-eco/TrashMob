@@ -18,6 +18,7 @@ namespace TrashMob.Shared.Managers.Prospects
     /// </summary>
     public class CsvImportManager(
         IKeyedRepository<CommunityProspect> prospectRepository,
+        IKeyedRepository<ProspectContact> contactRepository,
         IProspectScoringManager scoringManager,
         ILogger<CsvImportManager> logger)
         : ICsvImportManager
@@ -92,6 +93,10 @@ namespace TrashMob.Shared.Managers.Prospects
                     population = pop;
                 }
 
+                var contactEmail = fields[7].Trim();
+                var contactName = fields[8].Trim();
+                var contactTitle = fields[9].Trim();
+
                 var prospect = new CommunityProspect
                 {
                     Id = Guid.NewGuid(),
@@ -102,9 +107,6 @@ namespace TrashMob.Shared.Managers.Prospects
                     Country = fields[4].Trim(),
                     Population = population,
                     Website = fields[6].Trim(),
-                    ContactEmail = fields[7].Trim(),
-                    ContactName = fields[8].Trim(),
-                    ContactTitle = fields[9].Trim(),
                     PipelineStage = 0,
                     FitScore = 0,
                     CreatedByUserId = userId,
@@ -116,6 +118,28 @@ namespace TrashMob.Shared.Managers.Prospects
                 try
                 {
                     var added = await prospectRepository.AddAsync(prospect);
+
+                    // Create the primary contact if any contact field is present in the CSV row.
+                    if (!string.IsNullOrWhiteSpace(contactName)
+                        || !string.IsNullOrWhiteSpace(contactEmail)
+                        || !string.IsNullOrWhiteSpace(contactTitle))
+                    {
+                        var primaryContact = new ProspectContact
+                        {
+                            Id = Guid.NewGuid(),
+                            ProspectId = added.Id,
+                            Name = string.IsNullOrWhiteSpace(contactName) ? "(unknown)" : contactName,
+                            Email = contactEmail,
+                            Title = contactTitle,
+                            ContactStatus = (int)ProspectContactStatus.Active,
+                            IsPrimary = true,
+                            CreatedByUserId = userId,
+                            CreatedDate = DateTimeOffset.UtcNow,
+                            LastUpdatedByUserId = userId,
+                            LastUpdatedDate = DateTimeOffset.UtcNow,
+                        };
+                        await contactRepository.AddAsync(primaryContact);
+                    }
 
                     // Calculate and persist FitScore
                     var breakdown = await scoringManager.CalculateFitScoreAsync(added.Id, cancellationToken);

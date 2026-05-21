@@ -1,6 +1,7 @@
 namespace TrashMob.Shared.Managers.Prospects
 {
     using System;
+    using System.Linq;
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
@@ -144,7 +145,10 @@ namespace TrashMob.Shared.Managers.Prospects
                 : prospect.Region ?? "their area";
 
             var prospectType = prospect.Type ?? "community organization";
-            var contactName = prospect.ContactName ?? "the appropriate contact";
+            var primaryContact = prospect.Contacts?
+                .FirstOrDefault(c => c.IsPrimary)
+                ?? prospect.Contacts?.FirstOrDefault();
+            var contactName = primaryContact?.Name ?? "the appropriate contact";
 
             return cadenceStep switch
             {

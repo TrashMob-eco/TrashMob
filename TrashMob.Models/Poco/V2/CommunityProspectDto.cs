@@ -3,6 +3,7 @@
 namespace TrashMob.Models.Poco.V2
 {
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// V2 API representation of a community prospect. Flat DTO excluding navigation properties.
@@ -60,22 +61,27 @@ namespace TrashMob.Models.Poco.V2
         public string? Website { get; set; }
 
         /// <summary>
-        /// Gets or sets the contact email.
+        /// Gets or sets the primary contact email. Backward-compat: maps to the prospect's
+        /// primary <see cref="ProspectContactDto"/>. Will be removed once frontend migrates
+        /// to the dedicated /contacts endpoints (Project 60 Phase 3).
         /// </summary>
         public string? ContactEmail { get; set; }
 
         /// <summary>
-        /// Gets or sets the contact name.
+        /// Gets or sets the primary contact name. Backward-compat shortcut for the primary
+        /// <see cref="ProspectContactDto"/>.
         /// </summary>
         public string? ContactName { get; set; }
 
         /// <summary>
-        /// Gets or sets the contact title.
+        /// Gets or sets the primary contact title. Backward-compat shortcut for the primary
+        /// <see cref="ProspectContactDto"/>.
         /// </summary>
         public string? ContactTitle { get; set; }
 
         /// <summary>
-        /// Gets or sets the contact phone.
+        /// Gets or sets the primary contact phone. Backward-compat shortcut for the primary
+        /// <see cref="ProspectContactDto"/>.
         /// </summary>
         public string? ContactPhone { get; set; }
 
@@ -108,6 +114,13 @@ namespace TrashMob.Models.Poco.V2
         /// Gets or sets the partner identifier if this prospect was converted.
         /// </summary>
         public Guid? ConvertedPartnerId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contacts associated with this prospect (Project 60).
+        /// Populated on read; ignored on write — contacts are managed via the dedicated
+        /// /contacts endpoints introduced in Phase 2.
+        /// </summary>
+        public List<ProspectContactDto> Contacts { get; set; } = [];
 
         /// <summary>
         /// Gets or sets when the prospect was created.

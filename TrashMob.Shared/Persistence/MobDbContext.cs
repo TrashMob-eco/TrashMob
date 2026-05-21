@@ -160,6 +160,8 @@
 
         public virtual DbSet<CommunityProspect> CommunityProspects { get; set; }
 
+        public virtual DbSet<ProspectContact> ProspectContacts { get; set; }
+
         public virtual DbSet<ProspectActivity> ProspectActivities { get; set; }
 
         public virtual DbSet<ProspectOutreachEmail> ProspectOutreachEmails { get; set; }
@@ -3367,18 +3369,6 @@
                 entity.Property(e => e.Website)
                     .HasMaxLength(2048);
 
-                entity.Property(e => e.ContactEmail)
-                    .HasMaxLength(256);
-
-                entity.Property(e => e.ContactName)
-                    .HasMaxLength(128);
-
-                entity.Property(e => e.ContactTitle)
-                    .HasMaxLength(128);
-
-                entity.Property(e => e.ContactPhone)
-                    .HasMaxLength(32);
-
                 entity.Property(e => e.Notes)
                     .HasMaxLength(2000);
 
@@ -3407,6 +3397,62 @@
                     .HasConstraintName("FK_CommunityProspects_User_LastUpdatedBy");
             });
 
+            modelBuilder.Entity<ProspectContact>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Title)
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Email)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Phone)
+                    .HasMaxLength(30);
+
+                entity.Property(e => e.Role)
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.ContactStatus)
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.IsPrimary)
+                    .HasDefaultValue(false);
+
+                entity.Property(e => e.Notes)
+                    .HasMaxLength(2000);
+
+                entity.HasIndex(e => e.ProspectId);
+
+                entity.HasOne(d => d.Prospect)
+                    .WithMany(p => p.Contacts)
+                    .HasForeignKey(d => d.ProspectId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ProspectContacts_CommunityProspect");
+
+                entity.HasOne(d => d.ReferredByContact)
+                    .WithMany()
+                    .HasForeignKey(d => d.ReferredByContactId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_ProspectContacts_ReferredByContact");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProspectContacts_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProspectContacts_User_LastUpdatedBy");
+            });
+
             modelBuilder.Entity<ProspectActivity>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -3428,6 +3474,12 @@
                     .HasForeignKey(d => d.ProspectId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ProspectActivities_CommunityProspect");
+
+                entity.HasOne(d => d.Contact)
+                    .WithMany()
+                    .HasForeignKey(d => d.ProspectContactId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_ProspectActivities_ProspectContact");
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany()
@@ -3464,6 +3516,12 @@
                     .HasForeignKey(d => d.ProspectId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ProspectOutreachEmails_CommunityProspect");
+
+                entity.HasOne(d => d.Contact)
+                    .WithMany()
+                    .HasForeignKey(d => d.ProspectContactId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_ProspectOutreachEmails_ProspectContact");
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany()

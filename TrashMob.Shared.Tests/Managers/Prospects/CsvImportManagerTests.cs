@@ -19,6 +19,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
     public class CsvImportManagerTests
     {
         private readonly Mock<IKeyedRepository<CommunityProspect>> _prospectRepo;
+        private readonly Mock<IKeyedRepository<ProspectContact>> _contactRepo;
         private readonly Mock<IProspectScoringManager> _scoringManager;
         private readonly Mock<ILogger<CsvImportManager>> _logger;
         private readonly CsvImportManager _sut;
@@ -28,17 +29,19 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         public CsvImportManagerTests()
         {
             _prospectRepo = new Mock<IKeyedRepository<CommunityProspect>>();
+            _contactRepo = new Mock<IKeyedRepository<ProspectContact>>();
             _scoringManager = new Mock<IProspectScoringManager>();
             _logger = new Mock<ILogger<CsvImportManager>>();
 
             _prospectRepo.SetupGet(new List<CommunityProspect>());
             _prospectRepo.SetupAddAsync();
+            _contactRepo.SetupAddAsync();
 
             _scoringManager
                 .Setup(s => s.CalculateFitScoreAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new FitScoreBreakdown { TotalScore = 50 });
 
-            _sut = new CsvImportManager(_prospectRepo.Object, _scoringManager.Object, _logger.Object);
+            _sut = new CsvImportManager(_prospectRepo.Object, _contactRepo.Object, _scoringManager.Object, _logger.Object);
         }
 
         [Fact]

@@ -1,6 +1,7 @@
 namespace TrashMob.Shared.Extensions
 {
     using System;
+    using System.Linq;
     using TrashMob.Models;
 
     /// <summary>
@@ -9,19 +10,23 @@ namespace TrashMob.Shared.Extensions
     public static class CommunityProspectExtensions
     {
         /// <summary>
-        /// Converts a CommunityProspect to a new Partner entity with an associated PartnerContact.
+        /// Converts a CommunityProspect to a new Partner entity, copying the primary
+        /// ProspectContact (if one exists) into a PartnerContact.
         /// </summary>
-        /// <param name="prospect">The prospect to convert.</param>
+        /// <param name="prospect">The prospect to convert. Caller is responsible for loading <see cref="CommunityProspect.Contacts"/>.</param>
         /// <param name="partnerTypeId">The partner type ID to assign.</param>
         /// <returns>A new Partner entity with the prospect data.</returns>
         public static Partner ToPartner(this CommunityProspect prospect, int partnerTypeId)
         {
+            var primaryContact = prospect.Contacts?.FirstOrDefault(c => c.IsPrimary)
+                ?? prospect.Contacts?.FirstOrDefault();
+
             var partner = new Partner
             {
                 Id = Guid.NewGuid(),
                 Name = prospect.Name,
                 Website = prospect.Website,
-                ContactEmail = prospect.ContactEmail,
+                ContactEmail = primaryContact?.Email,
                 City = prospect.City,
                 Region = prospect.Region,
                 Country = prospect.Country,
@@ -36,16 +41,14 @@ namespace TrashMob.Shared.Extensions
                 LastUpdatedDate = DateTimeOffset.UtcNow,
             };
 
-            if (!string.IsNullOrWhiteSpace(prospect.ContactName))
+            if (primaryContact != null && !string.IsNullOrWhiteSpace(primaryContact.Name))
             {
-                var partnerContact = new PartnerContact
+                partner.PartnerContacts.Add(new PartnerContact
                 {
                     Id = Guid.NewGuid(),
-                    Name = prospect.ContactName,
-                    Email = prospect.ContactEmail,
-                };
-
-                partner.PartnerContacts.Add(partnerContact);
+                    Name = primaryContact.Name,
+                    Email = primaryContact.Email,
+                });
             }
 
             return partner;

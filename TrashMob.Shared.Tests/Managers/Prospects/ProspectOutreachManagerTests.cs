@@ -50,6 +50,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
             _outreachEmailRepo.SetupAddAsync();
             _activityRepo.SetupAddAsync();
             _prospectRepo.SetupUpdateAsync();
+            _prospectRepo.SetupGet(new List<CommunityProspect>());
 
             _sut = new ProspectOutreachManager(
                 _prospectRepo.Object,
@@ -93,8 +94,8 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         {
             var prospect = new CommunityProspectBuilder().Build();
             prospect.PipelineStage = 5;
-            prospect.ContactEmail = "test@example.com";
-            _prospectRepo.SetupGetAsync(prospect);
+            AddPrimaryContact(prospect, "test@example.com");
+            _prospectRepo.SetupGet(new[] { prospect });
             SetupEmptyOutreachHistory();
 
             var result = await _sut.SendOutreachAsync(prospect.Id, Guid.NewGuid());
@@ -107,8 +108,8 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         public async Task SendOutreach_WhenNoContactEmail_ReturnsFailure()
         {
             var prospect = new CommunityProspectBuilder().Build();
-            prospect.ContactEmail = null;
-            _prospectRepo.SetupGetAsync(prospect);
+            // No primary contact added — exercise the "no contact email" failure path.
+            _prospectRepo.SetupGet(new[] { prospect });
             SetupEmptyOutreachHistory();
 
             // In test mode, test recipient email is used, so this won't fail for missing contact email.
@@ -126,8 +127,8 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         public async Task SendOutreach_WhenCadenceComplete_ReturnsFailure()
         {
             var prospect = new CommunityProspectBuilder().Build();
-            prospect.ContactEmail = "test@example.com";
-            _prospectRepo.SetupGetAsync(prospect);
+            AddPrimaryContact(prospect, "test@example.com");
+            _prospectRepo.SetupGet(new[] { prospect });
 
             // Set up 4 existing outreach emails (cadence complete)
             var existingEmails = Enumerable.Range(1, 4).Select(step =>
@@ -147,9 +148,9 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         public async Task SendOutreach_SuccessfulSend_CreatesEmailAndActivity()
         {
             var prospect = new CommunityProspectBuilder().Build();
-            prospect.ContactEmail = "test@example.com";
+            AddPrimaryContact(prospect, "test@example.com");
             prospect.PipelineStage = 0;
-            _prospectRepo.SetupGetAsync(prospect);
+            _prospectRepo.SetupGet(new[] { prospect });
             SetupEmptyOutreachHistory();
             SetupContentService(prospect.Id, 1);
 
@@ -170,9 +171,9 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         public async Task SendOutreach_AdvancesPipelineStage_FromNewToContacted()
         {
             var prospect = new CommunityProspectBuilder().Build();
-            prospect.ContactEmail = "test@example.com";
+            AddPrimaryContact(prospect, "test@example.com");
             prospect.PipelineStage = 0;
-            _prospectRepo.SetupGetAsync(prospect);
+            _prospectRepo.SetupGet(new[] { prospect });
             SetupEmptyOutreachHistory();
             SetupContentService(prospect.Id, 1);
 
@@ -189,9 +190,9 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         public async Task SendOutreach_TestMode_SendsToTestEmail()
         {
             var prospect = new CommunityProspectBuilder().Build();
-            prospect.ContactEmail = "real@example.com";
+            AddPrimaryContact(prospect, "real@example.com");
             prospect.PipelineStage = 0;
-            _prospectRepo.SetupGetAsync(prospect);
+            _prospectRepo.SetupGet(new[] { prospect });
             SetupEmptyOutreachHistory();
             SetupContentService(prospect.Id, 1);
 
@@ -218,9 +219,9 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
             var sut = CreateSut();
 
             var prospect = new CommunityProspectBuilder().Build();
-            prospect.ContactEmail = "real@example.com";
+            AddPrimaryContact(prospect, "real@example.com");
             prospect.PipelineStage = 0;
-            _prospectRepo.SetupGetAsync(prospect);
+            _prospectRepo.SetupGet(new[] { prospect });
             SetupEmptyOutreachHistory();
             SetupContentService(prospect.Id, 1);
 
@@ -244,9 +245,9 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         public async Task SendOutreach_SetsNextFollowUpDate()
         {
             var prospect = new CommunityProspectBuilder().Build();
-            prospect.ContactEmail = "test@example.com";
+            AddPrimaryContact(prospect, "test@example.com");
             prospect.PipelineStage = 0;
-            _prospectRepo.SetupGetAsync(prospect);
+            _prospectRepo.SetupGet(new[] { prospect });
             SetupEmptyOutreachHistory();
             SetupContentService(prospect.Id, 1);
 
@@ -263,9 +264,9 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         public async Task SendOutreach_WithCustomContent_UsesCustomContentInsteadOfAI()
         {
             var prospect = new CommunityProspectBuilder().Build();
-            prospect.ContactEmail = "test@example.com";
+            AddPrimaryContact(prospect, "test@example.com");
             prospect.PipelineStage = 0;
-            _prospectRepo.SetupGetAsync(prospect);
+            _prospectRepo.SetupGet(new[] { prospect });
             SetupEmptyOutreachHistory();
 
             _emailManager.Setup(e => e.GetHtmlEmailCopy(It.IsAny<string>()))
@@ -306,9 +307,9 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         public async Task SendOutreach_WithEmptyCustomContent_FallsBackToAIGeneration()
         {
             var prospect = new CommunityProspectBuilder().Build();
-            prospect.ContactEmail = "test@example.com";
+            AddPrimaryContact(prospect, "test@example.com");
             prospect.PipelineStage = 0;
-            _prospectRepo.SetupGetAsync(prospect);
+            _prospectRepo.SetupGet(new[] { prospect });
             SetupEmptyOutreachHistory();
             SetupContentService(prospect.Id, 1);
 
@@ -346,8 +347,8 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         public async Task PreviewOutreach_DeterminesCorrectCadenceStep()
         {
             var prospect = new CommunityProspectBuilder().Build();
-            prospect.ContactEmail = "test@example.com";
-            _prospectRepo.SetupGetAsync(prospect);
+            AddPrimaryContact(prospect, "test@example.com");
+            _prospectRepo.SetupGet(new[] { prospect });
 
             // One existing email at step 1
             var existingEmails = new List<ProspectOutreachEmail>
@@ -371,11 +372,11 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         public async Task SendBatchOutreach_ProcessesMultipleProspects()
         {
             var prospect1 = new CommunityProspectBuilder().Build();
-            prospect1.ContactEmail = "p1@example.com";
+            AddPrimaryContact(prospect1, "p1@example.com");
             var prospect2 = new CommunityProspectBuilder().Build();
-            prospect2.ContactEmail = "p2@example.com";
+            AddPrimaryContact(prospect2, "p2@example.com");
 
-            _prospectRepo.SetupGetAsync(new[] { prospect1, prospect2 });
+            _prospectRepo.SetupGet(new[] { prospect1, prospect2 });
             SetupEmptyOutreachHistory();
             _contentService.Setup(s => s.GenerateOutreachContentAsync(
                     It.IsAny<CommunityProspect>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
@@ -411,12 +412,12 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         public async Task ProcessDueFollowUps_ProcessesDueProspects()
         {
             var prospect = new CommunityProspectBuilder().Build();
-            prospect.ContactEmail = "test@example.com";
+            AddPrimaryContact(prospect, "test@example.com");
             prospect.PipelineStage = 1;
             prospect.NextFollowUpDate = DateTimeOffset.UtcNow.AddHours(-1);
 
             _prospectRepo.SetupGetWithFilter(new[] { prospect });
-            _prospectRepo.SetupGetAsync(prospect);
+            _prospectRepo.SetupGet(new[] { prospect });
 
             // One existing email at step 1
             var existingEmails = new List<ProspectOutreachEmail>
@@ -484,6 +485,19 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         private void SetupEmptyOutreachHistory()
         {
             _outreachEmailRepo.SetupGetWithFilter(new List<ProspectOutreachEmail>());
+        }
+
+        private static void AddPrimaryContact(CommunityProspect prospect, string email, string name = "Primary Contact")
+        {
+            prospect.Contacts.Add(new ProspectContact
+            {
+                Id = Guid.NewGuid(),
+                ProspectId = prospect.Id,
+                Name = name,
+                Email = email,
+                ContactStatus = (int)ProspectContactStatus.Active,
+                IsPrimary = true,
+            });
         }
 
         private void SetupContentService(Guid prospectId, int expectedStep)

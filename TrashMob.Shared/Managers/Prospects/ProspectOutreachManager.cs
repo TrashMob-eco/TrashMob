@@ -38,7 +38,7 @@ namespace TrashMob.Shared.Managers.Prospects
         public async Task<OutreachPreview> PreviewOutreachAsync(Guid prospectId,
             CancellationToken cancellationToken = default)
         {
-            var prospect = await prospectRepository.GetAsync(prospectId, cancellationToken);
+            var prospect = await GetProspectWithContactsAsync(prospectId, cancellationToken);
             if (prospect is null)
             {
                 return new OutreachPreview { ProspectId = prospectId, Subject = "Prospect not found" };
@@ -73,7 +73,7 @@ namespace TrashMob.Shared.Managers.Prospects
                 };
             }
 
-            var prospect = await prospectRepository.GetAsync(prospectId, cancellationToken);
+            var prospect = await GetProspectWithContactsAsync(prospectId, cancellationToken);
             if (prospect is null)
             {
                 return new OutreachSendResult { Success = false, ErrorMessage = "Prospect not found." };
@@ -89,7 +89,13 @@ namespace TrashMob.Shared.Managers.Prospects
                 };
             }
 
-            var recipientEmail = settings.TestMode ? settings.TestRecipientEmail : prospect.ContactEmail;
+            var primaryContact = prospect.Contacts?
+                .FirstOrDefault(c => c.IsPrimary && c.ContactStatus == (int)ProspectContactStatus.Active)
+                ?? prospect.Contacts?.FirstOrDefault(c => c.IsPrimary);
+            var prospectEmail = primaryContact?.Email;
+            var prospectContactName = primaryContact?.Name;
+
+            var recipientEmail = settings.TestMode ? settings.TestRecipientEmail : prospectEmail;
             if (string.IsNullOrWhiteSpace(recipientEmail))
             {
                 return new OutreachSendResult
@@ -142,6 +148,7 @@ namespace TrashMob.Shared.Managers.Prospects
                 {
                     Id = Guid.NewGuid(),
                     ProspectId = prospectId,
+                    ProspectContactId = primaryContact?.Id,
                     CadenceStep = nextStep,
                     Subject = subject,
                     HtmlBody = fullHtml,
@@ -156,14 +163,14 @@ namespace TrashMob.Shared.Managers.Prospects
                 // Send via SendGrid
                 var dynamicTemplateData = new
                 {
-                    username = prospect.ContactName ?? prospect.Name,
+                    username = prospectContactName ?? prospect.Name,
                     subject,
                     emailCopy = fullHtml,
                 };
 
                 List<EmailAddress> recipients =
                 [
-                    new() { Name = prospect.ContactName ?? prospect.Name, Email = recipientEmail },
+                    new() { Name = prospectContactName ?? prospect.Name, Email = recipientEmail },
                 ];
 
                 // Use the sending admin's trashmob.eco email if available, otherwise fall back to Joe
@@ -187,6 +194,7 @@ namespace TrashMob.Shared.Managers.Prospects
                 {
                     Id = Guid.NewGuid(),
                     ProspectId = prospectId,
+                    ProspectContactId = primaryContact?.Id,
                     ActivityType = "EmailSent",
                     Subject = $"Outreach Step {nextStep}: {subject}",
                     Details = settings.TestMode
@@ -296,7 +304,7 @@ namespace TrashMob.Shared.Managers.Prospects
                 .Get(p => p.NextFollowUpDate != null
                     && p.NextFollowUpDate <= now
                     && p.PipelineStage == 1  // Contacted
-                    && !string.IsNullOrWhiteSpace(p.ContactEmail))
+                    && p.Contacts.Any(c => c.IsPrimary && c.Email != null && c.Email != string.Empty))
                 .Take(settings.MaxFollowUpsPerRun)
                 .ToListAsync(cancellationToken);
 
@@ -342,6 +350,13 @@ namespace TrashMob.Shared.Managers.Prospects
                 .MaxAsync(e => (int?)e.CadenceStep, cancellationToken) ?? 0;
 
             return lastStep + 1;
+        }
+
+        private Task<CommunityProspect> GetProspectWithContactsAsync(Guid prospectId, CancellationToken cancellationToken)
+        {
+            return prospectRepository.Get()
+                .Include(p => p.Contacts)
+                .FirstOrDefaultAsync(p => p.Id == prospectId, cancellationToken);
         }
 
         private static DateTimeOffset? GetNextFollowUpDate(int currentStep)
