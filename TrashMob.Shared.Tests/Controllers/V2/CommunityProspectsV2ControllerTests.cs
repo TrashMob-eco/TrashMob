@@ -125,6 +125,9 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             communityProspectManager
                 .Setup(m => m.AddAsync(It.IsAny<CommunityProspect>(), testUserId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(createdProspect);
+            communityProspectManager
+                .Setup(m => m.GetAsync(createdProspect.Id, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(createdProspect);
 
             var result = await controller.Create(prospectDto, CancellationToken.None);
 

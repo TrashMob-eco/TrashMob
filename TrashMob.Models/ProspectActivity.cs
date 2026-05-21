@@ -8,6 +8,8 @@ namespace TrashMob.Models
     {
         public Guid ProspectId { get; set; }
 
+        public Guid? ProspectContactId { get; set; }
+
         public string ActivityType { get; set; }
 
         public string Subject { get; set; }
@@ -17,5 +19,7 @@ namespace TrashMob.Models
         public string SentimentScore { get; set; }
 
         public virtual CommunityProspect Prospect { get; set; }
+
+        public virtual ProspectContact Contact { get; set; }
     }
 }

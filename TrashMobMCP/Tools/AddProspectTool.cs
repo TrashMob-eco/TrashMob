@@ -30,7 +30,7 @@ public class AddProspectTool(ICommunityProspectManager prospectManager)
     /// <param name="country">Country (default: United States)</param>
     /// <param name="population">Estimated population served</param>
     /// <param name="website">Organization website URL</param>
-    /// <param name="contactName">Best contact person's full name</param>
+    /// <param name="contactName">Best contact person's full name (saved as primary contact)</param>
     /// <param name="contactEmail">Contact person's email address</param>
     /// <param name="contactTitle">Contact person's job title (e.g., "Public Works Director")</param>
     /// <param name="contactPhone">Contact person's phone number</param>
@@ -39,7 +39,7 @@ public class AddProspectTool(ICommunityProspectManager prospectManager)
     /// <param name="notes">Research notes or rationale for why this is a good prospect</param>
     /// <returns>JSON with the created prospect record</returns>
     [McpServerTool]
-    [Description("Add a new community prospect to the TrashMob pipeline. Use this after researching an organization to save it as a prospect for outreach. Provide as much detail as available — name, type, city, and region are required.")]
+    [Description("Add a new community prospect to the TrashMob pipeline. Use this after researching an organization to save it as a prospect for outreach. Provide as much detail as available — name, type, city, and region are required. Any contact info given is saved as the prospect's primary contact.")]
     public async Task<string> AddProspect(
         string name,
         string type,
@@ -65,10 +65,6 @@ public class AddProspectTool(ICommunityProspectManager prospectManager)
             Country = country,
             Population = population,
             Website = website,
-            ContactName = contactName,
-            ContactEmail = contactEmail,
-            ContactTitle = contactTitle,
-            ContactPhone = contactPhone,
             Latitude = latitude,
             Longitude = longitude,
             Notes = notes,
@@ -78,36 +74,26 @@ public class AddProspectTool(ICommunityProspectManager prospectManager)
 
         var created = await prospectManager.AddAsync(prospect, CancellationToken.None);
 
+        ProspectContact? primary = null;
+        if (!string.IsNullOrWhiteSpace(contactName)
+            || !string.IsNullOrWhiteSpace(contactEmail)
+            || !string.IsNullOrWhiteSpace(contactTitle)
+            || !string.IsNullOrWhiteSpace(contactPhone))
+        {
+            primary = await prospectManager.UpsertPrimaryContactAsync(
+                created.Id,
+                contactName ?? string.Empty,
+                contactEmail ?? string.Empty,
+                contactTitle ?? string.Empty,
+                contactPhone ?? string.Empty,
+                created.CreatedByUserId,
+                CancellationToken.None);
+        }
+
         return JsonSerializer.Serialize(new
         {
             message = $"Prospect '{created.Name}' added to pipeline.",
-            prospect = ToDto(created),
+            prospect = ProspectDtoMapper.ToDto(created, primary, StageNames),
         }, JsonOptions);
-    }
-
-    private static ProspectDto ToDto(CommunityProspect p)
-    {
-        return new ProspectDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Type = p.Type,
-            City = p.City,
-            Region = p.Region,
-            Country = p.Country,
-            Population = p.Population,
-            Website = p.Website,
-            ContactName = p.ContactName,
-            ContactEmail = p.ContactEmail,
-            ContactTitle = p.ContactTitle,
-            PipelineStage = p.PipelineStage,
-            PipelineStageName = p.PipelineStage >= 0 && p.PipelineStage < StageNames.Length
-                ? StageNames[p.PipelineStage]
-                : "Unknown",
-            FitScore = p.FitScore,
-            LastContactedDate = p.LastContactedDate,
-            NextFollowUpDate = p.NextFollowUpDate,
-            Notes = p.Notes,
-        };
     }
 }

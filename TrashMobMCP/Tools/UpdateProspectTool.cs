@@ -1,6 +1,7 @@
 namespace TrashMobMCP.Tools;
 
 using System.ComponentModel;
+using System.Linq;
 using System.Text.Json;
 using ModelContextProtocol.Server;
 using TrashMob.Models;
@@ -31,7 +32,7 @@ public class UpdateProspectTool(ICommunityProspectManager prospectManager)
     /// <param name="country">Updated country</param>
     /// <param name="population">Updated population served</param>
     /// <param name="website">Updated website URL</param>
-    /// <param name="contactName">Updated contact person's full name</param>
+    /// <param name="contactName">Updated contact person's full name (applied to primary contact)</param>
     /// <param name="contactEmail">Updated contact email address</param>
     /// <param name="contactTitle">Updated contact job title</param>
     /// <param name="contactPhone">Updated contact phone number</param>
@@ -41,7 +42,7 @@ public class UpdateProspectTool(ICommunityProspectManager prospectManager)
     /// <param name="pipelineStage">Updated pipeline stage: 0=New, 1=Contacted, 2=Responded, 3=Interested, 4=Onboarding, 5=Active, 6=Declined</param>
     /// <returns>JSON with the updated prospect record</returns>
     [McpServerTool]
-    [Description("Update an existing community prospect in the TrashMob pipeline. Only provided fields are updated — omitted fields keep their current values. Use this to add contact info, update notes, or advance the pipeline stage.")]
+    [Description("Update an existing community prospect in the TrashMob pipeline. Only provided fields are updated — omitted fields keep their current values. Contact fields update the prospect's primary contact (creating one if none exists).")]
     public async Task<string> UpdateProspect(
         Guid id,
         string? name = null,
@@ -78,10 +79,6 @@ public class UpdateProspectTool(ICommunityProspectManager prospectManager)
         if (country is not null) prospect.Country = country;
         if (population.HasValue) prospect.Population = population.Value;
         if (website is not null) prospect.Website = website;
-        if (contactName is not null) prospect.ContactName = contactName;
-        if (contactEmail is not null) prospect.ContactEmail = contactEmail;
-        if (contactTitle is not null) prospect.ContactTitle = contactTitle;
-        if (contactPhone is not null) prospect.ContactPhone = contactPhone;
         if (latitude.HasValue) prospect.Latitude = latitude.Value;
         if (longitude.HasValue) prospect.Longitude = longitude.Value;
         if (notes is not null) prospect.Notes = notes;
@@ -91,36 +88,32 @@ public class UpdateProspectTool(ICommunityProspectManager prospectManager)
 
         var updated = await prospectManager.UpdateAsync(prospect, CancellationToken.None);
 
+        // Apply contact-field updates to the primary contact via the manager helper.
+        if (contactName is not null
+            || contactEmail is not null
+            || contactTitle is not null
+            || contactPhone is not null)
+        {
+            await prospectManager.UpsertPrimaryContactAsync(
+                updated.Id,
+                contactName ?? string.Empty,
+                contactEmail ?? string.Empty,
+                contactTitle ?? string.Empty,
+                contactPhone ?? string.Empty,
+                updated.LastUpdatedByUserId,
+                CancellationToken.None);
+
+            // Reload to get the freshly-saved primary contact.
+            updated = await prospectManager.GetAsync(updated.Id, CancellationToken.None);
+        }
+
+        var primary = updated.Contacts?.FirstOrDefault(c => c.IsPrimary)
+            ?? updated.Contacts?.FirstOrDefault();
+
         return JsonSerializer.Serialize(new
         {
             message = $"Prospect '{updated.Name}' updated.",
-            prospect = ToDto(updated),
+            prospect = ProspectDtoMapper.ToDto(updated, primary, StageNames),
         }, JsonOptions);
-    }
-
-    private static ProspectDto ToDto(CommunityProspect p)
-    {
-        return new ProspectDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Type = p.Type,
-            City = p.City,
-            Region = p.Region,
-            Country = p.Country,
-            Population = p.Population,
-            Website = p.Website,
-            ContactName = p.ContactName,
-            ContactEmail = p.ContactEmail,
-            ContactTitle = p.ContactTitle,
-            PipelineStage = p.PipelineStage,
-            PipelineStageName = p.PipelineStage >= 0 && p.PipelineStage < StageNames.Length
-                ? StageNames[p.PipelineStage]
-                : "Unknown",
-            FitScore = p.FitScore,
-            LastContactedDate = p.LastContactedDate,
-            NextFollowUpDate = p.NextFollowUpDate,
-            Notes = p.Notes,
-        };
     }
 }
