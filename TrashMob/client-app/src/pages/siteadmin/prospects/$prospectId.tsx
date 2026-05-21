@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
-import { Edit, Plus, Globe, Mail, User, MapPin, Send, ArrowRightLeft } from 'lucide-react';
+import { Edit, Plus, Globe, MapPin, Send, ArrowRightLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,7 +23,10 @@ import {
 import { PipelineStageBadge, ACTIVITY_TYPES } from '@/components/prospects/pipeline-stage-badge';
 import { OutreachPreviewDialog } from '@/components/prospects/outreach-preview-dialog';
 import { ConvertToPartnerDialog } from '@/components/prospects/convert-to-partner-dialog';
+import { ProspectContactsCard } from '@/components/prospects/prospect-contacts-card';
 import ProspectActivityData from '@/components/Models/ProspectActivityData';
+
+const NO_CONTACT_VALUE = '__none__';
 
 export const SiteAdminProspectDetail = () => {
     const { prospectId } = useParams<{ prospectId: string }>() as { prospectId: string };
@@ -35,6 +38,7 @@ export const SiteAdminProspectDetail = () => {
     const [activityType, setActivityType] = useState('Note');
     const [activitySubject, setActivitySubject] = useState('');
     const [activityDetails, setActivityDetails] = useState('');
+    const [activityContactId, setActivityContactId] = useState<string>(NO_CONTACT_VALUE);
 
     const { data: prospect } = useQuery({
         queryKey: GetCommunityProspectById({ id: prospectId }).key,
@@ -83,12 +87,23 @@ export const SiteAdminProspectDetail = () => {
             setActivityType('Note');
             setActivitySubject('');
             setActivityDetails('');
+            setActivityContactId(NO_CONTACT_VALUE);
         },
     });
+
+    const prospectContacts = useMemo(() => prospect?.contacts ?? [], [prospect?.contacts]);
+    const activityContactsById = useMemo(() => {
+        const map = new Map<string, string>();
+        for (const c of prospectContacts) {
+            map.set(c.id, c.name);
+        }
+        return map;
+    }, [prospectContacts]);
 
     function handleLogActivity() {
         const body = new ProspectActivityData();
         body.prospectId = prospectId;
+        body.prospectContactId = activityContactId === NO_CONTACT_VALUE ? null : activityContactId;
         body.activityType = activityType;
         body.subject = activitySubject;
         body.details = activityDetails;
@@ -147,23 +162,6 @@ export const SiteAdminProspectDetail = () => {
                             ) : null}
                         </div>
                         <div className='col-span-12 md:col-span-6 space-y-3'>
-                            {prospect.contactName ? (
-                                <div className='flex items-center gap-2 text-sm'>
-                                    <User className='h-4 w-4 text-muted-foreground' />
-                                    {prospect.contactName}
-                                    {prospect.contactTitle ? (
-                                        <span className='text-muted-foreground'>({prospect.contactTitle})</span>
-                                    ) : null}
-                                </div>
-                            ) : null}
-                            {prospect.contactEmail ? (
-                                <div className='flex items-center gap-2 text-sm'>
-                                    <Mail className='h-4 w-4 text-muted-foreground' />
-                                    <a href={`mailto:${prospect.contactEmail}`} className='hover:underline'>
-                                        {prospect.contactEmail}
-                                    </a>
-                                </div>
-                            ) : null}
                             {prospect.website ? (
                                 <div className='flex items-center gap-2 text-sm'>
                                     <Globe className='h-4 w-4 text-muted-foreground' />
@@ -177,6 +175,11 @@ export const SiteAdminProspectDetail = () => {
                                     </a>
                                 </div>
                             ) : null}
+                            <p className='text-sm text-muted-foreground'>
+                                {prospectContacts.length === 0
+                                    ? 'No contacts yet — add one in the Contacts section below.'
+                                    : `${prospectContacts.length} contact${prospectContacts.length === 1 ? '' : 's'} on file.`}
+                            </p>
                         </div>
                         {prospect.notes ? (
                             <div className='col-span-12'>
@@ -187,6 +190,8 @@ export const SiteAdminProspectDetail = () => {
                     </div>
                 </CardContent>
             </Card>
+
+            <ProspectContactsCard prospectId={prospectId} />
 
             {scoreBreakdown ? (
                 <Card>
@@ -272,6 +277,7 @@ export const SiteAdminProspectDetail = () => {
 
             <OutreachPreviewDialog
                 prospectId={prospectId}
+                contacts={prospectContacts}
                 open={outreachDialogOpen}
                 onOpenChange={setOutreachDialogOpen}
             />
@@ -314,6 +320,29 @@ export const SiteAdminProspectDetail = () => {
                                         </SelectContent>
                                     </Select>
                                 </div>
+                                {prospectContacts.length > 0 ? (
+                                    <div>
+                                        <label htmlFor='activity-contact' className='text-sm font-medium'>
+                                            Contact (optional)
+                                        </label>
+                                        <Select value={activityContactId} onValueChange={setActivityContactId}>
+                                            <SelectTrigger id='activity-contact'>
+                                                <SelectValue placeholder='Not tied to a specific contact' />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value={NO_CONTACT_VALUE}>
+                                                    — Not tied to a specific contact —
+                                                </SelectItem>
+                                                {prospectContacts.map((c) => (
+                                                    <SelectItem key={c.id} value={c.id}>
+                                                        {c.name}
+                                                        {c.isPrimary ? ' (primary)' : ''}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                ) : null}
                                 <div>
                                     <label htmlFor='activity-subject' className='text-sm font-medium'>
                                         Subject
@@ -356,8 +385,14 @@ export const SiteAdminProspectDetail = () => {
                         <div className='space-y-4'>
                             {(activities || []).map((activity) => (
                                 <div key={activity.id} className='border-l-2 border-muted pl-4 pb-2'>
-                                    <div className='flex items-center gap-2'>
+                                    <div className='flex items-center gap-2 flex-wrap'>
                                         <Badge variant='outline'>{activity.activityType}</Badge>
+                                        {activity.prospectContactId &&
+                                        activityContactsById.has(activity.prospectContactId) ? (
+                                            <span className='text-xs text-muted-foreground'>
+                                                → {activityContactsById.get(activity.prospectContactId)}
+                                            </span>
+                                        ) : null}
                                         {activity.sentimentScore ? (
                                             <Badge
                                                 className={
