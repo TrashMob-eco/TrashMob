@@ -42,6 +42,7 @@ PRIVO confirmed prod activation on their side; TrashMob enabled the integration 
 
 **Prod Key Vault (`kv-tm-pr-westus2`) configured:**
 - `Privo--Enabled` = `true`
+- `Privo--BaseUrl` = `https://consent-svc.privo.com` (set May 20; without this, `PrivoService` defaults to the INT URL hardcoded in the service)
 - `Privo--RedirectBaseUrl` = `https://www.trashmob.eco`
 - `Privo-ClientId` — production OAuth client (set May 20)
 - `Privo-ClientSecret` — production OAuth secret (set May 20)
