@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 0-3 Complete — PRIVO INT verified; Flow 3 child-initiated + production deployment remaining) |
+| **Status** | Production Live (May 20, 2026) — Phases 0-3 deployed; Flow 3 child-initiated needs prod E2E verification; sponsorship docs in progress |
 | **Priority** | High |
 | **Risk** | High |
 | **Size** | Large |
@@ -31,6 +31,39 @@ The PRIVO/parental consent work is implemented as part of the [Project 1 — Aut
 | Phase 4 (Family Features) | **Deferred** | **No** | Parent dashboard, multiple minor management (future project) |
 
 This combined approach minimizes risk by building PRIVO integration directly into the new Entra External ID auth system rather than retrofitting it into B2C.
+
+---
+
+## Deployment Status
+
+### Production (May 20, 2026) ✅
+
+PRIVO confirmed prod activation on their side; TrashMob enabled the integration in production the same day.
+
+**Prod Key Vault (`kv-tm-pr-westus2`) configured:**
+- `Privo--Enabled` = `true`
+- `Privo--RedirectBaseUrl` = `https://www.trashmob.eco`
+- `Privo-ClientId` — production OAuth client (set May 20)
+- `Privo-ClientSecret` — production OAuth secret (set May 20)
+- `Privo-ApiKey` — webhook auth key (set May 5; PRIVO uses this in the `X-Api-Key` header)
+
+**Verification:**
+- Container app `ca-tm-pr-westus2` revision restarted to pick up secrets (no `ReloadInterval` on `AddAzureKeyVault`)
+- `GET https://www.trashmob.eco/api/v2/privo/enabled` returns `{"enabled":true}`
+- Webhook endpoint live at `POST https://api.trashmob.eco/api/v2/webhooks/privo`
+
+### Dev (April 2026) ✅
+
+PRIVO INT credentials in `kv-tm-dev-westus2`; full end-to-end testing completed including consent webhook processing.
+
+### Remaining Work
+
+| Item | Owner | Notes |
+|------|-------|-------|
+| **Flow 3 child-initiated end-to-end test in prod** | TrashMob | `/child-signup` page calls `InitiateChildConsentAsync`; only INT testing done so far |
+| **Sponsorship documentation package** | TrashMob | Phase 3 deliverable (see Sponsorship Documentation Deliverables section) — in progress |
+| **Set a real `sendGridApiKey` on dev** | Ops | Dev currently has `"x"` (sentinel for "don't send"). Blocks PRIVO testers from exercising the child-account-invitation email flow on dev |
+| **Phase 4 — Family Features** | Deferred | Multi-minor management, family dashboard — future project |
 
 ---
 
@@ -91,6 +124,7 @@ This combined approach minimizes risk by building PRIVO integration directly int
 - [x] `/child-signup` page — child enters parent email, name, DOB
 - [x] Backend: `InitiateChildConsentAsync` — checks parent exists, calls PRIVO Section 6
 - [ ] End-to-end testing of child-initiated flow on INT
+- [ ] End-to-end testing of child-initiated flow on **prod** (May 2026 — prod creds live, ready to verify)
 
 #### PRIVO Feature Permissions
 - [x] `GET /v2/privo/permissions` — fetches PRIVO feature states by EID (Section 4), cached 1 hour
