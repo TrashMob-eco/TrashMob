@@ -20,6 +20,12 @@ namespace TrashMob.Models.Poco.V2
         public Guid ProspectId { get; set; }
 
         /// <summary>
+        /// Gets or sets the optional ProspectContact this activity was directed at.
+        /// Project 60 Phase 2: lets activities be attributed to a specific person at the prospect.
+        /// </summary>
+        public Guid? ProspectContactId { get; set; }
+
+        /// <summary>
         /// Gets or sets the activity type.
         /// </summary>
         public string ActivityType { get; set; } = string.Empty;

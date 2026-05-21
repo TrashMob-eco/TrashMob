@@ -328,6 +328,86 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
                 Times.Once);
         }
 
+        [Fact]
+        public async Task SendOutreach_WithContactIdOverride_TargetsSelectedContact()
+        {
+            var prospect = new CommunityProspectBuilder().Build();
+            prospect.PipelineStage = 0;
+            AddPrimaryContact(prospect, "primary@example.com", "Primary");
+            var secondary = new ProspectContact
+            {
+                Id = Guid.NewGuid(),
+                ProspectId = prospect.Id,
+                Name = "Secondary",
+                Email = "secondary@example.com",
+                ContactStatus = (int)ProspectContactStatus.Active,
+                IsPrimary = false,
+            };
+            prospect.Contacts.Add(secondary);
+            _prospectRepo.SetupGet(new[] { prospect });
+            SetupEmptyOutreachHistory();
+            SetupContentService(prospect.Id, 1);
+            _emailManager.Setup(e => e.GetHtmlEmailCopy(It.IsAny<string>()))
+                .Returns("<p>{personalizedContent}</p>");
+            _configuration.Setup(c => c["OutreachTestMode"]).Returns("false");
+            var sut = CreateSut();
+
+            var result = await sut.SendOutreachAsync(
+                prospect.Id, Guid.NewGuid(),
+                new OutreachSendRequest { ProspectContactId = secondary.Id });
+
+            Assert.True(result.Success);
+            // The saved outreach email should carry the secondary contact's Id, not the primary's.
+            _outreachEmailRepo.Verify(r => r.AddAsync(It.Is<ProspectOutreachEmail>(
+                e => e.ProspectContactId == secondary.Id)), Times.Once);
+            // Live mode → the secondary contact's email is the recipient.
+            _emailManager.Verify(e => e.SendTemplatedEmailAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<object>(),
+                It.Is<List<Shared.Poco.EmailAddress>>(r => r[0].Email == "secondary@example.com"),
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task SendOutreach_WithUnknownContactIdOverride_ReturnsFailure()
+        {
+            var prospect = new CommunityProspectBuilder().Build();
+            AddPrimaryContact(prospect, "test@example.com");
+            _prospectRepo.SetupGet(new[] { prospect });
+            SetupEmptyOutreachHistory();
+
+            var result = await _sut.SendOutreachAsync(
+                prospect.Id, Guid.NewGuid(),
+                new OutreachSendRequest { ProspectContactId = Guid.NewGuid() });
+
+            Assert.False(result.Success);
+            Assert.Contains("does not belong", result.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task SendOutreach_WithInactiveContactIdOverride_ReturnsFailure()
+        {
+            var prospect = new CommunityProspectBuilder().Build();
+            AddPrimaryContact(prospect, "primary@example.com");
+            var wrongPerson = new ProspectContact
+            {
+                Id = Guid.NewGuid(),
+                ProspectId = prospect.Id,
+                Name = "Wrong",
+                Email = "wrong@example.com",
+                ContactStatus = (int)ProspectContactStatus.WrongPerson,
+            };
+            prospect.Contacts.Add(wrongPerson);
+            _prospectRepo.SetupGet(new[] { prospect });
+            SetupEmptyOutreachHistory();
+
+            var result = await _sut.SendOutreachAsync(
+                prospect.Id, Guid.NewGuid(),
+                new OutreachSendRequest { ProspectContactId = wrongPerson.Id });
+
+            Assert.False(result.Success);
+            Assert.Contains("WrongPerson", result.ErrorMessage);
+        }
+
         #endregion
 
         #region PreviewOutreachAsync
