@@ -7754,7 +7754,7 @@ namespace TrashMob.Migrations
                     b.HasOne("TrashMob.Models.ProspectContact", "Contact")
                         .WithMany()
                         .HasForeignKey("ProspectContactId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("FK_ProspectActivities_ProspectContact");
 
                     b.HasOne("TrashMob.Models.CommunityProspect", "Prospect")
@@ -7826,7 +7826,7 @@ namespace TrashMob.Migrations
                     b.HasOne("TrashMob.Models.ProspectContact", "Contact")
                         .WithMany()
                         .HasForeignKey("ProspectContactId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("FK_ProspectOutreachEmails_ProspectContact");
 
                     b.HasOne("TrashMob.Models.CommunityProspect", "Prospect")
