@@ -115,7 +115,15 @@ namespace TrashMob.Controllers.V2
             var entity = dto.ToEntity();
             var result = await communityProspectManager.AddAsync(entity, UserId, cancellationToken);
 
-            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result.ToV2Dto());
+            if (dto.HasLegacyContactFields())
+            {
+                await communityProspectManager.UpsertPrimaryContactAsync(
+                    result.Id, dto.ContactName, dto.ContactEmail, dto.ContactTitle, dto.ContactPhone,
+                    UserId, cancellationToken);
+            }
+
+            var refreshed = await communityProspectManager.GetAsync(result.Id, cancellationToken);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, refreshed.ToV2Dto());
         }
 
         /// <summary>
@@ -133,7 +141,15 @@ namespace TrashMob.Controllers.V2
             var entity = dto.ToEntity();
             var result = await communityProspectManager.UpdateAsync(entity, UserId, cancellationToken);
 
-            return Ok(result.ToV2Dto());
+            if (dto.HasLegacyContactFields())
+            {
+                await communityProspectManager.UpsertPrimaryContactAsync(
+                    result.Id, dto.ContactName, dto.ContactEmail, dto.ContactTitle, dto.ContactPhone,
+                    UserId, cancellationToken);
+            }
+
+            var refreshed = await communityProspectManager.GetAsync(result.Id, cancellationToken);
+            return Ok(refreshed.ToV2Dto());
         }
 
         /// <summary>

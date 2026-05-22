@@ -1,6 +1,7 @@
 namespace TrashMob.Shared.Tests.Builders
 {
     using System;
+    using System.Linq;
     using TrashMob.Models;
 
     /// <summary>
@@ -86,9 +87,35 @@ namespace TrashMob.Shared.Tests.Builders
 
         public CommunityProspectBuilder WithContactInfo(string email, string name, string title)
         {
-            _prospect.ContactEmail = email;
-            _prospect.ContactName = name;
-            _prospect.ContactTitle = title;
+            return WithPrimaryContact(name: name, email: email, title: title);
+        }
+
+        public CommunityProspectBuilder WithPrimaryContact(string name, string email = null, string title = null, string phone = null)
+        {
+            var creatorId = _prospect.CreatedByUserId == Guid.Empty ? Guid.NewGuid() : _prospect.CreatedByUserId;
+
+            // Remove any existing primary contact so callers can chain WithPrimaryContact to replace.
+            foreach (var existing in _prospect.Contacts.Where(c => c.IsPrimary).ToList())
+            {
+                _prospect.Contacts.Remove(existing);
+            }
+
+            _prospect.Contacts.Add(new ProspectContact
+            {
+                Id = Guid.NewGuid(),
+                ProspectId = _prospect.Id,
+                Name = name,
+                Email = email,
+                Title = title,
+                Phone = phone,
+                ContactStatus = (int)ProspectContactStatus.Active,
+                IsPrimary = true,
+                CreatedByUserId = creatorId,
+                CreatedDate = DateTimeOffset.UtcNow,
+                LastUpdatedByUserId = creatorId,
+                LastUpdatedDate = DateTimeOffset.UtcNow,
+            });
+
             return this;
         }
 

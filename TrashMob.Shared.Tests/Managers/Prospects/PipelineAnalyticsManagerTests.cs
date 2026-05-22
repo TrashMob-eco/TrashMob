@@ -16,13 +16,26 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
     {
         private readonly Mock<IKeyedRepository<CommunityProspect>> _prospectRepo;
         private readonly Mock<IKeyedRepository<ProspectOutreachEmail>> _emailRepo;
+        private readonly Mock<IKeyedRepository<ProspectActivity>> _activityRepo;
+        private readonly Mock<IKeyedRepository<User>> _userRepo;
         private readonly PipelineAnalyticsManager _sut;
 
         public PipelineAnalyticsManagerTests()
         {
             _prospectRepo = new Mock<IKeyedRepository<CommunityProspect>>();
             _emailRepo = new Mock<IKeyedRepository<ProspectOutreachEmail>>();
-            _sut = new PipelineAnalyticsManager(_prospectRepo.Object, _emailRepo.Object);
+            _activityRepo = new Mock<IKeyedRepository<ProspectActivity>>();
+            _userRepo = new Mock<IKeyedRepository<User>>();
+
+            // Default empty data for the touchpoint tally so existing tests don't have to wire it.
+            _activityRepo.SetupGet(new List<ProspectActivity>());
+            _userRepo.SetupGet(new List<User>());
+
+            _sut = new PipelineAnalyticsManager(
+                _prospectRepo.Object,
+                _emailRepo.Object,
+                _activityRepo.Object,
+                _userRepo.Object);
         }
 
         [Fact]
@@ -142,6 +155,140 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
             prospect.CreatedDate = created;
             prospect.LastUpdatedDate = updated;
             return prospect;
+        }
+
+        // ----- Project 60 Phase 4: per-user touchpoint tally -----
+
+        [Fact]
+        public async Task GetAnalytics_TouchpointTally_GroupsActivitiesAndOutreachByUser()
+        {
+            _prospectRepo.SetupGet(new List<CommunityProspect>());
+
+            var now = DateTimeOffset.UtcNow;
+            var alice = new User { Id = Guid.NewGuid(), UserName = "alice", GivenName = "Alice", Surname = "Smith" };
+            var bob = new User { Id = Guid.NewGuid(), UserName = "bob" };
+            _userRepo.SetupGet(new[] { alice, bob });
+
+            _activityRepo.SetupGet(new[]
+            {
+                MakeActivity(alice.Id, now.AddDays(-5)),
+                MakeActivity(alice.Id, now.AddDays(-10)),
+                MakeActivity(bob.Id, now.AddDays(-20)),
+            });
+
+            _emailRepo.SetupGet(new[]
+            {
+                CreateEmail("Sent", alice.Id, now.AddDays(-3)),
+                CreateEmail("Sent", bob.Id, now.AddDays(-15)),
+                CreateEmail("Sent", bob.Id, now.AddDays(-25)),
+            });
+
+            var result = await _sut.GetAnalyticsAsync();
+
+            var aliceStat = result.TouchpointsByUserLast30Days.Single(s => s.UserId == alice.Id);
+            Assert.Equal("Alice Smith", aliceStat.UserName);
+            Assert.Equal(2, aliceStat.ActivityCount);
+            Assert.Equal(1, aliceStat.OutreachEmailCount);
+            Assert.Equal(3, aliceStat.TotalTouchpoints);
+
+            var bobStat = result.TouchpointsByUserLast30Days.Single(s => s.UserId == bob.Id);
+            Assert.Equal("bob", bobStat.UserName);
+            Assert.Equal(1, bobStat.ActivityCount);
+            Assert.Equal(2, bobStat.OutreachEmailCount);
+            Assert.Equal(3, bobStat.TotalTouchpoints);
+
+            // Ordered by TotalTouchpoints descending (tie is fine — both have 3 here).
+            Assert.Equal(2, result.TouchpointsByUserLast30Days.Count);
+        }
+
+        [Fact]
+        public async Task GetAnalytics_TouchpointTally_ExcludesOldEntriesFromWindow()
+        {
+            _prospectRepo.SetupGet(new List<CommunityProspect>());
+
+            var now = DateTimeOffset.UtcNow;
+            var alice = new User { Id = Guid.NewGuid(), UserName = "alice" };
+            _userRepo.SetupGet(new[] { alice });
+
+            _activityRepo.SetupGet(new[]
+            {
+                MakeActivity(alice.Id, now.AddDays(-15)),
+                MakeActivity(alice.Id, now.AddDays(-45)), // Outside the 30-day window
+                MakeActivity(alice.Id, now.AddDays(-200)), // Outside the 90-day window
+            });
+            _emailRepo.SetupGet(new List<ProspectOutreachEmail>());
+
+            var result = await _sut.GetAnalyticsAsync();
+
+            var alice30 = result.TouchpointsByUserLast30Days.Single(s => s.UserId == alice.Id);
+            Assert.Equal(1, alice30.TotalTouchpoints);
+
+            var alice90 = result.TouchpointsByUserLast90Days.Single(s => s.UserId == alice.Id);
+            Assert.Equal(2, alice90.TotalTouchpoints);
+        }
+
+        [Fact]
+        public async Task GetAnalytics_TouchpointTally_HandlesUnknownUsers()
+        {
+            _prospectRepo.SetupGet(new List<CommunityProspect>());
+            _userRepo.SetupGet(new List<User>());
+
+            var orphanUserId = Guid.NewGuid();
+            _activityRepo.SetupGet(new[] { MakeActivity(orphanUserId, DateTimeOffset.UtcNow.AddDays(-5)) });
+            _emailRepo.SetupGet(new List<ProspectOutreachEmail>());
+
+            var result = await _sut.GetAnalyticsAsync();
+
+            var stat = Assert.Single(result.TouchpointsByUserLast30Days);
+            Assert.Equal("(unknown)", stat.UserName);
+            Assert.Equal(1, stat.TotalTouchpoints);
+        }
+
+        [Fact]
+        public async Task GetAnalytics_TouchpointTally_IgnoresGuidEmptyUserIds()
+        {
+            _prospectRepo.SetupGet(new List<CommunityProspect>());
+            _userRepo.SetupGet(new List<User>());
+
+            // Automated/system-attributed entries (e.g. follow-up engine) carry Guid.Empty
+            // and should not appear in the per-user report.
+            _activityRepo.SetupGet(new[] { MakeActivity(Guid.Empty, DateTimeOffset.UtcNow.AddDays(-2)) });
+            _emailRepo.SetupGet(new[] { CreateEmail("Sent", Guid.Empty, DateTimeOffset.UtcNow.AddDays(-2)) });
+
+            var result = await _sut.GetAnalyticsAsync();
+
+            Assert.Empty(result.TouchpointsByUserLast30Days);
+        }
+
+        private static ProspectActivity MakeActivity(Guid userId, DateTimeOffset createdDate)
+        {
+            return new ProspectActivity
+            {
+                Id = Guid.NewGuid(),
+                ProspectId = Guid.NewGuid(),
+                ActivityType = "Call",
+                CreatedByUserId = userId,
+                CreatedDate = createdDate,
+                LastUpdatedByUserId = userId,
+                LastUpdatedDate = createdDate,
+            };
+        }
+
+        private static ProspectOutreachEmail CreateEmail(string status, Guid userId, DateTimeOffset createdDate)
+        {
+            return new ProspectOutreachEmail
+            {
+                Id = Guid.NewGuid(),
+                ProspectId = Guid.NewGuid(),
+                CadenceStep = 1,
+                Subject = "Test",
+                HtmlBody = "<p>Test</p>",
+                Status = status,
+                CreatedByUserId = userId,
+                LastUpdatedByUserId = userId,
+                CreatedDate = createdDate,
+                LastUpdatedDate = createdDate,
+            };
         }
     }
 }

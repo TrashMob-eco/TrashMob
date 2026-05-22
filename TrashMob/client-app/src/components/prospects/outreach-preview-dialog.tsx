@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import {
     PreviewOutreach,
@@ -14,6 +15,8 @@ import {
     GetCommunityProspectById,
 } from '@/services/community-prospects';
 import OutreachPreviewData from '@/components/Models/OutreachPreviewData';
+import ProspectContactData from '@/components/Models/ProspectContactData';
+import { ProspectContactStatusBadge } from '@/components/prospects/prospect-contact-status-badge';
 
 const CADENCE_STEP_LABELS: Record<number, string> = {
     1: 'Initial Outreach',
@@ -22,19 +25,49 @@ const CADENCE_STEP_LABELS: Record<number, string> = {
     4: 'Final Follow-up',
 };
 
+const PRIMARY_CONTACT_VALUE = '__primary__';
+
 interface OutreachPreviewDialogProps {
     prospectId: string;
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    /**
+     * The prospect's contacts. The dialog pre-selects the primary active contact and
+     * lets the user pick a different one before sending. Pass [] to fall back to the
+     * backend's automatic primary-contact resolution.
+     */
+    contacts?: ProspectContactData[];
 }
 
-export function OutreachPreviewDialog({ prospectId, open, onOpenChange }: OutreachPreviewDialogProps) {
+export function OutreachPreviewDialog({ prospectId, open, onOpenChange, contacts = [] }: OutreachPreviewDialogProps) {
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const [preview, setPreview] = useState<OutreachPreviewData | null>(null);
     const [loading, setLoading] = useState(false);
     const [editedSubject, setEditedSubject] = useState('');
     const [editedBody, setEditedBody] = useState('');
+    const [selectedContactId, setSelectedContactId] = useState<string>(PRIMARY_CONTACT_VALUE);
+
+    const sendableContacts = useMemo(
+        () => contacts.filter((c) => c.contactStatus === 0 /* Active */ || c.contactStatus === 4 /* RightPerson */),
+        [contacts],
+    );
+
+    // When the dialog opens (or the contacts list changes), default to the primary
+    // contact's id so the dropdown reflects who the email will actually go to.
+    useEffect(() => {
+        if (!open) {
+            return;
+        }
+        const primary = sendableContacts.find((c) => c.isPrimary);
+        if (primary) {
+            setSelectedContactId(primary.id);
+        } else if (sendableContacts.length === 1) {
+            setSelectedContactId(sendableContacts[0].id);
+        } else {
+            setSelectedContactId(PRIMARY_CONTACT_VALUE);
+        }
+    }, [open, sendableContacts]);
 
     const generatePreview = async () => {
         setLoading(true);
@@ -89,6 +122,9 @@ export function OutreachPreviewDialog({ prospectId, open, onOpenChange }: Outrea
     const isCadenceComplete = preview?.subject?.includes('complete') ?? false;
     const canSend = preview && preview.cadenceStep <= 4 && !isCadenceComplete;
 
+    const selectedContact =
+        selectedContactId === PRIMARY_CONTACT_VALUE ? null : (contacts.find((c) => c.id === selectedContactId) ?? null);
+
     return (
         <Dialog open={open} onOpenChange={handleOpen}>
             <DialogContent className='max-w-2xl max-h-[80vh] overflow-y-auto'>
@@ -111,6 +147,40 @@ export function OutreachPreviewDialog({ prospectId, open, onOpenChange }: Outrea
 
                         {!isCadenceComplete ? (
                             <>
+                                {contacts.length > 0 ? (
+                                    <div>
+                                        <label htmlFor='outreach-contact' className='text-sm font-medium'>
+                                            Send to
+                                        </label>
+                                        <Select value={selectedContactId} onValueChange={setSelectedContactId}>
+                                            <SelectTrigger id='outreach-contact'>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value={PRIMARY_CONTACT_VALUE}>
+                                                    Auto (primary active contact)
+                                                </SelectItem>
+                                                {sendableContacts.map((c) => (
+                                                    <SelectItem key={c.id} value={c.id}>
+                                                        {c.name}
+                                                        {c.email ? ` <${c.email}>` : ''}
+                                                        {c.isPrimary ? ' — primary' : ''}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        {selectedContact && !selectedContact.email ? (
+                                            <p className='text-xs text-destructive mt-1'>
+                                                This contact has no email address — the send will fail.
+                                            </p>
+                                        ) : null}
+                                        {selectedContact ? (
+                                            <div className='mt-1'>
+                                                <ProspectContactStatusBadge status={selectedContact.contactStatus} />
+                                            </div>
+                                        ) : null}
+                                    </div>
+                                ) : null}
                                 <div>
                                     <label htmlFor='outreach-subject' className='text-sm font-medium'>
                                         Subject
@@ -155,6 +225,8 @@ export function OutreachPreviewDialog({ prospectId, open, onOpenChange }: Outrea
                                     id: prospectId,
                                     subject: editedSubject,
                                     htmlBody: editedBody,
+                                    prospectContactId:
+                                        selectedContactId === PRIMARY_CONTACT_VALUE ? undefined : selectedContactId,
                                 })
                             }
                             disabled={sendOutreach.isPending || !editedSubject.trim() || !editedBody.trim()}

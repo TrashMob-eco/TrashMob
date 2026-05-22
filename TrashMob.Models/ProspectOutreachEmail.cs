@@ -15,6 +15,12 @@ namespace TrashMob.Models
         public Guid ProspectId { get; set; }
 
         /// <summary>
+        /// Gets or sets the specific ProspectContact this email was sent to, if known.
+        /// Null for emails sent before per-contact tracking was introduced.
+        /// </summary>
+        public Guid? ProspectContactId { get; set; }
+
+        /// <summary>
         /// Gets or sets the cadence step (1=Initial, 2=Follow-up, 3=Value-add, 4=Final).
         /// </summary>
         public int CadenceStep { get; set; }
@@ -58,5 +64,10 @@ namespace TrashMob.Models
         /// Gets or sets the associated prospect.
         /// </summary>
         public virtual CommunityProspect Prospect { get; set; }
+
+        /// <summary>
+        /// Gets or sets the associated prospect contact, if a specific person was targeted.
+        /// </summary>
+        public virtual ProspectContact Contact { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 namespace TrashMob.Models.Extensions.V2
 {
+    using System.Linq;
     using TrashMob.Models.Poco.V2;
 
     /// <summary>
@@ -429,10 +430,15 @@ namespace TrashMob.Models.Extensions.V2
         #region CommunityProspect
 
         /// <summary>
-        /// Maps a CommunityProspect entity to a V2 CommunityProspectDto.
+        /// Maps a CommunityProspect entity to a V2 CommunityProspectDto. The legacy flat
+        /// contact fields (ContactName / ContactEmail / ContactTitle / ContactPhone) are
+        /// populated from the primary <see cref="ProspectContact"/> as a backward-compat
+        /// shortcut. Requires <see cref="CommunityProspect.Contacts"/> to be loaded.
         /// </summary>
         public static CommunityProspectDto ToV2Dto(this CommunityProspect entity)
         {
+            var primary = entity.GetPrimaryContact();
+
             return new CommunityProspectDto
             {
                 Id = entity.Id,
@@ -445,22 +451,26 @@ namespace TrashMob.Models.Extensions.V2
                 Longitude = entity.Longitude,
                 Population = entity.Population,
                 Website = entity.Website,
-                ContactEmail = entity.ContactEmail,
-                ContactName = entity.ContactName,
-                ContactTitle = entity.ContactTitle,
-                ContactPhone = entity.ContactPhone,
+                ContactEmail = primary?.Email,
+                ContactName = primary?.Name,
+                ContactTitle = primary?.Title,
+                ContactPhone = primary?.Phone,
                 PipelineStage = entity.PipelineStage,
                 FitScore = entity.FitScore,
                 Notes = entity.Notes,
                 LastContactedDate = entity.LastContactedDate,
                 NextFollowUpDate = entity.NextFollowUpDate,
                 ConvertedPartnerId = entity.ConvertedPartnerId,
+                Contacts = entity.Contacts?.Select(c => c.ToV2Dto()).ToList() ?? [],
                 CreatedDate = entity.CreatedDate,
             };
         }
 
         /// <summary>
-        /// Maps a V2 CommunityProspectDto to a CommunityProspect entity.
+        /// Maps a V2 CommunityProspectDto to a CommunityProspect entity. The legacy flat
+        /// contact fields on the DTO are NOT applied here — callers (controller / manager)
+        /// must call <see cref="HasLegacyContactFields"/> and orchestrate the primary
+        /// contact upsert separately.
         /// </summary>
         public static CommunityProspect ToEntity(this CommunityProspectDto dto)
         {
@@ -476,16 +486,89 @@ namespace TrashMob.Models.Extensions.V2
                 Longitude = dto.Longitude,
                 Population = dto.Population,
                 Website = dto.Website,
-                ContactEmail = dto.ContactEmail,
-                ContactName = dto.ContactName,
-                ContactTitle = dto.ContactTitle,
-                ContactPhone = dto.ContactPhone,
                 PipelineStage = dto.PipelineStage,
                 FitScore = dto.FitScore,
                 Notes = dto.Notes,
                 LastContactedDate = dto.LastContactedDate,
                 NextFollowUpDate = dto.NextFollowUpDate,
                 ConvertedPartnerId = dto.ConvertedPartnerId,
+            };
+        }
+
+        /// <summary>
+        /// Returns the primary contact for a prospect, or null. Falls back to the first
+        /// contact if no row is explicitly flagged primary (defensive — should not happen
+        /// for migrated data).
+        /// </summary>
+        public static ProspectContact? GetPrimaryContact(this CommunityProspect entity)
+        {
+            if (entity.Contacts == null)
+            {
+                return null;
+            }
+
+            return entity.Contacts.FirstOrDefault(c => c.IsPrimary)
+                ?? entity.Contacts.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Returns true if the DTO has any non-whitespace legacy contact field set.
+        /// Used by controllers to decide whether to upsert the primary contact after
+        /// a prospect create/update.
+        /// </summary>
+        public static bool HasLegacyContactFields(this CommunityProspectDto dto)
+        {
+            return !string.IsNullOrWhiteSpace(dto.ContactName)
+                || !string.IsNullOrWhiteSpace(dto.ContactEmail)
+                || !string.IsNullOrWhiteSpace(dto.ContactTitle)
+                || !string.IsNullOrWhiteSpace(dto.ContactPhone);
+        }
+
+        #endregion
+
+        #region ProspectContact
+
+        /// <summary>
+        /// Maps a ProspectContact entity to a V2 ProspectContactDto.
+        /// </summary>
+        public static ProspectContactDto ToV2Dto(this ProspectContact entity)
+        {
+            return new ProspectContactDto
+            {
+                Id = entity.Id,
+                ProspectId = entity.ProspectId,
+                Name = entity.Name ?? string.Empty,
+                Title = entity.Title,
+                Email = entity.Email,
+                Phone = entity.Phone,
+                Role = entity.Role,
+                ContactStatus = entity.ContactStatus,
+                IsPrimary = entity.IsPrimary,
+                ReferredByContactId = entity.ReferredByContactId,
+                Notes = entity.Notes,
+                CreatedDate = entity.CreatedDate,
+                LastUpdatedDate = entity.LastUpdatedDate,
+            };
+        }
+
+        /// <summary>
+        /// Maps a V2 ProspectContactDto to a ProspectContact entity.
+        /// </summary>
+        public static ProspectContact ToEntity(this ProspectContactDto dto)
+        {
+            return new ProspectContact
+            {
+                Id = dto.Id,
+                ProspectId = dto.ProspectId,
+                Name = dto.Name ?? string.Empty,
+                Title = dto.Title,
+                Email = dto.Email,
+                Phone = dto.Phone,
+                Role = dto.Role,
+                ContactStatus = dto.ContactStatus,
+                IsPrimary = dto.IsPrimary,
+                ReferredByContactId = dto.ReferredByContactId,
+                Notes = dto.Notes,
             };
         }
 
@@ -502,6 +585,7 @@ namespace TrashMob.Models.Extensions.V2
             {
                 Id = entity.Id,
                 ProspectId = entity.ProspectId,
+                ProspectContactId = entity.ProspectContactId,
                 ActivityType = entity.ActivityType,
                 Subject = entity.Subject,
                 Details = entity.Details,
@@ -519,6 +603,7 @@ namespace TrashMob.Models.Extensions.V2
             {
                 Id = dto.Id,
                 ProspectId = dto.ProspectId,
+                ProspectContactId = dto.ProspectContactId,
                 ActivityType = dto.ActivityType ?? string.Empty,
                 Subject = dto.Subject,
                 Details = dto.Details,

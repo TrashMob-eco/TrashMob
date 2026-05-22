@@ -1,6 +1,7 @@
 namespace TrashMobMCP.Tools;
 
 using System.ComponentModel;
+using System.Linq;
 using System.Text.Json;
 using ModelContextProtocol.Server;
 using TrashMob.Models;
@@ -23,7 +24,7 @@ public class SearchProspectsTool(ICommunityProspectManager prospectManager)
     /// <summary>
     /// Search existing community prospects in the TrashMob pipeline.
     /// </summary>
-    /// <param name="searchTerm">Search by name, city, or region (optional)</param>
+    /// <param name="searchTerm">Search by name, city, region, or any contact name/email (optional)</param>
     /// <param name="pipelineStage">Filter by pipeline stage: 0=New, 1=Contacted, 2=Responded, 3=Interested, 4=Onboarding, 5=Active, 6=Declined (optional)</param>
     /// <param name="maxResults">Maximum number of results to return (default: 20, max: 100)</param>
     /// <returns>JSON array of matching prospects with pipeline status</returns>
@@ -51,7 +52,12 @@ public class SearchProspectsTool(ICommunityProspectManager prospectManager)
 
         var sanitized = prospects
             .Take(Math.Min(maxResults, 100))
-            .Select(ToDto)
+            .Select(p =>
+            {
+                var primary = p.Contacts?.FirstOrDefault(c => c.IsPrimary)
+                    ?? p.Contacts?.FirstOrDefault();
+                return ProspectDtoMapper.ToDto(p, primary, StageNames);
+            })
             .ToList();
 
         return JsonSerializer.Serialize(new
@@ -67,31 +73,5 @@ public class SearchProspectsTool(ICommunityProspectManager prospectManager)
                     : null,
             }
         }, JsonOptions);
-    }
-
-    private static ProspectDto ToDto(CommunityProspect p)
-    {
-        return new ProspectDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Type = p.Type,
-            City = p.City,
-            Region = p.Region,
-            Country = p.Country,
-            Population = p.Population,
-            Website = p.Website,
-            ContactName = p.ContactName,
-            ContactEmail = p.ContactEmail,
-            ContactTitle = p.ContactTitle,
-            PipelineStage = p.PipelineStage,
-            PipelineStageName = p.PipelineStage >= 0 && p.PipelineStage < StageNames.Length
-                ? StageNames[p.PipelineStage]
-                : "Unknown",
-            FitScore = p.FitScore,
-            LastContactedDate = p.LastContactedDate,
-            NextFollowUpDate = p.NextFollowUpDate,
-            Notes = p.Notes,
-        };
     }
 }

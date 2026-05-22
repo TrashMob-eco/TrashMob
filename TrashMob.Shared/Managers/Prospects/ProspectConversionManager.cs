@@ -2,8 +2,10 @@ namespace TrashMob.Shared.Managers.Prospects
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
@@ -29,7 +31,9 @@ namespace TrashMob.Shared.Managers.Prospects
             ProspectConversionRequest request, Guid userId,
             CancellationToken cancellationToken = default)
         {
-            var prospect = await prospectRepository.GetAsync(request.ProspectId, cancellationToken);
+            var prospect = await prospectRepository.Get()
+                .Include(p => p.Contacts)
+                .FirstOrDefaultAsync(p => p.Id == request.ProspectId, cancellationToken);
             if (prospect is null)
             {
                 return new ProspectConversionResult { Success = false, ErrorMessage = "Prospect not found." };
@@ -76,10 +80,12 @@ namespace TrashMob.Shared.Managers.Prospects
                 };
                 await activityRepository.AddAsync(activity);
 
-                // 5. Send welcome email if requested and contact email exists
-                if (request.SendWelcomeEmail && !string.IsNullOrWhiteSpace(prospect.ContactEmail))
+                // 5. Send welcome email if requested and a primary contact has an email
+                var primaryContact = prospect.Contacts?.FirstOrDefault(c => c.IsPrimary)
+                    ?? prospect.Contacts?.FirstOrDefault();
+                if (request.SendWelcomeEmail && !string.IsNullOrWhiteSpace(primaryContact?.Email))
                 {
-                    await SendWelcomeEmailAsync(prospect, newPartner, cancellationToken);
+                    await SendWelcomeEmailAsync(prospect, primaryContact, newPartner, cancellationToken);
                 }
 
                 logger.LogInformation("Converted prospect {ProspectId} to partner {PartnerId}", prospect.Id, newPartner.Id);
@@ -98,7 +104,7 @@ namespace TrashMob.Shared.Managers.Prospects
         }
 
         private async Task SendWelcomeEmailAsync(
-            CommunityProspect prospect, Partner partner,
+            CommunityProspect prospect, ProspectContact primaryContact, Partner partner,
             CancellationToken cancellationToken)
         {
             try
@@ -109,7 +115,7 @@ namespace TrashMob.Shared.Managers.Prospects
                 var subject = $"Welcome to TrashMob.eco, {partner.Name}!";
                 var dynamicTemplateData = new
                 {
-                    username = prospect.ContactName ?? prospect.Name,
+                    username = primaryContact?.Name ?? prospect.Name,
                     emailCopy = htmlCopy,
                     subject,
                 };
@@ -118,8 +124,8 @@ namespace TrashMob.Shared.Managers.Prospects
                 [
                     new()
                     {
-                        Name = prospect.ContactName ?? prospect.Name,
-                        Email = prospect.ContactEmail,
+                        Name = primaryContact?.Name ?? prospect.Name,
+                        Email = primaryContact?.Email,
                     },
                 ];
 

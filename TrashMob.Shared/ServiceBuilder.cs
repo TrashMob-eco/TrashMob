@@ -160,6 +160,7 @@
 
             // Community Prospects
             services.AddScoped<ICommunityProspectManager, CommunityProspectManager>();
+            services.AddScoped<IProspectContactManager, ProspectContactManager>();
             services.AddScoped<IProspectActivityManager, ProspectActivityManager>();
             services.AddScoped<IClaudeDiscoveryService, ClaudeDiscoveryService>();
             services.AddScoped<IProspectScoringManager, ProspectScoringManager>();
@@ -299,6 +300,7 @@
 
             // Community Prospect repositories
             services.AddScoped<IKeyedRepository<CommunityProspect>, KeyedRepository<CommunityProspect>>();
+            services.AddScoped<IKeyedRepository<ProspectContact>, KeyedRepository<ProspectContact>>();
             services.AddScoped<IKeyedRepository<ProspectActivity>, KeyedRepository<ProspectActivity>>();
             services.AddScoped<IKeyedRepository<ProspectOutreachEmail>, KeyedRepository<ProspectOutreachEmail>>();
 

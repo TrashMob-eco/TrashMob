@@ -1,9 +1,9 @@
 # TrashMob.eco — PRIVO Integration Package
 
-**Document Version:** 3.0
-**Date:** April 5, 2026
+**Document Version:** 3.1
+**Date:** May 20, 2026
 **Prepared for:** PRIVO Integration Team
-**Status:** Integration complete on INT — awaiting production credentials
+**Status:** **Production live** as of May 20, 2026. INT integration completed April 2026; prod OAuth credentials + webhook API key configured in `kv-tm-pr-westus2`; `Privo--Enabled=true` in prod. Flow 3 (child-initiated) ready for prod E2E verification.
 
 ---
 

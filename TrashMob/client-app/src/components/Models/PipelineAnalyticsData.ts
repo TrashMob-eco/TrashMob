@@ -10,6 +10,14 @@ export class ProspectTypeStat {
     convertedCount: number = 0;
 }
 
+export class UserTouchpointStat {
+    userId: string = '';
+    userName: string = '';
+    activityCount: number = 0;
+    outreachEmailCount: number = 0;
+    totalTouchpoints: number = 0;
+}
+
 class PipelineAnalyticsData {
     stageCounts: PipelineStageStat[] = [];
     totalProspects: number = 0;
@@ -24,6 +32,8 @@ class PipelineAnalyticsData {
     conversionRate: number = 0;
     averageDaysInPipeline: number = 0;
     typeBreakdown: ProspectTypeStat[] = [];
+    touchpointsByUserLast30Days: UserTouchpointStat[] = [];
+    touchpointsByUserLast90Days: UserTouchpointStat[] = [];
 }
 
 export default PipelineAnalyticsData;

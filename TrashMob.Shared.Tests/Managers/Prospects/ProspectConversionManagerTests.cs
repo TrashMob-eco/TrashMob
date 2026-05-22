@@ -36,6 +36,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
             _logger = new Mock<ILogger<ProspectConversionManager>>();
 
             _prospectRepo.SetupUpdateAsync();
+            _prospectRepo.SetupGet(new List<CommunityProspect>());
             _activityRepo.SetupAddAsync();
 
             _sut = new ProspectConversionManager(
@@ -114,7 +115,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         {
             var prospect = CreateProspect();
             prospect.ConvertedPartnerId = Guid.NewGuid();
-            _prospectRepo.SetupGetAsync(prospect);
+            _prospectRepo.SetupGet(new[] { prospect });
 
             var result = await _sut.ConvertToPartnerAsync(
                 new ProspectConversionRequest { ProspectId = prospect.Id },
@@ -194,7 +195,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
 
         private void SetupForConversion(CommunityProspect prospect)
         {
-            _prospectRepo.SetupGetAsync(prospect);
+            _prospectRepo.SetupGet(new[] { prospect });
 
             _partnerManager.Setup(m => m.AddAsync(It.IsAny<Partner>(), _userId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Partner p, Guid _, CancellationToken _) =>
