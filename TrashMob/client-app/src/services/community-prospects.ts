@@ -11,6 +11,7 @@ import OutreachSettingsData from '../components/Models/OutreachSettingsData';
 import PipelineAnalyticsData from '../components/Models/PipelineAnalyticsData';
 import ProspectConversionResultData from '../components/Models/ProspectConversionResultData';
 import ProspectActivityData from '../components/Models/ProspectActivityData';
+import ProspectContactData from '../components/Models/ProspectContactData';
 import ProspectOutreachEmailData from '../components/Models/ProspectOutreachEmailData';
 
 export type GetCommunityProspects_Params = { stage?: number; search?: string };
@@ -191,17 +192,29 @@ export const PreviewOutreach = (params: PreviewOutreach_Params) => ({
         }),
 });
 
-export type SendOutreach_Params = { id: string; subject?: string; htmlBody?: string };
+export type SendOutreach_Params = {
+    id: string;
+    subject?: string;
+    htmlBody?: string;
+    prospectContactId?: string;
+};
 export type SendOutreach_Response = OutreachSendResultData;
 export const SendOutreach = () => ({
     key: ['/communityprospects', 'outreach', 'send'],
-    service: async (params: SendOutreach_Params) =>
-        ApiService('protected').fetchData<SendOutreach_Response>({
+    service: async (params: SendOutreach_Params) => {
+        const hasBody = params.subject || params.htmlBody || params.prospectContactId;
+        return ApiService('protected').fetchData<SendOutreach_Response>({
             url: `/v2/community-prospects/${params.id}/outreach`,
             method: 'post',
-            data:
-                params.subject || params.htmlBody ? { subject: params.subject, htmlBody: params.htmlBody } : undefined,
-        }),
+            data: hasBody
+                ? {
+                      subject: params.subject,
+                      htmlBody: params.htmlBody,
+                      prospectContactId: params.prospectContactId,
+                  }
+                : undefined,
+        });
+    },
 });
 
 export type GetOutreachHistory_Params = { id: string };
@@ -266,5 +279,81 @@ export const ConvertProspectToPartner = () => ({
                 partnerTypeId: params.partnerTypeId ?? 1,
                 sendWelcomeEmail: params.sendWelcomeEmail ?? true,
             },
+        }),
+});
+
+// --- Project 60: Prospect Contacts ---
+
+export type GetProspectContacts_Params = { prospectId: string };
+export type GetProspectContacts_Response = ProspectContactData[];
+export const GetProspectContacts = (params: GetProspectContacts_Params) => ({
+    key: ['/communityprospects', params.prospectId, 'contacts'],
+    service: async () =>
+        ApiService('protected').fetchData<GetProspectContacts_Response>({
+            url: `/v2/community-prospects/${params.prospectId}/contacts`,
+            method: 'get',
+        }),
+});
+
+export type CreateProspectContact_Params = { prospectId: string };
+export type CreateProspectContact_Body = ProspectContactData;
+export type CreateProspectContact_Response = ProspectContactData;
+export const CreateProspectContact = (params: CreateProspectContact_Params) => ({
+    key: ['/communityprospects', params.prospectId, 'contacts', 'create'],
+    service: async (body: CreateProspectContact_Body) =>
+        ApiService('protected').fetchData<CreateProspectContact_Response, CreateProspectContact_Body>({
+            url: `/v2/community-prospects/${params.prospectId}/contacts`,
+            method: 'post',
+            data: body,
+        }),
+});
+
+export type UpdateProspectContact_Params = { prospectId: string; contactId: string };
+export type UpdateProspectContact_Body = ProspectContactData;
+export type UpdateProspectContact_Response = ProspectContactData;
+export const UpdateProspectContact = (params: UpdateProspectContact_Params) => ({
+    key: ['/communityprospects', params.prospectId, 'contacts', params.contactId, 'update'],
+    service: async (body: UpdateProspectContact_Body) =>
+        ApiService('protected').fetchData<UpdateProspectContact_Response, UpdateProspectContact_Body>({
+            url: `/v2/community-prospects/${params.prospectId}/contacts/${params.contactId}`,
+            method: 'put',
+            data: body,
+        }),
+});
+
+export type DeleteProspectContact_Params = { prospectId: string; contactId: string };
+export const DeleteProspectContact = () => ({
+    key: ['/communityprospects', 'contacts', 'delete'],
+    service: async (params: DeleteProspectContact_Params) =>
+        ApiService('protected').fetchData<unknown>({
+            url: `/v2/community-prospects/${params.prospectId}/contacts/${params.contactId}`,
+            method: 'delete',
+        }),
+});
+
+export type SetPrimaryProspectContact_Params = { prospectId: string; contactId: string };
+export type SetPrimaryProspectContact_Response = ProspectContactData;
+export const SetPrimaryProspectContact = () => ({
+    key: ['/communityprospects', 'contacts', 'set-primary'],
+    service: async (params: SetPrimaryProspectContact_Params) =>
+        ApiService('protected').fetchData<SetPrimaryProspectContact_Response>({
+            url: `/v2/community-prospects/${params.prospectId}/contacts/${params.contactId}/set-primary`,
+            method: 'post',
+        }),
+});
+
+export type UpdateProspectContactStatus_Params = {
+    prospectId: string;
+    contactId: string;
+    status: number;
+};
+export type UpdateProspectContactStatus_Response = ProspectContactData;
+export const UpdateProspectContactStatus = () => ({
+    key: ['/communityprospects', 'contacts', 'status'],
+    service: async (params: UpdateProspectContactStatus_Params) =>
+        ApiService('protected').fetchData<UpdateProspectContactStatus_Response>({
+            url: `/v2/community-prospects/${params.prospectId}/contacts/${params.contactId}/status`,
+            method: 'put',
+            data: { status: params.status },
         }),
 });
