@@ -3475,10 +3475,16 @@
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ProspectActivities_CommunityProspect");
 
+                // ClientSetNull (not SetNull) avoids SQL Server's multi-cascade-path error
+                // 1785: ProspectActivities already cascade-deletes from CommunityProspects, and
+                // ProspectContacts also cascade-deletes from CommunityProspects, so a SetNull
+                // path back to ProspectActivities creates two delete paths to the same table.
+                // ClientSetNull keeps the SetNull semantics in EF's tracker but uses NoAction
+                // in the schema.
                 entity.HasOne(d => d.Contact)
                     .WithMany()
                     .HasForeignKey(d => d.ProspectContactId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProspectActivities_ProspectContact");
 
                 entity.HasOne(d => d.CreatedByUser)
@@ -3517,10 +3523,11 @@
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ProspectOutreachEmails_CommunityProspect");
 
+                // ClientSetNull — see FK_ProspectActivities_ProspectContact above for rationale.
                 entity.HasOne(d => d.Contact)
                     .WithMany()
                     .HasForeignKey(d => d.ProspectContactId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProspectOutreachEmails_ProspectContact");
 
                 entity.HasOne(d => d.CreatedByUser)
