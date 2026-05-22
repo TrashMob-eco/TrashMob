@@ -110,10 +110,16 @@ jobs:
             dotnet workload install maui-ios --ignore-failed-sources --source https://api.nuget.org/v3/index.json
 
         - name: Set XCode Version
+          # .NET-iOS SDK 26.5.10284 (pulled by `dotnet workload install maui-ios`) requires
+          # Xcode 26.5. On the macos-26 runner image, Xcode 26.5 is currently only shipped
+          # as a Beta (e.g. /Applications/Xcode_26.5_beta_2.app), and maxim-lobanov/setup-xcode
+          # filters out non-stable versions, so the action can't resolve a `26.5` pin.
+          # Switch via xcode-select directly through the version symlink — once Apple ships
+          # 26.5 GM and Microsoft promotes it on the runner, swap this back to setup-xcode.
           if: runner.os == 'macOS'
-          uses: maxim-lobanov/setup-xcode@v1
-          with:
-            xcode-version: '26.5'
+          run: |
+            sudo xcode-select -switch /Applications/Xcode_26.5.app
+            xcodebuild -version
 
         - name: Import Code-Signing Certificates
           uses: Apple-Actions/import-codesign-certs@v6
