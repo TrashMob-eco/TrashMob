@@ -203,7 +203,7 @@ jobs:
             Write-Host "Staged artifacts:"
             Get-ChildItem artifact-staging
 
-        - uses: actions/upload-artifact@v7.0.0
+        - uses: actions/upload-artifact@v7.0.1
           with:
             name: artifacts-android-${{ env.semVer }}
             path: artifact-staging\
