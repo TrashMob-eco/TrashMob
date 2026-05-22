@@ -2,6 +2,7 @@
 
 namespace TrashMob.Models.Poco
 {
+    using System;
     using System.Collections.Generic;
 
     public class PipelineAnalytics
@@ -25,6 +26,13 @@ namespace TrashMob.Models.Poco
 
         // Breakdown by prospect type
         public List<ProspectTypeStat> TypeBreakdown { get; set; } = [];
+
+        // Project 60 Phase 4: per-user touchpoint tally — total of ProspectActivity +
+        // ProspectOutreachEmail rows that user created in the window. Used to gauge
+        // volunteer effort against the pipeline (and as the foundation for a future
+        // salesperson hire's billable-attempts report).
+        public List<UserTouchpointStat> TouchpointsByUserLast30Days { get; set; } = [];
+        public List<UserTouchpointStat> TouchpointsByUserLast90Days { get; set; } = [];
     }
 
     public class PipelineStageStat
@@ -39,5 +47,14 @@ namespace TrashMob.Models.Poco
         public string Type { get; set; } = string.Empty;
         public int Count { get; set; }
         public int ConvertedCount { get; set; }
+    }
+
+    public class UserTouchpointStat
+    {
+        public Guid UserId { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public int ActivityCount { get; set; }
+        public int OutreachEmailCount { get; set; }
+        public int TotalTouchpoints { get; set; }
     }
 }

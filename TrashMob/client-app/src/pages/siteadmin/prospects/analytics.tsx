@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { GetPipelineAnalytics } from '@/services/community-prospects';
 import { BarChart3, Mail, MousePointerClick, TrendingUp, Users } from 'lucide-react';
 
@@ -14,6 +16,11 @@ export const SiteAdminProspectAnalytics = () => {
     });
 
     const maxStageCount = Math.max(...(analytics?.stageCounts?.map((s) => s.count) ?? [1]));
+    const [touchpointWindow, setTouchpointWindow] = useState<'30' | '90'>('30');
+    const touchpointStats =
+        touchpointWindow === '30'
+            ? (analytics?.touchpointsByUserLast30Days ?? [])
+            : (analytics?.touchpointsByUserLast90Days ?? []);
 
     return (
         <div className='space-y-6'>
@@ -128,6 +135,53 @@ export const SiteAdminProspectAnalytics = () => {
                             </div>
                         </div>
                     </div>
+                </CardContent>
+            </Card>
+
+            {/* Touchpoints by Volunteer (Project 60 Phase 4) */}
+            <Card>
+                <CardHeader className='flex flex-row items-start justify-between'>
+                    <div>
+                        <CardTitle>Touchpoints by Volunteer</CardTitle>
+                        <CardDescription>
+                            Activity log entries + outreach emails per user. Used to gauge effort against the pipeline.
+                        </CardDescription>
+                    </div>
+                    <Tabs value={touchpointWindow} onValueChange={(v) => setTouchpointWindow(v as '30' | '90')}>
+                        <TabsList>
+                            <TabsTrigger value='30'>Last 30 days</TabsTrigger>
+                            <TabsTrigger value='90'>Last 90 days</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Volunteer</TableHead>
+                                <TableHead className='text-right'>Activities</TableHead>
+                                <TableHead className='text-right'>Outreach emails</TableHead>
+                                <TableHead className='text-right'>Total touchpoints</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {touchpointStats.map((stat) => (
+                                <TableRow key={stat.userId}>
+                                    <TableCell className='font-medium'>{stat.userName}</TableCell>
+                                    <TableCell className='text-right'>{stat.activityCount}</TableCell>
+                                    <TableCell className='text-right'>{stat.outreachEmailCount}</TableCell>
+                                    <TableCell className='text-right font-medium'>{stat.totalTouchpoints}</TableCell>
+                                </TableRow>
+                            ))}
+                            {touchpointStats.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={4} className='text-center text-muted-foreground'>
+                                        No touchpoints recorded in this window.
+                                    </TableCell>
+                                </TableRow>
+                            ) : null}
+                        </TableBody>
+                    </Table>
                 </CardContent>
             </Card>
 

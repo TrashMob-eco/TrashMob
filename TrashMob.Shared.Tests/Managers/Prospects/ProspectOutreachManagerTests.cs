@@ -384,6 +384,24 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         }
 
         [Fact]
+        public async Task SendOutreach_WhenProspectHasNoContacts_ReturnsFailureInLiveMode()
+        {
+            // Project 60 regression: an outreach send to a prospect with zero ProspectContact rows
+            // must fail cleanly rather than NRE in the primary-contact picker.
+            var prospect = new CommunityProspectBuilder().Build();
+            Assert.Empty(prospect.Contacts);
+            _prospectRepo.SetupGet(new[] { prospect });
+            SetupEmptyOutreachHistory();
+            _configuration.Setup(c => c["OutreachTestMode"]).Returns("false");
+            var sut = CreateSut();
+
+            var result = await sut.SendOutreachAsync(prospect.Id, Guid.NewGuid());
+
+            Assert.False(result.Success);
+            Assert.Contains("no contact email", result.ErrorMessage);
+        }
+
+        [Fact]
         public async Task SendOutreach_WithInactiveContactIdOverride_ReturnsFailure()
         {
             var prospect = new CommunityProspectBuilder().Build();

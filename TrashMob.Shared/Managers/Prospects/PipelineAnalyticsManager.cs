@@ -12,7 +12,9 @@ namespace TrashMob.Shared.Managers.Prospects
 
     public class PipelineAnalyticsManager(
         IKeyedRepository<CommunityProspect> prospectRepository,
-        IKeyedRepository<ProspectOutreachEmail> outreachEmailRepository)
+        IKeyedRepository<ProspectOutreachEmail> outreachEmailRepository,
+        IKeyedRepository<ProspectActivity> activityRepository,
+        IKeyedRepository<User> userRepository)
         : IPipelineAnalyticsManager
     {
         private static readonly string[] StageLabels =
@@ -95,7 +97,74 @@ namespace TrashMob.Shared.Managers.Prospects
                 .OrderByDescending(t => t.Count)
                 .ToListAsync(cancellationToken);
 
+            // Project 60 Phase 4: per-user touchpoint tally for the last 30 and 90 days.
+            var now = DateTimeOffset.UtcNow;
+            analytics.TouchpointsByUserLast30Days = await GetTouchpointsByUserAsync(now.AddDays(-30), cancellationToken);
+            analytics.TouchpointsByUserLast90Days = await GetTouchpointsByUserAsync(now.AddDays(-90), cancellationToken);
+
             return analytics;
+        }
+
+        private async Task<List<UserTouchpointStat>> GetTouchpointsByUserAsync(
+            DateTimeOffset since,
+            CancellationToken cancellationToken)
+        {
+            // Activity counts per user since the cutoff.
+            var activityCounts = await activityRepository.Get()
+                .Where(a => a.CreatedDate >= since)
+                .GroupBy(a => a.CreatedByUserId)
+                .Select(g => new { UserId = g.Key, Count = g.Count() })
+                .ToListAsync(cancellationToken);
+
+            // Outreach email counts per user since the cutoff.
+            var outreachCounts = await outreachEmailRepository.Get()
+                .Where(e => e.CreatedDate >= since)
+                .GroupBy(e => e.CreatedByUserId)
+                .Select(g => new { UserId = g.Key, Count = g.Count() })
+                .ToListAsync(cancellationToken);
+
+            // Stitch the two together by user.
+            var userIds = activityCounts.Select(a => a.UserId)
+                .Concat(outreachCounts.Select(o => o.UserId))
+                .Distinct()
+                .Where(id => id != Guid.Empty)
+                .ToList();
+
+            if (userIds.Count == 0)
+            {
+                return [];
+            }
+
+            // Fetch display names in a single round-trip.
+            var users = await userRepository.Get()
+                .Where(u => userIds.Contains(u.Id))
+                .Select(u => new { u.Id, u.UserName, u.GivenName, u.Surname })
+                .ToListAsync(cancellationToken);
+            var userLookup = users.ToDictionary(u => u.Id);
+
+            return userIds
+                .Select(userId =>
+                {
+                    var activityCount = activityCounts.FirstOrDefault(a => a.UserId == userId)?.Count ?? 0;
+                    var outreachCount = outreachCounts.FirstOrDefault(o => o.UserId == userId)?.Count ?? 0;
+                    userLookup.TryGetValue(userId, out var user);
+                    var displayName = user is null
+                        ? "(unknown)"
+                        : !string.IsNullOrWhiteSpace(user.GivenName) && !string.IsNullOrWhiteSpace(user.Surname)
+                            ? $"{user.GivenName} {user.Surname}"
+                            : user.UserName ?? "(unknown)";
+
+                    return new UserTouchpointStat
+                    {
+                        UserId = userId,
+                        UserName = displayName,
+                        ActivityCount = activityCount,
+                        OutreachEmailCount = outreachCount,
+                        TotalTouchpoints = activityCount + outreachCount,
+                    };
+                })
+                .OrderByDescending(s => s.TotalTouchpoints)
+                .ToList();
         }
     }
 }
