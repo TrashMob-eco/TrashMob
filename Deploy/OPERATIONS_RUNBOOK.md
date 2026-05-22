@@ -4,10 +4,18 @@ This document contains infrastructure operations procedures for the TrashMob pla
 
 ## Azure Resources
 
-| Environment | Container App | Environment | Resource Group | Custom Domain |
-|-------------|---------------|-------------|----------------|---------------|
-| **Production** | `ca-tm-pr-westus2` | `cae-tm-pr-westus2` | `rg-trashmob-pr-westus2` | `www.trashmob.eco` |
-| **Development** | `ca-tm-dev-westus2` | `cae-tm-dev-westus2` | `rg-trashmob-dev-westus2` | `dev.trashmob.eco` |
+| Environment | Container App | Environment | Resource Group | Public Hostname |
+|-------------|---------------|-------------|----------------|-----------------|
+| **Production** | `ca-tm-pr-westus2` | `cae-tm-pr-westus2` | `rg-trashmob-pr-westus2` | `www.trashmob.eco` + `trashmob.eco` (apex 308 redirect) via Azure Front Door `fd-tm-pr` |
+| **Development** | `ca-tm-dev-westus2` | `cae-tm-dev-westus2` | `rg-trashmob-dev-westus2` | `dev.trashmob.eco` (Container App direct) |
+
+### Production traffic flow
+
+`https://trashmob.eco` and `https://www.trashmob.eco` both terminate at Azure Front Door (`fd-tm-pr`, endpoint `fde-tm-pr.azurefd.net`). The apex hostname returns **308 Permanent Redirect** to `https://www.trashmob.eco/` via the `ApexRedirect` rule set. Front Door's single origin group points at the Container App's default FQDN. The Container App still has a hostname binding for `www.trashmob.eco` with a managed certificate; that binding is vestigial at this point (Front Door fronts all external traffic) but is harmless and the cert auto-renews.
+
+### Production DNS
+
+DNS is hosted in **Azure DNS** zone `trashmob.eco` in `rg-trashmob-pr-westus2`. Nameservers at the registrar are `ns1-07.azure-dns.com` / `ns2-07.azure-dns.net` / `ns3-07.azure-dns.org` / `ns4-07.azure-dns.info`. The zone is described by [`Deploy/dnsZone.bicep`](dnsZone.bicep) (12 record sets including apex ALIAS to Front Door, www CNAME to Front Door, MX/SPF/DKIM for Microsoft 365 mail, autodiscover, dev subdomain).
 
 ## Custom Domain & SSL Certificate
 
@@ -60,26 +68,64 @@ az containerapp hostname bind \
   --environment cae-tm-pr-westus2
 ```
 
-**DNS Requirements:**
+**Current DNS records (production zone in Azure DNS):**
 
-| Environment | Record Type | Name | Value |
-|-------------|-------------|------|-------|
-| Production | CNAME | `www` | `ca-tm-pr-westus2.greenground-fd8fc385.westus2.azurecontainerapps.io` |
-| Production | TXT | `asuid.www` | domain verification token (initial setup only) |
-| Development | CNAME | `dev` | `ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io` |
-| Development | TXT | `asuid.dev` | domain verification token (initial setup only) |
+| Type | Name | Value | Purpose |
+|------|------|-------|---------|
+| A (alias) | `@` (apex) | Front Door endpoint `fde-tm-pr` | Apex 308-redirects to www |
+| CNAME | `www` | `fde-tm-pr.azurefd.net` | Front Door fronts the SPA |
+| CNAME | `dev` | `ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io` | Direct to dev Container App |
+| MX | `@` | `trashmob-eco.mail.protection.outlook.com` | Microsoft 365 inbound mail |
+| TXT | `@` | `v=spf1 include:spf.protection.outlook.com -all` | SPF |
+| CNAME | `selector1._domainkey` / `selector2._domainkey` | M365 DKIM selectors | Mail signing |
+| CNAME | `autodiscover` | `autodiscover.outlook.com` | Outlook autodiscover |
+| TXT | `_dnsauth` / `_dnsauth.www` | Front Door domain-validation tokens | Managed cert validation |
 
-**DNS Management:** DNS records for trashmob.eco are managed in [Microsoft 365 Admin Center](https://admin.cloud.microsoft) under Domains.
+DNS is managed entirely in Azure DNS — the runbook used to point at Microsoft 365 Admin Center for DNS, that is no longer correct.
 
-See `CUSTOM_DOMAIN_MIGRATION.md` for full migration documentation.
+**Verify DNS records:**
+
+```bash
+az network dns record-set list --zone-name trashmob.eco --resource-group rg-trashmob-pr-westus2 -o table
+```
+
+See `CUSTOM_DOMAIN_MIGRATION.md` for the history of the original migration.
 
 ## Apex Domain (trashmob.eco) with Azure Front Door
 
-Azure Container Apps doesn't support apex/root domains with managed certificates directly. To handle both `trashmob.eco` and `www.trashmob.eco`, use Azure Front Door:
+Azure Container Apps doesn't support apex/root domains with managed certificates directly, so production uses Azure Front Door (`fd-tm-pr`) to terminate `trashmob.eco` and 308-redirect to `https://www.trashmob.eco/`. Front Door also fronts `www.trashmob.eco` and proxies to the Container App.
 
-**Deploy Front Door:**
+### Current configuration
+
+| Component | Value |
+|-----------|-------|
+| Front Door profile | `fd-tm-pr` (Standard SKU) in `rg-trashmob-pr-westus2` |
+| Endpoint | `fde-tm-pr.azurefd.net` |
+| Origin group | `og-containerapp` → Container App default FQDN |
+| Custom domains | `trashmob.eco`, `www.trashmob.eco` — both Approved, ManagedCertificate, deployment Succeeded |
+| Rule set | `ApexRedirect` — 308 redirects `trashmob.eco` → `https://www.trashmob.eco/` |
+| Route | `route-default` — both domains, `linkToDefaultDomain` enabled, `httpsRedirect` enabled |
+
+### Verify Front Door state
+
 ```bash
-# Deploy Front Door for production
+# Custom domain validation + cert status
+az afd custom-domain list \
+  --profile-name fd-tm-pr \
+  --resource-group rg-trashmob-pr-westus2 \
+  --query "[].{name:name,host:hostName,validation:domainValidationState,deploy:deploymentStatus}" \
+  -o table
+
+# Smoke-test the apex redirect from the public internet
+curl -sSI https://trashmob.eco   # expect: HTTP/2 308, location: https://www.trashmob.eco/
+curl -sSI https://www.trashmob.eco   # expect: HTTP/2 200
+```
+
+### Re-deploy Front Door (rare — only if config drift)
+
+The deployed state is described by [`Deploy/frontDoor.bicep`](frontDoor.bicep). Re-applying the template is idempotent:
+
+```bash
 az deployment group create \
   --resource-group rg-trashmob-pr-westus2 \
   --template-file Deploy/frontDoor.bicep \
@@ -90,63 +136,11 @@ az deployment group create \
     apexDomain=trashmob.eco
 ```
 
-**DNS Configuration for Front Door:**
+## Azure DNS Zone
 
-| Record Type | Name | Value |
-|-------------|------|-------|
-| CNAME | `www` | `fde-tm-pr.azurefd.net` (Front Door endpoint) |
-| ALIAS/ANAME | `@` (apex) | `fde-tm-pr.azurefd.net` (requires Azure DNS or Cloudflare) |
-| TXT | `_dnsauth.www` | validation token from Azure Portal |
-| TXT | `_dnsauth` | validation token from Azure Portal |
+The production DNS zone is described by [`Deploy/dnsZone.bicep`](dnsZone.bicep). Re-applying the template will overwrite the `_dnsauth*` TXT records with placeholder values — if you re-deploy, pull the real validation tokens from Azure Portal first and patch them back in, or scope the deployment to just the records you intend to change.
 
-**Note:** Microsoft 365 DNS doesn't support ALIAS records for apex domains. Options:
-1. Migrate DNS to Azure DNS (supports alias records to Front Door)
-2. Use Cloudflare DNS (free, supports CNAME flattening for apex)
-3. Keep current setup with only `www.trashmob.eco` working
-
-**Bicep template:** `frontDoor.bicep`
-
-## Azure DNS Migration (for Apex Domain Support)
-
-To support the apex domain (`trashmob.eco`) with Azure Front Door, migrate DNS from Microsoft 365 to Azure DNS:
-
-**Step 1: Deploy Azure DNS Zone**
-```bash
-az deployment group create \
-  --resource-group rg-trashmob-pr-westus2 \
-  --template-file Deploy/dnsZone.bicep \
-  --parameters \
-    zoneName=trashmob.eco \
-    environment=pr \
-    frontDoorEndpointHostname=fde-tm-pr.azurefd.net \
-    frontDoorEndpointId=/subscriptions/<sub-id>/resourceGroups/rg-trashmob-pr-westus2/providers/Microsoft.Cdn/profiles/fd-tm-pr/afdEndpoints/fde-tm-pr \
-    useFrontDoor=true
-```
-
-**Step 2: Note Azure Nameservers**
-The deployment outputs Azure's nameservers (e.g., `ns1-01.azure-dns.com`). You'll need all 4.
-
-**Step 3: Update Domain Registrar**
-Go to your domain registrar (where trashmob.eco was purchased) and update nameservers to Azure's:
-- `ns1-01.azure-dns.com`
-- `ns2-01.azure-dns.net`
-- `ns3-01.azure-dns.org`
-- `ns4-01.azure-dns.info`
-
-**Step 4: Wait for Propagation**
-DNS propagation can take 24-48 hours. Use `dig` or `nslookup` to verify.
-
-**Step 5: Update Validation Tokens**
-After Front Door is deployed, update the `_dnsauth` TXT records with actual validation tokens from Azure Portal.
-
-**Included Records:**
-- WWW CNAME -> Front Door
-- Apex ALIAS -> Front Door (Azure DNS alias record)
-- Dev CNAME -> Dev Container App
-- MX, SPF, DKIM -> Microsoft 365 email
-- Autodiscover CNAME -> Outlook
-
-**Bicep template:** `dnsZone.bicep`
+The zone was originally migrated from Microsoft 365 Admin Center to Azure DNS to add apex support. The deployment + nameserver-cutover happened pre-this-runbook-revision; current state is steady.
 
 ## Deployment Rollback Procedures
 
