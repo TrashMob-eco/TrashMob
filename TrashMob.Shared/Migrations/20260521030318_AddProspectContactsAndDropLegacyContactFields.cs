@@ -147,13 +147,20 @@ namespace TrashMob.Shared.Migrations
                 table: "ProspectActivities",
                 column: "ProspectContactId");
 
+            // ReferentialAction.NoAction (not SetNull) is required here. SQL Server refuses
+            // FKs that create multiple cascade paths to the same table: ProspectActivities
+            // already has a Cascade FK to CommunityProspects, and ProspectContacts has its own
+            // Cascade FK to CommunityProspects, so a second SetNull path from ProspectContacts
+            // back to ProspectActivities triggers SQL error 1785. The DeleteBehavior on the
+            // EF side is ClientSetNull, which gives the same observable behavior (null'd in
+            // memory when EF loads the entity) without the DB-level cascade.
             migrationBuilder.AddForeignKey(
                 name: "FK_ProspectActivities_ProspectContact",
                 table: "ProspectActivities",
                 column: "ProspectContactId",
                 principalTable: "ProspectContacts",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                onDelete: ReferentialAction.NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ProspectOutreachEmails_ProspectContact",
@@ -161,7 +168,7 @@ namespace TrashMob.Shared.Migrations
                 column: "ProspectContactId",
                 principalTable: "ProspectContacts",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                onDelete: ReferentialAction.NoAction);
         }
 
         /// <inheritdoc />
