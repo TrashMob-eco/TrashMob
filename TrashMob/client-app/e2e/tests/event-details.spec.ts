@@ -39,14 +39,26 @@ test.describe('Event Details', () => {
 
         await page.goto(`/eventdetails/${events[0].id}`);
 
-        // Give the page time to fully load (attendees query can crash after initial render)
+        // Three legitimate outcomes for a successful page render:
+        //   1. The action button rendered → assert it and we're done
+        //   2. The page crashed and the error boundary showed → skip (existing behavior)
+        //   3. The event filled up to maxNumberOfParticipants → the page renders
+        //      "This event is full." in place of the action button. That's correct
+        //      behavior, just not what this test can validate, so skip.
+        // If none of these appear within 30s, the page is genuinely broken and the
+        // test should fail.
         const errorBoundary = page.getByText('Something went wrong');
         const attendBtn = page.getByRole('button', { name: /attend|register|unregister/i });
+        const eventFull = page.getByText(/this event is full/i);
 
-        await expect(attendBtn.or(errorBoundary)).toBeVisible({ timeout: 30000 });
+        await expect(attendBtn.or(errorBoundary).or(eventFull)).toBeVisible({ timeout: 30000 });
 
         if (await errorBoundary.isVisible().catch(() => false)) {
             test.skip(true, 'Event details page crashed (intermittent backend error)');
+        }
+
+        if (await eventFull.isVisible().catch(() => false)) {
+            test.skip(true, 'Selected active event is full — no registration UI to test');
         }
 
         await expect(attendBtn).toBeVisible();
