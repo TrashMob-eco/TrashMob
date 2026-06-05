@@ -52,9 +52,12 @@ const updateEventSchema = z.object({
     region: z.string().optional(),
     country: z.string().optional(),
     postalCode: z.string().optional(),
-    latitude: z.number(),
-    longitude: z.number(),
-    maxNumberOfParticipants: z.number().min(0),
+    // z.coerce.number() (not z.number()) because <Input type='number'> always emits
+    // strings via onChange. With plain z.number(), Zod fails validation as "Invalid input"
+    // on any user-typed value even though the visible field looks correct.
+    latitude: z.coerce.number(),
+    longitude: z.coerce.number(),
+    maxNumberOfParticipants: z.coerce.number().min(0),
     eventVisibilityId: z.string(),
     teamId: z.string().nullable().optional(),
     createdByUserId: z.string(),
