@@ -331,7 +331,7 @@ namespace TrashMob.Controllers.V2
         /// <param name="eventDto">The event to update.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns the updated event.</response>
-        /// <response code="403">User is not an event lead.</response>
+        /// <response code="403">User is not an event lead or admin.</response>
         /// <response code="404">Event not found.</response>
         [HttpPut]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
@@ -345,7 +345,7 @@ namespace TrashMob.Controllers.V2
 
             var mobEvent = eventDto.ToEntity();
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }
