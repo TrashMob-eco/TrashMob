@@ -40,7 +40,7 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 		<UserSecretsId>0a8c5383-6f9f-4b4e-a3f3-f8ac8cc4d258</UserSecretsId>
-		<MauiVersion>10.0.20</MauiVersion>
+		<MauiVersion>10.0.70</MauiVersion>
 	</PropertyGroup>
 
 
