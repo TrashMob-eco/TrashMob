@@ -15,7 +15,8 @@ test.describe('Litter Reports Page Interactions', () => {
 
         await expect(page.locator('h1').first()).toContainText(/litter report/i, { timeout: 15000 });
 
-        const toggleGroup = page.locator('[role="group"]').first();
+        // Radix ToggleGroup with type='single' renders role='radiogroup' (not 'group')
+        const toggleGroup = page.locator('[role="radiogroup"]').first();
         await expect(toggleGroup).toBeVisible({ timeout: 10000 });
 
         const buttons = toggleGroup.locator('button');
