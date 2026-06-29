@@ -54,8 +54,8 @@
     <!-- OpenTelemetry packages for observability -->
     <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.8.1" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.3" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.1" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.10.0-beta.1" />
     <!-- Override transitive vulnerability in OpenTelemetry.Api 1.15.0 (GHSA-g94r-2vxg-569j) -->
     <PackageReference Include="OpenTelemetry.Api" Version="1.15.3" />
