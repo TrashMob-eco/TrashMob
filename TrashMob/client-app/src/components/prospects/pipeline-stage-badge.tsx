@@ -12,7 +12,16 @@ export const PIPELINE_STAGES = [
 
 export const PROSPECT_TYPES = ['Municipality', 'Nonprofit', 'HOA', 'CivicOrg', 'Vendor', 'Other'] as const;
 
-export const ACTIVITY_TYPES = ['EmailSent', 'EmailOpened', 'EmailClicked', 'Reply', 'PhoneCallMade', 'PhoneCallReceived', 'StatusChange', 'Note'] as const;
+export const ACTIVITY_TYPES = [
+    'EmailSent',
+    'EmailOpened',
+    'EmailClicked',
+    'Reply',
+    'PhoneCallMade',
+    'PhoneCallReceived',
+    'StatusChange',
+    'Note',
+] as const;
 
 export function getPipelineStageLabel(stage: number): string {
     return PIPELINE_STAGES.find((s) => s.value === stage)?.label ?? 'Unknown';
