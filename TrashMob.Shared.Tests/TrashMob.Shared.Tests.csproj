@@ -24,6 +24,8 @@
     <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.8" />
     <!-- Override transitive vulnerability in Microsoft.AspNetCore.DataProtection 10.0.0 (GHSA-9mv3-2cwr-p262) -->
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.8" />
+    <!-- Override transitive vulnerability in Microsoft.OpenApi 2.4.1 (GHSA-v5pm-xwqc-g5wc) -->
+    <PackageReference Include="Microsoft.OpenApi" Version="2.9.0" />
   </ItemGroup>
 
   <ItemGroup>
