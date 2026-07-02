@@ -22,13 +22,14 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         private readonly Mock<IEventManager> eventManager = new();
         private readonly Mock<IEventAttendeeManager> eventAttendeeManager = new();
         private readonly Mock<IEventSummaryManager> eventSummaryManager = new();
+        private readonly Mock<IKeyedManager<User>> userManager = new();
         private readonly Mock<IAuthorizationService> authorizationService = new();
         private readonly Mock<ILogger<EventsV2Controller>> logger = new();
         private readonly EventsV2Controller controller;
 
         public EventsV2ControllerTests()
         {
-            controller = new EventsV2Controller(eventManager.Object, eventAttendeeManager.Object, eventSummaryManager.Object, authorizationService.Object, logger.Object);
+            controller = new EventsV2Controller(eventManager.Object, eventAttendeeManager.Object, eventSummaryManager.Object, userManager.Object, authorizationService.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),
@@ -188,6 +189,28 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
             Assert.Equal(nameof(EventsV2Controller.GetEvent), createdResult.ActionName);
+        }
+
+        [Fact]
+        public async Task AddEvent_ReturnsForbid_WhenCreatorIsMinor()
+        {
+            // Project 23 Phase 3 / Auth Phase 7: minor accounts must not be able to
+            // create events, because the creator is auto-assigned as event lead and
+            // event leads must be adults.
+            var userId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+
+            userManager.Setup(m => m.GetAsync(userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new User { Id = userId, IsMinor = true, DependentId = Guid.NewGuid() });
+
+            var eventDto = new EventDto { Id = Guid.NewGuid(), Name = "Minor Attempted Cleanup" };
+
+            var result = await controller.AddEvent(eventDto, CancellationToken.None);
+
+            Assert.IsType<ForbidResult>(result);
+            eventManager.Verify(
+                m => m.AddAsync(It.IsAny<Event>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
+                Times.Never);
         }
 
         [Fact]

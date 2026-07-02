@@ -9,7 +9,8 @@ namespace TrashMob.Models.Extensions.V2
     {
         /// <summary>
         /// Maps an EventAttendee entity to a V2 EventAttendeeDto, including basic user info.
-        /// Requires the User navigation property to be loaded.
+        /// Requires the User navigation property to be loaded. Minor accounts have their
+        /// UserName masked via <see cref="UserExtensions.DisplayUserName"/>.
         /// </summary>
         /// <param name="entity">The EventAttendee entity to map.</param>
         /// <returns>An EventAttendeeDto with attendee and user info.</returns>
@@ -18,7 +19,7 @@ namespace TrashMob.Models.Extensions.V2
             return new EventAttendeeDto
             {
                 UserId = entity.UserId,
-                UserName = entity.User?.UserName ?? string.Empty,
+                UserName = entity.User.DisplayUserName(),
                 GivenName = entity.User?.GivenName ?? string.Empty,
                 ProfilePhotoUrl = entity.User?.ProfilePhotoUrl ?? string.Empty,
                 SignUpDate = entity.SignUpDate,

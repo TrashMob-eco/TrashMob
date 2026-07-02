@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 0-5a Complete — Production Live; Phase 6 Partial, Phase 7 Remaining) |
+| **Status** | In Progress (Phases 0-5a, 7 Complete — Production Live; Phase 6 mobile app update partial) |
 | **Priority** | Critical |
 | **Risk** | High |
 | **Size** | Large |
@@ -229,12 +229,17 @@ CIAM id_tokens lack the `email` claim because Entra External ID stores sign-up e
 - [ ] Monitor crash-free rate
 - [ ] Decommission B2C (after coexistence period)
 
-### Phase 7 — Minor Protections (→ Project 23 Phase 3)
-- [ ] Communication restrictions for minors
-- [ ] Limited profile visibility (first name + last initial)
-- [ ] Adult presence enforcement at events
-- [ ] Parent notification system
-- [ ] Complete Privo documentation package
+### Phase 7 — Minor Protections (→ Project 23 Phase 3) ✅ Complete (2026-07-01)
+- [x] ~~Communication restrictions for minors~~ **N/A** — TrashMob has no user-to-user 1:1 messaging surface. `MessageRequestV2Controller` is admin-broadcast-only (`[Authorize(Policy = UserIsAdmin)]`); `ContactRequestV2Controller` is a public form. Verified 2026-07-01.
+- [x] Limited profile visibility (first name + last initial) — `UserExtensions.DisplayUserName()` masks `IsMinor` accounts to `"GivenName Surname[0]."` and is wired into `EventAttendeeMappingsV2.ToV2Dto()` and `TeamMemberMappingsV2.ToV2Dto()`. Unit-tested. Landed 2026-07-01.
+- [x] Adult presence enforcement at events — **structural** via the event-lead-required invariant: (a) minors cannot create events (`EventsV2Controller.AddEvent` returns 403 if `creator.IsMinor`), (b) minors cannot be promoted to lead (`EventAttendeeManager.PromoteToLeadAsync` throws), (c) the last remaining lead cannot leave (`EventAttendeeManager.Delete` throws `InvalidOperationException`, controller returns 409). Every live event therefore has at least one adult attendee. Unit-tested. Landed 2026-07-01.
+- [x] Parent notification system — `EventAttendeesV2Controller.NotifyParentWaiverRequiredAsync` and `NotifyParentChildRegisteredAsync` fire on minor RSVP. Gated on `user is { IsMinor: true, DependentId: not null }`; the invariant is enforced by `DependentInvitationManager.LinkInvitationToUser` which sets both fields transactionally. Comment added at the gate line to document this dependency. Verified 2026-07-01.
+- [ ] Complete Privo documentation package — tracked separately as a sponsorship deliverable to Privo (not code work).
+
+**Follow-up hardening (not blockers for Phase 7 completion):**
+- `UsersV2Controller` GET endpoints (`/users`, `/users/{id}`, `/users/getuserbyemail/{email}`, `/users/getbyobjectid/{objectId}`) return the raw `UserDto` (email, DOB, IsMinor, Surname) without a class-level `[Authorize]`. Not caused by Phase 7 but surfaced during the audit — worth opening as a separate bug. Broader than Phase 7 scope.
+- `UserMappingsV2.ToV2Dto()` should also apply `DisplayUserName()` masking if it can ever be returned for a caller other than the profile owner. Currently used by the endpoints above; the fix above resolves it.
+- Consider a DB `CHECK` constraint (`IsMinor = 0 OR DependentId IS NOT NULL`) to hard-enforce the invariant that the parent-notification gate relies on.
 
 ---
 
@@ -550,7 +555,7 @@ For each provider (Google, Microsoft, Apple, Facebook):
 
 ---
 
-**Last Updated:** February 22, 2026
+**Last Updated:** 2026-07-01
 **Owner:** Security Engineer + Product Lead
-**Status:** In Progress (Phases 0-5a Complete — Production Live on Entra External ID; Phase 6 code changes done, mobile testing and store submission remaining; Phase 7 minor protections and Privo API integration remaining)
+**Status:** In Progress (Phases 0-5a, 7 Complete — Production Live on Entra External ID; Phase 6 mobile app update partial — device testing and store submission remaining)
 **Next Review:** After Phase 6 mobile testing and store submission

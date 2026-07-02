@@ -51,5 +51,52 @@ namespace TrashMob.Shared.Tests.Extensions.V2
             Assert.Equal(string.Empty, dto.GivenName);
             Assert.Equal(string.Empty, dto.ProfilePhotoUrl);
         }
+
+        [Fact]
+        public void ToV2Dto_MasksMinorUserNameToFirstNameLastInitial()
+        {
+            // COPPA / Project 23 Phase 3: a minor's UserName must not be exposed on the
+            // attendee list. The display name is masked to "GivenName Surname[0]." for
+            // any caller that fetches the DTO.
+            var entity = new EventAttendee
+            {
+                UserId = Guid.NewGuid(),
+                SignUpDate = DateTimeOffset.UtcNow,
+                IsEventLead = false,
+                User = new User
+                {
+                    UserName = "AlexMartinez2011",
+                    GivenName = "Alex",
+                    Surname = "Martinez",
+                    IsMinor = true,
+                },
+            };
+
+            var dto = entity.ToV2Dto();
+
+            Assert.Equal("Alex M.", dto.UserName);
+        }
+
+        [Fact]
+        public void ToV2Dto_UsesRawUserNameForAdultAccounts()
+        {
+            var entity = new EventAttendee
+            {
+                UserId = Guid.NewGuid(),
+                SignUpDate = DateTimeOffset.UtcNow,
+                IsEventLead = false,
+                User = new User
+                {
+                    UserName = "adult_full_name",
+                    GivenName = "Adult",
+                    Surname = "Volunteer",
+                    IsMinor = false,
+                },
+            };
+
+            var dto = entity.ToV2Dto();
+
+            Assert.Equal("adult_full_name", dto.UserName);
+        }
     }
 }
