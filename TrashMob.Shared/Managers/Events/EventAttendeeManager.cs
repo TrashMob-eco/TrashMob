@@ -55,9 +55,31 @@ namespace TrashMob.Shared.Managers.Events
         /// <inheritdoc />
         public override async Task<int> Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken)
         {
+            var eventAttendee = await Repository.Get(ea => ea.EventId == parentId && ea.UserId == secondId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            // Enforce the same last-lead guardrail as DemoteFromLeadAsync — an event lead
+            // cannot leave the event if they are the only remaining lead. Otherwise a minor
+            // registered on the event could end up with no adult organiser, and no attendee
+            // has the authority to promote a replacement (PromoteToLeadAsync requires the
+            // caller to already be a lead).
+            if (eventAttendee is { IsEventLead: true })
+            {
+                var currentLeadCount = await Repository
+                    .Get(ea => ea.EventId == parentId && ea.IsEventLead)
+                    .CountAsync(cancellationToken);
+
+                if (currentLeadCount <= 1)
+                {
+                    throw new InvalidOperationException(
+                        "You are the only event lead. Promote another attendee to co-lead before leaving the event.");
+                }
+            }
+
             // Auto-unregister under-13 dependents when parent cancels (they have no account
             // and cannot attend without the parent). 13-17 minors with their own accounts
-            // are NOT auto-unregistered — another adult may be supervising.
+            // are NOT auto-unregistered — the last-lead guardrail above ensures at least one
+            // adult organiser remains on the event.
             var dependentRegistrations = await eventDependentRepository
                 .Get(ed => ed.EventId == parentId && ed.ParentUserId == secondId)
                 .Include(ed => ed.Dependent)
@@ -71,9 +93,6 @@ namespace TrashMob.Shared.Managers.Events
                     await eventDependentRepository.DeleteAsync(registration);
                 }
             }
-
-            var eventAttendee = await Repository.Get(ea => ea.EventId == parentId && ea.UserId == secondId)
-                .FirstOrDefaultAsync(cancellationToken);
 
             return await Repository.DeleteAsync(eventAttendee);
         }
@@ -187,6 +206,14 @@ namespace TrashMob.Shared.Managers.Events
             if (attendee.IsEventLead)
             {
                 throw new InvalidOperationException("User is already an event lead.");
+            }
+
+            // Minors cannot be event leads. Event leads are the responsible adult on record —
+            // they organise the event, sign the liability waiver, and are the last-lead check
+            // in Delete/Demote. See Project 23 Phase 3 (Auth Phase 7) minor protections.
+            if (attendee.User is { IsMinor: true })
+            {
+                throw new InvalidOperationException("Minors cannot be promoted to event lead.");
             }
 
             attendee.IsEventLead = true;

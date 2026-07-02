@@ -11,7 +11,8 @@ namespace TrashMob.Models.Extensions.V2
     {
         /// <summary>
         /// Maps a TeamMember entity to a V2 TeamMemberDto.
-        /// Requires the User navigation property to be loaded.
+        /// Requires the User navigation property to be loaded. Minor accounts have their
+        /// UserName masked via <see cref="UserExtensions.DisplayUserName"/>.
         /// </summary>
         public static TeamMemberDto ToV2Dto(this TeamMember entity)
         {
@@ -20,7 +21,7 @@ namespace TrashMob.Models.Extensions.V2
                 Id = entity.Id,
                 TeamId = entity.TeamId,
                 UserId = entity.UserId,
-                UserName = entity.User?.UserName ?? string.Empty,
+                UserName = entity.User.DisplayUserName(),
                 GivenName = entity.User?.GivenName ?? string.Empty,
                 ProfilePhotoUrl = entity.User?.ProfilePhotoUrl ?? string.Empty,
                 IsTeamLead = entity.IsTeamLead,

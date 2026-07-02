@@ -34,6 +34,7 @@ namespace TrashMob.Controllers.V2
         IEventManager eventManager,
         IEventAttendeeManager eventAttendeeManager,
         IEventSummaryManager eventSummaryManager,
+        IKeyedManager<User> userManager,
         IAuthorizationService authorizationService,
         ILogger<EventsV2Controller> logger) : ControllerBase
     {
@@ -319,6 +320,16 @@ namespace TrashMob.Controllers.V2
         public async Task<IActionResult> AddEvent(EventDto eventDto, CancellationToken cancellationToken)
         {
             logger.LogInformation("V2 AddEvent Name={Name}", eventDto.Name);
+
+            // Minors cannot create events. Event creators are auto-assigned as event lead,
+            // and event leads must be adults (see EventAttendeeManager.PromoteToLeadAsync).
+            // Defence-in-depth against a UI regression that could expose the create button
+            // to a minor account. Project 23 Phase 3 / Auth Phase 7.
+            var creator = await userManager.GetAsync(UserId, cancellationToken);
+            if (creator is { IsMinor: true })
+            {
+                return Forbid();
+            }
 
             var mobEvent = eventDto.ToEntity();
             var newEvent = await eventManager.AddAsync(mobEvent, UserId, cancellationToken);

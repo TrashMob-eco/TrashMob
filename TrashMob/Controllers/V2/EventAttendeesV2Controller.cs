@@ -118,6 +118,12 @@ namespace TrashMob.Controllers.V2
             // Check if user is a minor — minors cannot sign their own waivers
             var user = await userManager.GetAsync(dto.UserId, cancellationToken);
 
+            // Invariant: a minor account is always created via DependentInvitationManager.LinkInvitationToUser(),
+            // which sets IsMinor and DependentId in the same transaction. So we can rely on
+            // "IsMinor implies DependentId != null" here. If that ever changes (e.g. a future signup path
+            // creates a minor without linking to a Dependent), the else branch will silently treat the minor
+            // as an adult — waiver enforcement and parent notifications will be skipped. Guard the invariant
+            // in tests or add a DB CHECK constraint if that flow gets more entry points.
             if (user is { IsMinor: true, DependentId: not null })
             {
                 // Minor path: check DependentWaivers signed by parent
@@ -210,7 +216,16 @@ namespace TrashMob.Controllers.V2
         {
             logger.LogInformation("V2 DeleteEventAttendee Event={EventId}, User={UserId}", eventId, userId);
 
-            await eventAttendeeManager.Delete(eventId, userId, cancellationToken);
+            try
+            {
+                await eventAttendeeManager.Delete(eventId, userId, cancellationToken);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Last-lead guardrail: the only remaining event lead cannot leave the event.
+                return Conflict(ex.Message);
+            }
+
             return NoContent();
         }
 
