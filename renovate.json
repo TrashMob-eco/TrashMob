@@ -25,6 +25,11 @@
       "matchPackageNames": ["Microsoft.Maui.Controls"],
       "matchManagers": ["custom.regex", "nuget"],
       "groupName": "Microsoft.Maui.Controls"
+    },
+    {
+      "description": "Block @radix-ui/react-tooltip bumps: the Strapi admin's @strapi/design-system@2.2.0 peer-pins react-tooltip@1.0.7, so any root-package bump produces an unresolvable ERESOLVE. Renovate had recreated the radix-ui-primitives monorepo PR five times (#3404, #3428, #3436, #3438, #3441) before we added this rule. Re-enable when Strapi ships a design-system with Radix 1.2.x+; other Radix packages can still update normally.",
+      "matchPackageNames": ["@radix-ui/react-tooltip"],
+      "enabled": false
     }
   ],
   "customManagers": [
