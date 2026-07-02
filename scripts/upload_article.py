@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import getpass
 import json
+import mimetypes
 import os
 import re
 import shutil
@@ -32,6 +33,7 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -520,22 +522,101 @@ def resolve_category_id(strapi_url: str, token: str, name: str) -> int:
     raise ValueError(f"No category named {name!r} on Strapi")
 
 
+def upload_cover_file(strapi_url: str, token: str, path: Path) -> int:
+    """POST a file to Strapi's upload plugin and return the new file id.
+
+    Uses `/api/upload` with a multipart body assembled by hand so we don't
+    take on `requests` or `httpx` as a dependency. The response is a JSON
+    array; we return the id of the first entry.
+    """
+    boundary = f"----trashmobcover{uuid.uuid4().hex}"
+    mime = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+    header = (
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="files"; filename="{path.name}"\r\n'
+        f"Content-Type: {mime}\r\n\r\n"
+    ).encode("utf-8")
+    footer = f"\r\n--{boundary}--\r\n".encode("utf-8")
+    body = header + path.read_bytes() + footer
+
+    req = urllib.request.Request(
+        f"{strapi_url}/api/upload",
+        data=body,
+        headers={
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req) as resp:  # noqa: S310 — trusted Strapi URL
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as err:
+        detail = ""
+        try:
+            detail = err.read().decode("utf-8")
+        except Exception:
+            pass
+        print(f"HTTP {err.code} {err.reason} on POST /api/upload", file=sys.stderr)
+        if detail:
+            print(f"Response body: {detail}", file=sys.stderr)
+        raise
+
+    if not isinstance(data, list) or not data:
+        raise ValueError(f"unexpected /api/upload response: {data!r}")
+    return int(data[0]["id"])
+
+
+def set_file_alt_text(strapi_url: str, token: str, file_id: int, alt: str) -> None:
+    """Set alternativeText on an uploaded file via the upload plugin.
+
+    Strapi's upload plugin accepts a POST to `/api/upload?id={id}` with a
+    `fileInfo` multipart field containing JSON. This is documented on the
+    plugin's `updateFileInfo` action. Failures here are non-fatal — alt
+    text can always be edited in the Strapi admin later.
+    """
+    boundary = f"----trashmobalt{uuid.uuid4().hex}"
+    file_info = json.dumps({"alternativeText": alt}).encode("utf-8")
+    body = (
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="fileInfo"\r\n\r\n'
+    ).encode("utf-8") + file_info + f"\r\n--{boundary}--\r\n".encode("utf-8")
+
+    req = urllib.request.Request(
+        f"{strapi_url}/api/upload?id={file_id}",
+        data=body,
+        headers={
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req) as resp:  # noqa: S310 — trusted Strapi URL
+            resp.read()
+    except urllib.error.HTTPError as err:
+        print(f"warning: could not set alt text ({err.code} {err.reason}); "
+              f"edit it manually in Strapi admin.", file=sys.stderr)
+
+
 def post_article(strapi_url: str, token: str, article: Article,
-                 category_id: int) -> dict[str, Any]:
-    payload = {
-        "data": {
-            "title": article.title,
-            "slug": article.slug,
-            "excerpt": article.excerpt,
-            "author": article.author,
-            "isFeatured": article.featured,
-            "estimatedReadTime": article.estimated_read_time,
-            "tags": article.tags,
-            "category": {"connect": [category_id]},
-            "body": article.body_blocks,
-        }
+                 category_id: int, cover_file_id: int | None = None) -> dict[str, Any]:
+    data: dict[str, Any] = {
+        "title": article.title,
+        "slug": article.slug,
+        "excerpt": article.excerpt,
+        "author": article.author,
+        "isFeatured": article.featured,
+        "estimatedReadTime": article.estimated_read_time,
+        "tags": article.tags,
+        "category": {"connect": [category_id]},
+        "body": article.body_blocks,
     }
-    res = _post_json(f"{strapi_url}/api/news-posts", payload, bearer=token)
+    if cover_file_id is not None:
+        data["coverImage"] = cover_file_id
+    res = _post_json(f"{strapi_url}/api/news-posts", {"data": data}, bearer=token)
     return res["data"]
 
 
@@ -569,6 +650,16 @@ def main() -> int:
                         help="Skip the publish step; leave the article as a draft")
     parser.add_argument("--dry-run", action="store_true",
                         help="Parse + convert + print the JSON payload, do not upload")
+    parser.add_argument("--cover", type=Path, default=None,
+                        help="Path to a cover image (1200x675 PNG per NewsArticles/CLAUDE.md). "
+                             "Defaults to '<article-stem>-cover.png' alongside the article if it "
+                             "exists.")
+    parser.add_argument("--cover-alt", default=None,
+                        help="Alternative text for the cover (defaults to the article title). "
+                             "Used for accessibility and social preview cards.")
+    parser.add_argument("--no-cover", action="store_true",
+                        help="Skip cover upload even if a matching '-cover.png' exists next to "
+                             "the article.")
     args = parser.parse_args()
 
     if not args.markdown.exists():
@@ -598,6 +689,16 @@ def main() -> int:
         print()
         return 0
 
+    # Resolve the cover path before we go online, so mistakes fail fast.
+    cover_path: Path | None = args.cover
+    if cover_path is None and not args.no_cover:
+        default_cover = args.markdown.with_name(f"{args.markdown.stem}-cover.png")
+        if default_cover.exists():
+            cover_path = default_cover
+    if cover_path is not None and not cover_path.exists():
+        print(f"error: --cover {cover_path} does not exist", file=sys.stderr)
+        return 2
+
     print(f"-> Resolving Strapi URL ({args.env})")
     strapi_url = resolve_strapi_url(args.env)
     print(f"   {strapi_url}")
@@ -608,8 +709,16 @@ def main() -> int:
     category_id = resolve_category_id(strapi_url, token, article.category)
     print(f"   id={category_id}")
 
+    cover_file_id: int | None = None
+    if cover_path is not None:
+        print(f"-> POST /api/upload (cover: {cover_path.name})")
+        cover_file_id = upload_cover_file(strapi_url, token, cover_path)
+        alt_text = args.cover_alt or article.title
+        set_file_alt_text(strapi_url, token, cover_file_id, alt_text)
+        print(f"   fileId={cover_file_id} alt={alt_text!r}")
+
     print("-> POST /api/news-posts (creates draft)")
-    created = post_article(strapi_url, token, article, category_id)
+    created = post_article(strapi_url, token, article, category_id, cover_file_id)
     document_id = created.get("documentId") or created.get("attributes", {}).get("documentId")
     if not document_id:
         print("error: created article missing documentId", file=sys.stderr)

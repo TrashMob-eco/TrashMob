@@ -85,10 +85,13 @@ Mixed formatting in a paragraph = multiple children in the paragraph's children 
 
 ### Image Upload
 
+**Cover images:** just pass `--cover <path>` to `scripts/upload_article.py`. If a `YYYY-MM-DD_slug-cover.png` file sits alongside the article's `.md`, the script picks it up automatically — no flag needed. It POSTs to `/api/upload`, sets the alt text (defaulting to the article title, overridable with `--cover-alt`), and attaches the returned file id as `coverImage` in the same create call. Pass `--no-cover` to opt out even when a matching file exists.
+
+**Inline body images** are still a manual step. The Strapi Blocks format needs the full file metadata inline, and `upload_article.py` doesn't handle that yet. The manual flow:
+
 1. Upload file: `POST /api/upload` (multipart form data)
 2. Get full metadata: `GET /api/upload/files/{id}` — need `hash`, `ext`, `mime`, `width`, `height`, `size`, `formats`, `provider`, `createdAt`, `updatedAt`
-3. For cover images, pass the file ID directly as `"coverImage": fileId` in the payload
-4. For inline body images, use full metadata in the image block:
+3. Splice the metadata into an image block in the body:
    ```json
    {
      "type": "image",
