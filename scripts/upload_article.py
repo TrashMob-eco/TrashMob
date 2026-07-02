@@ -24,13 +24,16 @@ from __future__ import annotations
 import argparse
 import getpass
 import json
+import mimetypes
 import os
 import re
+import shutil
 import subprocess
 import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -325,6 +328,7 @@ def resolve_strapi_url(env: str) -> str:
             "az", "containerapp", "show",
             "--name", "ca-strapi-tm-dev-westus2",
             "--resource-group", "rg-trashmob-dev-westus2",
+            "--subscription", "39a254b7-c01a-45ab-bebd-4038ea4adea9",
             "--query", "properties.configuration.ingress.fqdn", "-o", "tsv",
         ]
     elif env == "prod":
@@ -337,14 +341,70 @@ def resolve_strapi_url(env: str) -> str:
         ]
     else:
         raise ValueError(f"Unknown env: {env}")
+
+    # Resolve the az executable ourselves — on Windows `az` ships as `az.cmd`
+    # (a batch shim), which bare `subprocess.run(["az", ...])` won't find.
+    # `shutil.which` honours PATHEXT and returns the actual path.
+    az_path = shutil.which(cmd[0])
+    if az_path is None:
+        raise FileNotFoundError(
+            "Azure CLI ('az') not found on PATH. Install from https://aka.ms/azcli "
+            "or ensure the shim is discoverable."
+        )
+    cmd[0] = az_path
     res = subprocess.run(cmd, capture_output=True, text=True, check=True)
     fqdn = res.stdout.strip()
     return f"https://{fqdn}"
 
 
-def get_admin_credentials() -> tuple[str, str]:
+_KV_BY_ENV = {
+    "dev": ("kv-tm-dev-westus2", "39a254b7-c01a-45ab-bebd-4038ea4adea9"),
+    "prod": ("kv-tm-pr-westus2", "5ea21946-8cb1-413f-9005-0ab10bfa839d"),
+}
+
+
+def _fetch_kv_secret(vault: str, subscription: str, name: str) -> str | None:
+    """Return the value of a Key Vault secret, or None if it can't be read."""
+    az_path = shutil.which("az")
+    if az_path is None:
+        return None
+    cmd = [
+        az_path, "keyvault", "secret", "show",
+        "--vault-name", vault,
+        "--subscription", subscription,
+        "--name", name,
+        "--query", "value", "-o", "tsv",
+    ]
+    try:
+        res = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+    value = res.stdout.strip()
+    return value or None
+
+
+def get_admin_credentials(env: str) -> tuple[str, str]:
+    """Resolve Strapi admin credentials.
+
+    Order of precedence:
+      1. `STRAPI_ADMIN_EMAIL` / `STRAPI_ADMIN_PASSWORD` environment variables
+      2. `Strapi-Admin-Email` / `Strapi-Admin-Password` secrets in the env's
+         Key Vault (`kv-tm-dev-westus2` for dev, `kv-tm-pr-westus2` for prod).
+         Requires `az login` on a principal with `get` on the vault.
+      3. Interactive prompt as a last resort.
+    """
     email = os.environ.get("STRAPI_ADMIN_EMAIL")
     password = os.environ.get("STRAPI_ADMIN_PASSWORD")
+
+    if (not email or not password) and env in _KV_BY_ENV:
+        vault, subscription = _KV_BY_ENV[env]
+        if not email:
+            email = _fetch_kv_secret(vault, subscription, "Strapi-Admin-Email")
+        if not password:
+            password = _fetch_kv_secret(vault, subscription, "Strapi-Admin-Password")
+        if email and password:
+            print(f"-> Loaded admin credentials from Key Vault ({vault})")
+
     if not email:
         email = input("Strapi admin email: ").strip()
     if not password:
@@ -366,7 +426,7 @@ def get_api_token(strapi_url: str, env: str) -> str:
         except (json.JSONDecodeError, KeyError):
             pass
 
-    email, password = get_admin_credentials()
+    email, password = get_admin_credentials(env)
     print(f"-> Admin login as {email}")
     login = _post_json(f"{strapi_url}/admin/login",
                        {"email": email, "password": password})
@@ -414,8 +474,21 @@ def _request(method: str, url: str, body: Any = None, bearer: str | None = None)
     if bearer:
         headers["Authorization"] = f"Bearer {bearer}"
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
-    with urllib.request.urlopen(req) as resp:  # noqa: S310 — trusted Strapi URL
-        raw = resp.read().decode("utf-8")
+    try:
+        with urllib.request.urlopen(req) as resp:  # noqa: S310 — trusted Strapi URL
+            raw = resp.read().decode("utf-8")
+    except urllib.error.HTTPError as err:
+        # Surface the Strapi error body — otherwise the caller only sees
+        # "HTTP Error 400: Bad Request" and has no idea which field is off.
+        detail = ""
+        try:
+            detail = err.read().decode("utf-8")
+        except Exception:
+            pass
+        print(f"HTTP {err.code} {err.reason} on {method} {url}", file=sys.stderr)
+        if detail:
+            print(f"Response body: {detail}", file=sys.stderr)
+        raise
     if not raw:
         return {}
     return json.loads(raw)
@@ -449,22 +522,101 @@ def resolve_category_id(strapi_url: str, token: str, name: str) -> int:
     raise ValueError(f"No category named {name!r} on Strapi")
 
 
+def upload_cover_file(strapi_url: str, token: str, path: Path) -> int:
+    """POST a file to Strapi's upload plugin and return the new file id.
+
+    Uses `/api/upload` with a multipart body assembled by hand so we don't
+    take on `requests` or `httpx` as a dependency. The response is a JSON
+    array; we return the id of the first entry.
+    """
+    boundary = f"----trashmobcover{uuid.uuid4().hex}"
+    mime = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+    header = (
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="files"; filename="{path.name}"\r\n'
+        f"Content-Type: {mime}\r\n\r\n"
+    ).encode("utf-8")
+    footer = f"\r\n--{boundary}--\r\n".encode("utf-8")
+    body = header + path.read_bytes() + footer
+
+    req = urllib.request.Request(
+        f"{strapi_url}/api/upload",
+        data=body,
+        headers={
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req) as resp:  # noqa: S310 — trusted Strapi URL
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as err:
+        detail = ""
+        try:
+            detail = err.read().decode("utf-8")
+        except Exception:
+            pass
+        print(f"HTTP {err.code} {err.reason} on POST /api/upload", file=sys.stderr)
+        if detail:
+            print(f"Response body: {detail}", file=sys.stderr)
+        raise
+
+    if not isinstance(data, list) or not data:
+        raise ValueError(f"unexpected /api/upload response: {data!r}")
+    return int(data[0]["id"])
+
+
+def set_file_alt_text(strapi_url: str, token: str, file_id: int, alt: str) -> None:
+    """Set alternativeText on an uploaded file via the upload plugin.
+
+    Strapi's upload plugin accepts a POST to `/api/upload?id={id}` with a
+    `fileInfo` multipart field containing JSON. This is documented on the
+    plugin's `updateFileInfo` action. Failures here are non-fatal — alt
+    text can always be edited in the Strapi admin later.
+    """
+    boundary = f"----trashmobalt{uuid.uuid4().hex}"
+    file_info = json.dumps({"alternativeText": alt}).encode("utf-8")
+    body = (
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="fileInfo"\r\n\r\n'
+    ).encode("utf-8") + file_info + f"\r\n--{boundary}--\r\n".encode("utf-8")
+
+    req = urllib.request.Request(
+        f"{strapi_url}/api/upload?id={file_id}",
+        data=body,
+        headers={
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req) as resp:  # noqa: S310 — trusted Strapi URL
+            resp.read()
+    except urllib.error.HTTPError as err:
+        print(f"warning: could not set alt text ({err.code} {err.reason}); "
+              f"edit it manually in Strapi admin.", file=sys.stderr)
+
+
 def post_article(strapi_url: str, token: str, article: Article,
-                 category_id: int) -> dict[str, Any]:
-    payload = {
-        "data": {
-            "title": article.title,
-            "slug": article.slug,
-            "excerpt": article.excerpt,
-            "author": article.author,
-            "isFeatured": article.featured,
-            "estimatedReadTime": article.estimated_read_time,
-            "tags": article.tags,
-            "category": {"connect": [category_id]},
-            "body": article.body_blocks,
-        }
+                 category_id: int, cover_file_id: int | None = None) -> dict[str, Any]:
+    data: dict[str, Any] = {
+        "title": article.title,
+        "slug": article.slug,
+        "excerpt": article.excerpt,
+        "author": article.author,
+        "isFeatured": article.featured,
+        "estimatedReadTime": article.estimated_read_time,
+        "tags": article.tags,
+        "category": {"connect": [category_id]},
+        "body": article.body_blocks,
     }
-    res = _post_json(f"{strapi_url}/api/news-posts", payload, bearer=token)
+    if cover_file_id is not None:
+        data["coverImage"] = cover_file_id
+    res = _post_json(f"{strapi_url}/api/news-posts", {"data": data}, bearer=token)
     return res["data"]
 
 
@@ -498,6 +650,16 @@ def main() -> int:
                         help="Skip the publish step; leave the article as a draft")
     parser.add_argument("--dry-run", action="store_true",
                         help="Parse + convert + print the JSON payload, do not upload")
+    parser.add_argument("--cover", type=Path, default=None,
+                        help="Path to a cover image (1200x675 PNG per NewsArticles/CLAUDE.md). "
+                             "Defaults to '<article-stem>-cover.png' alongside the article if it "
+                             "exists.")
+    parser.add_argument("--cover-alt", default=None,
+                        help="Alternative text for the cover (defaults to the article title). "
+                             "Used for accessibility and social preview cards.")
+    parser.add_argument("--no-cover", action="store_true",
+                        help="Skip cover upload even if a matching '-cover.png' exists next to "
+                             "the article.")
     args = parser.parse_args()
 
     if not args.markdown.exists():
@@ -527,6 +689,16 @@ def main() -> int:
         print()
         return 0
 
+    # Resolve the cover path before we go online, so mistakes fail fast.
+    cover_path: Path | None = args.cover
+    if cover_path is None and not args.no_cover:
+        default_cover = args.markdown.with_name(f"{args.markdown.stem}-cover.png")
+        if default_cover.exists():
+            cover_path = default_cover
+    if cover_path is not None and not cover_path.exists():
+        print(f"error: --cover {cover_path} does not exist", file=sys.stderr)
+        return 2
+
     print(f"-> Resolving Strapi URL ({args.env})")
     strapi_url = resolve_strapi_url(args.env)
     print(f"   {strapi_url}")
@@ -537,8 +709,16 @@ def main() -> int:
     category_id = resolve_category_id(strapi_url, token, article.category)
     print(f"   id={category_id}")
 
+    cover_file_id: int | None = None
+    if cover_path is not None:
+        print(f"-> POST /api/upload (cover: {cover_path.name})")
+        cover_file_id = upload_cover_file(strapi_url, token, cover_path)
+        alt_text = args.cover_alt or article.title
+        set_file_alt_text(strapi_url, token, cover_file_id, alt_text)
+        print(f"   fileId={cover_file_id} alt={alt_text!r}")
+
     print("-> POST /api/news-posts (creates draft)")
-    created = post_article(strapi_url, token, article, category_id)
+    created = post_article(strapi_url, token, article, category_id, cover_file_id)
     document_id = created.get("documentId") or created.get("attributes", {}).get("documentId")
     if not document_id:
         print("error: created article missing documentId", file=sys.stderr)
