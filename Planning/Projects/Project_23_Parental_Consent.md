@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Production Live (May 20, 2026) — Phases 0-3 deployed; Flow 3 child-initiated needs prod E2E verification; sponsorship docs in progress |
+| **Status** | Complete (Production Live 2026-05-20; Flow 3 E2E verified 2026-07-01; Phase 3 minor-protection code closed by PR #3449 on 2026-07-01). Privo sponsorship documentation deliverable tracked separately. |
 | **Priority** | High |
 | **Risk** | High |
 | **Size** | Large |
@@ -272,7 +272,7 @@ public interface IPrivoService
 
 ### PRIVO API Documentation
 
-**Received March 24, 2026** — PRIVO delivered a 10-section API integration specification. See [Project 23 — PRIVO API Requirements](./Project_23_Privo_API_Requirements.md) for the complete reference including:
+**Received March 24, 2026** — PRIVO delivered a 10-section API integration specification. See [Project 23 — PRIVO API Requirements](./Archive/Project_23_Privo_API_Requirements.md) for the complete reference including:
 - Environment endpoints and credentials (INT + PROD)
 - Feature and attribute identifiers
 - All 10 API sections (token, consent requests, verification URLs, userinfo, revocation, webhooks)
@@ -1136,7 +1136,7 @@ Privo is a one-time gate at registration. Everything after that flows through th
    **Status:** ✅ Resolved (February 2026)
 
 2. ~~**When will Privo provide their API documentation and test environment?**~~
-   **Decision:** PRIVO delivered 10-section API integration doc on March 24, 2026. INT environment credentials included. See [PRIVO API Requirements](./Project_23_Privo_API_Requirements.md).
+   **Decision:** PRIVO delivered 10-section API integration doc on March 24, 2026. INT environment credentials included. See [PRIVO API Requirements](./Archive/Project_23_Privo_API_Requirements.md).
    **Status:** ✅ Resolved (March 2026)
 
 3. **How should group leaders (coaches, scout masters, teachers) handle minor participation?**
@@ -1175,13 +1175,14 @@ The following GitHub issues are tracked as part of this project:
 ## Related Documents
 
 - **[Project 1 - Auth Revamp](./Project_01_Auth_Revamp.md)** - Auth migration (Phases 3 & 7 implement this project's work)
-- **[Privo Integration Package](./Project_23_Privo_Integration_Package.md)** - Document to send to Privo
+- **[Privo Integration Package](./Archive/Project_23_Privo_Integration_Package.md)** - Document to send to Privo
 - **[Project 8 - Waivers V3](./Project_08_Waivers_V3.md)** - Minor waiver handling
 - **[Privo.com](https://privo.com)** - Vendor documentation
 
 ---
 
-**Last Updated:** March 7, 2026
+**Last Updated:** 2026-07-02
+**Completed:** 2026-07-01 (Flow 3 E2E verification finished; Phase 3 minor-protection code shipped via PR #3449)
 **Owner:** Product Lead + Legal + Engineering
-**Status:** In Progress — Phase 0 (parent-first flow) and Phase 3 (minor protections) complete. Privo API integration (Phases 1-2) blocked on Privo onboarding.
-**Next Review:** Privo API documentation availability; Phase 1 age verification implementation
+**Status:** Complete
+**Next Review:** N/A — Privo sponsorship documentation deliverable tracked separately as a follow-up

@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 5 remaining) |
+| **Status** | In Progress (Phase 5 remaining — unblocked by Project 23 completion 2026-07-01, ready for kickoff) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Medium |
@@ -166,6 +166,7 @@ The current Privacy Policy (v1.0, Feb 23 2026) states:
 - [x] Implement cookie consent banner that blocks Clarity, App Insights, and any remaining social scripts until user accepts — PR #2939, #2940
 - [ ] Update Privacy Policy to accurately list all third-party services and their cookie/tracking behavior
 - [ ] Update `DATA_PROCESSING_INVENTORY.md` with Clarity, App Insights, and any remaining third-party tracking
+- [ ] **New — added 2026-07-02:** Audit the user-deletion flow specifically for minor accounts now live via [Project 23 (Parental Consent)](./Project_23_Parental_Consent.md). Confirm the deletion cascade covers `Dependent`, `DependentInvitation`, `DependentWaiver`, `ParentalConsent`, and any PRIVO consent records held server-side. Add integration tests that create a minor account, register them for an event, sign a dependent waiver, then delete both the parent and the minor and assert that no orphan rows remain. COPPA verified-deletion is now a real production concern, not a hypothetical one.
 
 ---
 
@@ -200,7 +201,7 @@ The current Privacy Policy (v1.0, Feb 23 2026) states:
 - None — this project can begin immediately as an audit of existing functionality
 
 ### Enablers for Other Projects (What this unlocks)
-- **[Project 23 — Parental Consent](./Project_23_Parental_Consent.md):** COPPA compliance requires verified deletion of minor data; this project establishes the deletion audit framework
+- **[Project 23 — Parental Consent](./Project_23_Parental_Consent.md):** Complete 2026-07-01; live in production. This project's Phase 5 must now retroactively verify minor deletion works correctly (see Phase 5 Tasks).
 - **[Project 1 — Auth Revamp](./Project_01_Auth_Revamp.md):** Entra External ID migration changes where user identity data lives; deletion flow must account for both B2C and Entra scenarios
 
 ---
@@ -370,7 +371,7 @@ _To be created on project start._
 
 ---
 
-**Last Updated:** February 28, 2026
+**Last Updated:** 2026-07-02
 **Owner:** @JoeBeernink
-**Status:** Phases 1-4 Complete; Phase 5 (Cookie Consent & Tracking Audit) Not Started
-**Next Review:** On Phase 5 kickoff
+**Status:** Phases 1-4 Complete; Phase 5 (Cookie Consent & Tracking Audit + minor-deletion audit) partially complete, remaining work unblocked by Project 23 go-live
+**Next Review:** On Phase 5 kickoff — schedule after PR #3449 (Auth Phase 7) settles

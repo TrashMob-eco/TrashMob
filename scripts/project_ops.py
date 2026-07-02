@@ -55,16 +55,60 @@ IMPACT_CHOICES = ["Low", "Medium", "High", "Critical"]
 # File lookup
 # ---------------------------------------------------------------------------
 
+_MAIN_H1_RE = re.compile(r"^#\s+Project\s+\d+\s*[—-]", re.MULTILINE)
+
+
+def _is_main_project_file(path: Path) -> bool:
+    """A file is the "main" project doc if its H1 matches `# Project N — Title`.
+
+    Supporting technical docs (e.g. `Project_23_Privo_API_Requirements.md`)
+    use their own H1 style ("# PRIVO API Requirements", "# Integration
+    Guide", etc.) and won't match, so we can pick the main file even when
+    several sibling files share the same `Project_NN_*.md` prefix.
+    """
+    try:
+        head = path.read_bytes()[:512]
+    except OSError:
+        return False
+    for enc in ("utf-8", "utf-8-sig", "cp1252"):
+        try:
+            text = head.decode(enc)
+            break
+        except UnicodeDecodeError:
+            continue
+    else:
+        return False
+    return bool(_MAIN_H1_RE.search(text))
+
+
 def find_project(number: int) -> Path:
-    """Return the path to Project_{number}_*.md (active or archived)."""
+    """Return the path to Project_{number}_*.md (active or archived).
+
+    Larger projects sometimes ship several sibling markdown files (a main
+    project doc plus supporting technical docs). When that happens, we pick
+    the file whose H1 identifies it as the main project doc — see
+    `_is_main_project_file`. If exactly one main-doc candidate exists we
+    return it; if none or several do, we surface the ambiguity so the caller
+    can specify which file they meant.
+    """
+    # Older projects were checked in with a zero-padded number
+    # (`Project_01_Auth_Revamp.md`) while newer ones aren't
+    # (`Project_23_Parental_Consent.md`). Match either.
+    patterns = (f"Project_{number}_*.md", f"Project_{number:02d}_*.md")
     for root in (PROJECTS, ARCHIVE):
-        matches = list(root.glob(f"Project_{number}_*.md"))
+        matches: list[Path] = []
+        for pattern in patterns:
+            matches.extend(root.glob(pattern))
+        matches = sorted(set(matches))
         if len(matches) == 1:
             return matches[0]
         if len(matches) > 1:
+            main_docs = [p for p in matches if _is_main_project_file(p)]
+            if len(main_docs) == 1:
+                return main_docs[0]
             raise FileNotFoundError(
-                f"Multiple matches for project {number} in {root}: "
-                + ", ".join(p.name for p in matches)
+                f"Multiple main-doc candidates for project {number} in "
+                f"{root}: " + ", ".join(p.name for p in (main_docs or matches))
             )
     raise FileNotFoundError(
         f"No project file for number {number} in {PROJECTS} or {ARCHIVE}"
