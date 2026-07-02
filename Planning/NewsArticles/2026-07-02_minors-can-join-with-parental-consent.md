@@ -1,23 +1,19 @@
----
-slug: minors-can-join-with-parental-consent
-author: Joe Beernink
-category: Feature Announcements
-tags:
-  - Safety
-  - Minors
-  - PRIVO
-  - COPPA
-  - Parental Consent
-  - Families
-featured: true
-estimated_read_time: 3 min
----
-
 # Teens and Families Can Now Sign Up Together on TrashMob
+
+**Slug:** minors-can-join-with-parental-consent
+**Author:** Joe Beernink
+**Category:** Announcements
+**Tags:** ["Safety", "Minors", "PRIVO", "COPPA", "Parental Consent", "Families"]
+**Featured:** true
+**Estimated Read Time:** 3
+
+---
 
 ## Excerpt
 
-Back in April we announced our partnership with PRIVO to build COPPA-compliant parental consent into TrashMob. That work is now live in production — parents can invite their kids ages 13 and up to join TrashMob with their own account, sign a dependent waiver on their child's behalf, and get notified whenever their minor RSVPs for an event. Community cleanups have always been a family activity. Now the software finally reflects that.
+Back in April we announced our partnership with PRIVO to build COPPA-compliant parental consent into TrashMob. That work is now live in production — parents can invite their kids ages 13 and up to join TrashMob with their own account, sign a dependent waiver on their child's behalf, and get notified whenever their minor RSVPs for an event.
+
+---
 
 ## Body
 
@@ -75,6 +71,8 @@ A few pieces are still in flight and worth knowing about:
 Thanks to the volunteer developers, community managers, and — especially — to the families who told us what they needed. We're glad to finally have this out the door.
 
 — The TrashMob team
+
+---
 
 ## Social Posts
 

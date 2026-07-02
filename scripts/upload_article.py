@@ -26,6 +26,7 @@ import getpass
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import urllib.error
@@ -325,6 +326,7 @@ def resolve_strapi_url(env: str) -> str:
             "az", "containerapp", "show",
             "--name", "ca-strapi-tm-dev-westus2",
             "--resource-group", "rg-trashmob-dev-westus2",
+            "--subscription", "39a254b7-c01a-45ab-bebd-4038ea4adea9",
             "--query", "properties.configuration.ingress.fqdn", "-o", "tsv",
         ]
     elif env == "prod":
@@ -337,14 +339,70 @@ def resolve_strapi_url(env: str) -> str:
         ]
     else:
         raise ValueError(f"Unknown env: {env}")
+
+    # Resolve the az executable ourselves — on Windows `az` ships as `az.cmd`
+    # (a batch shim), which bare `subprocess.run(["az", ...])` won't find.
+    # `shutil.which` honours PATHEXT and returns the actual path.
+    az_path = shutil.which(cmd[0])
+    if az_path is None:
+        raise FileNotFoundError(
+            "Azure CLI ('az') not found on PATH. Install from https://aka.ms/azcli "
+            "or ensure the shim is discoverable."
+        )
+    cmd[0] = az_path
     res = subprocess.run(cmd, capture_output=True, text=True, check=True)
     fqdn = res.stdout.strip()
     return f"https://{fqdn}"
 
 
-def get_admin_credentials() -> tuple[str, str]:
+_KV_BY_ENV = {
+    "dev": ("kv-tm-dev-westus2", "39a254b7-c01a-45ab-bebd-4038ea4adea9"),
+    "prod": ("kv-tm-pr-westus2", "5ea21946-8cb1-413f-9005-0ab10bfa839d"),
+}
+
+
+def _fetch_kv_secret(vault: str, subscription: str, name: str) -> str | None:
+    """Return the value of a Key Vault secret, or None if it can't be read."""
+    az_path = shutil.which("az")
+    if az_path is None:
+        return None
+    cmd = [
+        az_path, "keyvault", "secret", "show",
+        "--vault-name", vault,
+        "--subscription", subscription,
+        "--name", name,
+        "--query", "value", "-o", "tsv",
+    ]
+    try:
+        res = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+    value = res.stdout.strip()
+    return value or None
+
+
+def get_admin_credentials(env: str) -> tuple[str, str]:
+    """Resolve Strapi admin credentials.
+
+    Order of precedence:
+      1. `STRAPI_ADMIN_EMAIL` / `STRAPI_ADMIN_PASSWORD` environment variables
+      2. `Strapi-Admin-Email` / `Strapi-Admin-Password` secrets in the env's
+         Key Vault (`kv-tm-dev-westus2` for dev, `kv-tm-pr-westus2` for prod).
+         Requires `az login` on a principal with `get` on the vault.
+      3. Interactive prompt as a last resort.
+    """
     email = os.environ.get("STRAPI_ADMIN_EMAIL")
     password = os.environ.get("STRAPI_ADMIN_PASSWORD")
+
+    if (not email or not password) and env in _KV_BY_ENV:
+        vault, subscription = _KV_BY_ENV[env]
+        if not email:
+            email = _fetch_kv_secret(vault, subscription, "Strapi-Admin-Email")
+        if not password:
+            password = _fetch_kv_secret(vault, subscription, "Strapi-Admin-Password")
+        if email and password:
+            print(f"-> Loaded admin credentials from Key Vault ({vault})")
+
     if not email:
         email = input("Strapi admin email: ").strip()
     if not password:
@@ -366,7 +424,7 @@ def get_api_token(strapi_url: str, env: str) -> str:
         except (json.JSONDecodeError, KeyError):
             pass
 
-    email, password = get_admin_credentials()
+    email, password = get_admin_credentials(env)
     print(f"-> Admin login as {email}")
     login = _post_json(f"{strapi_url}/admin/login",
                        {"email": email, "password": password})
@@ -414,8 +472,21 @@ def _request(method: str, url: str, body: Any = None, bearer: str | None = None)
     if bearer:
         headers["Authorization"] = f"Bearer {bearer}"
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
-    with urllib.request.urlopen(req) as resp:  # noqa: S310 — trusted Strapi URL
-        raw = resp.read().decode("utf-8")
+    try:
+        with urllib.request.urlopen(req) as resp:  # noqa: S310 — trusted Strapi URL
+            raw = resp.read().decode("utf-8")
+    except urllib.error.HTTPError as err:
+        # Surface the Strapi error body — otherwise the caller only sees
+        # "HTTP Error 400: Bad Request" and has no idea which field is off.
+        detail = ""
+        try:
+            detail = err.read().decode("utf-8")
+        except Exception:
+            pass
+        print(f"HTTP {err.code} {err.reason} on {method} {url}", file=sys.stderr)
+        if detail:
+            print(f"Response body: {detail}", file=sys.stderr)
+        raise
     if not raw:
         return {}
     return json.loads(raw)
