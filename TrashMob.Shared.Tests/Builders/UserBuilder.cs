@@ -121,6 +121,19 @@ namespace TrashMob.Shared.Tests.Builders
             return this;
         }
 
+        /// <summary>
+        /// Mark the user as a minor. Sets both IsMinor and DependentId to preserve
+        /// the invariant enforced by DependentInvitationManager.LinkInvitationToUser.
+        /// </summary>
+        public UserBuilder AsMinor(Guid? dependentId = null)
+        {
+            _user.IsMinor = true;
+            _user.DependentId = dependentId ?? Guid.NewGuid();
+            _user.GivenName ??= "Alex";
+            _user.Surname ??= "Martinez";
+            return this;
+        }
+
         public User Build() => _user;
     }
 }
