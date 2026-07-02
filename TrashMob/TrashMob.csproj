@@ -61,6 +61,8 @@
     <PackageReference Include="OpenTelemetry.Api" Version="1.15.3" />
     <!-- Override transitive vulnerability in SQLitePCLRaw.lib.e_sqlite3 2.1.11 (GHSA-2m69-gcr7-jv3q / CVE-2025-6965) -->
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.50.3" />
+    <!-- Override transitive vulnerability in Microsoft.OpenApi 2.4.1 (GHSA-v5pm-xwqc-g5wc) -->
+    <PackageReference Include="Microsoft.OpenApi" Version="2.9.0" />
 
   </ItemGroup>
 
