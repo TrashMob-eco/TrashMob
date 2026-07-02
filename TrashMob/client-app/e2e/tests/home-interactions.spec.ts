@@ -22,8 +22,8 @@ test.describe('Home Page Interactions', () => {
         test('should toggle between map and list views', async ({ page }) => {
             await page.goto('/');
 
-            // Wait for toggle group
-            const toggleGroup = page.locator('#events [role="group"]');
+            // Wait for toggle group (Radix ToggleGroup with type='single' renders role='radiogroup')
+            const toggleGroup = page.locator('#events [role="radiogroup"]');
             await expect(toggleGroup).toBeVisible({ timeout: 15000 });
 
             const listBtn = toggleGroup.locator('button').first();

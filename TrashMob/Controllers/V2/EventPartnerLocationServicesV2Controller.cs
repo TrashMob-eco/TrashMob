@@ -115,7 +115,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }
@@ -150,7 +150,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }
@@ -251,7 +251,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }

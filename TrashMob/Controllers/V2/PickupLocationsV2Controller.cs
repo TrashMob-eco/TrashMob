@@ -117,10 +117,10 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            if (!await IsAuthorizedAsync(pickupLocation, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(pickupLocation, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 var mobEvent = await eventManager.GetAsync(pickupLocation.EventId, cancellationToken);
-                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
                 {
                     return Forbid();
                 }
@@ -153,7 +153,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }
@@ -188,10 +188,10 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            if (!await IsAuthorizedAsync(localPickupLocation, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(localPickupLocation, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 var mobEvent = await eventManager.GetAsync(localPickupLocation.EventId, cancellationToken);
-                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
                 {
                     return Forbid();
                 }
@@ -238,10 +238,10 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 var mobEvent = await eventManager.GetAsync(entity.EventId, cancellationToken);
-                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
                 {
                     return Forbid();
                 }
@@ -274,7 +274,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }
@@ -308,7 +308,7 @@ namespace TrashMob.Controllers.V2
             }
 
             var mobEvent = await eventManager.GetAsync(entity.EventId, cancellationToken);
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }

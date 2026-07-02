@@ -50,6 +50,8 @@ interface DataTableProps<TData, TValue> {
     searchPlaceholder?: string;
     /** Columns to search in (by accessorKey). If not provided, searches all columns. */
     searchColumns?: string[];
+    /** Initial sort state applied on first render */
+    initialSorting?: SortingState;
 }
 
 export const DataTable = <TData, TValue>({
@@ -58,8 +60,9 @@ export const DataTable = <TData, TValue>({
     enableSearch = false,
     searchPlaceholder = 'Search...',
     searchColumns,
+    initialSorting = [],
 }: DataTableProps<TData, TValue>) => {
-    const [sorting, setSorting] = useState<SortingState>([]);
+    const [sorting, setSorting] = useState<SortingState>(initialSorting);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
 

@@ -584,6 +584,32 @@ namespace TrashMob.Shared.Tests.Managers.Events
         }
 
         [Fact]
+        public async Task PromoteToLeadAsync_WhenUserIsMinor_ThrowsInvalidOperationException()
+        {
+            // Project 23 Phase 3 / Auth Phase 7: minors cannot be event leads. Event leads
+            // are the responsible adult on record; allowing a minor to be promoted would
+            // let the last-lead check pass with no adult supervision on the event.
+            var userId = Guid.NewGuid();
+            var promoterUserId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+
+            var minor = new UserBuilder().WithId(userId).AsMinor().Build();
+            var attendee = new EventAttendeeBuilder()
+                .ForEvent(eventId)
+                .ForUser(minor)
+                .AsRegularAttendee()
+                .Build();
+
+            var attendees = new List<EventAttendee> { attendee };
+            _attendeeRepository.SetupGetWithFilter(attendees);
+
+            var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => _sut.PromoteToLeadAsync(eventId, userId, promoterUserId));
+
+            Assert.Contains("Minors cannot be promoted", ex.Message);
+        }
+
+        [Fact]
         public async Task PromoteToLeadAsync_SendsNotificationEmail()
         {
             // Arrange
@@ -730,6 +756,106 @@ namespace TrashMob.Shared.Tests.Managers.Events
             // Act & Assert
             await Assert.ThrowsAsync<InvalidOperationException>(
                 () => _sut.DemoteFromLeadAsync(eventId, userId, demoterUserId));
+        }
+
+        #endregion
+
+        #region Delete Tests
+
+        [Fact]
+        public async Task Delete_WhenLeavingUserIsLastLead_ThrowsInvalidOperationException()
+        {
+            // Project 23 Phase 3 / Auth Phase 7: mirrors the last-lead guardrail on
+            // DemoteFromLeadAsync. A lead must not be able to leave the event via the
+            // "unregister" path if they are the only remaining organiser — otherwise
+            // any minor still on the event has no adult supervision and there is no
+            // attendee left with authority to promote a replacement.
+            var userId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+
+            var lastLead = new EventAttendeeBuilder()
+                .ForEvent(eventId)
+                .ForUser(userId)
+                .AsEventLead()
+                .Build();
+
+            // Repository returns this attendee for both the "find me" lookup and the
+            // "count of leads" query — since predicate-based filtering is what SetupGetWithFilter
+            // wires up, both paths see this single lead.
+            _attendeeRepository.SetupGetWithFilter(new List<EventAttendee> { lastLead });
+            _eventDependentRepository.SetupGetWithFilter(new List<EventDependent>());
+
+            var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => _sut.Delete(eventId, userId, CancellationToken.None));
+
+            Assert.Contains("only event lead", ex.Message, StringComparison.OrdinalIgnoreCase);
+
+            // Should not have deleted anything.
+            _attendeeRepository.Verify(
+                r => r.DeleteAsync(It.IsAny<EventAttendee>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task Delete_WhenLeavingUserIsCoLead_Succeeds()
+        {
+            // Two leads on the event; either one can leave and the other remains.
+            var userId = Guid.NewGuid();
+            var otherLeadId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+
+            var leavingLead = new EventAttendeeBuilder()
+                .ForEvent(eventId)
+                .ForUser(userId)
+                .AsEventLead()
+                .Build();
+
+            var coLead = new EventAttendeeBuilder()
+                .ForEvent(eventId)
+                .ForUser(otherLeadId)
+                .AsEventLead()
+                .Build();
+
+            _attendeeRepository.SetupGetWithFilter(new List<EventAttendee> { leavingLead, coLead });
+            _eventDependentRepository.SetupGetWithFilter(new List<EventDependent>());
+            _attendeeRepository.Setup(r => r.DeleteAsync(It.IsAny<EventAttendee>()))
+                .ReturnsAsync(1);
+
+            var affected = await _sut.Delete(eventId, userId, CancellationToken.None);
+
+            Assert.Equal(1, affected);
+            _attendeeRepository.Verify(
+                r => r.DeleteAsync(It.Is<EventAttendee>(ea => ea.UserId == userId)),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task Delete_WhenLeavingUserIsNonLeadAttendee_Succeeds()
+        {
+            // Baseline: a regular attendee leaving does not touch the lead guardrail.
+            var userId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            var leadId = Guid.NewGuid();
+
+            var leaving = new EventAttendeeBuilder()
+                .ForEvent(eventId)
+                .ForUser(userId)
+                .AsRegularAttendee()
+                .Build();
+
+            var lead = new EventAttendeeBuilder()
+                .ForEvent(eventId)
+                .ForUser(leadId)
+                .AsEventLead()
+                .Build();
+
+            _attendeeRepository.SetupGetWithFilter(new List<EventAttendee> { leaving, lead });
+            _eventDependentRepository.SetupGetWithFilter(new List<EventDependent>());
+            _attendeeRepository.Setup(r => r.DeleteAsync(It.IsAny<EventAttendee>()))
+                .ReturnsAsync(1);
+
+            var affected = await _sut.Delete(eventId, userId, CancellationToken.None);
+
+            Assert.Equal(1, affected);
         }
 
         #endregion

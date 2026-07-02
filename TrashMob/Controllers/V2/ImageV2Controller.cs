@@ -39,7 +39,7 @@ namespace TrashMob.Controllers.V2
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>OK on success.</returns>
         /// <response code="200">Image uploaded successfully.</response>
-        /// <response code="403">User is not an event lead.</response>
+        /// <response code="403">User is not an event lead or admin.</response>
         [HttpPost]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -48,7 +48,7 @@ namespace TrashMob.Controllers.V2
         {
             var mobEvent = await eventManager.GetAsync(imageUpload.ParentId, cancellationToken);
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }
@@ -69,7 +69,7 @@ namespace TrashMob.Controllers.V2
         /// <returns>No content on success.</returns>
         /// <response code="204">Image deleted successfully.</response>
         /// <response code="400">Image could not be deleted.</response>
-        /// <response code="403">User is not an event lead.</response>
+        /// <response code="403">User is not an event lead or admin.</response>
         [HttpDelete]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -79,7 +79,7 @@ namespace TrashMob.Controllers.V2
         {
             var mobEvent = await eventManager.GetAsync(parentId, cancellationToken);
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }

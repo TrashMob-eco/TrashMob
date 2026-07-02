@@ -84,6 +84,7 @@ export const SiteAdminProspects = () => {
                     enableSearch
                     searchPlaceholder='Search prospects...'
                     searchColumns={['name', 'city', 'contactEmail']}
+                    initialSorting={[{ id: 'name', desc: false }]}
                 />
             </CardContent>
         </Card>

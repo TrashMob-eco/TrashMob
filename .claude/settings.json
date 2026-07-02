@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch *)",
+      "Bash(az monitor app-insights *)",
+      "Bash(az monitor log-analytics *)",
+      "Bash(az containerapp logs *)",
+      "Bash(az containerapp revision list *)",
+      "Bash(gh run watch *)"
+    ]
+  }
+}

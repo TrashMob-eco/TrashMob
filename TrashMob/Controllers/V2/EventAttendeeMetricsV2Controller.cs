@@ -144,7 +144,7 @@ namespace TrashMob.Controllers.V2
                 return Problem(detail: $"Event {eventId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }
@@ -179,7 +179,7 @@ namespace TrashMob.Controllers.V2
                 return Problem(detail: $"Event {eventId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }
@@ -219,7 +219,7 @@ namespace TrashMob.Controllers.V2
                 return Problem(detail: $"Event {eventId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }
@@ -264,7 +264,7 @@ namespace TrashMob.Controllers.V2
                 return Problem(detail: $"Event {eventId} not found.", statusCode: StatusCodes.Status404NotFound, title: "Not found");
             }
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }

@@ -195,7 +195,8 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | Status | Count | Projects |
 |--------|-------|----------|
 | ✅ **Complete** (archived) | 34 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 24, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53, 59 |
-| ✅ **Complete** (pending external) | 2 | Project 8 (legal review), Project 23 (PRIVO prod credentials) |
+| ✅ **Complete** (production live, in-place) | 1 | Project 23 (PRIVO live 2026-05-20, testing complete 2026-07-01) |
+| ✅ **Complete** (pending external) | 1 | Project 8 (minor waiver text pending legal review) |
 | **In Progress** | 13 | Projects 1, 4, 5, 6, 15, 25, 30, 36, 41, 45, 46, 49, 57 |
 | **Planning** | 2 | Projects 56, 58 |
 | **Ready for Review** | 1 | Project 2 |
@@ -213,7 +214,7 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | Project | What's Left |
 |---------|-------------|
 | [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Phase 6: Partial — remaining auth edge cases. Phases 0-5a, 7 complete. |
-| [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Complete on INT. Awaiting PRIVO production credentials for go-live. Flow 3 (child-initiated) pending E2E test. |
+| ~~[Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md)~~ | ✅ **Complete 2026-07-01.** PRIVO production live since 2026-05-20; Flow 3 (child-initiated) E2E verification finished. Privo sponsorship deliverable documentation is a separate track. |
 | [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Phases 3-5: Manual test matrix on physical devices, regression testing, load testing, accessibility audit (TalkBack/VoiceOver), supported device docs |
 | [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | Phase 4: Deployment health dashboards; Phase 5: Cost optimization & auto-scaling; Phase 6: Security scanning (OWASP ZAP, CodeQL, Trivy) |
 | [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Phase 3: Security audit — review remaining API endpoints for authorization, input validation, rate limiting |

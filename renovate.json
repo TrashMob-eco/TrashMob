@@ -19,6 +19,22 @@
       "matchUpdateTypes": ["patch", "minor", "major"],
       "matchCategories": ["security"],
       "minimumReleaseAge": "0 days"
+    },
+    {
+      "description": "Keep <MauiVersion> in lockstep with Microsoft.Maui.Controls in the same PR",
+      "matchPackageNames": ["Microsoft.Maui.Controls"],
+      "matchManagers": ["custom.regex", "nuget"],
+      "groupName": "Microsoft.Maui.Controls"
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Track <MauiVersion> MSBuild property in csproj files (mirrors Microsoft.Maui.Controls). Without this, Renovate's nuget manager only bumps the explicit PackageReference entries and leaves the MauiVersion property stale -- the resulting workload/controls skew crashed prod with a MissingMethodException on AccessibilityNodeInfoCompat.set_Checked after MAUI 10.0.50 -> 10.0.70.",
+      "fileMatch": ["\\.csproj$"],
+      "matchStrings": ["<MauiVersion>(?<currentValue>[^<]+)</MauiVersion>"],
+      "datasourceTemplate": "nuget",
+      "depNameTemplate": "Microsoft.Maui.Controls"
     }
   ]
 }

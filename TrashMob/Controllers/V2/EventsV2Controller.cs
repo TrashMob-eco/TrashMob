@@ -34,6 +34,7 @@ namespace TrashMob.Controllers.V2
         IEventManager eventManager,
         IEventAttendeeManager eventAttendeeManager,
         IEventSummaryManager eventSummaryManager,
+        IKeyedManager<User> userManager,
         IAuthorizationService authorizationService,
         ILogger<EventsV2Controller> logger) : ControllerBase
     {
@@ -320,6 +321,16 @@ namespace TrashMob.Controllers.V2
         {
             logger.LogInformation("V2 AddEvent Name={Name}", eventDto.Name);
 
+            // Minors cannot create events. Event creators are auto-assigned as event lead,
+            // and event leads must be adults (see EventAttendeeManager.PromoteToLeadAsync).
+            // Defence-in-depth against a UI regression that could expose the create button
+            // to a minor account. Project 23 Phase 3 / Auth Phase 7.
+            var creator = await userManager.GetAsync(UserId, cancellationToken);
+            if (creator is { IsMinor: true })
+            {
+                return Forbid();
+            }
+
             var mobEvent = eventDto.ToEntity();
             var newEvent = await eventManager.AddAsync(mobEvent, UserId, cancellationToken);
             return CreatedAtAction(nameof(GetEvent), new { id = newEvent.Id }, newEvent.ToV2Dto());
@@ -331,7 +342,7 @@ namespace TrashMob.Controllers.V2
         /// <param name="eventDto">The event to update.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns the updated event.</response>
-        /// <response code="403">User is not an event lead.</response>
+        /// <response code="403">User is not an event lead or admin.</response>
         /// <response code="404">Event not found.</response>
         [HttpPut]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
@@ -345,7 +356,7 @@ namespace TrashMob.Controllers.V2
 
             var mobEvent = eventDto.ToEntity();
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }

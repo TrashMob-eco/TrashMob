@@ -66,7 +66,7 @@ namespace TrashMob.Controllers.V2
         /// <param name="dto">The event summary DTO to add.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="201">Event summary created.</response>
-        /// <response code="403">User is not an event lead.</response>
+        /// <response code="403">User is not an event lead or admin.</response>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
@@ -80,7 +80,7 @@ namespace TrashMob.Controllers.V2
             var eventSummary = dto.ToEntity();
             eventSummary.EventId = eventId;
 
-            if (!await IsAuthorizedAsync(eventSummary, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(eventSummary, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }
@@ -97,7 +97,7 @@ namespace TrashMob.Controllers.V2
         /// <param name="dto">The event summary DTO to update.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="200">Returns the updated event summary.</response>
-        /// <response code="403">User is not an event lead.</response>
+        /// <response code="403">User is not an event lead or admin.</response>
         [HttpPut]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
@@ -111,7 +111,7 @@ namespace TrashMob.Controllers.V2
             var eventSummary = dto.ToEntity();
             eventSummary.EventId = eventId;
 
-            if (!await IsAuthorizedAsync(eventSummary, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(eventSummary, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }
@@ -126,7 +126,7 @@ namespace TrashMob.Controllers.V2
         /// <param name="eventId">The event identifier.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <response code="204">Event summary deleted.</response>
-        /// <response code="403">User is not an event lead.</response>
+        /// <response code="403">User is not an event lead or admin.</response>
         [HttpDelete]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
@@ -138,7 +138,7 @@ namespace TrashMob.Controllers.V2
 
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
 
-            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }
