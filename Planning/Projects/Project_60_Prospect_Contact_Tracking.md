@@ -349,10 +349,11 @@ None.
 - **[Project 40 - AI Community Sales Agent](./Archive/Project_40_AI_Community_Sales_Agent.md)** — The pipeline this project extends
 - **[Project 54 - Community Adoption Outreach](./Project_54_Community_Adoption_Outreach.md)** — Could adopt the same multi-contact pattern in a follow-up
 - **[Project 51 - Contact Management System](./Archive/Project_51_Contact_Management.md)** — Separate nonprofit-donor CRM (different domain; not to be confused with prospect contacts)
+- **[Project 63 - Municipal Sales Pipeline Reporting](./Project_63_Municipal_Sales_Pipeline_Reporting.md)** — Model + API foundation this project extends
 
 ---
 
-**Last Updated:** May 20, 2026
+**Last Updated:** 2026-07-03
 **Owner:** Product & Engineering
 **Status:** Not Started
 **Next Review:** When Project 54 enters development or a salesperson hire is on the calendar — whichever comes first
