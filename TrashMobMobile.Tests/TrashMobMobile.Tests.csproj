@@ -23,7 +23,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.70" />
-    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.70" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.71" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="CommunityToolkit.Maui" Version="14.2.0" />
     <PackageReference Include="Sentry.Maui" Version="6.2.0" />
