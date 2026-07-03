@@ -51,6 +51,7 @@ namespace TrashMob.Models
             ParentalConsentsAsGranter = new HashSet<ParentalConsent>();
             ParentalConsentsCreated = new HashSet<ParentalConsent>();
             ParentalConsentsUpdated = new HashSet<ParentalConsent>();
+            UserRoles = new HashSet<UserRole>();
         }
 
         /// <summary>
@@ -236,6 +237,17 @@ namespace TrashMob.Models
         /// Gets or sets the collection of events last updated by this user.
         /// </summary>
         public virtual ICollection<Event> EventsUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of role assignments for this user.
+        /// </summary>
+        /// <remarks>
+        /// Includes both active and revoked assignments; use
+        /// <c>IUserRoleService.HasRoleAsync</c> or a filter on
+        /// <c>RevokedDate == null &amp;&amp; (ExpiryDate == null || ExpiryDate &gt; now)</c>
+        /// to test effective role membership.
+        /// </remarks>
+        public virtual ICollection<UserRole> UserRoles { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of notifications for this user.

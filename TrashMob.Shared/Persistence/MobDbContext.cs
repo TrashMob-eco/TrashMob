@@ -9,8 +9,9 @@
     /// <summary>
     /// Provides the Entity Framework database context for the TrashMob application.
     /// </summary>
-    public class MobDbContext(IConfiguration configuration) : DbContext
+    public class MobDbContext(DbContextOptions<MobDbContext> options) : DbContext(options)
     {
+
 
         public virtual DbSet<ContactRequest> ContactRequests { get; set; }
 
@@ -156,6 +157,10 @@
 
         public virtual DbSet<UserAchievement> UserAchievements { get; set; }
 
+        public virtual DbSet<Role> Roles { get; set; }
+
+        public virtual DbSet<UserRole> UserRoles { get; set; }
+
         public virtual DbSet<EventPhoto> EventPhotos { get; set; }
 
         public virtual DbSet<CommunityProspect> CommunityProspects { get; set; }
@@ -192,14 +197,6 @@
 
         public virtual DbSet<ParentalConsent> ParentalConsents { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x =>
-            {
-                x.UseNetTopologySuite();
-                x.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-            });
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -3344,6 +3341,95 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserAchievements_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(60);
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(300);
+
+                entity.HasIndex(e => e.Name)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Roles_Name");
+
+                // Seed initial roles. New roles are added by follow-up migrations,
+                // never by user action from the UI. See Project 64.
+                entity.HasData(
+                    new Role
+                    {
+                        Id = 1,
+                        Name = "SiteAdmin",
+                        Description = "Full administrative access. Manages users, roles, waivers, events, moderation, and every other site-admin surface.",
+                        DisplayOrder = 1,
+                        IsActive = true,
+                    },
+                    new Role
+                    {
+                        Id = 2,
+                        Name = "SalesRep",
+                        Description = "Manages the municipal sales pipeline (prospects, contacts, activities) and reads the sales reports. Cannot administer users, waivers, or events.",
+                        DisplayOrder = 2,
+                        IsActive = true,
+                    });
+            });
+
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.RevokedReason)
+                    .HasMaxLength(500);
+
+                // Active-grant unique index (filtered on RevokedDate IS NULL) so a
+                // user can be granted the same role again after a prior revocation.
+                entity.HasIndex(e => new { e.UserId, e.RoleId })
+                    .IsUnique()
+                    .HasFilter("[RevokedDate] IS NULL")
+                    .HasDatabaseName("UX_UserRoles_Active");
+
+                entity.HasIndex(e => e.UserId)
+                    .HasFilter("[RevokedDate] IS NULL")
+                    .HasDatabaseName("IX_UserRoles_UserId_Active");
+
+                entity.HasIndex(e => e.RoleId)
+                    .HasFilter("[RevokedDate] IS NULL")
+                    .HasDatabaseName("IX_UserRoles_RoleId_Active");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserRoles)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_UserRoles_User");
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.UserRoles)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_UserRoles_Role");
+
+                entity.HasOne<User>()
+                    .WithMany()
+                    .HasForeignKey(d => d.GrantedByUserId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_UserRoles_User_GrantedBy");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserRoles_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserRoles_User_LastUpdatedBy");
             });
 
             modelBuilder.Entity<CommunityProspect>(entity =>
