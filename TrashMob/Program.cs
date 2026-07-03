@@ -248,7 +248,16 @@ public class Program
         builder.Services.Configure<GzipCompressionProviderOptions>(options =>
             options.Level = CompressionLevel.Fastest);
 
-        builder.Services.AddDbContext<MobDbContext>(c => c.UseLazyLoadingProxies());
+        builder.Services.AddDbContext<MobDbContext>((sp, options) =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            options.UseLazyLoadingProxies();
+            options.UseSqlServer(config["TMDBServerConnectionString"], x =>
+            {
+                x.UseNetTopologySuite();
+                x.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+            });
+        });
 
         // Security
         builder.Services.AddScoped<IAuthorizationHandler, UserOwnsEntityAuthHandler>();
