@@ -11,9 +11,11 @@ import { getErrorMessage } from '@/lib/api-errors';
 import {
     GetMonthlySalesReport,
     UpdateMonthlyTargets,
+    UpsertMonthlyNarrative,
     type MonthlySalesMetricDto,
     type MarketIntelligenceCountDto,
 } from '@/services/sales-reports';
+import { SalesReportNarrativePanel } from '@/components/prospects/sales-report-narrative-panel';
 
 /**
  * Monthly Municipal Sales Pipeline Report (Project 63 Phase 3).
@@ -285,6 +287,16 @@ export const SiteAdminProspectMonthlyReport = () => {
                     emptyMessage='No pricing feedback captured yet.'
                 />
             </div>
+
+            <SalesReportNarrativePanel
+                title='Recommended next-month priority'
+                description='What the salesperson recommends focusing on next month. Auto-saves when you click away.'
+                placeholder='e.g. Move all Bay Area meetings into scheduled; open a NorCal region tier.'
+                persistedValue={report?.nextMonthPriority ?? null}
+                mutationKey={UpsertMonthlyNarrative({ month: monthStr }).key}
+                save={(value) => UpsertMonthlyNarrative({ month: monthStr }).service({ nextMonthPriority: value })}
+                invalidateQueryKey={GetMonthlySalesReport({ month: monthStr }).key}
+            />
         </div>
     );
 };

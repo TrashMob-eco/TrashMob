@@ -29,7 +29,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
                 .UseInMemoryDatabase(databaseName: $"WeeklySalesReport_{Guid.NewGuid()}")
                 .Options;
             db = new MobDbContext(options);
-            sut = new WeeklySalesReportService(db);
+            sut = new WeeklySalesReportService(db, new SalesReportNarrativeService(db));
         }
 
         private CommunityProspect AddProspect(

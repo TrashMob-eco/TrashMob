@@ -10,6 +10,7 @@ namespace TrashMob.Controllers.V2
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Web.Resource;
+    using TrashMob.Models;
     using TrashMob.Models.Poco.V2;
     using TrashMob.Security;
     using TrashMob.Shared;
@@ -28,6 +29,7 @@ namespace TrashMob.Controllers.V2
     public class SalesReportsV2Controller(
         IWeeklySalesReportService weeklyReportService,
         IMonthlySalesReportService monthlyReportService,
+        ISalesReportNarrativeService narrativeService,
         ILogger<SalesReportsV2Controller> logger) : ControllerBase
     {
         private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId)
@@ -107,6 +109,75 @@ namespace TrashMob.Controllers.V2
                 month, request.Targets.Count, UserId);
 
             await monthlyReportService.UpdateTargetsAsync(month, request.Targets, UserId, cancellationToken);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Upserts the free-text "Next Steps" section on a weekly report.
+        /// </summary>
+        /// <param name="weekEnding">Last day of the week (Sunday) in
+        /// <c>yyyy-MM-dd</c> format. The narrative row keys off the derived
+        /// <c>weekEnding - 6 days</c> start-of-week date.</param>
+        /// <param name="body">Narrative body — <c>NextSteps</c> is written;
+        /// other fields are ignored on weekly upserts.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="204">Narrative saved.</response>
+        [HttpPut("weekly/{weekEnding}/narrative")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> UpsertWeeklyNarrative(
+            DateOnly weekEnding,
+            [FromBody] SalesReportNarrativeDto body,
+            CancellationToken cancellationToken)
+        {
+            var periodStart = weekEnding.AddDays(-6);
+            logger.LogInformation(
+                "V2 UpsertWeeklyNarrative WeekEnding={WeekEnding} PeriodStart={PeriodStart} User={UserId}",
+                weekEnding, periodStart, UserId);
+
+            await narrativeService.UpsertAsync(
+                SalesReportPeriodTypeEnum.Weekly,
+                periodStart,
+                weekEnding,
+                body?.NextSteps,
+                nextMonthPriority: null,
+                UserId,
+                cancellationToken);
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Upserts the free-text "Recommended next-month priority" section on
+        /// a monthly report.
+        /// </summary>
+        /// <param name="month">Any day in the target month in
+        /// <c>yyyy-MM-dd</c> format.</param>
+        /// <param name="body">Narrative body — <c>NextMonthPriority</c> is
+        /// written; other fields are ignored on monthly upserts.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="204">Narrative saved.</response>
+        [HttpPut("monthly/{month}/narrative")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> UpsertMonthlyNarrative(
+            DateOnly month,
+            [FromBody] SalesReportNarrativeDto body,
+            CancellationToken cancellationToken)
+        {
+            var periodStart = new DateOnly(month.Year, month.Month, 1);
+            var periodEnd = periodStart.AddMonths(1).AddDays(-1);
+            logger.LogInformation(
+                "V2 UpsertMonthlyNarrative Month={Month} User={UserId}",
+                periodStart, UserId);
+
+            await narrativeService.UpsertAsync(
+                SalesReportPeriodTypeEnum.Monthly,
+                periodStart,
+                periodEnd,
+                nextSteps: null,
+                body?.NextMonthPriority,
+                UserId,
+                cancellationToken);
+
             return NoContent();
         }
     }

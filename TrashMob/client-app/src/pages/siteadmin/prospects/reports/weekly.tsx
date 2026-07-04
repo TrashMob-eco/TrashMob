@@ -5,7 +5,8 @@ import { CalendarClock, ChevronLeft, ChevronRight, Download } from 'lucide-react
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { GetWeeklySalesReport, type WeeklySalesReportDto } from '@/services/sales-reports';
+import { GetWeeklySalesReport, UpsertWeeklyNarrative, type WeeklySalesReportDto } from '@/services/sales-reports';
+import { SalesReportNarrativePanel } from '@/components/prospects/sales-report-narrative-panel';
 
 /**
  * Weekly Municipal Sales Pipeline Report (Project 63 Phase 2).
@@ -222,6 +223,18 @@ export const SiteAdminProspectWeeklyReport = () => {
                             </CardContent>
                         </Card>
                     </div>
+
+                    <SalesReportNarrativePanel
+                        title='Next Steps'
+                        description='What the salesperson plans to do next week. Auto-saves when you click away.'
+                        placeholder='e.g. Push follow-ups on the 3 warm California cities; nail down Alameda County meeting time.'
+                        persistedValue={report?.nextSteps ?? null}
+                        mutationKey={UpsertWeeklyNarrative({ weekEnding: weekEndingStr }).key}
+                        save={(value) =>
+                            UpsertWeeklyNarrative({ weekEnding: weekEndingStr }).service({ nextSteps: value })
+                        }
+                        invalidateQueryKey={GetWeeklySalesReport({ weekEnding: weekEndingStr }).key}
+                    />
                 </>
             )}
         </div>

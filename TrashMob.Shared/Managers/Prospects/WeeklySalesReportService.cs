@@ -15,13 +15,16 @@ namespace TrashMob.Shared.Managers.Prospects
     /// EF-backed implementation of the weekly municipal sales pipeline report
     /// (Project 63 Phase 2). All counts are computed in a single scoped DB pass.
     /// </summary>
-    public class WeeklySalesReportService(MobDbContext db) : IWeeklySalesReportService
+    public class WeeklySalesReportService(
+        MobDbContext db,
+        ISalesReportNarrativeService narrativeService) : IWeeklySalesReportService
     {
         /// <inheritdoc />
         public async Task<WeeklySalesReportDto> GenerateAsync(DateOnly weekEnding, CancellationToken cancellationToken = default)
         {
             var end = new DateTimeOffset(weekEnding.ToDateTime(new TimeOnly(23, 59, 59, 999)), TimeSpan.Zero);
             var start = new DateTimeOffset(weekEnding.AddDays(-6).ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);
+            var periodStart = DateOnly.FromDateTime(start.UtcDateTime);
 
             var prospectsResearched = await db.CommunityProspects
                 .Where(p => p.CreatedDate >= start && p.CreatedDate <= end)
@@ -97,7 +100,8 @@ namespace TrashMob.Shared.Managers.Prospects
                 MeetingsHeld = meetingsHeld,
                 KeyMunicipalFeedback = keyMunicipalFeedback,
                 PricingFeedback = pricingFeedback,
-                NextSteps = null,
+                NextSteps = (await narrativeService.GetAsync(
+                    SalesReportPeriodTypeEnum.Weekly, periodStart, cancellationToken))?.NextSteps,
             };
         }
 
