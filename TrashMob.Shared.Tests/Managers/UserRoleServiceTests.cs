@@ -207,6 +207,125 @@ namespace TrashMob.Shared.Tests.Managers
         }
 
         [Fact]
+        public async Task ListRolesAsync_ReturnsAllSeededRoles()
+        {
+            var roles = await sut.ListRolesAsync();
+
+            Assert.Equal(2, roles.Count);
+            Assert.Contains(roles, r => r.Name == RoleNames.SiteAdmin);
+            Assert.Contains(roles, r => r.Name == RoleNames.SalesRep);
+        }
+
+        [Fact]
+        public async Task GetActiveGrantsForUserAsync_ReturnsOnlyActiveGrantsWithRoleIncluded()
+        {
+            var user = AddUser();
+            AddGrant(user.Id, SiteAdminRoleId);
+            AddGrant(user.Id, SalesRepRoleId, revokedDate: DateTimeOffset.UtcNow.AddHours(-1));
+
+            var grants = await sut.GetActiveGrantsForUserAsync(user.Id);
+
+            Assert.Single(grants);
+            var single = System.Linq.Enumerable.Single(grants);
+            Assert.Equal(RoleNames.SiteAdmin, single.Role.Name);
+        }
+
+        [Fact]
+        public async Task GrantRoleAsync_CreatesNewActiveGrant()
+        {
+            var user = AddUser();
+            var actor = AddUser();
+
+            var grant = await sut.GrantRoleAsync(user.Id, RoleNames.SalesRep, actor.Id, expiryDate: null);
+
+            Assert.NotNull(grant);
+            Assert.Equal(user.Id, grant.UserId);
+            Assert.Equal(SalesRepRoleId, grant.RoleId);
+            Assert.Equal(actor.Id, grant.GrantedByUserId);
+            Assert.Null(grant.RevokedDate);
+            Assert.True(await sut.HasRoleAsync(user.Id, RoleNames.SalesRep));
+        }
+
+        [Fact]
+        public async Task GrantRoleAsync_IsIdempotent_ReturnsExistingGrant()
+        {
+            var user = AddUser();
+            var actor = AddUser();
+            var first = await sut.GrantRoleAsync(user.Id, RoleNames.SalesRep, actor.Id, expiryDate: null);
+
+            var second = await sut.GrantRoleAsync(user.Id, RoleNames.SalesRep, actor.Id, expiryDate: null);
+
+            Assert.Equal(first.Id, second.Id);
+            Assert.Single(db.UserRoles);
+        }
+
+        [Fact]
+        public async Task GrantRoleAsync_UpdatesExpiryOnExistingGrant()
+        {
+            var user = AddUser();
+            var actor = AddUser();
+            await sut.GrantRoleAsync(user.Id, RoleNames.SalesRep, actor.Id, expiryDate: null);
+
+            var newExpiry = DateTimeOffset.UtcNow.AddDays(30);
+            var updated = await sut.GrantRoleAsync(user.Id, RoleNames.SalesRep, actor.Id, expiryDate: newExpiry);
+
+            Assert.Equal(newExpiry, updated.ExpiryDate);
+        }
+
+        [Fact]
+        public async Task GrantRoleAsync_ThrowsForUnknownRole()
+        {
+            var user = AddUser();
+            var actor = AddUser();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => sut.GrantRoleAsync(user.Id, "NotARealRole", actor.Id, expiryDate: null));
+        }
+
+        [Fact]
+        public async Task RevokeRoleAsync_SoftDeletesActiveGrant()
+        {
+            var user = AddUser();
+            var actor = AddUser();
+            await sut.GrantRoleAsync(user.Id, RoleNames.SalesRep, actor.Id, expiryDate: null);
+
+            var revoked = await sut.RevokeRoleAsync(user.Id, RoleNames.SalesRep, actor.Id, "no longer needed");
+
+            Assert.NotNull(revoked);
+            Assert.NotNull(revoked.RevokedDate);
+            Assert.Equal(actor.Id, revoked.RevokedByUserId);
+            Assert.Equal("no longer needed", revoked.RevokedReason);
+            Assert.False(await sut.HasRoleAsync(user.Id, RoleNames.SalesRep));
+        }
+
+        [Fact]
+        public async Task RevokeRoleAsync_ReturnsNull_WhenUserHasNoActiveGrant()
+        {
+            var user = AddUser();
+            var actor = AddUser();
+
+            var revoked = await sut.RevokeRoleAsync(user.Id, RoleNames.SalesRep, actor.Id, revokedReason: null);
+
+            Assert.Null(revoked);
+        }
+
+        [Fact]
+        public async Task GrantRoleAsync_InvalidatesPerRequestCache()
+        {
+            var user = AddUser();
+            var actor = AddUser();
+
+            // Prime the cache with no roles
+            var before = await sut.GetRoleNamesAsync(user.Id);
+            Assert.Empty(before);
+
+            await sut.GrantRoleAsync(user.Id, RoleNames.SalesRep, actor.Id, expiryDate: null);
+
+            var after = await sut.GetRoleNamesAsync(user.Id);
+            Assert.Contains(RoleNames.SalesRep, after);
+        }
+
+        [Fact]
         public async Task GetRoleNamesAsync_CachesPerRequest()
         {
             var user = AddUser();

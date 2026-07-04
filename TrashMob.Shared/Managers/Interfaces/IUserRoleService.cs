@@ -42,5 +42,33 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// role members.
         /// </summary>
         Task<IReadOnlyCollection<User>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Returns every seeded <see cref="Role"/>, ordered by <c>DisplayOrder</c>.
+        /// </summary>
+        Task<IReadOnlyCollection<Role>> ListRolesAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Returns the active <see cref="UserRole"/> grants for the given user,
+        /// with the <see cref="Role"/> navigation populated. Excludes revoked
+        /// grants and expired grants.
+        /// </summary>
+        Task<IReadOnlyCollection<UserRole>> GetActiveGrantsForUserAsync(Guid userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Grants the named role to the given user. If the user already has an
+        /// active grant of that role, returns the existing grant unchanged.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException">Thrown when the
+        /// role name does not match any seeded role.</exception>
+        Task<UserRole> GrantRoleAsync(Guid userId, string roleName, Guid grantedByUserId, DateTimeOffset? expiryDate, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Revokes an active grant of the named role for the given user.
+        /// Soft-delete: the row is retained with <see cref="UserRole.RevokedDate"/>
+        /// and <see cref="UserRole.RevokedByUserId"/> populated. Returns
+        /// <c>null</c> if the user has no active grant of the role.
+        /// </summary>
+        Task<UserRole> RevokeRoleAsync(Guid userId, string roleName, Guid revokedByUserId, string revokedReason, CancellationToken cancellationToken = default);
     }
 }

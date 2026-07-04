@@ -52,6 +52,8 @@
     <None Remove="Engine\EmailCopy\ProspectOutreachFinal.html" />
     <None Remove="Engine\EmailCopy\UpcomingTeamEventsThisWeek.html" />
     <None Remove="Engine\EmailCopy\UpcomingTeamEventsSoon.html" />
+    <None Remove="Engine\EmailCopy\RoleGranted.html" />
+    <None Remove="Engine\EmailCopy\RoleRevoked.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -106,6 +108,8 @@
     <EmbeddedResource Include="Engine\EmailCopy\FundraisingAppeal.html" />
     <EmbeddedResource Include="Engine\EmailCopy\InviteMinorToCreateAccount.html" />
     <EmbeddedResource Include="Engine\EmailCopy\DependentRegisteredForEvent.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\RoleGranted.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\RoleRevoked.html" />
   </ItemGroup>
 
   <ItemGroup>
