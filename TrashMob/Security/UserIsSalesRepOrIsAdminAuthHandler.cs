@@ -1,40 +1,42 @@
-﻿namespace TrashMob.Security
+namespace TrashMob.Security
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using TrashMob.Models;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Interfaces;
 
-    public class
-        UserIsPartnerUserOrIsAdminAuthHandler : AuthorizationHandler<UserIsPartnerUserOrIsAdminRequirement, Partner>
+    /// <summary>
+    /// Authorization handler for the <see cref="AuthorizationPolicyConstants.UserIsSalesRepOrIsAdmin"/>
+    /// policy. Succeeds when the calling user is granted the
+    /// <see cref="RoleNames.SalesRep"/> or <see cref="RoleNames.SiteAdmin"/> role.
+    /// </summary>
+    public class UserIsSalesRepOrIsAdminAuthHandler : AuthorizationHandler<UserIsSalesRepOrIsAdminRequirement>
     {
         private readonly IHttpContextAccessor httpContext;
-        private readonly ILogger<UserIsValidUserAuthHandler> logger;
-        private readonly IBaseManager<PartnerAdmin> partnerUserManager;
+        private readonly ILogger<UserIsSalesRepOrIsAdminAuthHandler> logger;
         private readonly IUserManager userManager;
         private readonly IUserRoleService userRoleService;
 
-        public UserIsPartnerUserOrIsAdminAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager,
-            IBaseManager<PartnerAdmin> partnerUserManager, IUserRoleService userRoleService,
-            ILogger<UserIsValidUserAuthHandler> logger)
+        public UserIsSalesRepOrIsAdminAuthHandler(
+            IHttpContextAccessor httpContext,
+            IUserManager userManager,
+            IUserRoleService userRoleService,
+            ILogger<UserIsSalesRepOrIsAdminAuthHandler> logger)
         {
             this.httpContext = httpContext;
             this.userManager = userManager;
-            this.partnerUserManager = partnerUserManager;
             this.userRoleService = userRoleService;
             this.logger = logger;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
-            UserIsPartnerUserOrIsAdminRequirement requirement, Partner resource)
+            UserIsSalesRepOrIsAdminRequirement requirement)
         {
             try
             {
@@ -57,25 +59,15 @@
                     httpContext.HttpContext.Items.Add("UserId", user.Id);
                 }
 
-                if (await userRoleService.HasRoleAsync(user.Id, RoleNames.SiteAdmin, CancellationToken.None))
+                if (await userRoleService.HasRoleAsync(user.Id, RoleNames.SiteAdmin, CancellationToken.None)
+                    || await userRoleService.HasRoleAsync(user.Id, RoleNames.SalesRep, CancellationToken.None))
                 {
                     context.Succeed(requirement);
                 }
                 else
                 {
-                    var currentUserPartner =
-                        (await partnerUserManager.GetAsync(pu => pu.PartnerId == resource.Id && pu.UserId == user.Id,
-                            CancellationToken.None)).FirstOrDefault();
-
-                    if (currentUserPartner is not null)
-                    {
-                        context.Succeed(requirement);
-                    }
-                    else
-                    {
-                        AuthorizationFailure.Failed(new List<AuthorizationFailureReason>
-                            { new(this, "User is not a partner user and is not a site admin.") });
-                    }
+                    AuthorizationFailure.Failed(new List<AuthorizationFailureReason>
+                        { new(this, "User is not a sales rep and is not a site admin.") });
                 }
             }
             catch (Exception ex)

@@ -9,6 +9,7 @@ namespace TrashMob.Security
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using TrashMob.Models;
+    using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Interfaces;
 
     /// <summary>
@@ -20,16 +21,19 @@ namespace TrashMob.Security
         private readonly ILogger<UserIsEventLeadOrIsAdminAuthHandler> logger;
         private readonly IUserManager userManager;
         private readonly IEventAttendeeManager eventAttendeeManager;
+        private readonly IUserRoleService userRoleService;
 
         public UserIsEventLeadOrIsAdminAuthHandler(
             IHttpContextAccessor httpContext,
             IUserManager userManager,
             IEventAttendeeManager eventAttendeeManager,
+            IUserRoleService userRoleService,
             ILogger<UserIsEventLeadOrIsAdminAuthHandler> logger)
         {
             this.httpContext = httpContext;
             this.userManager = userManager;
             this.eventAttendeeManager = eventAttendeeManager;
+            this.userRoleService = userRoleService;
             this.logger = logger;
         }
 
@@ -60,7 +64,7 @@ namespace TrashMob.Security
                 }
 
                 // Site admin can do anything
-                if (user.IsSiteAdmin)
+                if (await userRoleService.HasRoleAsync(user.Id, RoleNames.SiteAdmin, CancellationToken.None))
                 {
                     context.Succeed(requirement);
                     return;

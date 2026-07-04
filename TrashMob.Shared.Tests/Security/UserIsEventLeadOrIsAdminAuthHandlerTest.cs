@@ -16,6 +16,7 @@ namespace TrashMob.Shared.Tests.Security
     {
         private readonly Mock<IUserManager> _mockUserManager;
         private readonly Mock<IEventAttendeeManager> _mockEventAttendeeManager;
+        private readonly Mock<IUserRoleService> _mockUserRoleService;
         private readonly Mock<ILogger<UserIsEventLeadOrIsAdminAuthHandler>> _mockLogger;
         private readonly UserIsEventLeadOrIsAdminAuthHandler _sut;
         private readonly Mock<Microsoft.AspNetCore.Http.IHttpContextAccessor> _mockHttpContextAccessor;
@@ -24,12 +25,14 @@ namespace TrashMob.Shared.Tests.Security
         {
             _mockUserManager = new Mock<IUserManager>();
             _mockEventAttendeeManager = new Mock<IEventAttendeeManager>();
+            _mockUserRoleService = AuthHandlerTestHelper.CreateUserRoleService();
             _mockLogger = new Mock<ILogger<UserIsEventLeadOrIsAdminAuthHandler>>();
             _mockHttpContextAccessor = AuthHandlerTestHelper.CreateHttpContextAccessor();
             _sut = new UserIsEventLeadOrIsAdminAuthHandler(
                 _mockHttpContextAccessor.Object,
                 _mockUserManager.Object,
                 _mockEventAttendeeManager.Object,
+                _mockUserRoleService.Object,
                 _mockLogger.Object);
         }
 
@@ -41,6 +44,7 @@ namespace TrashMob.Shared.Tests.Security
             var user = new UserBuilder().WithId(userId).WithEmail("admin@test.com").AsSiteAdmin().Build();
             _mockUserManager.Setup(m => m.GetUserByEmailAsync("admin@test.com", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
+            _mockUserRoleService.GrantSiteAdmin(userId);
 
             var resource = new Event { Id = Guid.NewGuid(), CreatedByUserId = otherUserId };
             var principal = AuthHandlerTestHelper.CreateClaimsPrincipal("admin@test.com");
@@ -143,6 +147,7 @@ namespace TrashMob.Shared.Tests.Security
             var user = new UserBuilder().WithId(userId).WithEmail("admin@test.com").AsSiteAdmin().Build();
             _mockUserManager.Setup(m => m.GetUserByEmailAsync("admin@test.com", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
+            _mockUserRoleService.GrantSiteAdmin(userId);
 
             var resource = new Event { Id = Guid.NewGuid(), CreatedByUserId = Guid.NewGuid() };
             var principal = AuthHandlerTestHelper.CreateClaimsPrincipal("admin@test.com");
