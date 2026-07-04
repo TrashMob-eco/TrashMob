@@ -84,6 +84,7 @@
             services.AddScoped<IPickupLocationManager, PickupLocationManager>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IUserRoleService, UserRoleService>();
+            services.AddScoped<IRoleGrantNotificationService, RoleGrantNotificationService>();
             services.AddScoped<INonEventUserNotificationManager, NonEventUserNotificationManager>();
             services.AddScoped<IWaiverManager, WaiverManager>();
             services.AddScoped<ILitterImageManager, LitterImageManager>();

@@ -29,6 +29,7 @@ import {
     LayoutDashboard,
     Sparkles,
     TrendingUp,
+    Shield,
 } from 'lucide-react';
 import { SidebarNav, NavGroup } from '@/components/ui/sidebar-nav';
 
@@ -43,6 +44,7 @@ const navGroups: NavGroup[] = [
         title: 'Data Management',
         items: [
             { name: 'Users', href: `${pathPrefix}/users`, icon: Users },
+            { name: 'Roles', href: `${pathPrefix}/roles`, icon: Shield },
             { name: 'Events', href: `${pathPrefix}/events`, icon: Calendar },
             { name: 'Partners', href: `${pathPrefix}/partners`, icon: Building2 },
             { name: 'Documents', href: `${pathPrefix}/documents`, icon: FileText },

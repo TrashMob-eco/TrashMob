@@ -328,6 +328,10 @@ const SiteAdminUsers = lazy(() => import('./pages/siteadmin/users/page').then((m
 const SiteAdminUserDetail = lazy(() =>
     import('./pages/siteadmin/users/$userId').then((m) => ({ default: m.SiteAdminUserDetail })),
 );
+const SiteAdminUserRoles = lazy(() =>
+    import('./pages/siteadmin/users/$userId.roles').then((m) => ({ default: m.SiteAdminUserRoles })),
+);
+const SiteAdminRoles = lazy(() => import('./pages/siteadmin/roles/page').then((m) => ({ default: m.SiteAdminRoles })));
 const SiteAdminEvents = lazy(() =>
     import('./pages/siteadmin/events/page').then((m) => ({ default: m.SiteAdminEvents })),
 );
@@ -706,6 +710,8 @@ const AppContent: FC = () => {
                                 <Route path='guide' element={<SiteAdminGuide />} />
                                 <Route path='users' element={<SiteAdminUsers />} />
                                 <Route path='users/:userId' element={<SiteAdminUserDetail />} />
+                                <Route path='users/:userId/roles' element={<SiteAdminUserRoles />} />
+                                <Route path='roles' element={<SiteAdminRoles />} />
                                 <Route path='events' element={<SiteAdminEvents />} />
                                 <Route path='partners' element={<SiteAdminPartners />} />
                                 <Route path='documents' element={<SiteAdminDocuments />} />
