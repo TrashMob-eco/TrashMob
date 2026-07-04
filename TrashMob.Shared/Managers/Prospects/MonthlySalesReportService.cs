@@ -16,7 +16,9 @@ namespace TrashMob.Shared.Managers.Prospects
     /// (Project 63 Phase 3). One DB pass for the base metrics, one for market
     /// intelligence aggregation.
     /// </summary>
-    public class MonthlySalesReportService(MobDbContext db) : IMonthlySalesReportService
+    public class MonthlySalesReportService(
+        MobDbContext db,
+        ISalesReportNarrativeService narrativeService) : IMonthlySalesReportService
     {
         /// <summary>
         /// Cynthia's baseline targets per Project 63 (20 / 20 / 15 / 10 / 3 / 2 / 1).
@@ -166,6 +168,9 @@ namespace TrashMob.Shared.Managers.Prospects
                 .Take(5)
                 .ToList();
 
+            var narrative = await narrativeService.GetAsync(
+                SalesReportPeriodTypeEnum.Monthly, monthStart, cancellationToken);
+
             return new MonthlySalesReportDto
             {
                 PeriodStart = monthStartUtc,
@@ -174,7 +179,7 @@ namespace TrashMob.Shared.Managers.Prospects
                 BestRespondingDepartments = bestRespondingDepartments,
                 CommonObjections = commonObjections,
                 PricingFeedback = pricingFeedback,
-                NextMonthPriority = null,
+                NextMonthPriority = narrative?.NextMonthPriority,
             };
         }
 

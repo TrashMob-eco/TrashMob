@@ -173,6 +173,8 @@
 
         public virtual DbSet<SalesMonthlyTarget> SalesMonthlyTargets { get; set; }
 
+        public virtual DbSet<SalesReport> SalesReports { get; set; }
+
         public virtual DbSet<Contact> Contacts { get; set; }
 
         public virtual DbSet<Donation> Donations { get; set; }
@@ -3672,6 +3674,36 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SalesMonthlyTargets_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<SalesReport>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.PeriodStart).HasColumnType("date");
+                entity.Property(e => e.PeriodEnd).HasColumnType("date");
+
+                entity.Property(e => e.NextSteps).HasMaxLength(2000);
+                entity.Property(e => e.NextMonthPriority).HasMaxLength(2000);
+
+                // One narrative per (PeriodType, PeriodStart) — the report screen
+                // upserts through this constraint so callers never need a
+                // read-before-write dance.
+                entity.HasIndex(e => new { e.PeriodType, e.PeriodStart })
+                    .IsUnique()
+                    .HasDatabaseName("UX_SalesReports_PeriodTypeStart");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SalesReports_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SalesReports_User_LastUpdatedBy");
             });
 
             // ===== Contact Management System (Project 51) =====

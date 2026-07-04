@@ -709,6 +709,24 @@ namespace TrashMob.Models
     }
 
     /// <summary>
+    /// Discriminates <see cref="SalesReport"/> rows by reporting cadence
+    /// (Project 63 Phase 4). Weekly rows carry <c>NextSteps</c>; monthly
+    /// rows carry <c>NextMonthPriority</c>.
+    /// </summary>
+    public enum SalesReportPeriodTypeEnum
+    {
+        /// <summary>
+        /// Weekly (Monday–Sunday) narrative.
+        /// </summary>
+        Weekly = 1,
+
+        /// <summary>
+        /// Monthly (first-of-month) narrative.
+        /// </summary>
+        Monthly = 2,
+    }
+
+    /// <summary>
     /// Represents the 7 tracked metrics for the monthly municipal sales
     /// pipeline report (Project 63 Phase 3). Numeric values map to
     /// <c>SalesMonthlyTarget.Metric</c> rows.

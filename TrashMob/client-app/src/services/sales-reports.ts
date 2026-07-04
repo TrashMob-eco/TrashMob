@@ -89,3 +89,34 @@ export const UpdateMonthlyTargets = (params: UpdateMonthlyTargets_Params) => ({
             data: body,
         }),
 });
+
+// ---------- Narrative persistence (Project 63 Phase 4a) ----------
+
+export interface SalesReportNarrativeBody {
+    nextSteps?: string | null;
+    nextMonthPriority?: string | null;
+}
+
+export type UpsertWeeklyNarrative_Params = { weekEnding: string };
+
+export const UpsertWeeklyNarrative = (params: UpsertWeeklyNarrative_Params) => ({
+    key: ['/reports/sales/weekly', params.weekEnding, 'narrative'],
+    service: async (body: SalesReportNarrativeBody) =>
+        ApiService('protected').fetchData<unknown, SalesReportNarrativeBody>({
+            url: `/v2/reports/sales/weekly/${params.weekEnding}/narrative`,
+            method: 'put',
+            data: body,
+        }),
+});
+
+export type UpsertMonthlyNarrative_Params = { month: string };
+
+export const UpsertMonthlyNarrative = (params: UpsertMonthlyNarrative_Params) => ({
+    key: ['/reports/sales/monthly', params.month, 'narrative'],
+    service: async (body: SalesReportNarrativeBody) =>
+        ApiService('protected').fetchData<unknown, SalesReportNarrativeBody>({
+            url: `/v2/reports/sales/monthly/${params.month}/narrative`,
+            method: 'put',
+            data: body,
+        }),
+});
