@@ -34,14 +34,22 @@ export const PROSPECT_PRIORITIES = [
     { value: 3, label: 'Low' },
 ] as const;
 
+/**
+ * Activity-type strings the Weekly Report categorizes (Project 63 Phase 2).
+ * Match `ProspectActivityTypeEnum` names on the backend — case-insensitive on
+ * read, but new activities should log with these exact strings.
+ *
+ * Legacy strings like `EmailSent` / `Reply` are still accepted on write (the
+ * ActivityType column is free-form), but they won't be counted in the weekly
+ * report categories.
+ */
 export const ACTIVITY_TYPES = [
-    'EmailSent',
-    'EmailOpened',
-    'EmailClicked',
-    'Reply',
-    'PhoneCallMade',
-    'PhoneCallReceived',
-    'StatusChange',
+    'Outreach',
+    'FollowUp',
+    'ResponseReceived',
+    'MeetingRequested',
+    'MeetingScheduled',
+    'MeetingHeld',
     'Note',
 ] as const;
 

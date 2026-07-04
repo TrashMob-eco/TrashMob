@@ -172,6 +172,7 @@
             services.AddScoped<IPipelineAnalyticsManager, PipelineAnalyticsManager>();
             services.AddScoped<ISentimentAnalysisService, SentimentAnalysisService>();
             services.AddScoped<IProspectConversionManager, ProspectConversionManager>();
+            services.AddScoped<IWeeklySalesReportService, WeeklySalesReportService>();
 
             // Contact Management
             services.AddScoped<IContactManager, ContactManager>();
