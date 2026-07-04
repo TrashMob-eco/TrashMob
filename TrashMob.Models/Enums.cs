@@ -709,6 +709,54 @@ namespace TrashMob.Models
     }
 
     /// <summary>
+    /// Represents the 7 tracked metrics for the monthly municipal sales
+    /// pipeline report (Project 63 Phase 3). Numeric values map to
+    /// <c>SalesMonthlyTarget.Metric</c> rows.
+    /// </summary>
+    public enum SalesMetricEnum
+    {
+        /// <summary>
+        /// Count of prospects created in the month.
+        /// </summary>
+        ProspectsResearched = 1,
+
+        /// <summary>
+        /// Count of prospect contacts created in the month.
+        /// </summary>
+        NewContacts = 2,
+
+        /// <summary>
+        /// Count of <see cref="ProspectActivity"/> rows tagged
+        /// <see cref="ProspectActivityTypeEnum.Outreach"/> in the month.
+        /// </summary>
+        OutreachTouches = 3,
+
+        /// <summary>
+        /// Count of <see cref="ProspectActivity"/> rows tagged
+        /// <see cref="ProspectActivityTypeEnum.FollowUp"/> in the month.
+        /// </summary>
+        FollowUpTouches = 4,
+
+        /// <summary>
+        /// Count of <see cref="ProspectActivity"/> rows tagged
+        /// <see cref="ProspectActivityTypeEnum.ResponseReceived"/> in the month.
+        /// </summary>
+        Responses = 5,
+
+        /// <summary>
+        /// Count of <see cref="ProspectActivity"/> rows tagged
+        /// <see cref="ProspectActivityTypeEnum.MeetingRequested"/> in the month.
+        /// </summary>
+        MeetingsRequested = 6,
+
+        /// <summary>
+        /// Count of <see cref="ProspectActivity"/> rows tagged
+        /// <see cref="ProspectActivityTypeEnum.MeetingScheduled"/> in the month.
+        /// </summary>
+        MeetingsScheduled = 7,
+    }
+
+    /// <summary>
     /// Represents the status of a grant in the pipeline.
     /// </summary>
     public enum GrantStatusEnum

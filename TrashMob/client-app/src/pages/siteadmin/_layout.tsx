@@ -31,6 +31,7 @@ import {
     TrendingUp,
     Shield,
     CalendarClock,
+    CalendarDays,
 } from 'lucide-react';
 import { SidebarNav, NavGroup } from '@/components/ui/sidebar-nav';
 
@@ -58,6 +59,7 @@ const navGroups: NavGroup[] = [
             { name: 'Import CSV', href: `${pathPrefix}/prospects/import`, icon: Upload },
             { name: 'Pipeline Analytics', href: `${pathPrefix}/prospects/analytics`, icon: BarChart3 },
             { name: 'Weekly Report', href: `${pathPrefix}/prospects/reports/weekly`, icon: CalendarClock },
+            { name: 'Monthly Report', href: `${pathPrefix}/prospects/reports/monthly`, icon: CalendarDays },
         ],
     },
     {

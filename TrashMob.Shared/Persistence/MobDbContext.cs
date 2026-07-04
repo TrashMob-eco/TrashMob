@@ -171,6 +171,8 @@
 
         public virtual DbSet<ProspectOutreachEmail> ProspectOutreachEmails { get; set; }
 
+        public virtual DbSet<SalesMonthlyTarget> SalesMonthlyTargets { get; set; }
+
         public virtual DbSet<Contact> Contacts { get; set; }
 
         public virtual DbSet<Donation> Donations { get; set; }
@@ -3639,6 +3641,37 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProspectOutreachEmails_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<SalesMonthlyTarget>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Month).HasColumnType("date");
+
+                entity.Property(e => e.Notes).HasMaxLength(500);
+
+                // One target per (Month, Metric) pair. The Monthly Report UI
+                // upserts through this constraint so callers never need to
+                // check for a pre-existing row.
+                entity.HasIndex(e => new { e.Month, e.Metric })
+                    .IsUnique()
+                    .HasDatabaseName("UX_SalesMonthlyTargets_MonthMetric");
+
+                entity.HasIndex(e => e.Month)
+                    .HasDatabaseName("IX_SalesMonthlyTargets_Month");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SalesMonthlyTargets_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SalesMonthlyTargets_User_LastUpdatedBy");
             });
 
             // ===== Contact Management System (Project 51) =====
