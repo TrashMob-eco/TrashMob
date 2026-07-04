@@ -19,8 +19,10 @@ namespace TrashMob.Shared.Managers
     /// Manager for photo moderation operations.
     /// Handles moderation for LitterImage, TeamPhoto, EventPhoto, and PartnerPhoto entities.
     /// </summary>
-    public class PhotoModerationManager(MobDbContext dbContext, IEmailManager emailManager)
-        : IPhotoModerationManager
+    public class PhotoModerationManager(
+        MobDbContext dbContext,
+        IEmailManager emailManager,
+        IUserRoleService userRoleService) : IPhotoModerationManager
     {
         private const string LitterImageType = "LitterImage";
         private const string TeamPhotoType = "TeamPhoto";
@@ -560,12 +562,13 @@ namespace TrashMob.Shared.Managers
 
         private async Task SendPhotoFlaggedNotificationAsync(string photoType, Guid photoId, string reason, Guid flaggedByUserId, CancellationToken cancellationToken)
         {
-            // Get admins to notify
-            var admins = await dbContext.Users
-                .Where(u => u.IsSiteAdmin)
-                .ToListAsync(cancellationToken);
+            // Get admins to notify. Routes through IUserRoleService so admin
+            // membership is defined by the SiteAdmin role, not the legacy
+            // User.IsSiteAdmin boolean. The role service's compatibility bridge
+            // still folds any legacy-flag users in during the observation window.
+            var admins = await userRoleService.GetUsersInRoleAsync(RoleNames.SiteAdmin, cancellationToken);
 
-            if (!admins.Any())
+            if (admins.Count == 0)
             {
                 return;
             }

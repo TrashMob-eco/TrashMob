@@ -19,6 +19,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
     public class UsersV2ControllerTests
     {
         private readonly Mock<IUserManager> userManager = new();
+        private readonly Mock<IUserRoleService> userRoleService = new();
         private readonly Mock<IEventAttendeeMetricsManager> metricsManager = new();
         private readonly Mock<IImageManager> imageManager = new();
         private readonly Mock<IUserDataExportManager> exportManager = new();
@@ -28,7 +29,7 @@ namespace TrashMob.Shared.Tests.Controllers.V2
 
         public UsersV2ControllerTests()
         {
-            controller = new UsersV2Controller(userManager.Object, metricsManager.Object, imageManager.Object, exportManager.Object, routeManager.Object, logger.Object);
+            controller = new UsersV2Controller(userManager.Object, userRoleService.Object, metricsManager.Object, imageManager.Object, exportManager.Object, routeManager.Object, logger.Object);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext(),
@@ -242,6 +243,47 @@ namespace TrashMob.Shared.Tests.Controllers.V2
             var result = await controller.GetUserImpact(userId, CancellationToken.None);
 
             Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task DeleteUser_ReturnsForbid_WhenCallerIsNotAdminAndNotSelf()
+        {
+            var callerId = Guid.NewGuid();
+            var targetId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = callerId.ToString();
+
+            userManager
+                .Setup(m => m.GetUserByInternalIdAsync(callerId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new User { Id = callerId, UserName = "caller" });
+            // Default userRoleService mock returns false for HasRoleAsync → not a SiteAdmin.
+
+            var result = await controller.DeleteUser(targetId, CancellationToken.None);
+
+            Assert.IsType<ForbidResult>(result);
+            userManager.Verify(m => m.DeleteAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task DeleteUser_ReturnsNoContent_WhenCallerHoldsSiteAdminRole()
+        {
+            var callerId = Guid.NewGuid();
+            var targetId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = callerId.ToString();
+
+            userManager
+                .Setup(m => m.GetUserByInternalIdAsync(callerId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new User { Id = callerId, UserName = "admin" });
+            userRoleService
+                .Setup(s => s.HasRoleAsync(callerId, "SiteAdmin", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+            userManager
+                .Setup(m => m.DeleteAsync(targetId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            var result = await controller.DeleteUser(targetId, CancellationToken.None);
+
+            Assert.IsType<NoContentResult>(result);
+            userManager.Verify(m => m.DeleteAsync(targetId, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
