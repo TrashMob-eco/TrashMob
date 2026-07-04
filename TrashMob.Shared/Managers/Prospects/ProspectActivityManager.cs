@@ -45,17 +45,17 @@ namespace TrashMob.Shared.Managers.Prospects
                     var advanced = false;
 
                     // Contacted -> Responded
-                    if (prospect.PipelineStage == 1)
+                    if (prospect.PipelineStage == (int)PipelineStageEnum.Contacted)
                     {
-                        prospect.PipelineStage = 2;
+                        prospect.PipelineStage = (int)PipelineStageEnum.Responded;
                         advanced = true;
                     }
 
-                    // Responded -> Interested (on positive sentiment)
-                    if (prospect.PipelineStage == 2
+                    // Responded -> DiscoveryInProgress (on positive sentiment)
+                    if (prospect.PipelineStage == (int)PipelineStageEnum.Responded
                         && string.Equals(instance.SentimentScore, "Positive", StringComparison.OrdinalIgnoreCase))
                     {
-                        prospect.PipelineStage = 3;
+                        prospect.PipelineStage = (int)PipelineStageEnum.DiscoveryInProgress;
                         advanced = true;
                     }
 

@@ -74,9 +74,11 @@ namespace TrashMob.Shared.Managers.Prospects
                 analytics.ConversionRate = Math.Round((double)analytics.ConvertedCount / analytics.TotalProspects * 100, 1);
             }
 
-            // Average days in pipeline - load only converted prospects (small subset)
+            // Average days in pipeline — load only converted prospects (small subset).
+            // Project 63 removed the dedicated "Converted" stage from the enum;
+            // ConvertedPartnerId is now the authoritative signal.
             var convertedProspects = await prospectRepository.Get()
-                .Where(p => p.ConvertedPartnerId.HasValue && p.PipelineStage == 5)
+                .Where(p => p.ConvertedPartnerId.HasValue)
                 .ToListAsync(cancellationToken);
 
             if (convertedProspects.Count > 0)

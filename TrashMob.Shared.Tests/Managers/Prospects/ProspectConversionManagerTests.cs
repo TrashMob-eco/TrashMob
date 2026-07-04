@@ -91,9 +91,11 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
                 _userId);
 
             Assert.NotNull(prospect.ConvertedPartnerId);
-            Assert.Equal(5, prospect.PipelineStage);
+            // Project 63 removed the dedicated "Converted" stage; ConvertedPartnerId
+            // is the authoritative flag, and PipelineStage is left where it was.
+            Assert.Equal((int)PipelineStageEnum.DiscoveryInProgress, prospect.PipelineStage);
             _prospectRepo.Verify(r => r.UpdateAsync(It.Is<CommunityProspect>(
-                p => p.ConvertedPartnerId.HasValue && p.PipelineStage == 5)), Times.Once);
+                p => p.ConvertedPartnerId.HasValue)), Times.Once);
         }
 
         [Fact]
@@ -187,7 +189,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         private static CommunityProspect CreateProspect()
         {
             return new CommunityProspectBuilder()
-                .WithPipelineStage(3)
+                .WithPipelineStage((int)PipelineStageEnum.DiscoveryInProgress)
                 .WithContactInfo("test@city.gov", "John Doe", "Director")
                 .WithWebsite("https://city.gov")
                 .Build();

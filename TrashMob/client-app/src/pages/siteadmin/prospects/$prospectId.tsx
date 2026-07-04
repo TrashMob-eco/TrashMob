@@ -20,7 +20,7 @@ import {
     GetOutreachHistory,
     GetOutreachSettings,
 } from '@/services/community-prospects';
-import { PipelineStageBadge, ACTIVITY_TYPES } from '@/components/prospects/pipeline-stage-badge';
+import { PipelineStageBadge, PriorityBadge, ACTIVITY_TYPES } from '@/components/prospects/pipeline-stage-badge';
 import { OutreachPreviewDialog } from '@/components/prospects/outreach-preview-dialog';
 import { ConvertToPartnerDialog } from '@/components/prospects/convert-to-partner-dialog';
 import { ProspectContactsCard } from '@/components/prospects/prospect-contacts-card';
@@ -144,11 +144,17 @@ export const SiteAdminProspectDetail = () => {
                 <CardContent>
                     <div className='grid grid-cols-12 gap-4'>
                         <div className='col-span-12 md:col-span-6 space-y-3'>
-                            <div className='flex items-center gap-2'>
+                            <div className='flex items-center gap-2 flex-wrap'>
                                 <Badge variant='outline'>{prospect.type}</Badge>
                                 <PipelineStageBadge stage={prospect.pipelineStage} />
+                                <PriorityBadge priority={prospect.priority} />
                                 {prospect.fitScore > 0 && <Badge variant='secondary'>Fit: {prospect.fitScore}</Badge>}
                             </div>
+                            {prospect.department ? (
+                                <p className='text-sm text-muted-foreground'>
+                                    <span className='font-medium'>Department:</span> {prospect.department}
+                                </p>
+                            ) : null}
                             {prospect.city || prospect.region ? (
                                 <div className='flex items-center gap-2 text-muted-foreground'>
                                     <MapPin className='h-4 w-4' />
@@ -190,6 +196,32 @@ export const SiteAdminProspectDetail = () => {
                     </div>
                 </CardContent>
             </Card>
+
+            {prospect.keyObjection || prospect.pricingFeedback ? (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Signal</CardTitle>
+                    </CardHeader>
+                    <CardContent className='space-y-3'>
+                        {prospect.keyObjection ? (
+                            <div>
+                                <h4 className='text-sm font-medium mb-1'>Key Objection or Question</h4>
+                                <p className='text-sm text-muted-foreground whitespace-pre-wrap'>
+                                    {prospect.keyObjection}
+                                </p>
+                            </div>
+                        ) : null}
+                        {prospect.pricingFeedback ? (
+                            <div>
+                                <h4 className='text-sm font-medium mb-1'>Pricing / Business Model Feedback</h4>
+                                <p className='text-sm text-muted-foreground whitespace-pre-wrap'>
+                                    {prospect.pricingFeedback}
+                                </p>
+                            </div>
+                        ) : null}
+                    </CardContent>
+                </Card>
+            ) : null}
 
             <ProspectContactsCard prospectId={prospectId} />
 

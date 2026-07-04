@@ -14,12 +14,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { CreateCommunityProspect, GetCommunityProspects } from '@/services/community-prospects';
-import { PIPELINE_STAGES, PROSPECT_TYPES } from '@/components/prospects/pipeline-stage-badge';
+import { PIPELINE_STAGES, MUNICIPALITY_TYPES, PROSPECT_PRIORITIES } from '@/components/prospects/pipeline-stage-badge';
 import CommunityProspectData from '@/components/Models/CommunityProspectData';
 
 interface FormInputs {
     name: string;
     type: string;
+    department: string;
+    priority: string;
     city: string;
     region: string;
     country: string;
@@ -31,6 +33,8 @@ interface FormInputs {
     population: string;
     fitScore: string;
     pipelineStage: string;
+    keyObjection: string;
+    pricingFeedback: string;
     notes: string;
     latitude: string;
     longitude: string;
@@ -39,6 +43,8 @@ interface FormInputs {
 const formSchema = z.object({
     name: z.string().min(1, 'Name is required'),
     type: z.string(),
+    department: z.string(),
+    priority: z.string(),
     city: z.string(),
     region: z.string(),
     country: z.string(),
@@ -50,6 +56,8 @@ const formSchema = z.object({
     population: z.string(),
     fitScore: z.string(),
     pipelineStage: z.string(),
+    keyObjection: z.string().max(500).optional().default(''),
+    pricingFeedback: z.string().max(500).optional().default(''),
     notes: z.string(),
     latitude: z.string(),
     longitude: z.string(),
@@ -81,7 +89,9 @@ export const SiteAdminProspectCreate = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: searchParams.get('name') || '',
-            type: searchParams.get('type') || 'Municipality',
+            type: searchParams.get('type') || 'City',
+            department: searchParams.get('department') || '',
+            priority: '',
             city: searchParams.get('city') || '',
             region: searchParams.get('region') || '',
             country: searchParams.get('country') || 'United States',
@@ -93,6 +103,8 @@ export const SiteAdminProspectCreate = () => {
             population: searchParams.get('population') || '',
             fitScore: '0',
             pipelineStage: '0',
+            keyObjection: '',
+            pricingFeedback: '',
             notes: searchParams.get('notes') || '',
             latitude: searchParams.get('latitude') || '',
             longitude: searchParams.get('longitude') || '',
@@ -104,6 +116,10 @@ export const SiteAdminProspectCreate = () => {
             const body = new CommunityProspectData();
             body.name = formValues.name;
             body.type = formValues.type;
+            body.department = formValues.department;
+            body.priority = formValues.priority ? parseInt(formValues.priority, 10) : null;
+            body.keyObjection = formValues.keyObjection;
+            body.pricingFeedback = formValues.pricingFeedback;
             body.city = formValues.city;
             body.region = formValues.region;
             body.country = formValues.country;
@@ -159,7 +175,7 @@ export const SiteAdminProspectCreate = () => {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {PROSPECT_TYPES.map((t) => (
+                                            {MUNICIPALITY_TYPES.map((t) => (
                                                 <SelectItem key={t} value={t}>
                                                     {t}
                                                 </SelectItem>
@@ -186,6 +202,43 @@ export const SiteAdminProspectCreate = () => {
                                             {PIPELINE_STAGES.map((s) => (
                                                 <SelectItem key={s.value} value={String(s.value)}>
                                                     {s.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name='department'
+                            render={({ field }) => (
+                                <FormItem className='col-span-12 md:col-span-6'>
+                                    <FormLabel>Department</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} placeholder='Public Works, Sustainability, ...' />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name='priority'
+                            render={({ field }) => (
+                                <FormItem className='col-span-12 md:col-span-3'>
+                                    <FormLabel>Priority</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder='Unassigned' />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {PROSPECT_PRIORITIES.map((p) => (
+                                                <SelectItem key={p.value} value={String(p.value)}>
+                                                    {p.label}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -319,6 +372,36 @@ export const SiteAdminProspectCreate = () => {
                                     <FormLabel>Fit Score (0-100)</FormLabel>
                                     <FormControl>
                                         <Input {...field} type='number' min='0' max='100' />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name='keyObjection'
+                            render={({ field }) => (
+                                <FormItem className='col-span-12 md:col-span-6'>
+                                    <FormLabel>Key Objection or Question</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            {...field}
+                                            rows={2}
+                                            placeholder='What is blocking or slowing this prospect?'
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name='pricingFeedback'
+                            render={({ field }) => (
+                                <FormItem className='col-span-12 md:col-span-6'>
+                                    <FormLabel>Pricing / Business Model Feedback</FormLabel>
+                                    <FormControl>
+                                        <Textarea {...field} rows={2} placeholder='Budget, procurement cycle, ...' />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

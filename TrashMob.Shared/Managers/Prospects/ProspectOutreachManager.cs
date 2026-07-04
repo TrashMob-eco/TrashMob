@@ -79,8 +79,10 @@ namespace TrashMob.Shared.Managers.Prospects
                 return new OutreachSendResult { Success = false, ErrorMessage = "Prospect not found." };
             }
 
-            // Skip prospects in terminal pipeline stages (Active=5, Declined=6)
-            if (prospect.PipelineStage >= 5)
+            // Skip prospects in terminal / parked pipeline stages (NotAFit=8,
+            // FutureFollowUp=9) as well as already-converted prospects.
+            if (prospect.ConvertedPartnerId.HasValue
+                || prospect.PipelineStage >= (int)PipelineStageEnum.NotAFit)
             {
                 return new OutreachSendResult
                 {
@@ -242,10 +244,10 @@ namespace TrashMob.Shared.Managers.Prospects
                 prospect.LastUpdatedByUserId = userId;
                 prospect.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-                // Advance from New (0) to Contacted (1) on first send
-                if (prospect.PipelineStage == 0)
+                // Advance Identified -> Contacted on first send
+                if (prospect.PipelineStage == (int)PipelineStageEnum.Identified)
                 {
-                    prospect.PipelineStage = 1;
+                    prospect.PipelineStage = (int)PipelineStageEnum.Contacted;
                 }
 
                 await prospectRepository.UpdateAsync(prospect);
@@ -329,10 +331,11 @@ namespace TrashMob.Shared.Managers.Prospects
             }
 
             var now = DateTimeOffset.UtcNow;
+            var contactedStage = (int)PipelineStageEnum.Contacted;
             var dueProspects = await prospectRepository
                 .Get(p => p.NextFollowUpDate != null
                     && p.NextFollowUpDate <= now
-                    && p.PipelineStage == 1  // Contacted
+                    && p.PipelineStage == contactedStage
                     && p.Contacts.Any(c => c.IsPrimary && c.Email != null && c.Email != string.Empty))
                 .Take(settings.MaxFollowUpsPerRun)
                 .ToListAsync(cancellationToken);

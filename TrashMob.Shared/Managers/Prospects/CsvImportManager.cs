@@ -107,7 +107,7 @@ namespace TrashMob.Shared.Managers.Prospects
                     Country = fields[4].Trim(),
                     Population = population,
                     Website = fields[6].Trim(),
-                    PipelineStage = 0,
+                    PipelineStage = (int)PipelineStageEnum.Identified,
                     FitScore = 0,
                     CreatedByUserId = userId,
                     CreatedDate = DateTimeOffset.UtcNow,
