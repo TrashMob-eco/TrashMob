@@ -18,11 +18,7 @@ import {
     UpdateCommunityProspect,
     GetCommunityProspects,
 } from '@/services/community-prospects';
-import {
-    PIPELINE_STAGES,
-    MUNICIPALITY_TYPES,
-    PROSPECT_PRIORITIES,
-} from '@/components/prospects/pipeline-stage-badge';
+import { PIPELINE_STAGES, MUNICIPALITY_TYPES, PROSPECT_PRIORITIES } from '@/components/prospects/pipeline-stage-badge';
 import CommunityProspectData from '@/components/Models/CommunityProspectData';
 
 interface FormInputs {

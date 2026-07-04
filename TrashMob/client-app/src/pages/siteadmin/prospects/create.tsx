@@ -14,11 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { CreateCommunityProspect, GetCommunityProspects } from '@/services/community-prospects';
-import {
-    PIPELINE_STAGES,
-    MUNICIPALITY_TYPES,
-    PROSPECT_PRIORITIES,
-} from '@/components/prospects/pipeline-stage-badge';
+import { PIPELINE_STAGES, MUNICIPALITY_TYPES, PROSPECT_PRIORITIES } from '@/components/prospects/pipeline-stage-badge';
 import CommunityProspectData from '@/components/Models/CommunityProspectData';
 
 interface FormInputs {
