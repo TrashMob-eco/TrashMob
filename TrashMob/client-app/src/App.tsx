@@ -424,6 +424,11 @@ const SiteAdminProspectWeeklyReport = lazy(() =>
         default: m.SiteAdminProspectWeeklyReport,
     })),
 );
+const SiteAdminProspectMonthlyReport = lazy(() =>
+    import('./pages/siteadmin/prospects/reports/monthly').then((m) => ({
+        default: m.SiteAdminProspectMonthlyReport,
+    })),
+);
 const SiteAdminDocuments = lazy(() =>
     import('./pages/siteadmin/documents/page').then((m) => ({ default: m.SiteAdminDocuments })),
 );
@@ -751,6 +756,7 @@ const AppContent: FC = () => {
                                 <Route path='prospects/import' element={<SiteAdminProspectImport />} />
                                 <Route path='prospects/analytics' element={<SiteAdminProspectAnalytics />} />
                                 <Route path='prospects/reports/weekly' element={<SiteAdminProspectWeeklyReport />} />
+                                <Route path='prospects/reports/monthly' element={<SiteAdminProspectMonthlyReport />} />
                                 <Route path='prospects/:prospectId' element={<SiteAdminProspectDetail />} />
                                 <Route path='prospects/:prospectId/edit' element={<SiteAdminProspectEdit />} />
                                 <Route path='contacts' element={<SiteAdminContacts />} />
