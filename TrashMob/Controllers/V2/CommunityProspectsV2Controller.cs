@@ -28,7 +28,7 @@ namespace TrashMob.Controllers.V2
     [ApiVersion("2.0")]
     [EnableCors("_myAllowSpecificOrigins")]
     [Route("api/v{version:apiVersion}/community-prospects")]
-    [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
+    [Authorize(Policy = AuthorizationPolicyConstants.UserIsSalesRepOrIsAdmin)]
     [RequiredScope(Constants.TrashMobWriteScope)]
     public class CommunityProspectsV2Controller(
         ICommunityProspectManager communityProspectManager,

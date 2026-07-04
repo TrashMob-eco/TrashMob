@@ -8,6 +8,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Interfaces;
 
     public class UserIsAdminAuthHandler : AuthorizationHandler<UserIsAdminRequirement>
@@ -15,12 +16,15 @@
         private readonly IHttpContextAccessor httpContext;
         private readonly ILogger<UserIsValidUserAuthHandler> logger;
         private readonly IUserManager userManager;
+        private readonly IUserRoleService userRoleService;
 
         public UserIsAdminAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager,
+            IUserRoleService userRoleService,
             ILogger<UserIsValidUserAuthHandler> logger)
         {
             this.httpContext = httpContext;
             this.userManager = userManager;
+            this.userRoleService = userRoleService;
             this.logger = logger;
         }
 
@@ -48,7 +52,7 @@
                     httpContext.HttpContext.Items.Add("UserId", user.Id);
                 }
 
-                if (user.IsSiteAdmin)
+                if (await userRoleService.HasRoleAsync(user.Id, RoleNames.SiteAdmin, CancellationToken.None))
                 {
                     context.Succeed(requirement);
                 }

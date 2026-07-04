@@ -26,11 +26,14 @@ namespace TrashMob.Controllers.V2
     /// <summary>
     /// V2 controller for users with server-side pagination and filtering.
     /// Returns PII-safe UserDto (no email, identity provider fields, or date of birth).
+    /// All endpoints require an authenticated user (Project 62 audit — no anonymous reads
+    /// of the user directory).
     /// </summary>
     [ApiController]
     [ApiVersion("2.0")]
     [EnableCors("_myAllowSpecificOrigins")]
     [Route("api/v{version:apiVersion}/users")]
+    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
     public class UsersV2Controller(
         IUserManager userManager,
         IEventAttendeeMetricsManager metricsManager,
