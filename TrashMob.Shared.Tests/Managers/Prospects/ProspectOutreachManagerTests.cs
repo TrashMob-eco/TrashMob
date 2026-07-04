@@ -90,10 +90,10 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         }
 
         [Fact]
-        public async Task SendOutreach_WhenProspectInStage5_ReturnsFailure()
+        public async Task SendOutreach_WhenProspectMarkedNotAFit_ReturnsFailure()
         {
             var prospect = new CommunityProspectBuilder().Build();
-            prospect.PipelineStage = 5;
+            prospect.PipelineStage = (int)PipelineStageEnum.NotAFit;
             AddPrimaryContact(prospect, "test@example.com");
             _prospectRepo.SetupGet(new[] { prospect });
             SetupEmptyOutreachHistory();
@@ -183,7 +183,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
             await _sut.SendOutreachAsync(prospect.Id, Guid.NewGuid());
 
             _prospectRepo.Verify(r => r.UpdateAsync(It.Is<CommunityProspect>(
-                p => p.Id == prospect.Id && p.PipelineStage == 1)), Times.Once);
+                p => p.Id == prospect.Id && p.PipelineStage == (int)PipelineStageEnum.Contacted)), Times.Once);
         }
 
         [Fact]
@@ -511,7 +511,7 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         {
             var prospect = new CommunityProspectBuilder().Build();
             AddPrimaryContact(prospect, "test@example.com");
-            prospect.PipelineStage = 1;
+            prospect.PipelineStage = (int)PipelineStageEnum.Contacted;
             prospect.NextFollowUpDate = DateTimeOffset.UtcNow.AddHours(-1);
 
             _prospectRepo.SetupGetWithFilter(new[] { prospect });

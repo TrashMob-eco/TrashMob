@@ -21,9 +21,44 @@ namespace TrashMob.Models.Poco.V2
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the prospect type.
+        /// Gets or sets the constrained municipality type (see
+        /// <see cref="MunicipalityTypeEnum"/>). Wire format is the enum name
+        /// (e.g. <c>"City"</c>, <c>"County"</c>) so the client does not depend
+        /// on integer ordering.
         /// </summary>
         public string? Type { get; set; }
+
+        /// <summary>
+        /// Gets or sets the original free-form <c>Type</c> string captured
+        /// before the Project 63 <see cref="MunicipalityTypeEnum"/> migration.
+        /// Read-only from the UI's perspective — retained for audit.
+        /// </summary>
+        public string? TypeRaw { get; set; }
+
+        /// <summary>
+        /// Gets or sets the department within the municipality being worked
+        /// (e.g. Public Works, Sustainability). Aggregated on the weekly
+        /// report's "best responding departments" section.
+        /// </summary>
+        public string? Department { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sales priority (see <see cref="ProspectPriorityEnum"/>).
+        /// Nullable — a newly-discovered prospect has no priority yet.
+        /// </summary>
+        public int? Priority { get; set; }
+
+        /// <summary>
+        /// Gets or sets free-text pricing / business-model feedback captured
+        /// from the prospect. Aggregated on the weekly report.
+        /// </summary>
+        public string? PricingFeedback { get; set; }
+
+        /// <summary>
+        /// Gets or sets the free-text key objection or open question from the
+        /// prospect. Aggregated on the weekly report.
+        /// </summary>
+        public string? KeyObjection { get; set; }
 
         /// <summary>
         /// Gets or sets the city.

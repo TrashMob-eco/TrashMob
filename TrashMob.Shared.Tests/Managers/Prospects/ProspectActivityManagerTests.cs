@@ -56,7 +56,9 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         [Fact]
         public async Task AddAsync_WhenReplyAndStageContacted_AdvancesToResponded()
         {
-            var prospect = new CommunityProspectBuilder().WithPipelineStage(1).Build();
+            var prospect = new CommunityProspectBuilder()
+                .WithPipelineStage((int)PipelineStageEnum.Contacted)
+                .Build();
             _prospectRepo.SetupGetAsync(prospect);
             _prospectRepo.SetupUpdateAsync();
             _sentimentService
@@ -67,14 +69,18 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
 
             await _sut.AddAsync(activity, _userId);
 
-            Assert.Equal(2, prospect.PipelineStage);
-            _prospectRepo.Verify(r => r.UpdateAsync(It.Is<CommunityProspect>(p => p.PipelineStage == 2)), Times.Once);
+            Assert.Equal((int)PipelineStageEnum.Responded, prospect.PipelineStage);
+            _prospectRepo.Verify(
+                r => r.UpdateAsync(It.Is<CommunityProspect>(p => p.PipelineStage == (int)PipelineStageEnum.Responded)),
+                Times.Once);
         }
 
         [Fact]
-        public async Task AddAsync_WhenPositiveReplyAndStageResponded_AdvancesToInterested()
+        public async Task AddAsync_WhenPositiveReplyAndStageResponded_AdvancesToDiscoveryInProgress()
         {
-            var prospect = new CommunityProspectBuilder().WithPipelineStage(2).Build();
+            var prospect = new CommunityProspectBuilder()
+                .WithPipelineStage((int)PipelineStageEnum.Responded)
+                .Build();
             _prospectRepo.SetupGetAsync(prospect);
             _prospectRepo.SetupUpdateAsync();
             _sentimentService
@@ -85,8 +91,11 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
 
             await _sut.AddAsync(activity, _userId);
 
-            Assert.Equal(3, prospect.PipelineStage);
-            _prospectRepo.Verify(r => r.UpdateAsync(It.Is<CommunityProspect>(p => p.PipelineStage == 3)), Times.Once);
+            Assert.Equal((int)PipelineStageEnum.DiscoveryInProgress, prospect.PipelineStage);
+            _prospectRepo.Verify(
+                r => r.UpdateAsync(It.Is<CommunityProspect>(
+                    p => p.PipelineStage == (int)PipelineStageEnum.DiscoveryInProgress)),
+                Times.Once);
         }
 
         [Fact]
@@ -104,7 +113,9 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
         [Fact]
         public async Task AddAsync_WhenNegativeReplyAndStageContacted_AdvancesToRespondedOnly()
         {
-            var prospect = new CommunityProspectBuilder().WithPipelineStage(1).Build();
+            var prospect = new CommunityProspectBuilder()
+                .WithPipelineStage((int)PipelineStageEnum.Contacted)
+                .Build();
             _prospectRepo.SetupGetAsync(prospect);
             _prospectRepo.SetupUpdateAsync();
             _sentimentService
@@ -115,8 +126,8 @@ namespace TrashMob.Shared.Tests.Managers.Prospects
 
             await _sut.AddAsync(activity, _userId);
 
-            // Should advance from 1 to 2 (Contacted -> Responded), but NOT to 3
-            Assert.Equal(2, prospect.PipelineStage);
+            // Contacted -> Responded, but NOT further to DiscoveryInProgress on negative sentiment.
+            Assert.Equal((int)PipelineStageEnum.Responded, prospect.PipelineStage);
         }
 
         private static ProspectActivity CreateActivity(Guid prospectId, string type, string details)

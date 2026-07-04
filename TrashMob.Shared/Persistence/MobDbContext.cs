@@ -3443,6 +3443,18 @@
                 entity.Property(e => e.Type)
                     .HasMaxLength(50);
 
+                entity.Property(e => e.TypeRaw)
+                    .HasMaxLength(120);
+
+                entity.Property(e => e.Department)
+                    .HasMaxLength(120);
+
+                entity.Property(e => e.PricingFeedback)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.KeyObjection)
+                    .HasMaxLength(500);
+
                 entity.Property(e => e.City)
                     .HasMaxLength(256);
 

@@ -3,7 +3,18 @@ import ProspectContactData from './ProspectContactData';
 class CommunityProspectData {
     id: string = '00000000-0000-0000-0000-000000000000';
     name: string = '';
-    type: string = 'Municipality';
+    // Constrained to MunicipalityTypeEnum names — see MUNICIPALITY_TYPES.
+    type: string = 'City';
+    // Original free-form Type value preserved by the Project 63 migration.
+    // Read-only from the UI's perspective.
+    typeRaw: string | null = null;
+    // Department within the municipality being worked (e.g. Public Works).
+    department: string = '';
+    // Sales priority (see PROSPECT_PRIORITIES). Null when unset.
+    priority: number | null = null;
+    // Free-text feedback captured during outreach.
+    pricingFeedback: string = '';
+    keyObjection: string = '';
     city: string = '';
     region: string = '';
     country: string = 'United States';

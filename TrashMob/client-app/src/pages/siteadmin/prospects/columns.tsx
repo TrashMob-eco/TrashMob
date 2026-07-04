@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { DataTableColumnHeader } from '@/components/ui/data-table';
-import { PipelineStageBadge } from '@/components/prospects/pipeline-stage-badge';
+import { PipelineStageBadge, PriorityBadge } from '@/components/prospects/pipeline-stage-badge';
 import CommunityProspectData from '@/components/Models/CommunityProspectData';
 
 interface GetColumnsProps {
@@ -45,6 +45,17 @@ export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<CommunityPr
         accessorKey: 'pipelineStage',
         header: 'Stage',
         cell: ({ row }) => <PipelineStageBadge stage={row.getValue('pipelineStage')} />,
+    },
+    {
+        accessorKey: 'priority',
+        header: 'Priority',
+        cell: ({ row }) => <PriorityBadge priority={row.original.priority} />,
+        sortingFn: (a, b) => (a.original.priority ?? 99) - (b.original.priority ?? 99),
+    },
+    {
+        accessorKey: 'department',
+        header: 'Department',
+        cell: ({ row }) => row.original.department || '-',
     },
     {
         accessorKey: 'fitScore',
