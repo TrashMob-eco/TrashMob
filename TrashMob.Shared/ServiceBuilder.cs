@@ -83,6 +83,8 @@
             services.AddScoped<IPartnerSocialMediaAccountManager, PartnerSocialMediaAccountManager>();
             services.AddScoped<IPickupLocationManager, PickupLocationManager>();
             services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<IUserRoleService, UserRoleService>();
+            services.AddScoped<IRoleGrantNotificationService, RoleGrantNotificationService>();
             services.AddScoped<INonEventUserNotificationManager, NonEventUserNotificationManager>();
             services.AddScoped<IWaiverManager, WaiverManager>();
             services.AddScoped<ILitterImageManager, LitterImageManager>();
@@ -170,6 +172,11 @@
             services.AddScoped<IPipelineAnalyticsManager, PipelineAnalyticsManager>();
             services.AddScoped<ISentimentAnalysisService, SentimentAnalysisService>();
             services.AddScoped<IProspectConversionManager, ProspectConversionManager>();
+            services.AddScoped<IWeeklySalesReportService, WeeklySalesReportService>();
+            services.AddScoped<IMonthlySalesReportService, MonthlySalesReportService>();
+            services.AddScoped<ISalesReportNarrativeService, SalesReportNarrativeService>();
+            services.AddScoped<ISalesReportSubscriberService, SalesReportSubscriberService>();
+            services.AddScoped<ISalesReportEmailService, SalesReportEmailService>();
 
             // Contact Management
             services.AddScoped<IContactManager, ContactManager>();

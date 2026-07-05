@@ -543,6 +543,238 @@ namespace TrashMob.Models
     }
 
     /// <summary>
+    /// Represents the constrained type of a municipal sales prospect (Project 63).
+    /// </summary>
+    /// <remarks>
+    /// Migrated from a free-form string on <c>CommunityProspect.Type</c>. The
+    /// original string is preserved in <c>CommunityProspect.TypeRaw</c> for
+    /// historical fidelity; anything the migration could not confidently map
+    /// bucketed to <see cref="Other"/>.
+    /// </remarks>
+    public enum MunicipalityTypeEnum
+    {
+        /// <summary>
+        /// Anything that does not fit a named category.
+        /// </summary>
+        Other = 0,
+
+        /// <summary>
+        /// Incorporated city.
+        /// </summary>
+        City = 1,
+
+        /// <summary>
+        /// Town (typically smaller than a city).
+        /// </summary>
+        Town = 2,
+
+        /// <summary>
+        /// County government.
+        /// </summary>
+        County = 3,
+
+        /// <summary>
+        /// Regional agency (metropolitan planning, transit authority, etc.).
+        /// </summary>
+        RegionalAgency = 4,
+
+        /// <summary>
+        /// Special district (water district, park district, mosquito abatement, etc.).
+        /// </summary>
+        SpecialDistrict = 5,
+    }
+
+    /// <summary>
+    /// Ordered pipeline stages a municipal sales prospect progresses through
+    /// (Project 63). Numeric ordering roughly represents pipeline progress
+    /// left-to-right, with the last two values reserved for terminal /
+    /// parked outcomes.
+    /// </summary>
+    public enum PipelineStageEnum
+    {
+        /// <summary>
+        /// Prospect identified but not yet researched.
+        /// </summary>
+        Identified = 0,
+
+        /// <summary>
+        /// Company info gathered.
+        /// </summary>
+        Researched = 1,
+
+        /// <summary>
+        /// First outreach sent.
+        /// </summary>
+        Contacted = 2,
+
+        /// <summary>
+        /// Awaiting response; second touchpoint queued.
+        /// </summary>
+        FollowUpNeeded = 3,
+
+        /// <summary>
+        /// They replied.
+        /// </summary>
+        Responded = 4,
+
+        /// <summary>
+        /// Active dialogue about their needs.
+        /// </summary>
+        DiscoveryInProgress = 5,
+
+        /// <summary>
+        /// Meeting ask sent.
+        /// </summary>
+        MeetingRequested = 6,
+
+        /// <summary>
+        /// Meeting on the calendar.
+        /// </summary>
+        MeetingScheduled = 7,
+
+        /// <summary>
+        /// Dead end.
+        /// </summary>
+        NotAFit = 8,
+
+        /// <summary>
+        /// Parked; revisit later.
+        /// </summary>
+        FutureFollowUp = 9,
+    }
+
+    /// <summary>
+    /// Sales-priority ranking on a municipal prospect (Project 63).
+    /// </summary>
+    public enum ProspectPriorityEnum
+    {
+        /// <summary>
+        /// High priority — actively worked.
+        /// </summary>
+        High = 1,
+
+        /// <summary>
+        /// Medium priority.
+        /// </summary>
+        Medium = 2,
+
+        /// <summary>
+        /// Low priority — backlog.
+        /// </summary>
+        Low = 3,
+    }
+
+    /// <summary>
+    /// Categorization of activity types on <see cref="ProspectActivity"/>
+    /// records used by the weekly-report categorisation (Project 63).
+    /// Existing free-form <c>ActivityType</c> strings are matched
+    /// case-insensitively against the enum name.
+    /// </summary>
+    public enum ProspectActivityTypeEnum
+    {
+        /// <summary>
+        /// Unclassified activity (falls back for anything that does not match).
+        /// </summary>
+        Note = 0,
+
+        /// <summary>
+        /// Initial or subsequent outbound touch.
+        /// </summary>
+        Outreach = 1,
+
+        /// <summary>
+        /// Follow-up touch after prior outreach with no response.
+        /// </summary>
+        FollowUp = 2,
+
+        /// <summary>
+        /// Response received from the prospect.
+        /// </summary>
+        ResponseReceived = 3,
+
+        /// <summary>
+        /// Meeting requested (either direction).
+        /// </summary>
+        MeetingRequested = 4,
+
+        /// <summary>
+        /// Meeting scheduled on the calendar.
+        /// </summary>
+        MeetingScheduled = 5,
+
+        /// <summary>
+        /// Meeting held.
+        /// </summary>
+        MeetingHeld = 6,
+    }
+
+    /// <summary>
+    /// Discriminates <see cref="SalesReport"/> rows by reporting cadence
+    /// (Project 63 Phase 4). Weekly rows carry <c>NextSteps</c>; monthly
+    /// rows carry <c>NextMonthPriority</c>.
+    /// </summary>
+    public enum SalesReportPeriodTypeEnum
+    {
+        /// <summary>
+        /// Weekly (Monday–Sunday) narrative.
+        /// </summary>
+        Weekly = 1,
+
+        /// <summary>
+        /// Monthly (first-of-month) narrative.
+        /// </summary>
+        Monthly = 2,
+    }
+
+    /// <summary>
+    /// Represents the 7 tracked metrics for the monthly municipal sales
+    /// pipeline report (Project 63 Phase 3). Numeric values map to
+    /// <c>SalesMonthlyTarget.Metric</c> rows.
+    /// </summary>
+    public enum SalesMetricEnum
+    {
+        /// <summary>
+        /// Count of prospects created in the month.
+        /// </summary>
+        ProspectsResearched = 1,
+
+        /// <summary>
+        /// Count of prospect contacts created in the month.
+        /// </summary>
+        NewContacts = 2,
+
+        /// <summary>
+        /// Count of <see cref="ProspectActivity"/> rows tagged
+        /// <see cref="ProspectActivityTypeEnum.Outreach"/> in the month.
+        /// </summary>
+        OutreachTouches = 3,
+
+        /// <summary>
+        /// Count of <see cref="ProspectActivity"/> rows tagged
+        /// <see cref="ProspectActivityTypeEnum.FollowUp"/> in the month.
+        /// </summary>
+        FollowUpTouches = 4,
+
+        /// <summary>
+        /// Count of <see cref="ProspectActivity"/> rows tagged
+        /// <see cref="ProspectActivityTypeEnum.ResponseReceived"/> in the month.
+        /// </summary>
+        Responses = 5,
+
+        /// <summary>
+        /// Count of <see cref="ProspectActivity"/> rows tagged
+        /// <see cref="ProspectActivityTypeEnum.MeetingRequested"/> in the month.
+        /// </summary>
+        MeetingsRequested = 6,
+
+        /// <summary>
+        /// Count of <see cref="ProspectActivity"/> rows tagged
+        /// <see cref="ProspectActivityTypeEnum.MeetingScheduled"/> in the month.
+        /// </summary>
+        MeetingsScheduled = 7,
+    }
+
+    /// <summary>
     /// Represents the status of a grant in the pipeline.
     /// </summary>
     public enum GrantStatusEnum

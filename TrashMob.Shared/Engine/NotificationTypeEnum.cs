@@ -259,5 +259,25 @@
         /// Notification sent to a parent when their dependent is registered for an event.
         /// </summary>
         DependentRegisteredForEvent = 51,
+
+        /// <summary>
+        /// Notification sent to a user when a role is granted to their account (Project 64).
+        /// </summary>
+        RoleGranted = 52,
+
+        /// <summary>
+        /// Notification sent to a user when a role is revoked from their account (Project 64).
+        /// </summary>
+        RoleRevoked = 53,
+
+        /// <summary>
+        /// Weekly municipal sales pipeline report emailed to subscribers (Project 63).
+        /// </summary>
+        SalesReportWeekly = 54,
+
+        /// <summary>
+        /// Monthly municipal sales pipeline report emailed to subscribers (Project 63).
+        /// </summary>
+        SalesReportMonthly = 55,
     }
 }

@@ -9,8 +9,9 @@
     /// <summary>
     /// Provides the Entity Framework database context for the TrashMob application.
     /// </summary>
-    public class MobDbContext(IConfiguration configuration) : DbContext
+    public class MobDbContext(DbContextOptions<MobDbContext> options) : DbContext(options)
     {
+
 
         public virtual DbSet<ContactRequest> ContactRequests { get; set; }
 
@@ -156,6 +157,10 @@
 
         public virtual DbSet<UserAchievement> UserAchievements { get; set; }
 
+        public virtual DbSet<Role> Roles { get; set; }
+
+        public virtual DbSet<UserRole> UserRoles { get; set; }
+
         public virtual DbSet<EventPhoto> EventPhotos { get; set; }
 
         public virtual DbSet<CommunityProspect> CommunityProspects { get; set; }
@@ -165,6 +170,12 @@
         public virtual DbSet<ProspectActivity> ProspectActivities { get; set; }
 
         public virtual DbSet<ProspectOutreachEmail> ProspectOutreachEmails { get; set; }
+
+        public virtual DbSet<SalesMonthlyTarget> SalesMonthlyTargets { get; set; }
+
+        public virtual DbSet<SalesReport> SalesReports { get; set; }
+
+        public virtual DbSet<SalesReportSubscriber> SalesReportSubscribers { get; set; }
 
         public virtual DbSet<Contact> Contacts { get; set; }
 
@@ -192,14 +203,6 @@
 
         public virtual DbSet<ParentalConsent> ParentalConsents { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x =>
-            {
-                x.UseNetTopologySuite();
-                x.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-            });
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -3346,6 +3349,95 @@
                     .HasConstraintName("FK_UserAchievements_User_LastUpdatedBy");
             });
 
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(60);
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(300);
+
+                entity.HasIndex(e => e.Name)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Roles_Name");
+
+                // Seed initial roles. New roles are added by follow-up migrations,
+                // never by user action from the UI. See Project 64.
+                entity.HasData(
+                    new Role
+                    {
+                        Id = 1,
+                        Name = "SiteAdmin",
+                        Description = "Full administrative access. Manages users, roles, waivers, events, moderation, and every other site-admin surface.",
+                        DisplayOrder = 1,
+                        IsActive = true,
+                    },
+                    new Role
+                    {
+                        Id = 2,
+                        Name = "SalesRep",
+                        Description = "Manages the municipal sales pipeline (prospects, contacts, activities) and reads the sales reports. Cannot administer users, waivers, or events.",
+                        DisplayOrder = 2,
+                        IsActive = true,
+                    });
+            });
+
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.RevokedReason)
+                    .HasMaxLength(500);
+
+                // Active-grant unique index (filtered on RevokedDate IS NULL) so a
+                // user can be granted the same role again after a prior revocation.
+                entity.HasIndex(e => new { e.UserId, e.RoleId })
+                    .IsUnique()
+                    .HasFilter("[RevokedDate] IS NULL")
+                    .HasDatabaseName("UX_UserRoles_Active");
+
+                entity.HasIndex(e => e.UserId)
+                    .HasFilter("[RevokedDate] IS NULL")
+                    .HasDatabaseName("IX_UserRoles_UserId_Active");
+
+                entity.HasIndex(e => e.RoleId)
+                    .HasFilter("[RevokedDate] IS NULL")
+                    .HasDatabaseName("IX_UserRoles_RoleId_Active");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserRoles)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_UserRoles_User");
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.UserRoles)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_UserRoles_Role");
+
+                entity.HasOne<User>()
+                    .WithMany()
+                    .HasForeignKey(d => d.GrantedByUserId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_UserRoles_User_GrantedBy");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserRoles_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserRoles_User_LastUpdatedBy");
+            });
+
             modelBuilder.Entity<CommunityProspect>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -3356,6 +3448,18 @@
 
                 entity.Property(e => e.Type)
                     .HasMaxLength(50);
+
+                entity.Property(e => e.TypeRaw)
+                    .HasMaxLength(120);
+
+                entity.Property(e => e.Department)
+                    .HasMaxLength(120);
+
+                entity.Property(e => e.PricingFeedback)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.KeyObjection)
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.City)
                     .HasMaxLength(256);
@@ -3541,6 +3645,97 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProspectOutreachEmails_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<SalesMonthlyTarget>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Month).HasColumnType("date");
+
+                entity.Property(e => e.Notes).HasMaxLength(500);
+
+                // One target per (Month, Metric) pair. The Monthly Report UI
+                // upserts through this constraint so callers never need to
+                // check for a pre-existing row.
+                entity.HasIndex(e => new { e.Month, e.Metric })
+                    .IsUnique()
+                    .HasDatabaseName("UX_SalesMonthlyTargets_MonthMetric");
+
+                entity.HasIndex(e => e.Month)
+                    .HasDatabaseName("IX_SalesMonthlyTargets_Month");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SalesMonthlyTargets_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SalesMonthlyTargets_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<SalesReport>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.PeriodStart).HasColumnType("date");
+                entity.Property(e => e.PeriodEnd).HasColumnType("date");
+
+                entity.Property(e => e.NextSteps).HasMaxLength(2000);
+                entity.Property(e => e.NextMonthPriority).HasMaxLength(2000);
+
+                // One narrative per (PeriodType, PeriodStart) — the report screen
+                // upserts through this constraint so callers never need a
+                // read-before-write dance.
+                entity.HasIndex(e => new { e.PeriodType, e.PeriodStart })
+                    .IsUnique()
+                    .HasDatabaseName("UX_SalesReports_PeriodTypeStart");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SalesReports_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SalesReports_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<SalesReportSubscriber>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                // One subscription row per user — the "toggle weekly / monthly"
+                // UI upserts through this unique constraint so callers don't
+                // race on duplicate inserts.
+                entity.HasIndex(e => e.UserId)
+                    .IsUnique()
+                    .HasDatabaseName("UX_SalesReportSubscribers_User");
+
+                entity.HasOne(d => d.User)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_SalesReportSubscribers_User");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SalesReportSubscribers_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SalesReportSubscribers_User_LastUpdatedBy");
             });
 
             // ===== Contact Management System (Project 51) =====

@@ -18,6 +18,13 @@
 
         public const string UserIsProfessionalCompanyUserOrIsAdmin = "UserIsProfessionalCompanyUserOrIsAdmin";
 
+        /// <summary>
+        /// Authorizes users with the SalesRep role (Project 63 — municipal sales
+        /// pipeline access) or the SiteAdmin role. Applied to the prospect and
+        /// sales-report v2 controllers.
+        /// </summary>
+        public const string UserIsSalesRepOrIsAdmin = "UserIsSalesRepOrIsAdmin";
+
         public const string IftttServiceKey = "IftttServiceKey";
     }
 }

@@ -328,6 +328,10 @@ const SiteAdminUsers = lazy(() => import('./pages/siteadmin/users/page').then((m
 const SiteAdminUserDetail = lazy(() =>
     import('./pages/siteadmin/users/$userId').then((m) => ({ default: m.SiteAdminUserDetail })),
 );
+const SiteAdminUserRoles = lazy(() =>
+    import('./pages/siteadmin/users/$userId.roles').then((m) => ({ default: m.SiteAdminUserRoles })),
+);
+const SiteAdminRoles = lazy(() => import('./pages/siteadmin/roles/page').then((m) => ({ default: m.SiteAdminRoles })));
 const SiteAdminEvents = lazy(() =>
     import('./pages/siteadmin/events/page').then((m) => ({ default: m.SiteAdminEvents })),
 );
@@ -414,6 +418,21 @@ const SiteAdminProspectImport = lazy(() =>
 );
 const SiteAdminProspectAnalytics = lazy(() =>
     import('./pages/siteadmin/prospects/analytics').then((m) => ({ default: m.SiteAdminProspectAnalytics })),
+);
+const SiteAdminProspectWeeklyReport = lazy(() =>
+    import('./pages/siteadmin/prospects/reports/weekly').then((m) => ({
+        default: m.SiteAdminProspectWeeklyReport,
+    })),
+);
+const SiteAdminProspectMonthlyReport = lazy(() =>
+    import('./pages/siteadmin/prospects/reports/monthly').then((m) => ({
+        default: m.SiteAdminProspectMonthlyReport,
+    })),
+);
+const SiteAdminProspectSubscribers = lazy(() =>
+    import('./pages/siteadmin/prospects/reports/subscribers').then((m) => ({
+        default: m.SiteAdminProspectSubscribers,
+    })),
 );
 const SiteAdminDocuments = lazy(() =>
     import('./pages/siteadmin/documents/page').then((m) => ({ default: m.SiteAdminDocuments })),
@@ -706,6 +725,8 @@ const AppContent: FC = () => {
                                 <Route path='guide' element={<SiteAdminGuide />} />
                                 <Route path='users' element={<SiteAdminUsers />} />
                                 <Route path='users/:userId' element={<SiteAdminUserDetail />} />
+                                <Route path='users/:userId/roles' element={<SiteAdminUserRoles />} />
+                                <Route path='roles' element={<SiteAdminRoles />} />
                                 <Route path='events' element={<SiteAdminEvents />} />
                                 <Route path='partners' element={<SiteAdminPartners />} />
                                 <Route path='documents' element={<SiteAdminDocuments />} />
@@ -739,6 +760,12 @@ const AppContent: FC = () => {
                                 <Route path='prospects/discovery' element={<SiteAdminProspectDiscovery />} />
                                 <Route path='prospects/import' element={<SiteAdminProspectImport />} />
                                 <Route path='prospects/analytics' element={<SiteAdminProspectAnalytics />} />
+                                <Route path='prospects/reports/weekly' element={<SiteAdminProspectWeeklyReport />} />
+                                <Route path='prospects/reports/monthly' element={<SiteAdminProspectMonthlyReport />} />
+                                <Route
+                                    path='prospects/reports/subscribers'
+                                    element={<SiteAdminProspectSubscribers />}
+                                />
                                 <Route path='prospects/:prospectId' element={<SiteAdminProspectDetail />} />
                                 <Route path='prospects/:prospectId/edit' element={<SiteAdminProspectEdit />} />
                                 <Route path='contacts' element={<SiteAdminContacts />} />

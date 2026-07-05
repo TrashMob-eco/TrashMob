@@ -29,6 +29,9 @@ import {
     LayoutDashboard,
     Sparkles,
     TrendingUp,
+    Shield,
+    CalendarClock,
+    CalendarDays,
 } from 'lucide-react';
 import { SidebarNav, NavGroup } from '@/components/ui/sidebar-nav';
 
@@ -43,6 +46,7 @@ const navGroups: NavGroup[] = [
         title: 'Data Management',
         items: [
             { name: 'Users', href: `${pathPrefix}/users`, icon: Users },
+            { name: 'Roles', href: `${pathPrefix}/roles`, icon: Shield },
             { name: 'Events', href: `${pathPrefix}/events`, icon: Calendar },
             { name: 'Partners', href: `${pathPrefix}/partners`, icon: Building2 },
             { name: 'Documents', href: `${pathPrefix}/documents`, icon: FileText },
@@ -54,6 +58,9 @@ const navGroups: NavGroup[] = [
             { name: 'Discovery', href: `${pathPrefix}/prospects/discovery`, icon: Search },
             { name: 'Import CSV', href: `${pathPrefix}/prospects/import`, icon: Upload },
             { name: 'Pipeline Analytics', href: `${pathPrefix}/prospects/analytics`, icon: BarChart3 },
+            { name: 'Weekly Report', href: `${pathPrefix}/prospects/reports/weekly`, icon: CalendarClock },
+            { name: 'Monthly Report', href: `${pathPrefix}/prospects/reports/monthly`, icon: CalendarDays },
+            { name: 'Report Subscribers', href: `${pathPrefix}/prospects/reports/subscribers`, icon: Mail },
         ],
     },
     {

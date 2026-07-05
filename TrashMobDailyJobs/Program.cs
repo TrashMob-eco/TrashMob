@@ -32,6 +32,8 @@ namespace TrashMobDailyJobs
             await RunProcessorAsync<StatGenerator>(scope, logger);
             await RunProcessorAsync<LeaderboardGenerator>(scope, logger);
             await RunProcessorAsync<AchievementProcessor>(scope, logger);
+            await RunProcessorAsync<WeeklySalesReportEmailer>(scope, logger);
+            await RunProcessorAsync<MonthlySalesReportEmailer>(scope, logger);
         }
 
         private static async Task RunProcessorAsync<T>(IServiceScope scope, ILogger logger) where T : class
@@ -100,6 +102,8 @@ namespace TrashMobDailyJobs
             services.AddScoped<StatGenerator>();
             services.AddScoped<LeaderboardGenerator>();
             services.AddScoped<AchievementProcessor>();
+            services.AddScoped<WeeklySalesReportEmailer>();
+            services.AddScoped<MonthlySalesReportEmailer>();
             ServiceBuilder.AddManagers(services);
             ServiceBuilder.AddRepositories(services);
             services.AddDbContext<MobDbContext>();

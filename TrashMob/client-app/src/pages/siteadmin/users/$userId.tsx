@@ -39,6 +39,12 @@ export const SiteAdminUserDetail = () => {
                             </Badge>
                         ) : null}
                     </div>
+                    <Button variant='outline' size='sm' asChild>
+                        <Link to={`/siteadmin/users/${user.id}/roles`}>
+                            <Shield className='mr-1 h-4 w-4' />
+                            Manage roles
+                        </Link>
+                    </Button>
                 </CardHeader>
                 <CardContent>
                     <div className='grid grid-cols-12 gap-4'>

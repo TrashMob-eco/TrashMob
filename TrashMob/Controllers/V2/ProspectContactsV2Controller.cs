@@ -21,13 +21,13 @@ namespace TrashMob.Controllers.V2
 
     /// <summary>
     /// V2 controller for managing the contacts associated with a CommunityProspect (Project 60).
-    /// Admin-only — contacts are not exposed publicly.
+    /// Restricted to SalesRep and SiteAdmin roles — contacts are not exposed publicly.
     /// </summary>
     [ApiController]
     [ApiVersion("2.0")]
     [EnableCors("_myAllowSpecificOrigins")]
     [Route("api/v{version:apiVersion}/community-prospects/{prospectId}/contacts")]
-    [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
+    [Authorize(Policy = AuthorizationPolicyConstants.UserIsSalesRepOrIsAdmin)]
     [RequiredScope(Constants.TrashMobWriteScope)]
     public class ProspectContactsV2Controller(
         ICommunityProspectManager prospectManager,

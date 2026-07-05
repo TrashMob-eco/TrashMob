@@ -15,6 +15,7 @@ namespace TrashMob.Shared.Tests.Security
     public class UserIsAdminAuthHandlerTest
     {
         private readonly Mock<IUserManager> _mockUserManager;
+        private readonly Mock<IUserRoleService> _mockUserRoleService;
         private readonly Mock<ILogger<UserIsValidUserAuthHandler>> _mockLogger;
         private readonly UserIsAdminAuthHandler _sut;
         private readonly Mock<Microsoft.AspNetCore.Http.IHttpContextAccessor> _mockHttpContextAccessor;
@@ -22,11 +23,13 @@ namespace TrashMob.Shared.Tests.Security
         public UserIsAdminAuthHandlerTest()
         {
             _mockUserManager = new Mock<IUserManager>();
+            _mockUserRoleService = AuthHandlerTestHelper.CreateUserRoleService();
             _mockLogger = new Mock<ILogger<UserIsValidUserAuthHandler>>();
             _mockHttpContextAccessor = AuthHandlerTestHelper.CreateHttpContextAccessor();
             _sut = new UserIsAdminAuthHandler(
                 _mockHttpContextAccessor.Object,
                 _mockUserManager.Object,
+                _mockUserRoleService.Object,
                 _mockLogger.Object);
         }
 
@@ -36,6 +39,7 @@ namespace TrashMob.Shared.Tests.Security
             var user = new UserBuilder().WithEmail("admin@test.com").AsSiteAdmin().Build();
             _mockUserManager.Setup(m => m.GetUserByEmailAsync("admin@test.com", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
+            _mockUserRoleService.GrantSiteAdmin(user.Id);
 
             var principal = AuthHandlerTestHelper.CreateClaimsPrincipal("admin@test.com");
             var requirement = new UserIsAdminRequirement();
@@ -84,6 +88,7 @@ namespace TrashMob.Shared.Tests.Security
             var user = new UserBuilder().WithId(userId).WithEmail("admin@test.com").AsSiteAdmin().Build();
             _mockUserManager.Setup(m => m.GetUserByEmailAsync("admin@test.com", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
+            _mockUserRoleService.GrantSiteAdmin(userId);
 
             var principal = AuthHandlerTestHelper.CreateClaimsPrincipal("admin@test.com");
             var requirement = new UserIsAdminRequirement();

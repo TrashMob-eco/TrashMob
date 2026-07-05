@@ -58,9 +58,11 @@ namespace TrashMob.Shared.Managers.Prospects
                 };
                 await partnerAdminManager.AddAsync(partnerAdmin, userId, cancellationToken);
 
-                // 3. Update prospect: set ConvertedPartnerId, stage -> Active (5)
+                // 3. Mark conversion. Post Project 63 the stage enum no longer
+                // has a dedicated "Converted" value — ConvertedPartnerId is the
+                // authoritative flag. Leave PipelineStage where it was at the
+                // moment of conversion for historical fidelity.
                 prospect.ConvertedPartnerId = newPartner.Id;
-                prospect.PipelineStage = 5;
                 prospect.LastUpdatedByUserId = userId;
                 prospect.LastUpdatedDate = DateTimeOffset.UtcNow;
                 await prospectRepository.UpdateAsync(prospect);

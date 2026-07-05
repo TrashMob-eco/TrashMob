@@ -20,19 +20,24 @@ namespace TrashMob.Controllers.V2
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Extensions;
+    using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
     /// <summary>
     /// V2 controller for users with server-side pagination and filtering.
     /// Returns PII-safe UserDto (no email, identity provider fields, or date of birth).
+    /// All endpoints require an authenticated user (Project 62 audit — no anonymous reads
+    /// of the user directory).
     /// </summary>
     [ApiController]
     [ApiVersion("2.0")]
     [EnableCors("_myAllowSpecificOrigins")]
     [Route("api/v{version:apiVersion}/users")]
+    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
     public class UsersV2Controller(
         IUserManager userManager,
+        IUserRoleService userRoleService,
         IEventAttendeeMetricsManager metricsManager,
         IImageManager imageManager,
         IUserDataExportManager exportManager,
@@ -40,6 +45,9 @@ namespace TrashMob.Controllers.V2
         ILogger<UsersV2Controller> logger) : ControllerBase
     {
         private Guid UserId => Guid.TryParse(HttpContext.Items["UserId"]?.ToString(), out var parsedUserId) ? parsedUserId : Guid.Empty;
+
+        private Task<bool> IsCallerSiteAdminAsync(CancellationToken cancellationToken) =>
+            userRoleService.HasRoleAsync(UserId, RoleNames.SiteAdmin, cancellationToken);
 
         /// <summary>
         /// Gets a paginated list of users with optional filtering.
@@ -134,7 +142,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            if (userDto.Id != UserId && !currentUser.IsSiteAdmin)
+            if (userDto.Id != UserId && !await IsCallerSiteAdminAsync(cancellationToken))
             {
                 return Forbid();
             }
@@ -150,6 +158,8 @@ namespace TrashMob.Controllers.V2
                 }
 
                 user.ObjectId = currentUser.ObjectId;
+                // Preserve the legacy IsSiteAdmin boolean until Phase 4b drops the column.
+                // Actual admin membership is granted / revoked via /api/v2/users/{id}/roles.
                 user.IsSiteAdmin = currentUser.IsSiteAdmin;
                 user.CreatedByUserId = currentUser.CreatedByUserId;
                 user.CreatedDate = currentUser.CreatedDate;
@@ -348,7 +358,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            if (id != UserId && !currentUser.IsSiteAdmin)
+            if (id != UserId && !await IsCallerSiteAdminAsync(cancellationToken))
             {
                 return Forbid();
             }
@@ -400,7 +410,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            if (id != UserId && !currentUser.IsSiteAdmin)
+            if (id != UserId && !await IsCallerSiteAdminAsync(cancellationToken))
             {
                 return Forbid();
             }

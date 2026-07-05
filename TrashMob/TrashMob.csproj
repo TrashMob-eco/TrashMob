@@ -16,24 +16,24 @@
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.1" />
     <PackageReference Include="Azure.Identity" Version="1.21.0" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.11.0" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.28.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.29.0" />
     <PackageReference Include="EntityFramework" Version="6.5.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="10.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="10.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.8">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.14.0" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="4.10.0" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="6.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -47,7 +47,7 @@
     <PackageReference Include="SendGrid" Version="9.29.3" />
     <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.1" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.1" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
 

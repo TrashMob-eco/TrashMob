@@ -15,6 +15,7 @@ namespace TrashMob.Shared.Tests.Security
     public class UserOwnsEntityOrIsAdminAuthHandlerTest
     {
         private readonly Mock<IUserManager> _mockUserManager;
+        private readonly Mock<IUserRoleService> _mockUserRoleService;
         private readonly Mock<ILogger<UserIsValidUserAuthHandler>> _mockLogger;
         private readonly UserOwnsEntityOrIsAdminAuthHandler _sut;
         private readonly Mock<Microsoft.AspNetCore.Http.IHttpContextAccessor> _mockHttpContextAccessor;
@@ -22,11 +23,13 @@ namespace TrashMob.Shared.Tests.Security
         public UserOwnsEntityOrIsAdminAuthHandlerTest()
         {
             _mockUserManager = new Mock<IUserManager>();
+            _mockUserRoleService = AuthHandlerTestHelper.CreateUserRoleService();
             _mockLogger = new Mock<ILogger<UserIsValidUserAuthHandler>>();
             _mockHttpContextAccessor = AuthHandlerTestHelper.CreateHttpContextAccessor();
             _sut = new UserOwnsEntityOrIsAdminAuthHandler(
                 _mockHttpContextAccessor.Object,
                 _mockUserManager.Object,
+                _mockUserRoleService.Object,
                 _mockLogger.Object);
         }
 
@@ -56,6 +59,7 @@ namespace TrashMob.Shared.Tests.Security
             var user = new UserBuilder().WithId(userId).WithEmail("admin@test.com").AsSiteAdmin().Build();
             _mockUserManager.Setup(m => m.GetUserByEmailAsync("admin@test.com", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
+            _mockUserRoleService.GrantSiteAdmin(userId);
 
             var resource = new Event { CreatedByUserId = otherUserId };
             var principal = AuthHandlerTestHelper.CreateClaimsPrincipal("admin@test.com");

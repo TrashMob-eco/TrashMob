@@ -180,7 +180,9 @@ public class Program
             .AddPolicy(AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin,
                 policy => policy.AddRequirements(new UserIsEventLeadOrIsAdminRequirement()))
             .AddPolicy(AuthorizationPolicyConstants.UserIsProfessionalCompanyUserOrIsAdmin,
-                policy => policy.AddRequirements(new UserIsProfessionalCompanyUserOrIsAdminRequirement()));
+                policy => policy.AddRequirements(new UserIsProfessionalCompanyUserOrIsAdminRequirement()))
+            .AddPolicy(AuthorizationPolicyConstants.UserIsSalesRepOrIsAdmin,
+                policy => policy.AddRequirements(new UserIsSalesRepOrIsAdminRequirement()));
 
         // In production, the React files will be served from this directory
         builder.Services.AddSpaStaticFiles(configuration => { configuration.RootPath = "client-app/build"; });
@@ -248,7 +250,16 @@ public class Program
         builder.Services.Configure<GzipCompressionProviderOptions>(options =>
             options.Level = CompressionLevel.Fastest);
 
-        builder.Services.AddDbContext<MobDbContext>(c => c.UseLazyLoadingProxies());
+        builder.Services.AddDbContext<MobDbContext>((sp, options) =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            options.UseLazyLoadingProxies();
+            options.UseSqlServer(config["TMDBServerConnectionString"], x =>
+            {
+                x.UseNetTopologySuite();
+                x.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+            });
+        });
 
         // Security
         builder.Services.AddScoped<IAuthorizationHandler, UserOwnsEntityAuthHandler>();
@@ -259,6 +270,7 @@ public class Program
         builder.Services.AddScoped<IAuthorizationHandler, UserIsEventLeadAuthHandler>();
         builder.Services.AddScoped<IAuthorizationHandler, UserIsEventLeadOrIsAdminAuthHandler>();
         builder.Services.AddScoped<IAuthorizationHandler, UserIsProfessionalCompanyUserOrIsAdminAuthHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, UserIsSalesRepOrIsAdminAuthHandler>();
 
         builder.Services.AddHttpClient("CiamGraph");
         builder.Services.AddSingleton<ICiamGraphService, CiamGraphService>();

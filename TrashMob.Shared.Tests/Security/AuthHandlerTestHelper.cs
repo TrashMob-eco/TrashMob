@@ -3,12 +3,40 @@ namespace TrashMob.Shared.Tests.Security
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
+    using System.Threading;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Moq;
+    using TrashMob.Models;
+    using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.Interfaces;
 
     public static class AuthHandlerTestHelper
     {
+        /// <summary>
+        /// Creates a mock <see cref="IUserRoleService"/> whose <c>HasRoleAsync</c> defaults to
+        /// <c>false</c>. Tests that need the caller to hold a role should call
+        /// <see cref="GrantSiteAdmin"/> (or add their own <c>Setup</c> on the returned mock).
+        /// </summary>
+        public static Mock<IUserRoleService> CreateUserRoleService()
+        {
+            var mock = new Mock<IUserRoleService>();
+            mock.Setup(s => s.HasRoleAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
+            return mock;
+        }
+
+        /// <summary>
+        /// Configures the given <paramref name="mock"/> so that <c>HasRoleAsync</c> returns
+        /// <c>true</c> when queried for the <c>SiteAdmin</c> role with the given
+        /// <paramref name="userId"/>.
+        /// </summary>
+        public static void GrantSiteAdmin(this Mock<IUserRoleService> mock, Guid userId)
+        {
+            mock.Setup(s => s.HasRoleAsync(userId, RoleNames.SiteAdmin, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+        }
+
         public static ClaimsPrincipal CreateClaimsPrincipal(string email)
         {
             var claims = new List<Claim> { new("email", email) };
