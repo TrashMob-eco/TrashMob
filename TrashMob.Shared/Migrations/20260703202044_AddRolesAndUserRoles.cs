@@ -128,21 +128,24 @@ namespace TrashMob.Shared.Migrations
                 unique: true,
                 filter: "[RevokedDate] IS NULL");
 
-            // Project 64 Phase 1 backfill: grant every existing IsSiteAdmin=true user
-            // the SiteAdmin role (id=1). GrantedByUserId points at the system user id
-            // used elsewhere for automated writes. Preserves current behavior; the
-            // compatibility bridge in IUserRoleService.HasRoleAsync also honours the
-            // legacy boolean, so no read path breaks between deploy and this backfill.
+            // Project 64 Phase 1 backfill: grant every existing IsSiteAdmin=true
+            // user the SiteAdmin role (id=1). All attribution fields point at u.Id
+            // — the "well-known system user" the plan called out doesn't actually
+            // exist in the Users table (dev happened to pass because it has no
+            // IsSiteAdmin=1 rows so this INSERT ran on zero rows; prod deploy
+            // 2026-07-05 failed with FK_UserRoles_User_CreatedBy). Attributing the
+            // grant to the recipient user is semantically "you granted yourself
+            // this role during migration" — a placeholder audit trail, but every
+            // FK resolves to a real row.
             migrationBuilder.Sql(@"
-                DECLARE @SystemUserId UNIQUEIDENTIFIER = '00000000-0000-0000-0000-000000000001';
                 DECLARE @Now DATETIMEOFFSET = SYSDATETIMEOFFSET();
 
                 INSERT INTO UserRoles (Id, UserId, RoleId, GrantedByUserId, GrantedDate,
                                        CreatedByUserId, CreatedDate,
                                        LastUpdatedByUserId, LastUpdatedDate)
-                SELECT NEWID(), u.Id, 1, @SystemUserId, @Now,
-                       @SystemUserId, @Now,
-                       @SystemUserId, @Now
+                SELECT NEWID(), u.Id, 1, u.Id, @Now,
+                       u.Id, @Now,
+                       u.Id, @Now
                 FROM Users u
                 WHERE u.IsSiteAdmin = 1
                   AND NOT EXISTS (
