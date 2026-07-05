@@ -103,4 +103,10 @@ If Theory 3 evidence appears (Front Door access logs show a nonzero rate of 404s
 
 ## Change log
 
-- **2026-07-05** — Investigation opened. Confirmed all four HTTP/HTTPS paths return correct status codes. Theories 1–4 documented. No fix applied yet.
+- **2026-07-05 (evening)** — Fix A deployed to production Front Door (`fd-tm-pr` in `rg-trashmob-pr-westus2`).
+  - Bicep changes shipped via [#3487](https://github.com/TrashMob-eco/TrashMob/pull/3487) (Fix A) merged to `main`, then [#3489](https://github.com/TrashMob-eco/TrashMob/pull/3489) merged main → release.
+  - First `az deployment group create` attempt failed preflight — `Microsoft.Cdn 2024-02-01` now requires `queryStringCachingBehavior` on any route with `cacheConfiguration`. The pre-existing block had it implicit. Hotfix [#3490](https://github.com/TrashMob-eco/TrashMob/pull/3490) added `queryStringCachingBehavior: 'IgnoreQueryString'` (matches effective behavior). Same fix synced back to main in [#3491](https://github.com/TrashMob-eco/TrashMob/pull/3491).
+  - Second `az deployment group create` succeeded at 16:56Z, `provisioningState: Succeeded`, `duration: PT1M48.2140413S`, all 10 resources including the new `RedirectApexToWww` + `RedirectWwwHttpToHttps` rules deployed.
+  - **First probe ~1 min post-deploy still showed the old two-hop chain** (`http://trashmob.eco/` → 307 → `https://trashmob.eco/`). Attributed to normal Front Door edge propagation (5–15 min per POP, anycast can serve stale POPs longer). Awaiting re-probe at 30+ min mark to confirm the new behavior lands.
+  - If probes still show two hops after 30+ min, next step is `az afd route show --resource-group rg-trashmob-pr-westus2 --profile-name fd-tm-pr --endpoint-name fde-tm-pr --route-name route-default` to inspect the actually-deployed route state and confirm `httpsRedirect: 'Disabled'` persisted.
+- **2026-07-05 (afternoon)** — Investigation opened. Confirmed all four HTTP/HTTPS paths return correct status codes from a warm probe. Theories 1–4 documented. Fix A queued.
