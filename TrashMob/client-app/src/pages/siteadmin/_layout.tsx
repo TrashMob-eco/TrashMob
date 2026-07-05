@@ -60,6 +60,7 @@ const navGroups: NavGroup[] = [
             { name: 'Pipeline Analytics', href: `${pathPrefix}/prospects/analytics`, icon: BarChart3 },
             { name: 'Weekly Report', href: `${pathPrefix}/prospects/reports/weekly`, icon: CalendarClock },
             { name: 'Monthly Report', href: `${pathPrefix}/prospects/reports/monthly`, icon: CalendarDays },
+            { name: 'Report Subscribers', href: `${pathPrefix}/prospects/reports/subscribers`, icon: Mail },
         ],
     },
     {

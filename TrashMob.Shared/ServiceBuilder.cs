@@ -175,6 +175,8 @@
             services.AddScoped<IWeeklySalesReportService, WeeklySalesReportService>();
             services.AddScoped<IMonthlySalesReportService, MonthlySalesReportService>();
             services.AddScoped<ISalesReportNarrativeService, SalesReportNarrativeService>();
+            services.AddScoped<ISalesReportSubscriberService, SalesReportSubscriberService>();
+            services.AddScoped<ISalesReportEmailService, SalesReportEmailService>();
 
             // Contact Management
             services.AddScoped<IContactManager, ContactManager>();

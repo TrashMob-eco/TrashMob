@@ -54,6 +54,8 @@
     <None Remove="Engine\EmailCopy\UpcomingTeamEventsSoon.html" />
     <None Remove="Engine\EmailCopy\RoleGranted.html" />
     <None Remove="Engine\EmailCopy\RoleRevoked.html" />
+    <None Remove="Engine\EmailCopy\SalesReportWeekly.html" />
+    <None Remove="Engine\EmailCopy\SalesReportMonthly.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -110,6 +112,8 @@
     <EmbeddedResource Include="Engine\EmailCopy\DependentRegisteredForEvent.html" />
     <EmbeddedResource Include="Engine\EmailCopy\RoleGranted.html" />
     <EmbeddedResource Include="Engine\EmailCopy\RoleRevoked.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\SalesReportWeekly.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\SalesReportMonthly.html" />
   </ItemGroup>
 
   <ItemGroup>

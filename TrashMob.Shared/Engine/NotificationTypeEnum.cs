@@ -269,5 +269,15 @@
         /// Notification sent to a user when a role is revoked from their account (Project 64).
         /// </summary>
         RoleRevoked = 53,
+
+        /// <summary>
+        /// Weekly municipal sales pipeline report emailed to subscribers (Project 63).
+        /// </summary>
+        SalesReportWeekly = 54,
+
+        /// <summary>
+        /// Monthly municipal sales pipeline report emailed to subscribers (Project 63).
+        /// </summary>
+        SalesReportMonthly = 55,
     }
 }
