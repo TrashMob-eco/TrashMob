@@ -209,6 +209,15 @@ resource route 'Microsoft.Cdn/profiles/afdEndpoints/routes@2024-02-01' = {
     httpsRedirect: 'Disabled'
     enabledState: 'Enabled'
     cacheConfiguration: {
+      // Required by the AFD Standard/Premium schema whenever
+      // cacheConfiguration is set. Matches the effective behavior of
+      // the historic config that was accepted under an older API
+      // version — Front Door treats a URL's cache key without regard
+      // to query string, which is correct for our SPA (all client
+      // routing lives in the app; the same index.html is served for
+      // any path). Origin Cache-Control headers still control whether
+      // any given response is actually cached.
+      queryStringCachingBehavior: 'IgnoreQueryString'
       compressionSettings: {
         isCompressionEnabled: true
         contentTypesToCompress: [
