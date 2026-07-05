@@ -95,6 +95,8 @@ See `CUSTOM_DOMAIN_MIGRATION.md` for the history of the original migration.
 
 Azure Container Apps doesn't support apex/root domains with managed certificates directly, so production uses Azure Front Door (`fd-tm-pr`) to terminate `trashmob.eco` and 308-redirect to `https://www.trashmob.eco/`. Front Door also fronts `www.trashmob.eco` and proxies to the Container App.
 
+> **Known symptom:** users report "site not found" on the first visit to `trashmob.eco`, then success on refresh. Investigation and candidate fixes in [`APEX_FIRST_VISIT_INVESTIGATION.md`](APEX_FIRST_VISIT_INVESTIGATION.md).
+
 ### Current configuration
 
 | Component | Value |
