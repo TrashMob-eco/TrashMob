@@ -33,10 +33,6 @@ namespace TrashMob.Shared.Managers.Prospects
     {
         private readonly TimeProvider clock = timeProvider ?? TimeProvider.System;
 
-        // System user for automated writes — matches the id used by the
-        // Project 64 backfill migration.
-        private static readonly Guid SystemUserId = new("00000000-0000-0000-0000-000000000001");
-
         /// <inheritdoc />
         public async Task<int> SendWeeklyReportIfDueAsync(CancellationToken cancellationToken = default)
         {
@@ -84,7 +80,7 @@ namespace TrashMob.Shared.Managers.Prospects
             var count = await DispatchAsync(subject, html, subscribers, cancellationToken);
 
             await MarkSentAsync(
-                SalesReportPeriodTypeEnum.Weekly, weekStart, weekEnding, cancellationToken);
+                SalesReportPeriodTypeEnum.Weekly, weekStart, weekEnding, subscribers, cancellationToken);
 
             logger.LogInformation(
                 "Weekly sales report for week ending {WeekEnding} sent to {Count} subscribers.",
@@ -140,7 +136,7 @@ namespace TrashMob.Shared.Managers.Prospects
             var count = await DispatchAsync(subject, html, subscribers, cancellationToken);
 
             await MarkSentAsync(
-                SalesReportPeriodTypeEnum.Monthly, monthStart, monthEnd, cancellationToken);
+                SalesReportPeriodTypeEnum.Monthly, monthStart, monthEnd, subscribers, cancellationToken);
 
             logger.LogInformation(
                 "Monthly sales report for {Month:yyyy-MM} sent to {Count} subscribers.",
@@ -165,11 +161,20 @@ namespace TrashMob.Shared.Managers.Prospects
             SalesReportPeriodTypeEnum periodType,
             DateOnly periodStart,
             DateOnly periodEnd,
+            IReadOnlyCollection<SalesReportSubscriber> subscribers,
             CancellationToken cancellationToken)
         {
             var start = periodStart.ToDateTime(TimeOnly.MinValue);
             var end = periodEnd.ToDateTime(TimeOnly.MinValue);
             var now = clock.GetUtcNow();
+
+            // Attribute the audit trail to the first recipient. The daily job has
+            // no natural user context, and the SalesReport CreatedBy/LastUpdatedBy
+            // FKs must resolve to real Users rows (see the Project 64 P1 backfill
+            // failure on 2026-07-05 for what happens when you use a fake
+            // 00000000-0000-0000-0000-000000000001 sentinel). "First subscriber
+            // received this report" is a fine placeholder.
+            var attributionUserId = subscribers.First().UserId;
 
             var existing = await db.SalesReports.FirstOrDefaultAsync(
                 r => r.PeriodType == (int)periodType && r.PeriodStart == start,
@@ -184,16 +189,16 @@ namespace TrashMob.Shared.Managers.Prospects
                     PeriodStart = start,
                     PeriodEnd = end,
                     EmailSentDate = now,
-                    CreatedByUserId = SystemUserId,
+                    CreatedByUserId = attributionUserId,
                     CreatedDate = now,
-                    LastUpdatedByUserId = SystemUserId,
+                    LastUpdatedByUserId = attributionUserId,
                     LastUpdatedDate = now,
                 });
             }
             else
             {
                 existing.EmailSentDate = now;
-                existing.LastUpdatedByUserId = SystemUserId;
+                existing.LastUpdatedByUserId = attributionUserId;
                 existing.LastUpdatedDate = now;
             }
 
