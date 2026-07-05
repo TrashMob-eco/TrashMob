@@ -86,13 +86,23 @@ resource origin 'Microsoft.Cdn/profiles/originGroups/origins@2024-02-01' = {
   }
 }
 
-// Rule Set for apex domain redirect
+// Rule Set for apex + www HTTPS canonicalisation. See
+// Deploy/APEX_FIRST_VISIT_INVESTIGATION.md for background — the route
+// used to have httpsRedirect: Enabled, which auto-307'd HTTP-apex
+// traffic to HTTPS-apex before the rule set could see it, causing a
+// two-hop redirect chain (http://apex → 307 → https://apex → 308 →
+// https://www) with two consecutive TLS handshakes on cold browser
+// sessions. Now the route delegates HTTPS enforcement to this rule
+// set so http://apex resolves to https://www in a single 308.
 resource ruleSet 'Microsoft.Cdn/profiles/ruleSets@2024-02-01' = if (apexDomain != '') {
   parent: frontDoorProfile
   name: ruleSetName
 }
 
-// Rule to redirect apex to www
+// Rule to redirect apex traffic (either HTTP or HTTPS) straight to
+// https://www.trashmob.eco/ in a single hop. Matches both schemes on
+// purpose so cold browsers never pay the http-apex → https-apex
+// interstitial handshake.
 resource redirectRule 'Microsoft.Cdn/profiles/ruleSets/rules@2024-02-01' = if (apexDomain != '') {
   parent: ruleSet
   name: 'RedirectApexToWww'
@@ -125,6 +135,54 @@ resource redirectRule 'Microsoft.Cdn/profiles/ruleSets/rules@2024-02-01' = if (a
   }
 }
 
+// Rule to redirect http://www.trashmob.eco/ traffic to
+// https://www.trashmob.eco/ (same host, upgrade scheme). Previously
+// route.httpsRedirect handled this, but we disabled it above so the
+// apex rule could catch HTTP-apex directly. This rule preserves the
+// prior HTTP→HTTPS behavior for www without adding a second hop.
+resource redirectWwwHttpToHttpsRule 'Microsoft.Cdn/profiles/ruleSets/rules@2024-02-01' = if (apexDomain != '') {
+  parent: ruleSet
+  name: 'RedirectWwwHttpToHttps'
+  properties: {
+    order: 2
+    conditions: [
+      {
+        name: 'HostName'
+        parameters: {
+          typeName: 'DeliveryRuleHostNameConditionParameters'
+          operator: 'Equal'
+          matchValues: [primaryDomain]
+          transforms: ['Lowercase']
+          negateCondition: false
+        }
+      }
+      {
+        name: 'RequestScheme'
+        parameters: {
+          typeName: 'DeliveryRuleRequestSchemeConditionParameters'
+          operator: 'Equal'
+          matchValues: ['HTTP']
+          negateCondition: false
+        }
+      }
+    ]
+    actions: [
+      {
+        name: 'UrlRedirect'
+        parameters: {
+          typeName: 'DeliveryRuleUrlRedirectActionParameters'
+          redirectType: 'PermanentRedirect'
+          destinationProtocol: 'Https'
+        }
+      }
+    ]
+    matchProcessingBehavior: 'Stop'
+  }
+  dependsOn: [
+    redirectRule
+  ]
+}
+
 // Route for primary domain (www)
 resource route 'Microsoft.Cdn/profiles/afdEndpoints/routes@2024-02-01' = {
   parent: endpoint
@@ -143,7 +201,12 @@ resource route 'Microsoft.Cdn/profiles/afdEndpoints/routes@2024-02-01' = {
     patternsToMatch: ['/*']
     forwardingProtocol: 'HttpsOnly'
     linkToDefaultDomain: 'Enabled'
-    httpsRedirect: 'Enabled'
+    // Disabled on purpose — HTTPS enforcement now lives in the rule
+    // set (RedirectApexToWww + RedirectWwwHttpToHttps). Route-level
+    // httpsRedirect would fire *before* the rule set, forcing
+    // http://apex to bounce through https://apex on the way to
+    // https://www and doubling the cold-visit TLS handshakes.
+    httpsRedirect: 'Disabled'
     enabledState: 'Enabled'
     cacheConfiguration: {
       compressionSettings: {
@@ -162,6 +225,7 @@ resource route 'Microsoft.Cdn/profiles/afdEndpoints/routes@2024-02-01' = {
   dependsOn: [
     origin
     redirectRule
+    redirectWwwHttpToHttpsRule
   ]
 }
 
