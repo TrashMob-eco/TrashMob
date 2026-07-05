@@ -175,6 +175,8 @@
 
         public virtual DbSet<SalesReport> SalesReports { get; set; }
 
+        public virtual DbSet<SalesReportSubscriber> SalesReportSubscribers { get; set; }
+
         public virtual DbSet<Contact> Contacts { get; set; }
 
         public virtual DbSet<Donation> Donations { get; set; }
@@ -3704,6 +3706,36 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SalesReports_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<SalesReportSubscriber>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                // One subscription row per user — the "toggle weekly / monthly"
+                // UI upserts through this unique constraint so callers don't
+                // race on duplicate inserts.
+                entity.HasIndex(e => e.UserId)
+                    .IsUnique()
+                    .HasDatabaseName("UX_SalesReportSubscribers_User");
+
+                entity.HasOne(d => d.User)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_SalesReportSubscribers_User");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SalesReportSubscribers_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SalesReportSubscribers_User_LastUpdatedBy");
             });
 
             // ===== Contact Management System (Project 51) =====

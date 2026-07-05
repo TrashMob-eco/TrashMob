@@ -1,0 +1,38 @@
+<p style="margin: 0 0 16px 0; line-height: 1.6; color: #333333; font-size: 16px;">
+    Here's the municipal sales pipeline report for <strong>{PeriodLabel}</strong>.
+</p>
+
+<h3 style="margin: 24px 0 8px 0; font-size: 18px; color: #333333;">Goals vs. Actuals</h3>
+<table role="presentation" style="border-collapse: collapse; width: 100%; margin-bottom: 16px; font-size: 15px; color: #333333;">
+    <thead>
+        <tr style="border-bottom: 1px solid #dddddd;">
+            <th style="text-align: left; padding: 6px 12px 6px 0;">Metric</th>
+            <th style="text-align: right; padding: 6px 8px;">Target</th>
+            <th style="text-align: right; padding: 6px 8px;">Actual</th>
+            <th style="text-align: left; padding: 6px 0 6px 8px;">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {MetricRowsHtml}
+    </tbody>
+</table>
+
+<h3 style="margin: 24px 0 8px 0; font-size: 18px; color: #333333;">Best Responding Departments</h3>
+<div style="margin: 0 0 16px 0; line-height: 1.6; color: #333333; font-size: 15px;">
+    {DepartmentsHtml}
+</div>
+
+<h3 style="margin: 24px 0 8px 0; font-size: 18px; color: #333333;">Common Objections</h3>
+<div style="margin: 0 0 16px 0; line-height: 1.6; color: #333333; font-size: 15px;">
+    {ObjectionsHtml}
+</div>
+
+<h3 style="margin: 24px 0 8px 0; font-size: 18px; color: #333333;">Pricing Feedback</h3>
+<div style="margin: 0 0 16px 0; line-height: 1.6; color: #333333; font-size: 15px;">
+    {PricingHtml}
+</div>
+
+<h3 style="margin: 24px 0 8px 0; font-size: 18px; color: #333333;">Recommended Next-Month Priority</h3>
+<div style="margin: 0 0 16px 0; line-height: 1.6; color: #333333; font-size: 15px;">
+    {NextMonthPriorityHtml}
+</div>
