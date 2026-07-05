@@ -195,10 +195,10 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | Status | Count | Projects |
 |--------|-------|----------|
 | ✅ **Complete** (archived) | 34 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 24, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53, 59 |
-| ✅ **Complete** (production live, in-place) | 1 | Project 23 (PRIVO live 2026-05-20, testing complete 2026-07-01) |
+| ✅ **Complete** (production live, in-place) | 2 | Project 23 (PRIVO live 2026-05-20, testing complete 2026-07-01), Project 63 (Municipal Sales Pipeline live 2026-07-05) |
 | ✅ **Complete** (pending external) | 1 | Project 8 (minor waiver text pending legal review) |
-| **In Progress** | 13 | Projects 1, 4, 5, 6, 15, 25, 30, 36, 41, 45, 46, 49, 57 |
-| **Planning** | 5 | Projects 56, 58, 62, 63, 64 |
+| **In Progress** | 14 | Projects 1, 4, 5, 6, 15, 25, 30, 36, 41, 45, 46, 49, 57, **64** (Phases 1–4a live; Phase 4b column-drop queued for ~2026-08-05) |
+| **Planning** | 3 | Projects 56, 58, 62 |
 | **Ready for Review** | 1 | Project 2 |
 | **Not Started** | 5 | Projects 12, 31, 43, 52, 54, 55 |
 | **Deprioritized** | 1 | Project 33 |
@@ -228,6 +228,7 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | [Project 49 - Privacy & Compliance](./Projects/Project_49_Privacy_Compliance_Review.md) | Phase 5: Cookie consent & tracking audit — update Privacy Policy, document third-party services (Clarity, App Insights) |
 | [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | Community tier pricing, feature comparison, branding guidelines, digital assets |
 | [Project 57 - Participation Report](./Projects/Project_57_Participation_Report.md) | Phases 1-3 complete (backend + web + mobile). Phase 4 deferred: verification URLs with QR codes |
+| [Project 64 - Roles & RBAC Refactor](./Projects/Project_64_Roles_and_RBAC_Refactor.md) | Phases 1–4a shipped 2026-07-05 (Role + UserRole model, auth handler migration, `SalesRep` role, admin UI, sweep of `IsSiteAdmin` readers). Phase 4b (drop the `IsSiteAdmin` column + remove compat bridge) queued for ~2026-08-05 after a 30-day observation window. |
 
 ### Ready for Design Review
 
@@ -242,8 +243,6 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | [Project 56 - Board Metrics Dashboard](./Projects/Project_56_Board_Metrics_Dashboard.md) | Unified admin dashboard pulling from App Insights, GA4, Sentry, Clarity, Azure Cost Management, and QuickBooks for monthly board meetings |
 | [Project 58 - Community Event Seeding](./Projects/Project_58_Community_Event_Seeding.md) | Admin-seeded public cleanup events with organizer claim workflow to solve cold-start growth |
 | [Project 62 - TrashMob Site & Codebase Re-evaluation](./Projects/Project_62_TrashMob_Site_and_Codebase_Reevaluation.md) | **Engineering health check.** Codebase is in solid shape (A- architecture, no surprise debt); real constraint is WIP overload. Recommends capping in-progress at 6, finishing Mobile Robustness Phases 3–5 and unblocking E2E CI as P0 for Q3 2026. Living doc, updated every 6 months. |
-| [Project 63 - Municipal Sales Pipeline Reporting](./Projects/Project_63_Municipal_Sales_Pipeline_Reporting.md) | Extends the existing prospect CRM (from Project 60) with municipal-specific fields, a weekly report screen matching Cynthia's spreadsheet, monthly goals with target-vs-actual rollups, and market-intelligence aggregation. Supports the 1099 sales contractor selling TrashMob SaaS to cities. |
-| [Project 64 - Roles & RBAC Refactor](./Projects/Project_64_Roles_and_RBAC_Refactor.md) | Replaces the single `IsSiteAdmin` boolean with a proper Role + UserRole model. Ships `SiteAdmin` and `SalesRep` on day 1; establishes the pattern for future roles (`PartnerAdmin`, `ContentEditor`, etc.). Prerequisite for Project 63 to give the sales contractor a scoped login. |
 
 ### Not Started
 
