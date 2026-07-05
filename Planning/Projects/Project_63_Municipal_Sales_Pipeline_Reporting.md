@@ -2,11 +2,24 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning |
+| **Status** | ✅ Complete (all phases shipped to production 2026-07-05) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
 | **Dependencies** | [Project 60 — Prospect Multi-Contact Tracking](./Project_60_Prospect_Contact_Tracking.md), [Project 64 — Roles & RBAC Refactor](./Project_64_Roles_and_RBAC_Refactor.md) |
+
+## Shipped
+
+| Phase | PR | Shipped |
+|-------|-----|---------|
+| Phase 1 — Model + admin form extensions | [#3476](https://github.com/TrashMob-eco/TrashMob/pull/3476) | 2026-07-04 |
+| Phase 2 — Weekly Report screen | [#3477](https://github.com/TrashMob-eco/TrashMob/pull/3477) | 2026-07-04 |
+| Phase 3 — Monthly Goals + Market Intelligence Notes | [#3478](https://github.com/TrashMob-eco/TrashMob/pull/3478) | 2026-07-04 |
+| Phase 4a — Narrative persistence with autosave | [#3479](https://github.com/TrashMob-eco/TrashMob/pull/3479) | 2026-07-04 |
+| Phase 4b — Subscribers + scheduled email delivery | [#3480](https://github.com/TrashMob-eco/TrashMob/pull/3480) | 2026-07-04 |
+| Prod release + hotfix | [#3481](https://github.com/TrashMob-eco/TrashMob/pull/3481) + [#3483](https://github.com/TrashMob-eco/TrashMob/pull/3483) | 2026-07-05 |
+
+**Note:** the "well-known system user id" the plan called out for the backfill migration didn't actually exist in the `Users` table. Dev migration passed by luck (no `IsSiteAdmin=1` rows to attempt the FK-violating INSERT); prod caught it. Hotfix #3483 re-attributes the audit fields to `u.Id` for the migration and to the first subscriber's `UserId` for the email dispatcher. Documented here so anyone repeating this pattern for a future migration knows to avoid inventing a "system user."
 
 ---
 
@@ -387,7 +400,7 @@ Deferred; each item is a candidate follow-up project, not a commitment.
 
 ---
 
-**Last Updated:** 2026-07-03
+**Last Updated:** 2026-07-05
 **Owner:** Joe (engineering) + Cynthia (sales lead + Board) + 1099 salesperson
-**Status:** Planning
-**Next Review:** 2026-07-10 — align on Phase 1 scope before starting model changes
+**Status:** ✅ Complete — all phases in production 2026-07-05
+**Next Review:** 30 days after salesperson start (2026-08-13) — measure whether the salesperson prefers the CRM over a private spreadsheet, whether Cynthia trusts the weekly numbers as-is for Board meetings, and whether the Market Intelligence Notes have surfaced actionable insight

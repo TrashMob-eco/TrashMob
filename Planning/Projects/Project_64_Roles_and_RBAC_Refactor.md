@@ -2,11 +2,30 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning |
+| **Status** | In Progress — Phases 1–4a shipped to production 2026-07-05; Phase 4b (column drop) time-gated on 30-day observation window |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
 | **Dependencies** | _None_ — this project unblocks [Project 63 (Municipal Sales Pipeline Reporting)](./Project_63_Municipal_Sales_Pipeline_Reporting.md) and any future non-admin role |
+
+## Shipped
+
+| Phase | PR | Shipped |
+|-------|-----|---------|
+| Phase 1 — Role / UserRole model + `IUserRoleService` + compat bridge | [#3468](https://github.com/TrashMob-eco/TrashMob/pull/3468) | 2026-07-03 |
+| Phase 2 — Auth handler migration + `SalesRep` policy + `UsersV2Controller` `[Authorize]` | [#3473](https://github.com/TrashMob-eco/TrashMob/pull/3473) | 2026-07-04 |
+| Phase 3 — Role admin UI + `RolesV2Controller` + grant/revoke emails | [#3474](https://github.com/TrashMob-eco/TrashMob/pull/3474) | 2026-07-04 |
+| Phase 4a — Sweep production `IsSiteAdmin` readers | [#3475](https://github.com/TrashMob-eco/TrashMob/pull/3475) | 2026-07-04 |
+| Prod release + backfill migration hotfix | [#3481](https://github.com/TrashMob-eco/TrashMob/pull/3481) + [#3483](https://github.com/TrashMob-eco/TrashMob/pull/3483) | 2026-07-05 |
+| **Phase 4b — Drop `IsSiteAdmin` column** | (queued) | Earliest ~2026-08-05 (30 days after Phase 4a in prod) |
+
+## Lessons learned
+
+- **The "well-known system user" pattern was a fiction.** The plan referenced "a well-known 'System' user id used elsewhere for automated writes" and told the backfill migration to use `00000000-0000-0000-0000-000000000001` for the `GrantedBy` / `CreatedBy` / `LastUpdatedBy` audit fields. That row doesn't actually exist in the `Users` table. Dev happened to pass because dev has no `IsSiteAdmin = 1` rows to trigger the failing `INSERT SELECT`; prod caught it with `FK_UserRoles_User_CreatedBy`.
+  - Fix: [#3483](https://github.com/TrashMob-eco/TrashMob/pull/3483) — re-attributed audit fields to `u.Id` (the user whose grant is being backfilled). Semantically weird ("each SiteAdmin granted themselves this role during migration") but every FK resolves to a real row.
+  - Guardrail for future migrations: **never invent a sentinel user id.** Either use a real existing user (self-reference, or query for any admin), or add a nullable FK.
+
+- **Dev-passing migrations can still fail in prod.** The dev DB has a much smaller / different user base than prod, and any migration that touches `Users`-referencing tables should be tested against a schema populated with production-representative rows before rolling to release.
 
 ---
 
@@ -347,7 +366,7 @@ Sweep the codebase, drop the column, close the loop.
 
 ---
 
-**Last Updated:** 2026-07-03
+**Last Updated:** 2026-07-05
 **Owner:** Joe (engineering)
-**Status:** Planning
-**Next Review:** 2026-07-10 — coordinate Phase 1 kickoff with Project 63 timeline
+**Status:** In Progress — Phases 1–4a shipped; Phase 4b (column drop) queued for ~2026-08-05
+**Next Review:** 2026-08-05 — decide whether the 30-day observation window is enough to drop `IsSiteAdmin`; if any missed reader has caused a production incident since 4a, extend the window and grep the codebase again first
