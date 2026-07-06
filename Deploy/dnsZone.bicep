@@ -66,8 +66,13 @@ resource dnsZone 'Microsoft.Network/dnsZones@2023-07-01-preview' = {
   }
 }
 
-// WWW CNAME record - points to Front Door or Container App
-resource wwwRecord 'Microsoft.Network/dnsZones/CNAME@2023-07-01-preview' = {
+// WWW CNAME record - points to Front Door or Container App.
+// Guarded so a re-apply that doesn't pass frontDoorEndpointHostname /
+// containerAppFqdn (both default to '') doesn't corrupt the record by
+// setting cname to an empty string. Same trap as the _dnsauth
+// parameterization: silent property reset by ARM Incremental when the
+// template computes an empty value.
+resource wwwRecord 'Microsoft.Network/dnsZones/CNAME@2023-07-01-preview' = if ((useFrontDoor && frontDoorEndpointHostname != '') || (!useFrontDoor && containerAppFqdn != '')) {
   parent: dnsZone
   name: 'www'
   properties: {
