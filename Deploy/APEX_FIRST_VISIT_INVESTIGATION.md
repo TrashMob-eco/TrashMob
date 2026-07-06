@@ -1,6 +1,6 @@
 # Apex First-Visit "Site Not Found" — Investigation Log
 
-**Status:** Open — root cause not yet confirmed
+**Status:** Fix A deployed 2026-07-05; monitoring for symptom recurrence
 **First observed:** ongoing for months as of 2026-07-05
 **Reproduction rate:** intermittent; multiple users report seeing it on first visit to `trashmob.eco`
 **Owner:** Joe
@@ -103,6 +103,17 @@ If Theory 3 evidence appears (Front Door access logs show a nonzero rate of 404s
 
 ## Change log
 
+- **2026-07-05 (late evening, apex restored)** — Apex domain fully restored; Fix A confirmed live on all four paths.
+  - After the customDomains hotfix in #3492 landed, `az afd route show` confirmed both custom domains were bound to the route, but apex probes kept returning 404 / connection reset. Root cause: `az afd custom-domain show trashmob-eco` reported `domainValidationState: PendingRevalidation` while `www-trashmob-eco` was `Approved`. The stripped-then-re-added apex binding forced a fresh managed-cert validation, and the `_dnsauth.trashmob.eco` TXT record still held the *original* validation token from initial cutover.
+  - Recovery: `az afd custom-domain regenerate-validation-token` on the apex custom-domain issued a new token (`_iuufe275dy62wlzy8vs9ico8lk80prs`, expires 2026-07-13). Then `az network dns record-set txt remove-record` (old token) + `add-record` (new token) on the `_dnsauth.trashmob.eco` TXT record. AFD detected the match within ~10 min, transitioned state `Pending` → `Approved` with `deploymentStatus: InProgress`, and edge POPs picked up the binding shortly after.
+  - **Final verification** (probes ~15 min after revalidation, from a cold PowerShell session):
+    - `http://trashmob.eco/` → **308 → `https://www.trashmob.eco/` in a single hop** ← Fix A goal achieved
+    - `https://trashmob.eco/` → 308 → `https://www.trashmob.eco/`
+    - `http://www.trashmob.eco/` → 308 → `https://www.trashmob.eco/`
+    - `https://www.trashmob.eco/` → 200
+    - All four responses carry `x-azure-ref` proving Front Door is responding; single TLS handshake for cold visitors as intended.
+  - **Follow-up hygiene**: `Deploy/dnsZone.bicep` still contains `<ADD_VALIDATION_TOKEN_FROM_AZURE_PORTAL>` placeholders for the `_dnsauth` TXT records. If that Bicep is ever re-applied without patching, it will overwrite the real token again and trigger the same outage-then-revalidate loop. Options: commit the real token (tokens are not secrets), externalize as a Bicep parameter with a default, or upgrade the comment to a hard "DO NOT RE-APPLY WITHOUT UPDATING" warning. Tracked as a to-do.
+  - **Watch for**: does the "first-visit site not found" symptom stop being reported? If Theory 1 was the actual root cause, we should stop seeing user reports within a couple of weeks. If it keeps happening, revisit Theory 2 (HSTS) or Theory 3 (edge POP staleness).
 - **2026-07-05 (evening, +90 min after Fix A)** — Prod incident: apex outage caused by the Fix A re-deploy stripping the route → custom-domain associations.
   - **Symptom** (verified via 3 consecutive probes ~30 min post-Fix-A-deploy): `http://trashmob.eco/` returned `404 Not Found`, `https://trashmob.eco/` returned "connection closed" during TLS handshake, `www.trashmob.eco/` continued to serve normally.
   - **Root cause**: `Deploy/frontDoor.bicep` declared both custom domain resources (`customDomainWww`, `customDomainApex`) but the `route-default` resource had **no `customDomains` array binding them**. The historic associations were added manually via the Azure portal at initial cutover and never captured in Bicep. ARM Incremental deploys still reset properties declared on a resource; "not mentioned" collapsed to "empty" during the Fix A apply, unbinding both domains from the route. `www.trashmob.eco/` kept working via `linkToDefaultDomain: 'Enabled'` (the default `.azurefd.net` endpoint acted as an implicit route target).
