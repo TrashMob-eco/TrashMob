@@ -1,6 +1,6 @@
 # Apex First-Visit "Site Not Found" — Investigation Log
 
-**Status:** Open — root cause not yet confirmed
+**Status:** Fix A deployed 2026-07-05; monitoring for symptom recurrence
 **First observed:** ongoing for months as of 2026-07-05
 **Reproduction rate:** intermittent; multiple users report seeing it on first visit to `trashmob.eco`
 **Owner:** Joe
@@ -103,6 +103,24 @@ If Theory 3 evidence appears (Front Door access logs show a nonzero rate of 404s
 
 ## Change log
 
+- **2026-07-05 (late evening, apex restored)** — Apex domain fully restored; Fix A confirmed live on all four paths.
+  - After the customDomains hotfix in #3492 landed, `az afd route show` confirmed both custom domains were bound to the route, but apex probes kept returning 404 / connection reset. Root cause: `az afd custom-domain show trashmob-eco` reported `domainValidationState: PendingRevalidation` while `www-trashmob-eco` was `Approved`. The stripped-then-re-added apex binding forced a fresh managed-cert validation, and the `_dnsauth.trashmob.eco` TXT record still held the *original* validation token from initial cutover.
+  - Recovery: `az afd custom-domain regenerate-validation-token` on the apex custom-domain issued a new token (`_iuufe275dy62wlzy8vs9ico8lk80prs`, expires 2026-07-13). Then `az network dns record-set txt remove-record` (old token) + `add-record` (new token) on the `_dnsauth.trashmob.eco` TXT record. AFD detected the match within ~10 min, transitioned state `Pending` → `Approved` with `deploymentStatus: InProgress`, and edge POPs picked up the binding shortly after.
+  - **Final verification** (probes ~15 min after revalidation, from a cold PowerShell session):
+    - `http://trashmob.eco/` → **308 → `https://www.trashmob.eco/` in a single hop** ← Fix A goal achieved
+    - `https://trashmob.eco/` → 308 → `https://www.trashmob.eco/`
+    - `http://www.trashmob.eco/` → 308 → `https://www.trashmob.eco/`
+    - `https://www.trashmob.eco/` → 200
+    - All four responses carry `x-azure-ref` proving Front Door is responding; single TLS handshake for cold visitors as intended.
+  - **Follow-up hygiene**: `Deploy/dnsZone.bicep` still contains `<ADD_VALIDATION_TOKEN_FROM_AZURE_PORTAL>` placeholders for the `_dnsauth` TXT records. If that Bicep is ever re-applied without patching, it will overwrite the real token again and trigger the same outage-then-revalidate loop. Options: commit the real token (tokens are not secrets), externalize as a Bicep parameter with a default, or upgrade the comment to a hard "DO NOT RE-APPLY WITHOUT UPDATING" warning. Tracked as a to-do.
+  - **Watch for**: does the "first-visit site not found" symptom stop being reported? If Theory 1 was the actual root cause, we should stop seeing user reports within a couple of weeks. If it keeps happening, revisit Theory 2 (HSTS) or Theory 3 (edge POP staleness).
+- **2026-07-05 (evening, +90 min after Fix A)** — Prod incident: apex outage caused by the Fix A re-deploy stripping the route → custom-domain associations.
+  - **Symptom** (verified via 3 consecutive probes ~30 min post-Fix-A-deploy): `http://trashmob.eco/` returned `404 Not Found`, `https://trashmob.eco/` returned "connection closed" during TLS handshake, `www.trashmob.eco/` continued to serve normally.
+  - **Root cause**: `Deploy/frontDoor.bicep` declared both custom domain resources (`customDomainWww`, `customDomainApex`) but the `route-default` resource had **no `customDomains` array binding them**. The historic associations were added manually via the Azure portal at initial cutover and never captured in Bicep. ARM Incremental deploys still reset properties declared on a resource; "not mentioned" collapsed to "empty" during the Fix A apply, unbinding both domains from the route. `www.trashmob.eco/` kept working via `linkToDefaultDomain: 'Enabled'` (the default `.azurefd.net` endpoint acted as an implicit route target).
+  - **Fix** ([#3492](https://github.com/TrashMob-eco/TrashMob/pull/3492), synced to main in [#3493](https://github.com/TrashMob-eco/TrashMob/pull/3493)): added `customDomains: concat([{ id: customDomainWww.id }], [{ id: customDomainApex.id }])` to the route, plus a WARNING comment above the resource so future editors don't drop the association again. Bicep infers deploy ordering from the `.id` references — no explicit `dependsOn` needed.
+  - **Verification via `az afd route show`** post-hotfix-deploy: both custom domains bound with `isActive: true`, `httpsRedirect: 'Disabled'` (Fix A intact), `ruleSets` still pointing at `ApexRedirect`. Server-side config exactly as intended.
+  - **Post-hotfix probes**: apex still returning 404 / connection reset ~5 min after deploy. Attributed to slower propagation of custom-domain-to-route bindings than route/rule changes alone (Front Door apex domain bindings are documented to take up to 30 min). Not resolved at time of this entry — check again at the 30–60 min mark.
+  - **Lesson for next time**: any Bicep resource whose properties can be set out-of-band (Azure portal, Azure CLI, another template) must have those properties captured in the Bicep. An "empty" or "absent" property in a subsequent apply is a *reset* to empty, not a "leave alone." The rule-of-thumb "Bicep incremental preserves what you don't declare" is only true at the *resource* level, not the *property* level.
 - **2026-07-05 (evening)** — Fix A deployed to production Front Door (`fd-tm-pr` in `rg-trashmob-pr-westus2`).
   - Bicep changes shipped via [#3487](https://github.com/TrashMob-eco/TrashMob/pull/3487) (Fix A) merged to `main`, then [#3489](https://github.com/TrashMob-eco/TrashMob/pull/3489) merged main → release.
   - First `az deployment group create` attempt failed preflight — `Microsoft.Cdn 2024-02-01` now requires `queryStringCachingBehavior` on any route with `cacheConfiguration`. The pre-existing block had it implicit. Hotfix [#3490](https://github.com/TrashMob-eco/TrashMob/pull/3490) added `queryStringCachingBehavior: 'IgnoreQueryString'` (matches effective behavior). Same fix synced back to main in [#3491](https://github.com/TrashMob-eco/TrashMob/pull/3491).
