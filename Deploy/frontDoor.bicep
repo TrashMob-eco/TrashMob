@@ -183,11 +183,24 @@ resource redirectWwwHttpToHttpsRule 'Microsoft.Cdn/profiles/ruleSets/rules@2024-
   ]
 }
 
-// Route for primary domain (www)
+// Route for both custom domains (www + apex).
+//
+// customDomains MUST be listed here — Bicep re-deploys are Incremental
+// but ARM still resets Route.customDomains to whatever the template
+// declares. The initial cutover set the associations manually via the
+// Azure portal, which left the Bicep silent on this property; the
+// 2026-07-05 Fix A re-deploy consequently stripped the associations
+// and produced a production outage on trashmob.eco (Front Door
+// returning 404 because no route was bound to that host). Never leave
+// this array implicit again.
 resource route 'Microsoft.Cdn/profiles/afdEndpoints/routes@2024-02-01' = {
   parent: endpoint
   name: routeName
   properties: {
+    customDomains: concat(
+      primaryDomain != '' ? [{ id: customDomainWww.id }] : [],
+      apexDomain != '' ? [{ id: customDomainApex.id }] : []
+    )
     originGroup: {
       id: originGroup.id
     }
