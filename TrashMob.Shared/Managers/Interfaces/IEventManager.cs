@@ -138,5 +138,16 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <returns>The updated event.</returns>
         Task<Event> CompleteEventAsync(Guid eventId, Guid userId,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Returns Instant Events owned by the specified user that appear to still be in
+        /// progress — status Active, visibility Private, zero duration (never Completed),
+        /// and started within the last 24 hours. Used by the mobile Dashboard to offer a
+        /// resume path after a fresh install, cross-device switch, or cleared app data
+        /// where the local Preferences record was lost. See
+        /// Planning/Projects/Project_65_Instant_Events.md Phase 1 (Option B).
+        /// </summary>
+        Task<IEnumerable<Event>> GetInProgressInstantEventsAsync(Guid userId,
+            CancellationToken cancellationToken = default);
     }
 }

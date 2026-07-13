@@ -39,5 +39,13 @@
         /// Marks an event as Complete and computes its duration from elapsed time.
         /// </summary>
         Task<Event> CompleteEventAsync(Guid eventId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Returns the caller's Instant Events that still look in-progress on the server
+        /// (Active + Private + zero duration + started within the last 24 hours). Used to
+        /// offer a cross-device / fresh-install resume path when local Preferences is empty.
+        /// </summary>
+        Task<IEnumerable<Event>> GetInProgressInstantEventsAsync(
+            CancellationToken cancellationToken = default);
     }
 }

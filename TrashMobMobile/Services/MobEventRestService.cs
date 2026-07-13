@@ -153,4 +153,15 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
         var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
         return JsonConvert.DeserializeObject<EventDto>(returnContent)!.ToEntity();
     }
+
+    public async Task<IEnumerable<Event>> GetInProgressInstantEventsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var response = await AuthorizedHttpClient
+            .GetAsync($"{Controller}/instant/in-progress", cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        var dtos = JsonConvert.DeserializeObject<List<EventDto>>(content) ?? [];
+        return dtos.Select(d => d.ToEntity());
+    }
 }

@@ -111,5 +111,11 @@
         {
             return mobEventRestService.CompleteEventAsync(eventId, cancellationToken);
         }
+
+        public Task<IEnumerable<Event>> GetInProgressInstantEventsAsync(
+            CancellationToken cancellationToken = default)
+        {
+            return mobEventRestService.GetInProgressInstantEventsAsync(cancellationToken);
+        }
     }
 }

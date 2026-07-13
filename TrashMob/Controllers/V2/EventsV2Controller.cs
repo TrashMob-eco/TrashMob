@@ -374,6 +374,27 @@ namespace TrashMob.Controllers.V2
         }
 
         /// <summary>
+        /// Returns the caller's Instant Events that appear to still be in progress — status
+        /// Active, visibility Private, zero duration, started within the last 24 hours. Used
+        /// by the mobile Dashboard to offer a resume path after a fresh install, cross-device
+        /// switch, or cleared app data. Returns empty list when no such events exist.
+        /// See Planning/Projects/Project_65_Instant_Events.md Phase 1 (Option B).
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns candidate in-progress Instant Events, newest first.</response>
+        [HttpGet("instant/in-progress")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetInProgressInstantEvents(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 GetInProgressInstantEvents User={UserId}", UserId);
+
+            var events = await eventManager.GetInProgressInstantEventsAsync(UserId, cancellationToken);
+            return Ok(events.Select(e => e.ToV2Dto()));
+        }
+
+        /// <summary>
         /// Marks an event as Complete and computes its actual duration from the elapsed time
         /// since EventDate. Used by the Instant Events "Stop" flow. Only event leads or admins
         /// can complete an event.
