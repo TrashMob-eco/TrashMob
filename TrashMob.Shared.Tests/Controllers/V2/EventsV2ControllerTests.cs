@@ -214,6 +214,115 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         }
 
         [Fact]
+        public async Task AddInstantEvent_ReturnsCreated_WithPersistedEvent()
+        {
+            var userId = Guid.NewGuid();
+            var newEventId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+
+            var request = new InstantEventRequestDto { Latitude = 47.6, Longitude = -122.3 };
+            eventManager.Setup(m => m.AddInstantEventAsync(request.Latitude, request.Longitude, userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Event
+                {
+                    Id = newEventId,
+                    Name = "Instant Event – 2026-07-12 14:30",
+                    EventVisibilityId = (int)EventVisibilityEnum.Private,
+                    Latitude = request.Latitude,
+                    Longitude = request.Longitude,
+                });
+
+            var result = await controller.AddInstantEvent(request, CancellationToken.None);
+
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result);
+            Assert.Equal(nameof(EventsV2Controller.GetEvent), createdResult.ActionName);
+            var dto = Assert.IsType<EventDto>(createdResult.Value);
+            Assert.Equal(newEventId, dto.Id);
+        }
+
+        [Fact]
+        public async Task AddInstantEvent_ReturnsForbid_WhenCreatorIsMinor()
+        {
+            // Minors cannot create events — mirrors the AddEvent minor check for defence-in-depth
+            // against a UI regression that exposed the Start-a-Pick button to a minor account.
+            var userId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+
+            userManager.Setup(m => m.GetAsync(userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new User { Id = userId, IsMinor = true, DependentId = Guid.NewGuid() });
+
+            var result = await controller.AddInstantEvent(
+                new InstantEventRequestDto { Latitude = 0, Longitude = 0 },
+                CancellationToken.None);
+
+            Assert.IsType<ForbidResult>(result);
+            eventManager.Verify(
+                m => m.AddInstantEventAsync(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task CompleteEvent_ReturnsNotFound_WhenEventMissing()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+            var missingId = Guid.NewGuid();
+            eventManager.Setup(m => m.GetAsync(missingId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Event)null!);
+
+            var result = await controller.CompleteEvent(missingId, CancellationToken.None);
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task CompleteEvent_ReturnsForbid_WhenCallerNotEventLead()
+        {
+            controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();
+            var eventId = Guid.NewGuid();
+
+            eventManager.Setup(m => m.GetAsync(eventId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Event { Id = eventId });
+            authorizationService.Setup(a => a.AuthorizeAsync(It.IsAny<System.Security.Claims.ClaimsPrincipal>(),
+                    It.IsAny<object>(), It.IsAny<string>()))
+                .ReturnsAsync(AuthorizationResult.Failed());
+
+            var result = await controller.CompleteEvent(eventId, CancellationToken.None);
+
+            Assert.IsType<ForbidResult>(result);
+            eventManager.Verify(m => m.CompleteEventAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task CompleteEvent_ReturnsOkWithCompletedEvent()
+        {
+            var userId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+            controller.HttpContext.User = new System.Security.Claims.ClaimsPrincipal(
+                new System.Security.Claims.ClaimsIdentity(
+                    new[] { new System.Security.Claims.Claim("sub", userId.ToString()) }, "test"));
+
+            eventManager.Setup(m => m.GetAsync(eventId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Event { Id = eventId });
+            authorizationService.Setup(a => a.AuthorizeAsync(It.IsAny<System.Security.Claims.ClaimsPrincipal>(),
+                    It.IsAny<object>(), It.IsAny<string>()))
+                .ReturnsAsync(AuthorizationResult.Success());
+            eventManager.Setup(m => m.CompleteEventAsync(eventId, userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Event
+                {
+                    Id = eventId,
+                    EventStatusId = (int)EventStatusEnum.Complete,
+                    DurationHours = 1,
+                    DurationMinutes = 15,
+                });
+
+            var result = await controller.CompleteEvent(eventId, CancellationToken.None);
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var dto = Assert.IsType<EventDto>(ok.Value);
+            Assert.Equal(eventId, dto.Id);
+        }
+
+        [Fact]
         public async Task UpdateEvent_ReturnsForbid_WhenNotAuthorized()
         {
             controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();

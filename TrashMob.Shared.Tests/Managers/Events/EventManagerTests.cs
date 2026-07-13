@@ -352,6 +352,156 @@ namespace TrashMob.Shared.Tests.Managers.Events
 
         #endregion
 
+        #region AddInstantEventAsync Tests
+
+        [Fact]
+        public async Task AddInstantEventAsync_SetsExpectedDefaults()
+        {
+            var userId = Guid.NewGuid();
+            _eventRepository.SetupAddAsync();
+            _eventAttendeeManager.Setup(m => m.AddAsync(It.IsAny<EventAttendee>(), userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((EventAttendee ea, Guid _, CancellationToken _) => ea);
+
+            var result = await _sut.AddInstantEventAsync(47.6, -122.3, userId);
+
+            Assert.NotNull(result);
+            Assert.StartsWith("Instant Event", result.Name);
+            Assert.Equal("Instant private event", result.Description);
+            Assert.Equal((int)EventVisibilityEnum.Private, result.EventVisibilityId);
+            Assert.Equal((int)EventStatusEnum.Active, result.EventStatusId);
+            Assert.Equal(47.6, result.Latitude);
+            Assert.Equal(-122.3, result.Longitude);
+            Assert.Equal(1, result.MaxNumberOfParticipants);
+            Assert.Null(result.TeamId);
+        }
+
+        [Fact]
+        public async Task AddInstantEventAsync_RegistersCreatorAsEventLead()
+        {
+            var userId = Guid.NewGuid();
+            _eventRepository.SetupAddAsync();
+            _eventAttendeeManager.Setup(m => m.AddAsync(It.IsAny<EventAttendee>(), userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((EventAttendee ea, Guid _, CancellationToken _) => ea);
+
+            var result = await _sut.AddInstantEventAsync(0, 0, userId);
+
+            _eventAttendeeManager.Verify(m => m.AddAsync(
+                It.Is<EventAttendee>(ea => ea.UserId == userId
+                                           && ea.EventId == result.Id
+                                           && ea.IsEventLead),
+                userId,
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task AddInstantEventAsync_DoesNotSendNewEventNotificationEmail()
+        {
+            // The regular AddAsync fires a "New Event Alert" email to info@trashmob.eco.
+            // For solo private cleanups that would spam the inbox — the AddInstantEventAsync
+            // path deliberately skips it. Guarding the behavior with a test so a future refactor
+            // doesn't accidentally re-enable it.
+            var userId = Guid.NewGuid();
+            _eventRepository.SetupAddAsync();
+            _eventAttendeeManager.Setup(m => m.AddAsync(It.IsAny<EventAttendee>(), userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((EventAttendee ea, Guid _, CancellationToken _) => ea);
+
+            await _sut.AddInstantEventAsync(0, 0, userId);
+
+            _emailManager.Verify(e => e.SendTemplatedEmailAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<int>(),
+                It.IsAny<object>(),
+                It.IsAny<List<EmailAddress>>(),
+                It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        #endregion
+
+        #region CompleteEventAsync Tests
+
+        [Fact]
+        public async Task CompleteEventAsync_SetsStatusToCompleteAndComputesDuration()
+        {
+            var userId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            var startedTwoHoursAgo = DateTimeOffset.UtcNow.AddHours(-2).AddMinutes(-15);
+            var existing = new EventBuilder()
+                .WithId(eventId)
+                .WithName("Instant Event to Complete")
+                .CreatedBy(userId)
+                .AsActive()
+                .Build();
+            existing.EventDate = startedTwoHoursAgo;
+
+            _eventRepository.SetupGetAsync(existing);
+            _eventRepository.SetupUpdateAsync();
+
+            var result = await _sut.CompleteEventAsync(eventId, userId);
+
+            Assert.Equal((int)EventStatusEnum.Complete, result.EventStatusId);
+            Assert.Equal(2, result.DurationHours);
+            // Minutes field is the sub-hour remainder; allow ±1 for clock skew during test run.
+            Assert.InRange(result.DurationMinutes, 14, 16);
+        }
+
+        [Fact]
+        public async Task CompleteEventAsync_ClampsDurationTo24Hours_WhenEventAbandoned()
+        {
+            var userId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            var existing = new EventBuilder()
+                .WithId(eventId)
+                .WithName("Abandoned Instant Event")
+                .CreatedBy(userId)
+                .AsActive()
+                .Build();
+            existing.EventDate = DateTimeOffset.UtcNow.AddDays(-3);
+
+            _eventRepository.SetupGetAsync(existing);
+            _eventRepository.SetupUpdateAsync();
+
+            var result = await _sut.CompleteEventAsync(eventId, userId);
+
+            Assert.Equal(24, result.DurationHours);
+            Assert.Equal(0, result.DurationMinutes);
+        }
+
+        [Fact]
+        public async Task CompleteEventAsync_ClampsNegativeDurationToZero_ForBackdatedFutureEvents()
+        {
+            var userId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            var existing = new EventBuilder()
+                .WithId(eventId)
+                .WithName("Future-dated Event")
+                .CreatedBy(userId)
+                .AsActive()
+                .Build();
+            existing.EventDate = DateTimeOffset.UtcNow.AddHours(2);
+
+            _eventRepository.SetupGetAsync(existing);
+            _eventRepository.SetupUpdateAsync();
+
+            var result = await _sut.CompleteEventAsync(eventId, userId);
+
+            Assert.Equal(0, result.DurationHours);
+            Assert.Equal(0, result.DurationMinutes);
+        }
+
+        [Fact]
+        public async Task CompleteEventAsync_Throws_WhenEventNotFound()
+        {
+            var missingId = Guid.NewGuid();
+            _eventRepository.Setup(r => r.GetAsync(missingId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Event)null!);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => _sut.CompleteEventAsync(missingId, Guid.NewGuid()));
+        }
+
+        #endregion
+
         #region DeleteAsync Tests
 
         [Fact]

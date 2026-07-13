@@ -109,5 +109,34 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <returns>The number of entities deleted.</returns>
         Task<int> DeleteAsync(Guid id, string cancellationReason, Guid userId,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Creates a new solo private Instant Event for the specified user at the given GPS
+        /// coordinates. Auto-fills name (with timestamp), description, EventType (Cleanup),
+        /// visibility (Private), status (Active), and EventDate (now). Registers the creator
+        /// as sole attendee + event lead. Deliberately skips the info@ new-event notification
+        /// email — private solo cleanups would flood that inbox.
+        /// See Planning/Projects/Project_65_Instant_Events.md.
+        /// </summary>
+        /// <param name="latitude">Latitude of the user's location at Start.</param>
+        /// <param name="longitude">Longitude of the user's location at Start.</param>
+        /// <param name="userId">The user creating the event.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The newly created event.</returns>
+        Task<Event> AddInstantEventAsync(double latitude, double longitude, Guid userId,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Marks an event as Complete and computes its actual duration from the elapsed time
+        /// since the event was created. Used by the Instant Events "Stop" flow but works for
+        /// any event. Duration is clamped to [0, 24h] as a safeguard against abandoned or
+        /// backdated events producing absurd values.
+        /// </summary>
+        /// <param name="eventId">The event to complete.</param>
+        /// <param name="userId">The user completing the event (used for audit fields).</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The updated event.</returns>
+        Task<Event> CompleteEventAsync(Guid eventId, Guid userId,
+            CancellationToken cancellationToken = default);
     }
 }

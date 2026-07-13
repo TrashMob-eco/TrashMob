@@ -337,6 +337,78 @@ namespace TrashMob.Controllers.V2
         }
 
         /// <summary>
+        /// Creates a new solo private "Instant Event" at the given GPS location.
+        /// Zero user input required beyond the coordinates — server auto-fills Name (with
+        /// local timestamp), Description, EventDate (now), EventType (Cleanup), Visibility
+        /// (Private), and Status (Active). Registers the caller as sole attendee + event lead.
+        /// Skips the info@trashmob.eco new-event notification email.
+        /// See Planning/Projects/Project_65_Instant_Events.md.
+        /// </summary>
+        /// <param name="request">The GPS coordinates at Start.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="201">Instant event created.</response>
+        /// <response code="403">Minor accounts cannot create events (event leads must be adults).</response>
+        [HttpPost("instant")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(EventDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> AddInstantEvent(InstantEventRequestDto request,
+            CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 AddInstantEvent User={UserId} Lat={Latitude} Lng={Longitude}",
+                UserId, request.Latitude, request.Longitude);
+
+            // Mirrors AddEvent — minors cannot create events because event creators are
+            // auto-assigned as event lead and event leads must be adults.
+            var creator = await userManager.GetAsync(UserId, cancellationToken);
+            if (creator is { IsMinor: true })
+            {
+                return Forbid();
+            }
+
+            var newEvent = await eventManager
+                .AddInstantEventAsync(request.Latitude, request.Longitude, UserId, cancellationToken);
+
+            return CreatedAtAction(nameof(GetEvent), new { id = newEvent.Id }, newEvent.ToV2Dto());
+        }
+
+        /// <summary>
+        /// Marks an event as Complete and computes its actual duration from the elapsed time
+        /// since EventDate. Used by the Instant Events "Stop" flow. Only event leads or admins
+        /// can complete an event.
+        /// </summary>
+        /// <param name="id">The event to complete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the completed event with computed duration.</response>
+        /// <response code="403">User is not an event lead or admin for this event.</response>
+        /// <response code="404">Event not found.</response>
+        [HttpPut("{id}/complete")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(EventDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> CompleteEvent(Guid id, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("V2 CompleteEvent Event={EventId}", id);
+
+            var mobEvent = await eventManager.GetAsync(id, cancellationToken);
+            if (mobEvent == null)
+            {
+                return NotFound();
+            }
+
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
+            {
+                return Forbid();
+            }
+
+            var completed = await eventManager.CompleteEventAsync(id, UserId, cancellationToken);
+            return Ok(completed.ToV2Dto());
+        }
+
+        /// <summary>
         /// Updates an existing event. Only event leads can update.
         /// </summary>
         /// <param name="eventDto">The event to update.</param>
