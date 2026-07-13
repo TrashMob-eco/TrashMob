@@ -422,6 +422,22 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
         await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={Guid.Empty}");
     }
 
+    [RelayCommand]
+    private async Task StartInstantEvent()
+    {
+        // Waiver gate mirrors CreateEvent — Instant Events still register the user as
+        // an event attendee under the hood, so the same waiver requirement applies.
+        // Project 65 Phase 1 design decision: block Start if unsigned, redirect to
+        // WaiverListPage; no in-flow signing.
+        if (!await waiverManager.HasUserSignedAllRequiredWaiversAsync())
+        {
+            await Shell.Current.GoToAsync(nameof(WaiverListPage));
+            return;
+        }
+
+        await Shell.Current.GoToAsync(nameof(InstantEventPage));
+    }
+
     private async void HandleUpcomingDateRangeSelected()
     {
         try

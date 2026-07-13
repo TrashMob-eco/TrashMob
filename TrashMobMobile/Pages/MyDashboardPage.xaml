@@ -121,6 +121,18 @@
                                HorizontalTextAlignment="Center" />
                     </Grid>
                 </Border>
+                <!-- Instant Event primary action — Project 65. Strava-style: tap once and
+                     you're recording. Sits above the secondary Create Event / Report Litter
+                     row so it reads as the primary Dashboard action. -->
+                <Button Command="{Binding StartInstantEventCommand}"
+                        HorizontalOptions="Fill"
+                        Margin="5,5,5,10"
+                        Style="{StaticResource PrimaryLargeButton}"
+                        Text="Start a New Pick"
+                        ContentLayout="Left, 8"
+                        HeightRequest="56"
+                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconPlusCircle}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
+
                 <Grid ColumnDefinitions="*, *, *, *"
                       RowDefinitions="Auto"
                       VerticalOptions="End"

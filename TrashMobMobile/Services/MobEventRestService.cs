@@ -133,4 +133,24 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
             return JsonConvert.DeserializeObject<IEnumerable<Location>>(content) ?? [];
         }
     }
+
+    public async Task<Event> AddInstantEventAsync(double latitude, double longitude,
+        CancellationToken cancellationToken = default)
+    {
+        var body = new InstantEventRequestDto { Latitude = latitude, Longitude = longitude };
+        var content = JsonContent.Create(body, typeof(InstantEventRequestDto), null, SerializerOptions);
+        var response = await AuthorizedHttpClient.PostAsync($"{Controller}/instant", content, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
+        return JsonConvert.DeserializeObject<EventDto>(returnContent)!.ToEntity();
+    }
+
+    public async Task<Event> CompleteEventAsync(Guid eventId, CancellationToken cancellationToken = default)
+    {
+        var response = await AuthorizedHttpClient.PutAsync($"{Controller}/{eventId}/complete",
+            content: null, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
+        return JsonConvert.DeserializeObject<EventDto>(returnContent)!.ToEntity();
+    }
 }
