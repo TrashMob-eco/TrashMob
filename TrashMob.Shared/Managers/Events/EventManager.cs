@@ -37,6 +37,11 @@ namespace TrashMob.Shared.Managers.Events
         : KeyedManager<Event>(repository), IEventManager
     {
         private const int StandardEventWindowInMinutes = 120;
+
+        // Seed EventType row for a general "Cleanup" event. Used as the default type for
+        // Instant Events per Project 65 Decisions (reuse rather than adding a "Solo Pick" type).
+        // Corresponds to the seeded EventType with Name = "Cleanup".
+        private const int DefaultEventTypeIdCleanup = 1;
         private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
 
         /// <inheritdoc />
@@ -336,6 +341,75 @@ namespace TrashMob.Shared.Managers.Events
             }
 
             return updatedEvent;
+        }
+
+        /// <inheritdoc />
+        public async Task<Event> AddInstantEventAsync(double latitude, double longitude, Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            var now = DateTimeOffset.UtcNow;
+            var localTimestamp = now.ToLocalTime().ToString("yyyy-MM-dd HH:mm");
+
+            var instantEvent = new Event
+            {
+                Name = $"Instant Event – {localTimestamp}",
+                Description = "Instant private event",
+                EventDate = now,
+                DurationHours = 0,
+                DurationMinutes = 0,
+                EventTypeId = DefaultEventTypeIdCleanup,
+                EventStatusId = (int)EventStatusEnum.Active,
+                EventVisibilityId = (int)EventVisibilityEnum.Private,
+                Latitude = latitude,
+                Longitude = longitude,
+                MaxNumberOfParticipants = 1,
+            };
+
+            // Bypass this.AddAsync — that override sends a "new event alert" email to
+            // info@trashmob.eco which is spam for solo private cleanups. Call base directly
+            // to persist the event, then wire up the creator-as-lead attendee ourselves.
+            var newEvent = await base.AddAsync(instantEvent, userId, cancellationToken);
+
+            var newEventAttendee = new EventAttendee
+            {
+                UserId = userId,
+                EventId = newEvent.Id,
+                SignUpDate = DateTime.UtcNow,
+                IsEventLead = true,
+            };
+
+            await eventAttendeeManager.AddAsync(newEventAttendee, userId, cancellationToken);
+
+            return newEvent;
+        }
+
+        /// <inheritdoc />
+        public async Task<Event> CompleteEventAsync(Guid eventId, Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            var mobEvent = await Repo.GetAsync(eventId, cancellationToken)
+                ?? throw new InvalidOperationException($"Event {eventId} not found.");
+
+            var elapsed = DateTimeOffset.UtcNow - mobEvent.EventDate;
+
+            // Clamp to [0, 24h]. Negative can happen if EventDate was backdated to the future
+            // (weird but possible via manual DB edits). 24h cap prevents an abandoned Instant
+            // Event that never got Stopped from returning a comically long duration when the
+            // background-abandonment job (Phase 4) eventually completes it.
+            if (elapsed < TimeSpan.Zero)
+            {
+                elapsed = TimeSpan.Zero;
+            }
+            else if (elapsed > TimeSpan.FromHours(24))
+            {
+                elapsed = TimeSpan.FromHours(24);
+            }
+
+            mobEvent.DurationHours = (int)elapsed.TotalHours;
+            mobEvent.DurationMinutes = elapsed.Minutes;
+            mobEvent.EventStatusId = (int)EventStatusEnum.Complete;
+
+            return await base.UpdateAsync(mobEvent, userId, cancellationToken);
         }
 
         private async Task<List<Guid>> GetUserTeamIdsAsync(Guid? userId,
