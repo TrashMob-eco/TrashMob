@@ -44,6 +44,16 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private bool hasPendingWaiverAlerts;
 
+    // True when local Preferences hold a started-but-not-completed Instant Event. Drives
+    // the resume banner + hides the fresh Start button. Refreshed on every Dashboard load
+    // via RefreshInstantEventResumeState so the state stays in sync after Stop / cancel /
+    // out-of-band server completion. See Project 65 Phase 1 gap discussion.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanStartFreshInstantEvent))]
+    private bool hasInProgressInstantEvent;
+
+    public bool CanStartFreshInstantEvent => !HasInProgressInstantEvent;
+
     public ObservableCollection<string> UpcomingDateRanges { get; set; } = [];
 
     public ObservableCollection<string> CompletedDateRanges { get; set; } = [];
@@ -221,7 +231,17 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
             SelectedCreatedDateRange = DateRanges.LastMonth;
 
             await Task.WhenAll(RefreshEvents(), RefreshStatistics(), RefreshLitterReports(), RefreshPendingWaiverAlerts());
+            RefreshInstantEventResumeState();
         }, "An error has occurred while loading the dashboard. Please wait and try again in a moment.");
+    }
+
+    private void RefreshInstantEventResumeState()
+    {
+        // Cheap synchronous check — server validation happens inside InstantEventViewModel
+        // when the user taps Resume. Dashboard only cares whether *something* is worth
+        // offering to resume.
+        var pending = Preferences.Default.Get(InstantEventViewModel.PrefKeyEventId, string.Empty);
+        HasInProgressInstantEvent = !string.IsNullOrEmpty(pending);
     }
 
     private async void PerformEventNavigation(EventViewModel eventViewModel)
@@ -420,6 +440,32 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
         }
 
         await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={Guid.Empty}");
+    }
+
+    [RelayCommand]
+    private async Task StartInstantEvent()
+    {
+        // Resume path: if a running Instant Event is persisted locally, skip the waiver
+        // gate — the user already signed to create it — and go straight to the recording
+        // page. InstantEventViewModel.Init validates with the server and falls through to
+        // a fresh start if the persisted event was completed/canceled out-of-band.
+        if (HasInProgressInstantEvent)
+        {
+            await Shell.Current.GoToAsync(nameof(InstantEventPage));
+            return;
+        }
+
+        // Waiver gate mirrors CreateEvent — Instant Events still register the user as
+        // an event attendee under the hood, so the same waiver requirement applies.
+        // Project 65 Phase 1 design decision: block Start if unsigned, redirect to
+        // WaiverListPage; no in-flow signing.
+        if (!await waiverManager.HasUserSignedAllRequiredWaiversAsync())
+        {
+            await Shell.Current.GoToAsync(nameof(WaiverListPage));
+            return;
+        }
+
+        await Shell.Current.GoToAsync(nameof(InstantEventPage));
     }
 
     private async void HandleUpcomingDateRangeSelected()

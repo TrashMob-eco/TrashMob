@@ -121,6 +121,49 @@
                                HorizontalTextAlignment="Center" />
                     </Grid>
                 </Border>
+                <!-- Instant Event in-progress banner — appears when a running Instant Event
+                     is persisted locally from a prior session that got closed before Stop.
+                     Tapping Resume goes to InstantEventPage which rebuilds the timer from
+                     the persisted start time. Hides the fresh-Start button below so the
+                     Dashboard has one clear next action. -->
+                <Border Padding="12" Margin="5,5"
+                        BackgroundColor="{AppThemeBinding Light=#eff6ff, Dark=#1e3a8a}"
+                        StrokeShape="RoundRectangle 10"
+                        Stroke="{AppThemeBinding Light=#93c5fd, Dark=#3b82f6}"
+                        StrokeThickness="1"
+                        IsVisible="{Binding HasInProgressInstantEvent}">
+                    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" ColumnSpacing="12">
+                        <Label Grid.Row="0" Grid.Column="0"
+                               Text="Pick in progress"
+                               FontFamily="LexendSemibold" FontSize="14"
+                               TextColor="{AppThemeBinding Light=#1e40af, Dark=#bfdbfe}" />
+                        <Label Grid.Row="1" Grid.Column="0"
+                               Text="You started a pick that wasn't finished. Tap Resume to keep going."
+                               FontSize="13"
+                               TextColor="{AppThemeBinding Light=#1e40af, Dark=#dbeafe}" />
+                        <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                                Text="Resume"
+                                Style="{StaticResource PrimaryLargeButton}"
+                                HeightRequest="40" Padding="16,0" FontSize="Small"
+                                VerticalOptions="Center"
+                                Command="{Binding StartInstantEventCommand}" />
+                    </Grid>
+                </Border>
+
+                <!-- Instant Event primary action — Project 65. Strava-style: tap once and
+                     you're recording. Sits above the secondary Create Event / Report Litter
+                     row so it reads as the primary Dashboard action. Hidden when a running
+                     Instant Event is already persisted (the resume banner replaces it). -->
+                <Button Command="{Binding StartInstantEventCommand}"
+                        HorizontalOptions="Fill"
+                        Margin="5,5,5,10"
+                        Style="{StaticResource PrimaryLargeButton}"
+                        Text="Start a New Pick"
+                        ContentLayout="Left, 8"
+                        HeightRequest="56"
+                        IsVisible="{Binding CanStartFreshInstantEvent}"
+                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconPlusCircle}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
+
                 <Grid ColumnDefinitions="*, *, *, *"
                       RowDefinitions="Auto"
                       VerticalOptions="End"

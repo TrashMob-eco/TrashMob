@@ -41,5 +41,10 @@
 
         Task<IEnumerable<TrashMob.Models.Poco.Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate,
             DateTimeOffset endDate, CancellationToken cancellationToken = default);
+
+        Task<Event> AddInstantEventAsync(double latitude, double longitude,
+            CancellationToken cancellationToken = default);
+
+        Task<Event> CompleteEventAsync(Guid eventId, CancellationToken cancellationToken = default);
     }
 }

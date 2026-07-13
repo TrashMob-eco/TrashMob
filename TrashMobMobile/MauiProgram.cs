@@ -80,6 +80,8 @@ public static class MauiProgram
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<ManageEventPartnersPage>();
         builder.Services.AddTransient<MyDashboardPage>();
+        builder.Services.AddTransient<InstantEventPage>();
+        builder.Services.AddTransient<InstantEventViewModel>();
         builder.Services.AddTransient<ProfilePage>();
         builder.Services.AddTransient<QuickActionPlaceholderPage>();
         builder.Services.AddTransient<SearchEventsPage>();
