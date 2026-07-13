@@ -49,6 +49,7 @@
 | [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md) | Pre-event waiver validation, configurable check-in notifications, attendance roster for event leads | Not Started |
 | [Project 56 - Board Metrics Dashboard](./Projects/Project_56_Board_Metrics_Dashboard.md) | Unified admin dashboard consolidating App Insights, GA4, Sentry, Clarity, Azure costs, and QuickBooks for board meetings | Planning |
 | [Project 57 - Participation Report](./Projects/Project_57_Participation_Report.md) | Official volunteer participation report email with PDF for school/court/employer verification | In Progress (Phases 1-3 Complete) |
+| [Project 65 - Instant Events](./Projects/Project_65_Instant_Events.md) | Strava-style one-tap "Start a Pick" mobile flow for solo private cleanups with optional route tracking and deferred stats entry | Not Started |
 
 #### High Priority (Marketing & Growth)
 
@@ -147,6 +148,7 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 ### Event Experience
 - [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md)
 - [Project 59 - Event Weather Forecast](./Projects/Archive/Project_59_Event_Weather_Forecast.md) ✅
+- [Project 65 - Instant Events](./Projects/Project_65_Instant_Events.md)
 
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Archive/Project_07_Event_Weights.md) ✅
@@ -200,10 +202,10 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | **In Progress** | 14 | Projects 1, 4, 5, 6, 15, 25, 30, 36, 41, 45, 46, 49, 57, **64** (Phases 1–4a live; Phase 4b column-drop queued for ~2026-08-05) |
 | **Planning** | 3 | Projects 56, 58, 62 |
 | **Ready for Review** | 1 | Project 2 |
-| **Not Started** | 5 | Projects 12, 31, 43, 52, 54, 55 |
+| **Not Started** | 6 | Projects 12, 31, 43, 52, 54, 55, 65 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 62 project specifications documented
+**Total:** 63 project specifications documented
 
 ---
 
@@ -254,6 +256,7 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | [Project 52 - Volunteer Rewards](./Projects/Project_52_Volunteer_Rewards.md) | Partner reward sourcing, criteria, distribution, fraud prevention (future) |
 | [Project 54 - Community Adoption Outreach](./Projects/Project_54_Community_Adoption_Outreach.md) | AI-powered sponsor/adopter discovery and outreach for community managers |
 | [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md) | Pre-event waiver validation, configurable check-in notifications, attendance roster |
+| [Project 65 - Instant Events](./Projects/Project_65_Instant_Events.md) | One-tap mobile "Start a Pick" flow for solo private cleanups (Strava-style) with optional route tracking and deferred stats entry |
 
 ---
 
@@ -326,6 +329,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** April 5, 2026
+**Last Updated:** July 12, 2026
 **Maintained By:** Product & Engineering Team
-**Next Review:** End of Q2 2026
+**Next Review:** End of Q3 2026
