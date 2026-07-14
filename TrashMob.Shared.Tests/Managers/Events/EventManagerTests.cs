@@ -394,6 +394,55 @@ namespace TrashMob.Shared.Tests.Managers.Events
         }
 
         [Fact]
+        public async Task AddInstantEventAsync_PopulatesAddressFromReverseGeocode()
+        {
+            var userId = Guid.NewGuid();
+            _eventRepository.SetupAddAsync();
+            _eventAttendeeManager.Setup(m => m.AddAsync(It.IsAny<EventAttendee>(), userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((EventAttendee ea, Guid _, CancellationToken _) => ea);
+
+            _mapManager.Setup(m => m.GetAddressAsync(47.6, -122.3))
+                .ReturnsAsync(new Address
+                {
+                    StreetAddress = "123 Test St",
+                    City = "Seattle",
+                    Region = "WA",
+                    Country = "United States",
+                    PostalCode = "98101",
+                });
+
+            var result = await _sut.AddInstantEventAsync(47.6, -122.3, userId);
+
+            Assert.Equal("123 Test St", result.StreetAddress);
+            Assert.Equal("Seattle", result.City);
+            Assert.Equal("WA", result.Region);
+            Assert.Equal("United States", result.Country);
+            Assert.Equal("98101", result.PostalCode);
+        }
+
+        [Fact]
+        public async Task AddInstantEventAsync_ContinuesWhenReverseGeocodeThrows()
+        {
+            // Geocoding is a nice-to-have — a network blip or Azure Maps outage must not
+            // block Instant Event creation. Event should still exist with only GPS.
+            var userId = Guid.NewGuid();
+            _eventRepository.SetupAddAsync();
+            _eventAttendeeManager.Setup(m => m.AddAsync(It.IsAny<EventAttendee>(), userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((EventAttendee ea, Guid _, CancellationToken _) => ea);
+
+            _mapManager.Setup(m => m.GetAddressAsync(It.IsAny<double>(), It.IsAny<double>()))
+                .ThrowsAsync(new InvalidOperationException("Azure Maps returned 503"));
+
+            var result = await _sut.AddInstantEventAsync(47.6, -122.3, userId);
+
+            Assert.NotNull(result);
+            Assert.Equal(47.6, result.Latitude);
+            Assert.Equal(-122.3, result.Longitude);
+            Assert.Null(result.StreetAddress);
+            Assert.Null(result.City);
+        }
+
+        [Fact]
         public async Task AddInstantEventAsync_DoesNotSendNewEventNotificationEmail()
         {
             // The regular AddAsync fires a "New Event Alert" email to info@trashmob.eco.

@@ -365,6 +365,16 @@ namespace TrashMob.Shared.Managers.Events
                 MaxNumberOfParticipants = 1,
             };
 
+            // Reverse-geocode server-side (Project 65 Phase 2). Populates the address
+            // fields so the event has a human-readable location for maps + community
+            // stats without requiring the mobile client to do a follow-up UpdateEvent.
+            // Geocode failures (network, quota, invalid coordinates) are logged rather
+            // than propagated — an event with only GPS is still valid; missing address
+            // fields will just render as coordinates. Runs synchronously because the
+            // mobile client is still on the "Starting your pick…" status message during
+            // this call; typical Azure Maps latency is well under a second.
+            await PopulateAddressFromGpsAsync(instantEvent);
+
             // Bypass this.AddAsync — that override sends a "new event alert" email to
             // info@trashmob.eco which is spam for solo private cleanups. Call base directly
             // to persist the event, then wire up the creator-as-lead attendee ourselves.
@@ -437,6 +447,36 @@ namespace TrashMob.Shared.Managers.Events
                     && e.EventDate >= cutoff)
                 .OrderByDescending(e => e.EventDate)
                 .ToListAsync(cancellationToken);
+        }
+
+        private async Task PopulateAddressFromGpsAsync(Event mobEvent)
+        {
+            if (mobEvent.Latitude is not { } lat || mobEvent.Longitude is not { } lng)
+            {
+                return;
+            }
+
+            try
+            {
+                var address = await mapManager.GetAddressAsync(lat, lng);
+                if (address == null)
+                {
+                    return;
+                }
+
+                mobEvent.StreetAddress = address.StreetAddress;
+                mobEvent.City = address.City;
+                mobEvent.Region = address.Region;
+                mobEvent.Country = address.Country;
+                mobEvent.PostalCode = address.PostalCode;
+            }
+            catch (Exception)
+            {
+                // Deliberately swallow — a missing address is a nice-to-have miss, not a
+                // reason to fail the event creation. Exception details flow through the
+                // caller's telemetry (ILogger / Application Insights) via the OpenTelemetry
+                // pipeline on the HttpClient inside MapManager itself.
+            }
         }
 
         private async Task<List<Guid>> GetUserTeamIdsAsync(Guid? userId,
