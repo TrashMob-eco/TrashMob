@@ -157,8 +157,8 @@ Not blocked by any project. Can start immediately.
 
 ### Phase 2 — Route tracking toggle + reverse geocoding
 
+- **Reverse geocoding (shipped 2026-07-13):** happens **server-side** inside `EventManager.AddInstantEventAsync`, not client-side as the earlier plan suggested. `IMapManager.GetAddressAsync` already exists on the server and populating address fields before the DB write is cleaner than a mobile follow-up `UpdateEvent` call. Runs synchronously — Azure Maps geocoding is fast (~500ms) and the mobile client is on the "Starting your pick…" status message during the call. Geocode failures are swallowed with a nice-to-have miss (event has GPS but no address) rather than blocking creation.
 - Wire the Project 15 route-recording pipeline behind the toggle.
-- Kick off async reverse-geocoding at Start; patch `StreetAddress` / `City` / `Region` / `Country` / `PostalCode` when the geocode returns.
 - Post-stop screen shows route distance and offers the trim UI from Project 48 if a route was recorded.
 
 **Exit criteria:** an internal-tester user can complete a full loop with route tracking on and see the route in event details.

@@ -113,9 +113,11 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <summary>
         /// Creates a new solo private Instant Event for the specified user at the given GPS
         /// coordinates. Auto-fills name (with timestamp), description, EventType (Cleanup),
-        /// visibility (Private), status (Active), and EventDate (now). Registers the creator
-        /// as sole attendee + event lead. Deliberately skips the info@ new-event notification
-        /// email — private solo cleanups would flood that inbox.
+        /// visibility (Private), status (Active), and EventDate (now). Reverse-geocodes the
+        /// coordinates to populate StreetAddress / City / Region / Country / PostalCode; a
+        /// geocode failure does not fail the creation (the event just gets no address).
+        /// Registers the creator as sole attendee + event lead. Deliberately skips the info@
+        /// new-event notification email — private solo cleanups would flood that inbox.
         /// See Planning/Projects/Project_65_Instant_Events.md.
         /// </summary>
         /// <param name="latitude">Latitude of the user's location at Start.</param>
