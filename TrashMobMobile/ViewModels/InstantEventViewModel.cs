@@ -1,5 +1,6 @@
 namespace TrashMobMobile.ViewModels;
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Devices.Sensors;
@@ -7,6 +8,7 @@ using Sentry;
 using TrashMob.Models;
 using TrashMobMobile.Pages;
 using TrashMobMobile.Services;
+using TrashMobMobile.Services.Offline;
 
 /// <summary>
 /// In-progress view for a running Instant Event. Init decides between two paths based on
@@ -21,6 +23,8 @@ using TrashMobMobile.Services;
 /// </summary>
 public partial class InstantEventViewModel(
     IMobEventManager mobEventManager,
+    IRouteRecordingCoordinator routeCoordinator,
+    IUserManager userManager,
     INotificationService notificationService)
     : BaseViewModel(notificationService)
 {
@@ -29,7 +33,16 @@ public partial class InstantEventViewModel(
     public const string PrefKeyEventId = "instant_event_id";
     public const string PrefKeyStartedAt = "instant_event_started_at";
 
+    // Persisted per-event opt-in for route tracking. Set from the query parameter on
+    // fresh Start. On resume (persisted event id) we re-read this to know whether the
+    // in-flight event had tracking enabled — the coordinator state already lives in
+    // RouteTrackingSessionManager, but we still need the flag for UI (e.g. showing
+    // the map view).
+    public const string PrefKeyTrackRoute = "instant_event_track_route";
+
     private readonly IMobEventManager mobEventManager = mobEventManager;
+    private readonly IRouteRecordingCoordinator routeCoordinator = routeCoordinator;
+    private readonly IUserManager userManager = userManager;
     private DateTimeOffset startedAt;
     private IDispatcherTimer? timer;
 
@@ -46,7 +59,23 @@ public partial class InstantEventViewModel(
     private bool isFailed;
 
     [ObservableProperty]
+    private bool isTrackingRoute;
+
+    [ObservableProperty]
     private string statusMessage = "Getting location…";
+
+    /// <summary>
+    /// Populated with GPS points as they arrive when route tracking is enabled. Bound to
+    /// the map view on <see cref="Pages.InstantEventPage"/> for live route rendering.
+    /// </summary>
+    public ObservableCollection<Location> Locations { get; } = [];
+
+    /// <summary>
+    /// Set by <see cref="Pages.InstantEventPage"/> from the TrackRoute query parameter
+    /// before Init runs. Determines whether a fresh Start also opens a route session.
+    /// Resume path reads Preferences instead (the query param isn't passed on resume).
+    /// </summary>
+    public bool RequestedTrackRoute { get; set; }
 
     public async Task Init()
     {
@@ -112,6 +141,17 @@ public partial class InstantEventViewModel(
         IsRunning = true;
         StatusMessage = "Recording your pick";
         StartTimer();
+
+        // Route-tracking resume is best-effort. The coordinator's in-memory state
+        // (listener CTS, active session id, in-progress point collection) doesn't
+        // survive an app-close, so on a fresh boot IsRecording will be false and we
+        // can't rejoin the GPS listener seamlessly. Any GPS points captured before
+        // the close are safe in SQLite (RoutePointWriter flushes on process shutdown
+        // best-effort, and SyncQueue.GetInterruptedSessionsAsync surfaces stragglers
+        // on next app boot). Full route-recording resume would need broader work in
+        // RouteTrackingSessionManager.TryRestoreSession + coordinator boot hydration;
+        // out of scope for this Phase 2 slice.
+        IsTrackingRoute = routeCoordinator.IsRecording && routeCoordinator.ActiveEventId == serverEvent.Id;
         return true;
     }
 
@@ -133,11 +173,40 @@ public partial class InstantEventViewModel(
 
         EventId = mobEvent.Id;
         startedAt = mobEvent.EventDate;
-        PersistState(mobEvent.Id, mobEvent.EventDate);
+        PersistState(mobEvent.Id, mobEvent.EventDate, RequestedTrackRoute);
 
         IsRunning = true;
         StatusMessage = "Recording your pick";
         StartTimer();
+
+        if (RequestedTrackRoute)
+        {
+            await StartRouteTrackingAsync(mobEvent);
+        }
+    }
+
+    private async Task StartRouteTrackingAsync(Event mobEvent)
+    {
+        var result = await routeCoordinator.StartAsync(
+            mobEvent.Id,
+            mobEvent.Name,
+            userManager.CurrentUser.Id,
+            startedAt,
+            skipDefaultTrim: false,
+            Locations);
+
+        if (result.Outcome == RouteRecordingStartOutcome.Success)
+        {
+            IsTrackingRoute = true;
+        }
+        else if (result.Outcome == RouteRecordingStartOutcome.ConflictOtherEvent)
+        {
+            // Another event is currently being tracked — surface a soft warning but
+            // let the Instant Event continue running without a route. Turning off the
+            // route toggle for this session is preferable to failing the whole flow.
+            await NotificationService.Notify(
+                $"Route tracking is already active for '{result.ConflictingEventName}'. Your Instant Event is running without a route.");
+        }
     }
 
     [RelayCommand]
@@ -157,6 +226,14 @@ public partial class InstantEventViewModel(
 
         await ExecuteAsync(async () =>
         {
+            // Stop the route recording first so its cleanup (flush writer, mark session
+            // pending upload, POST route) runs even if the CompleteEvent call fails.
+            // The route is separately valuable from the completed-event state.
+            if (routeCoordinator.IsRecording && routeCoordinator.ActiveEventId == completedEventId)
+            {
+                await routeCoordinator.StopAsync(DateTimeOffset.UtcNow);
+            }
+
             await mobEventManager.CompleteEventAsync(completedEventId);
 
             // Clear persisted state only after the server confirms Complete — if the
@@ -199,16 +276,18 @@ public partial class InstantEventViewModel(
         timer = null;
     }
 
-    private static void PersistState(Guid eventId, DateTimeOffset startedAt)
+    private static void PersistState(Guid eventId, DateTimeOffset startedAt, bool trackRoute)
     {
         Preferences.Default.Set(PrefKeyEventId, eventId.ToString());
         Preferences.Default.Set(PrefKeyStartedAt, startedAt.ToString("o"));
+        Preferences.Default.Set(PrefKeyTrackRoute, trackRoute);
     }
 
     private static void ClearPersistedState()
     {
         Preferences.Default.Remove(PrefKeyEventId);
         Preferences.Default.Remove(PrefKeyStartedAt);
+        Preferences.Default.Remove(PrefKeyTrackRoute);
     }
 
     private static async Task<Location?> GetCurrentLocationAsync()

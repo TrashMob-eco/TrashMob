@@ -153,16 +153,31 @@
                 <!-- Instant Event primary action — Project 65. Strava-style: tap once and
                      you're recording. Sits above the secondary Create Event / Report Litter
                      row so it reads as the primary Dashboard action. Hidden when a running
-                     Instant Event is already persisted (the resume banner replaces it). -->
-                <Button Command="{Binding StartInstantEventCommand}"
-                        HorizontalOptions="Fill"
-                        Margin="5,5,5,10"
-                        Style="{StaticResource PrimaryLargeButton}"
-                        Text="Start a New Pick"
-                        ContentLayout="Left, 8"
-                        HeightRequest="56"
-                        IsVisible="{Binding CanStartFreshInstantEvent}"
-                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconPlusCircle}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
+                     Instant Event is already persisted (the resume banner replaces it).
+
+                     Route-tracking toggle sits inline above the button per the Phase 2
+                     Decisions table: remembered per-user, defaults off on first-ever use.
+                     Placed inline (not in a bottom sheet) to preserve the "one tap and go"
+                     ethos — with the toggle remembered, most users touch it once ever. -->
+                <VerticalStackLayout Spacing="8" Margin="5,5,5,10"
+                                     IsVisible="{Binding CanStartFreshInstantEvent}">
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Switch IsToggled="{Binding TrackRouteForNextPick}"
+                                VerticalOptions="Center" />
+                        <Label Text="Track my route"
+                               VerticalOptions="Center"
+                               FontSize="14" />
+                    </HorizontalStackLayout>
+
+                    <Button Command="{Binding StartInstantEventCommand}"
+                            HorizontalOptions="Fill"
+                            Style="{StaticResource PrimaryLargeButton}"
+                            Text="Start a New Pick"
+                            ContentLayout="Left, 8"
+                            HeightRequest="56"
+                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconPlusCircle}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
+                </VerticalStackLayout>
 
                 <Grid ColumnDefinitions="*, *, *, *"
                       RowDefinitions="Auto"

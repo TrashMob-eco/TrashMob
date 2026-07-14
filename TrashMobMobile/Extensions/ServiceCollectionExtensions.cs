@@ -73,6 +73,7 @@
             services.AddSingleton<RoutePointWriter>();
             services.AddSingleton<SyncQueue>();
             services.AddSingleton<SyncService>();
+            services.AddSingleton<IRouteRecordingCoordinator, RouteRecordingCoordinator>();
 
             return services;
         }
