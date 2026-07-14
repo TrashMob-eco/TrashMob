@@ -27,8 +27,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     ILitterReportManager litterReportManager,
     IEventPhotoManager eventPhotoManager,
     IRouteTrackingSessionManager routeTrackingSessionManager,
+    IRouteRecordingCoordinator routeRecordingCoordinator,
     IEventAttendeeMetricsRestService eventAttendeeMetricsRestService,
-    RoutePointWriter routePointWriter,
     SyncQueue syncQueue,
     IDependentRestService dependentRestService,
     IParticipationReportRestService participationReportRestService,
@@ -515,7 +515,10 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
     private async Task RealTimeLocationTracker(CancellationToken cancellationToken)
     {
-        // Prevent concurrent tracking across different events
+        // Fast conflict check — short-circuits before the disclosure prompts if someone is
+        // already tracking another event. The coordinator's StartAsync does the same check
+        // internally as a backstop, but doing it here avoids showing the privacy prompts
+        // to a user who can't proceed anyway.
         if (routeTrackingSessionManager.IsTracking && routeTrackingSessionManager.ActiveEventId != mobEvent.Id)
         {
             var popup = new ConfirmPopup(
@@ -530,190 +533,117 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             return;
         }
 
-        if (EnableStartTrackEventRoute)
+        if (!EnableStartTrackEventRoute)
         {
-            // Show prominent disclosure the first time the user starts route tracking (Google Play policy)
-            const string disclosureKey = "RouteTrackingDisclosureShown";
-            if (!Preferences.Default.Get(disclosureKey, false))
+            return;
+        }
+
+        // Show prominent disclosure the first time the user starts route tracking (Google Play policy)
+        const string disclosureKey = "RouteTrackingDisclosureShown";
+        if (!Preferences.Default.Get(disclosureKey, false))
+        {
+            var disclosureMessage =
+                "TrashMob needs access to your location to record your cleanup route on a map. " +
+                "Your location will be tracked while the route recording is active and a notification is shown. " +
+                "You can stop recording at any time.";
+            var accepted = await Shell.Current.CurrentPage.DisplayAlertAsync(
+                "Location Permission Required", disclosureMessage, "Continue", "Cancel");
+
+            if (!accepted)
             {
-                var disclosureMessage =
-                    "TrashMob needs access to your location to record your cleanup route on a map. " +
-                    "Your location will be tracked while the route recording is active and a notification is shown. " +
-                    "You can stop recording at any time.";
-                var accepted = await Shell.Current.CurrentPage.DisplayAlertAsync(
-                    "Location Permission Required", disclosureMessage, "Continue", "Cancel");
-
-                if (!accepted)
-                {
-                    return;
-                }
-
-                Preferences.Default.Set(disclosureKey, true);
+                return;
             }
 
-            // Ask user whether to hide start/end location for privacy
-            var privacyMessage =
-                "Would you like to hide the first and last 100 meters of your route? " +
-                "This helps protect your home location if you're starting from home.";
-            var hideStartEnd = await Shell.Current.CurrentPage.DisplayAlertAsync(
-                "Privacy Option", privacyMessage, "Yes, hide", "No, keep full route");
+            Preferences.Default.Set(disclosureKey, true);
+        }
 
-            skipDefaultTrim = !hideStartEnd;
+        // Ask user whether to hide start/end location for privacy
+        var privacyMessage =
+            "Would you like to hide the first and last 100 meters of your route? " +
+            "This helps protect your home location if you're starting from home.";
+        var hideStartEnd = await Shell.Current.CurrentPage.DisplayAlertAsync(
+            "Privacy Option", privacyMessage, "Yes, hide", "No, keep full route");
+        skipDefaultTrim = !hideStartEnd;
 
-            RouteStartTime = DateTimeOffset.Now;
-            RouteEndTime = DateTimeOffset.Now;
+        var startTime = DateTimeOffset.Now;
+        RouteStartTime = startTime;
+        RouteEndTime = startTime;
+
+        // Emulator path: don't bother with the real GPS listener or SQLite pipeline —
+        // wait for Stop, then call the server-side SimulateRoute to generate fake data.
+        if (DeviceInfo.DeviceType == DeviceType.Virtual)
+        {
             EnableStopTrackEventRoute = true;
             EnableStartTrackEventRoute = false;
             IsRecordingRoute = true;
 
-            // Create SQLite session for crash-safe persistence
-            var session = await syncQueue.CreateRouteSessionAsync(
-                mobEvent.Id, userManager.CurrentUser.Id, RouteStartTime, skipDefaultTrim);
-            routeTrackingSessionManager.TryStartSession(mobEvent.Id, mobEvent.Name, session.SessionId);
-            routePointWriter.StartSession(session.SessionId);
-        }
-
-        if (DeviceInfo.DeviceType == DeviceType.Virtual)
-        {
-            // On emulators, wait for Stop to be pressed, then simulate
-            var tcs = new TaskCompletionSource();
-            cancellationToken.Register(async () =>
+            try
             {
-                IsRecordingRoute = false;
-                RouteEndTime = DateTimeOffset.Now;
-                await routePointWriter.StopAndFlushAsync();
+                await Task.Delay(Timeout.Infinite, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected — user hit Stop.
+            }
 
-                var sessionId = routeTrackingSessionManager.ActiveSessionId;
-                routeTrackingSessionManager.EndSession();
-
-                // Discard the empty SQLite session since emulator uses server-side simulation
-                if (sessionId != null)
-                {
-                    await syncQueue.DiscardSessionAsync(sessionId);
-                }
-
-                tcs.TrySetResult();
-            });
-
-            await tcs.Task;
-
+            IsRecordingRoute = false;
+            RouteEndTime = DateTimeOffset.Now;
             await SimulateRoute();
             EnableStopTrackEventRoute = false;
             EnableStartTrackEventRoute = true;
             return;
         }
 
-        cancellationToken.Register(async () =>
+        // Real device: delegate the whole session + writer + listener + upload pipeline
+        // to the shared coordinator (added in Project 65 Phase 2 for Instant Events, now
+        // reused here to eliminate the duplicate inline implementation).
+        var startResult = await routeRecordingCoordinator.StartAsync(
+            mobEvent.Id,
+            mobEvent.Name,
+            userManager.CurrentUser.Id,
+            startTime,
+            skipDefaultTrim,
+            Locations);
+
+        if (startResult.Outcome == RouteRecordingStartOutcome.ConflictOtherEvent)
+        {
+            // Race with the pre-check above (or with another VM/tab). Surface it and bail.
+            var popup = new ConfirmPopup(
+                "Route In Progress",
+                $"You're already tracking a route for \"{startResult.ConflictingEventName}\". Only one route can be tracked at a time.",
+                "OK");
+            await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+            return;
+        }
+
+        EnableStopTrackEventRoute = true;
+        EnableStartTrackEventRoute = false;
+        IsRecordingRoute = true;
+
+        try
+        {
+            await Task.Delay(Timeout.Infinite, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected — user hit Stop.
+        }
+        finally
         {
             IsRecordingRoute = false;
             RouteEndTime = DateTimeOffset.Now;
 
-            // Flush remaining GPS points to SQLite
-            await routePointWriter.StopAndFlushAsync();
-
-            // Mark session ready for upload
-            var sessionId = routeTrackingSessionManager.ActiveSessionId;
-            routeTrackingSessionManager.EndSession();
-
-            if (sessionId != null)
+            var stopResult = await routeRecordingCoordinator.StopAsync(RouteEndTime);
+            if (stopResult.Outcome == RouteRecordingStopOutcome.QueuedForRetry)
             {
-                await syncQueue.MarkSessionPendingUploadAsync(sessionId, RouteEndTime);
-            }
-
-            await SaveRoute(sessionId);
-            Locations.Clear();
-            EnableStopTrackEventRoute = false;
-            EnableStartTrackEventRoute = true;
-        });
-
-        var progress = new Progress<Microsoft.Maui.Devices.Sensors.Location>(location =>
-        {
-            location.Timestamp = DateTimeOffset.Now;
-            Locations.Add(location);
-
-            // Persist to SQLite for crash recovery
-            routePointWriter.AddPoint(location.Latitude, location.Longitude, location.Altitude, location.Timestamp);
-        });
-
-        await Geolocator.Default.StartListening(progress, cancellationToken);
-    }
-
-    private async Task SaveRoute(string? sessionId)
-    {
-        // If there are no locations, discard the empty session
-        if (Locations.Count == 0)
-        {
-            if (sessionId != null)
-            {
-                await syncQueue.DiscardSessionAsync(sessionId);
-            }
-
-            return;
-        }
-
-        try
-        {
-            // If there is only one location, then add a second location to make a line.
-            if (Locations.Count == 1)
-            {
-                Locations.Add(Locations[0]);
-            }
-
-            await eventAttendeeRouteRestService.AddEventAttendeeRouteAsync(new DisplayEventAttendeeRoute
-            {
-                EventId = mobEvent.Id,
-                UserId = userManager.CurrentUser.Id,
-                Locations = GetSortableLocations(),
-                StartTime = RouteStartTime,
-                EndTime = RouteEndTime,
-                SkipDefaultTrim = skipDefaultTrim,
-                SessionId = sessionId != null ? Guid.Parse(sessionId) : null,
-            });
-
-            // Upload succeeded — clean up SQLite data
-            if (sessionId != null)
-            {
-                await syncQueue.MarkSessionUploadedAsync(sessionId);
-            }
-        }
-        catch (Exception ex)
-        {
-            // Upload failed — data is safe in SQLite, will retry via SyncService
-            if (sessionId != null)
-            {
-                await syncQueue.MarkSessionFailedAsync(sessionId, ex.Message);
-                SentrySdk.AddBreadcrumb(
-                    $"Route queued offline: event={mobEvent.Id}, session={sessionId}",
-                    "sync",
-                    level: BreadcrumbLevel.Info);
                 _ = NotificationService.Notify(
                     "Route saved locally and will upload when connection improves.");
             }
-            else
-            {
-                _ = NotificationService.Notify(
-                    "An error occurred while saving your route.");
-            }
+
+            Locations.Clear();
+            EnableStopTrackEventRoute = false;
+            EnableStartTrackEventRoute = true;
         }
-    }
-
-    private List<SortableLocation> GetSortableLocations()
-    {
-        var sortableLocations = new List<SortableLocation>();
-        int order = 0;
-        foreach (var location in Locations.OrderBy(l => l.Timestamp))
-        {
-            var sortableLocation = new SortableLocation
-            {
-                Latitude = location.Latitude,
-                Longitude = location.Longitude,
-                SortOrder = order++
-            };
-
-            sortableLocations.Add(sortableLocation);
-        }
-
-        return sortableLocations;
     }
 
     /// <summary>
