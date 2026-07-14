@@ -46,5 +46,8 @@
             CancellationToken cancellationToken = default);
 
         Task<Event> CompleteEventAsync(Guid eventId, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<Event>> GetInProgressInstantEventsAsync(
+            CancellationToken cancellationToken = default);
     }
 }

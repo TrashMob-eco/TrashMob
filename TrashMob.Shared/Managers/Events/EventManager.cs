@@ -412,6 +412,33 @@ namespace TrashMob.Shared.Managers.Events
             return await base.UpdateAsync(mobEvent, userId, cancellationToken);
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<Event>> GetInProgressInstantEventsAsync(Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            // Signal for "an Instant Event that never got Stopped":
+            //   - Owned by the caller
+            //   - Status Active (never transitioned to Complete)
+            //   - Visibility Private (Instant Events are always Private)
+            //   - Duration = 0h 0m (Complete would have set it from elapsed time)
+            //   - Started in the last 24 hours (older ones are abandonment cases
+            //     Phase 4 will auto-complete server-side rather than resume)
+            //
+            // Deliberately no filter on Name — the "Instant Event – <timestamp>" prefix
+            // is a display convention, and coupling this query to a string format that
+            // could change is more brittle than the semantic filter above.
+            var cutoff = DateTimeOffset.UtcNow.AddHours(-24);
+            return await Repo.Get(e =>
+                    e.CreatedByUserId == userId
+                    && e.EventStatusId == (int)EventStatusEnum.Active
+                    && e.EventVisibilityId == (int)EventVisibilityEnum.Private
+                    && e.DurationHours == 0
+                    && e.DurationMinutes == 0
+                    && e.EventDate >= cutoff)
+                .OrderByDescending(e => e.EventDate)
+                .ToListAsync(cancellationToken);
+        }
+
         private async Task<List<Guid>> GetUserTeamIdsAsync(Guid? userId,
             CancellationToken cancellationToken = default)
         {

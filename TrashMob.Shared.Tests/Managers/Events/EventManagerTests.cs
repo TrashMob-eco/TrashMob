@@ -502,6 +502,86 @@ namespace TrashMob.Shared.Tests.Managers.Events
 
         #endregion
 
+        #region GetInProgressInstantEventsAsync Tests
+
+        [Fact]
+        public async Task GetInProgressInstantEventsAsync_ReturnsOnlyResumableInstantEventsForUser()
+        {
+            var userId = Guid.NewGuid();
+            var otherUserId = Guid.NewGuid();
+            var thirtyMinAgo = DateTimeOffset.UtcNow.AddMinutes(-30);
+
+            // Ideal candidate — owned by user, Active, Private, zero duration, started recently.
+            var resumable = new EventBuilder()
+                .WithName("Instant Event – 2026-07-13 09:30")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(0, 0)
+                .WithEventDate(thirtyMinAgo)
+                .Build();
+
+            // Completed Instant Event — has a duration set. Should NOT resume.
+            var completed = new EventBuilder()
+                .WithName("Instant Event – 2026-07-13 08:00")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(1, 15)
+                .WithEventDate(thirtyMinAgo)
+                .Build();
+
+            // Public event — wrong visibility. Should NOT resume.
+            var publicEvent = new EventBuilder()
+                .WithName("Public event")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPublic()
+                .WithDuration(0, 0)
+                .WithEventDate(thirtyMinAgo)
+                .Build();
+
+            // Owned by another user. Should NOT resume for this caller.
+            var otherUsers = new EventBuilder()
+                .WithName("Someone else's instant event")
+                .CreatedBy(otherUserId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(0, 0)
+                .WithEventDate(thirtyMinAgo)
+                .Build();
+
+            // Too old — outside the 24h resume window. Belongs to Phase 4 abandonment guard.
+            var tooOld = new EventBuilder()
+                .WithName("Instant Event – three days ago")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(0, 0)
+                .WithEventDate(DateTimeOffset.UtcNow.AddDays(-3))
+                .Build();
+
+            _eventRepository.SetupGetWithFilter(new[] { resumable, completed, publicEvent, otherUsers, tooOld });
+
+            var result = await _sut.GetInProgressInstantEventsAsync(userId);
+
+            var list = result.ToList();
+            Assert.Single(list);
+            Assert.Equal(resumable.Id, list[0].Id);
+        }
+
+        [Fact]
+        public async Task GetInProgressInstantEventsAsync_ReturnsEmpty_WhenNoCandidates()
+        {
+            _eventRepository.SetupGetWithFilter(Array.Empty<Event>());
+
+            var result = await _sut.GetInProgressInstantEventsAsync(Guid.NewGuid());
+
+            Assert.Empty(result);
+        }
+
+        #endregion
+
         #region DeleteAsync Tests
 
         [Fact]

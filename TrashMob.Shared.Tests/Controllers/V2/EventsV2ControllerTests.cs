@@ -261,6 +261,33 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         }
 
         [Fact]
+        public async Task GetInProgressInstantEvents_ReturnsCallerScopedList()
+        {
+            var userId = Guid.NewGuid();
+            controller.HttpContext.Items["UserId"] = userId.ToString();
+
+            var candidate = new Event
+            {
+                Id = Guid.NewGuid(),
+                Name = "Instant Event – 2026-07-13 09:30",
+                EventStatusId = (int)EventStatusEnum.Active,
+                EventVisibilityId = (int)EventVisibilityEnum.Private,
+                CreatedByUserId = userId,
+            };
+
+            eventManager
+                .Setup(m => m.GetInProgressInstantEventsAsync(userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync([candidate]);
+
+            var result = await controller.GetInProgressInstantEvents(CancellationToken.None);
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var dtos = Assert.IsAssignableFrom<IEnumerable<EventDto>>(ok.Value);
+            Assert.Single(dtos);
+            Assert.Equal(candidate.Id, dtos.First().Id);
+        }
+
+        [Fact]
         public async Task CompleteEvent_ReturnsNotFound_WhenEventMissing()
         {
             controller.HttpContext.Items["UserId"] = Guid.NewGuid().ToString();

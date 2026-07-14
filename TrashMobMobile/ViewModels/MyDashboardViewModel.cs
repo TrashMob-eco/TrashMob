@@ -230,18 +230,46 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
             SelectedCreatedDateRange = DateRanges.LastMonth;
 
-            await Task.WhenAll(RefreshEvents(), RefreshStatistics(), RefreshLitterReports(), RefreshPendingWaiverAlerts());
-            RefreshInstantEventResumeState();
+            await Task.WhenAll(RefreshEvents(), RefreshStatistics(), RefreshLitterReports(), RefreshPendingWaiverAlerts(), RefreshInstantEventResumeStateAsync());
         }, "An error has occurred while loading the dashboard. Please wait and try again in a moment.");
     }
 
-    private void RefreshInstantEventResumeState()
+    private async Task RefreshInstantEventResumeStateAsync()
     {
-        // Cheap synchronous check — server validation happens inside InstantEventViewModel
-        // when the user taps Resume. Dashboard only cares whether *something* is worth
-        // offering to resume.
+        // Local state is the fast path — if Preferences hold a running Instant Event,
+        // that's the resume target and we're done.
         var pending = Preferences.Default.Get(InstantEventViewModel.PrefKeyEventId, string.Empty);
-        HasInProgressInstantEvent = !string.IsNullOrEmpty(pending);
+        if (!string.IsNullOrEmpty(pending))
+        {
+            HasInProgressInstantEvent = true;
+            return;
+        }
+
+        // Cross-device / fresh-install fallback — Preferences got wiped or the user
+        // started their pick on another device. Ask the server for any in-progress
+        // Instant Events owned by the caller in the last 24h; if one exists, hydrate
+        // Preferences from it so the resume flow behaves identically to the local case.
+        try
+        {
+            var candidates = await mobEventManager.GetInProgressInstantEventsAsync();
+            var candidate = candidates?.FirstOrDefault();
+            if (candidate != null)
+            {
+                Preferences.Default.Set(InstantEventViewModel.PrefKeyEventId, candidate.Id.ToString());
+                Preferences.Default.Set(InstantEventViewModel.PrefKeyStartedAt, candidate.EventDate.ToString("o"));
+                HasInProgressInstantEvent = true;
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Non-critical — the local Preferences check already returned false, so
+            // the worst outcome is the user doesn't see a resume banner they could have.
+            // Don't break the dashboard for this.
+            SentrySdk.CaptureException(ex);
+        }
+
+        HasInProgressInstantEvent = false;
     }
 
     private async void PerformEventNavigation(EventViewModel eventViewModel)
