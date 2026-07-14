@@ -57,12 +57,96 @@ public class RouteRecordingCoordinator(
         activeStartTime = startTime;
         activeSkipDefaultTrim = skipDefaultTrim;
 
+        StartGpsListener();
+
+        return new RouteRecordingStartResult(
+            RouteRecordingStartOutcome.Success,
+            SessionId: session.SessionId,
+            ConflictingEventName: null);
+    }
+
+    public async Task<RouteRecordingStartResult> TryResumeAsync(
+        Guid eventId,
+        string eventName,
+        Guid userId,
+        ObservableCollection<Microsoft.Maui.Devices.Sensors.Location> displayCollection)
+    {
+        // Hydrate session manager's in-memory state from Preferences. If the previous
+        // process died before Stop, this brings back IsTracking + ActiveEventId +
+        // ActiveSessionId. No-op if the manager already has state in memory.
+        if (!sessionManager.IsTracking)
+        {
+            sessionManager.TryRestoreSession();
+        }
+
+        if (!sessionManager.IsTracking
+            || sessionManager.ActiveEventId != eventId
+            || sessionManager.ActiveSessionId is not { } sessionId)
+        {
+            return new RouteRecordingStartResult(
+                RouteRecordingStartOutcome.NothingToResume, null, null);
+        }
+
+        // Cross-check against SQLite. GetInterruptedSessionsAsync returns everything in
+        // Recording status — the source of truth for "was actually mid-flight when the
+        // process died." If sessionManager thinks we're tracking but SQLite disagrees,
+        // clear the stale sessionManager state and bail.
+        var interrupted = await syncQueue.GetInterruptedSessionsAsync();
+        var session = interrupted.FirstOrDefault(s => s.SessionId == sessionId);
+        if (session == null)
+        {
+            sessionManager.EndSession();
+            return new RouteRecordingStartResult(
+                RouteRecordingStartOutcome.NothingToResume, null, null);
+        }
+
+        // Load existing points into the display collection so the map shows the
+        // pre-close portion of the route.
+        var existingPoints = await syncQueue.GetRoutePointsAsync(sessionId);
+        foreach (var p in existingPoints.OrderBy(p => p.PointOrder))
+        {
+            displayCollection.Add(new Microsoft.Maui.Devices.Sensors.Location(p.Latitude, p.Longitude)
+            {
+                Altitude = p.Altitude,
+                Timestamp = DateTimeOffset.TryParse(p.Timestamp, out var ts) ? ts : DateTimeOffset.UtcNow,
+            });
+        }
+
+        // Rehydrate coordinator state.
+        this.displayCollection = displayCollection;
+        activeEventId = eventId;
+        activeUserId = userId;
+        activeSessionId = sessionId;
+        activeStartTime = DateTimeOffset.TryParse(session.StartTime, out var startTime)
+            ? startTime
+            : DateTimeOffset.UtcNow;
+        activeSkipDefaultTrim = session.SkipDefaultTrim;
+
+        // Reopen the writer. StartSession resets pointOrder to 0 (fine for fresh
+        // sessions), so use SetPointOrder to continue past the existing max so new
+        // points don't collide with old ones on the same SessionId.
+        routePointWriter.StartSession(sessionId);
+        var maxOrder = await syncQueue.GetMaxPointOrderAsync(sessionId);
+        routePointWriter.SetPointOrder(maxOrder);
+
+        StartGpsListener();
+
+        return new RouteRecordingStartResult(
+            RouteRecordingStartOutcome.Success,
+            SessionId: sessionId,
+            ConflictingEventName: null);
+    }
+
+    private void StartGpsListener()
+    {
+        listenerCts?.Dispose();
         listenerCts = new CancellationTokenSource();
+
         var progress = new Progress<Microsoft.Maui.Devices.Sensors.Location>(OnPointReceived);
 
-        // Fire-and-forget the listener — it awaits until cancellation. We don't await
-        // it here (that would block StartAsync forever). Any exception the listener
-        // throws surfaces to Sentry via the continuation.
+        // Fire-and-forget the listener — it awaits until cancellation. Not awaited here
+        // (that would block the caller forever). Any exception surfaces to Sentry via
+        // the continuation.
         _ = Geolocator.Default.StartListening(progress, listenerCts.Token)
             .ContinueWith(t =>
             {
@@ -71,11 +155,6 @@ public class RouteRecordingCoordinator(
                     SentrySdk.CaptureException(t.Exception);
                 }
             }, TaskScheduler.Default);
-
-        return new RouteRecordingStartResult(
-            RouteRecordingStartOutcome.Success,
-            SessionId: session.SessionId,
-            ConflictingEventName: null);
     }
 
     public async Task<RouteRecordingStopResult> StopAsync(DateTimeOffset endTime)

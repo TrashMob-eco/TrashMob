@@ -45,12 +45,29 @@ public interface IRouteRecordingCoordinator
     /// <see cref="RouteRecordingStopOutcome.NotStarted"/>.
     /// </summary>
     Task<RouteRecordingStopResult> StopAsync(DateTimeOffset endTime);
+
+    /// <summary>
+    /// Attempt to resume an in-progress route recording after an app-close/reopen. If
+    /// <see cref="IRouteTrackingSessionManager"/> holds a persisted session for the
+    /// specified event AND the SQLite session record is still in <c>Recording</c>
+    /// state, this method hydrates the coordinator's in-memory state, loads existing
+    /// GPS points into <paramref name="displayCollection"/>, reopens the writer
+    /// preserving point order, and restarts the GPS listener. Returns
+    /// <see cref="RouteRecordingStartOutcome.NothingToResume"/> when no matching
+    /// interrupted session exists.
+    /// </summary>
+    Task<RouteRecordingStartResult> TryResumeAsync(
+        Guid eventId,
+        string eventName,
+        Guid userId,
+        ObservableCollection<Microsoft.Maui.Devices.Sensors.Location> displayCollection);
 }
 
 public enum RouteRecordingStartOutcome
 {
     Success,
     ConflictOtherEvent,
+    NothingToResume,
 }
 
 public enum RouteRecordingStopOutcome

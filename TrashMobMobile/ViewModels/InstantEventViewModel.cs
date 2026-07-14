@@ -142,16 +142,24 @@ public partial class InstantEventViewModel(
         StatusMessage = "Recording your pick";
         StartTimer();
 
-        // Route-tracking resume is best-effort. The coordinator's in-memory state
-        // (listener CTS, active session id, in-progress point collection) doesn't
-        // survive an app-close, so on a fresh boot IsRecording will be false and we
-        // can't rejoin the GPS listener seamlessly. Any GPS points captured before
-        // the close are safe in SQLite (RoutePointWriter flushes on process shutdown
-        // best-effort, and SyncQueue.GetInterruptedSessionsAsync surfaces stragglers
-        // on next app boot). Full route-recording resume would need broader work in
-        // RouteTrackingSessionManager.TryRestoreSession + coordinator boot hydration;
-        // out of scope for this Phase 2 slice.
-        IsTrackingRoute = routeCoordinator.IsRecording && routeCoordinator.ActiveEventId == serverEvent.Id;
+        // If the pre-close session had route tracking on, try to resume the recording
+        // pipeline. The coordinator rehydrates its in-memory state from persisted
+        // Preferences + SQLite, loads existing GPS points into Locations for the map
+        // view, and restarts the GPS listener. Any points captured between the
+        // process death and this call are lost (no GPS listener was running), but the
+        // pre-close portion is preserved and new points continue to accumulate.
+        var wasTrackingRoute = Preferences.Default.Get(PrefKeyTrackRoute, false);
+        if (wasTrackingRoute)
+        {
+            var resumeResult = await routeCoordinator.TryResumeAsync(
+                serverEvent.Id,
+                serverEvent.Name,
+                userManager.CurrentUser.Id,
+                Locations);
+
+            IsTrackingRoute = resumeResult.Outcome == RouteRecordingStartOutcome.Success;
+        }
+
         return true;
     }
 
