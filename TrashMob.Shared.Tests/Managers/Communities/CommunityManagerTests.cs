@@ -305,6 +305,126 @@ namespace TrashMob.Shared.Tests.Managers.Communities
 
         #endregion
 
+        #region GetCommunityAtLocationAsync
+
+        private static Partner MakeCommunity(
+            string name,
+            string slug,
+            double southLat,
+            double northLat,
+            double westLng,
+            double eastLng,
+            RegionTypeEnum regionType = RegionTypeEnum.City,
+            bool enabled = true,
+            bool active = true)
+        {
+            return new Partner
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                Slug = slug,
+                HomePageEnabled = enabled,
+                PartnerStatusId = active ? (int)PartnerStatusEnum.Active : (int)PartnerStatusEnum.Inactive,
+                BoundsSouth = southLat,
+                BoundsNorth = northLat,
+                BoundsWest = westLng,
+                BoundsEast = eastLng,
+                RegionType = (int)regionType,
+            };
+        }
+
+        [Fact]
+        public async Task GetCommunityAtLocationAsync_ReturnsCommunityWhenBoundsContainPoint()
+        {
+            var seattle = MakeCommunity("Seattle, WA", "seattle-wa",
+                southLat: 47.4, northLat: 47.8, westLng: -122.5, eastLng: -122.2);
+            _partnerRepository.SetupGet(new List<Partner> { seattle });
+
+            // 47.6, -122.3 is inside Seattle's bounds.
+            var result = await _sut.GetCommunityAtLocationAsync(47.6, -122.3);
+
+            Assert.NotNull(result);
+            Assert.Equal(seattle.Id, result.Id);
+        }
+
+        [Fact]
+        public async Task GetCommunityAtLocationAsync_ReturnsNullWhenNoCommunityContainsPoint()
+        {
+            var seattle = MakeCommunity("Seattle, WA", "seattle-wa",
+                southLat: 47.4, northLat: 47.8, westLng: -122.5, eastLng: -122.2);
+            _partnerRepository.SetupGet(new List<Partner> { seattle });
+
+            // 40.7, -74.0 is New York — outside Seattle bounds.
+            var result = await _sut.GetCommunityAtLocationAsync(40.7, -74.0);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetCommunityAtLocationAsync_PrefersMoreSpecificRegionType()
+        {
+            // City sits inside the county sits inside the state — all three contain
+            // 47.6, -122.3. Expect the City (RegionType=0) to win.
+            var seattleCity = MakeCommunity("Seattle, WA", "seattle-wa",
+                47.4, 47.8, -122.5, -122.2, RegionTypeEnum.City);
+            var kingCounty = MakeCommunity("King County, WA", "king-county-wa",
+                47.0, 48.0, -122.6, -121.0, RegionTypeEnum.County);
+            var washingtonState = MakeCommunity("Washington", "washington",
+                45.5, 49.0, -125.0, -116.0, RegionTypeEnum.State);
+            _partnerRepository.SetupGet(new List<Partner> { washingtonState, kingCounty, seattleCity });
+
+            var result = await _sut.GetCommunityAtLocationAsync(47.6, -122.3);
+
+            Assert.NotNull(result);
+            Assert.Equal(seattleCity.Id, result.Id);
+        }
+
+        [Fact]
+        public async Task GetCommunityAtLocationAsync_ExcludesDisabledCommunities()
+        {
+            var seattle = MakeCommunity("Seattle, WA", "seattle-wa",
+                47.4, 47.8, -122.5, -122.2, enabled: false);
+            _partnerRepository.SetupGet(new List<Partner> { seattle });
+
+            var result = await _sut.GetCommunityAtLocationAsync(47.6, -122.3);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetCommunityAtLocationAsync_ExcludesInactiveCommunities()
+        {
+            var seattle = MakeCommunity("Seattle, WA", "seattle-wa",
+                47.4, 47.8, -122.5, -122.2, active: false);
+            _partnerRepository.SetupGet(new List<Partner> { seattle });
+
+            var result = await _sut.GetCommunityAtLocationAsync(47.6, -122.3);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetCommunityAtLocationAsync_IgnoresCommunitiesWithoutBounds()
+        {
+            var noBounds = new Partner
+            {
+                Id = Guid.NewGuid(),
+                Name = "Legacy Community",
+                Slug = "legacy",
+                HomePageEnabled = true,
+                PartnerStatusId = (int)PartnerStatusEnum.Active,
+                RegionType = (int)RegionTypeEnum.City,
+                // BoundsNorth/South/East/West all null
+            };
+            _partnerRepository.SetupGet(new List<Partner> { noBounds });
+
+            var result = await _sut.GetCommunityAtLocationAsync(47.6, -122.3);
+
+            Assert.Null(result);
+        }
+
+        #endregion
+
         #region GetCommunityEventsAsync
 
         [Fact]
