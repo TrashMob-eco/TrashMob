@@ -73,6 +73,46 @@ namespace TrashMob.Controllers.V2
         }
 
         /// <summary>
+        /// Returns the community whose geographic bounds contain the specified GPS point,
+        /// or 404 when no enabled community matches. When several communities contain the
+        /// point (e.g. a city inside a county), the most specific one wins. Used by the
+        /// Instant Events post-Stop screen to show "your pick is contributing to X" —
+        /// see Planning/Projects/Project_65_Instant_Events.md Phase 3.
+        /// </summary>
+        /// <param name="latitude">GPS latitude.</param>
+        /// <param name="longitude">GPS longitude.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the matching community.</response>
+        /// <response code="404">No enabled community contains this point.</response>
+        [HttpGet("at-location")]
+        [ProducesResponseType(typeof(CommunityLocationMatchDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetCommunityAtLocation(
+            [FromQuery] double latitude,
+            [FromQuery] double longitude,
+            CancellationToken cancellationToken = default)
+        {
+            logger.LogInformation(
+                "V2 GetCommunityAtLocation requested Lat={Latitude}, Lon={Longitude}",
+                latitude, longitude);
+
+            var community = await communityManager.GetCommunityAtLocationAsync(
+                latitude, longitude, cancellationToken);
+
+            if (community == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new CommunityLocationMatchDto
+            {
+                Id = community.Id,
+                Name = community.Name,
+                Slug = community.Slug,
+            });
+        }
+
+        /// <summary>
         /// Gets a community by its URL slug.
         /// </summary>
         /// <param name="slug">The URL-friendly slug (e.g., "seattle-wa").</param>

@@ -28,6 +28,17 @@ namespace TrashMob.Shared.Managers.Interfaces
             CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Returns the community whose bounding box contains the specified GPS point,
+        /// or null when no enabled community matches. When multiple communities contain
+        /// the point (e.g. a city inside a county), the more specific one wins (City
+        /// beats County beats State). Only enabled communities are considered.
+        /// Used by Instant Events (Project 65 Phase 3) to surface which community a
+        /// solo pick contributes to.
+        /// </summary>
+        Task<Partner> GetCommunityAtLocationAsync(double latitude, double longitude,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Gets a community by its URL slug.
         /// </summary>
         /// <param name="slug">The URL-friendly slug (e.g., "seattle-wa").</param>

@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Sentry;
 using TrashMob.Models;
 using TrashMobMobile.Services;
 
@@ -10,11 +11,13 @@ public partial class EditEventSummaryViewModel(
     IMobEventManager mobEventManager,
     INotificationService notificationService,
     IUserManager userManager,
-    IEventAttendeeRouteRestService eventAttendeeRouteRestService) : BaseViewModel(notificationService)
+    IEventAttendeeRouteRestService eventAttendeeRouteRestService,
+    ICommunityRestService communityRestService) : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IUserManager userManager = userManager;
     private readonly IEventAttendeeRouteRestService eventAttendeeRouteRestService = eventAttendeeRouteRestService;
+    private readonly ICommunityRestService communityRestService = communityRestService;
 
     [ObservableProperty]
     private bool enableSaveEventSummary;
@@ -27,6 +30,20 @@ public partial class EditEventSummaryViewModel(
 
     [ObservableProperty]
     private bool isFromRouteData;
+
+    // Community-contribution banner (Project 65 Phase 3). Populated after Init if the
+    // event's GPS falls inside an enabled community's bounds. Purely informational —
+    // the community's stats aggregate this event automatically via the same bounding
+    // box, so there's no explicit opt-in step needed. See
+    // Planning/Projects/Project_65_Instant_Events.md Phase 3.
+    [ObservableProperty]
+    private string matchedCommunityName = string.Empty;
+
+    [ObservableProperty]
+    private string matchedCommunitySlug = string.Empty;
+
+    [ObservableProperty]
+    private bool hasMatchedCommunity;
 
     public ObservableCollection<WeightUnit> WeightUnits { get; } =
     [
@@ -80,7 +97,35 @@ public partial class EditEventSummaryViewModel(
             }
 
             EnableSaveEventSummary = true;
+
+            await TryLoadMatchedCommunityAsync(new Guid(eventId));
         }, "An error has occurred while loading the event summary. Please wait and try again in a moment.");
+    }
+
+    private async Task TryLoadMatchedCommunityAsync(Guid eventId)
+    {
+        try
+        {
+            var mobEvent = await mobEventManager.GetEventAsync(eventId);
+            if (mobEvent?.Latitude is not { } lat || mobEvent.Longitude is not { } lng)
+            {
+                return;
+            }
+
+            var match = await communityRestService.GetCommunityAtLocationAsync(lat, lng);
+            if (match != null)
+            {
+                MatchedCommunityName = match.Name;
+                MatchedCommunitySlug = match.Slug;
+                HasMatchedCommunity = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Non-critical — the community banner is purely informational, don't break
+            // the summary screen if the lookup fails.
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private async Task TryPrefillFromRouteData(Guid eventId)

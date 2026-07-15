@@ -127,6 +127,40 @@ namespace TrashMob.Shared.Managers.Communities
         }
 
         /// <inheritdoc />
+        public async Task<Partner> GetCommunityAtLocationAsync(double latitude, double longitude,
+            CancellationToken cancellationToken = default)
+        {
+            var now = DateTimeOffset.UtcNow;
+
+            // Bounding-box filter runs in SQL — only Enabled + Active communities with all
+            // four bounds set are candidates. Nullable comparisons in EF need HasValue guards.
+            var candidates = await partnerRepository.Get()
+                .Where(p => p.HomePageEnabled
+                    && (p.HomePageStartDate == null || p.HomePageStartDate <= now)
+                    && (p.HomePageEndDate == null || p.HomePageEndDate >= now)
+                    && p.PartnerStatusId == (int)PartnerStatusEnum.Active
+                    && p.BoundsNorth != null && p.BoundsSouth != null
+                    && p.BoundsEast != null && p.BoundsWest != null
+                    && p.BoundsSouth <= latitude && p.BoundsNorth >= latitude
+                    && p.BoundsWest <= longitude && p.BoundsEast >= longitude)
+                .ToListAsync(cancellationToken);
+
+            if (candidates.Count == 0)
+            {
+                return null;
+            }
+
+            // Multiple communities can contain the same GPS point (a City sits inside a
+            // County, which sits inside a State). RegionType is ordered from most to least
+            // specific (City=0, County=1, State=2, Province=3, Region=4, Country=5), so
+            // OrderBy gives the most-specific match first. Communities with a null
+            // RegionType default to City per the DB default and existing convention.
+            return candidates
+                .OrderBy(c => c.RegionType ?? (int)RegionTypeEnum.City)
+                .First();
+        }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetCommunityEventsAsync(string slug, bool upcomingOnly = true, CancellationToken cancellationToken = default)
         {
             var community = await GetBySlugAsync(slug, cancellationToken);
