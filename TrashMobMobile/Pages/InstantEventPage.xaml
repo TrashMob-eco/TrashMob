@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:InstantEventViewModel"
+             x:Class="TrashMobMobile.Pages.InstantEventPage"
+             Title="Instant Event"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="*, Auto, Auto, Auto, *" Padding="20">
+
+        <!-- Elapsed time (only visible while running) -->
+        <Label Grid.Row="1"
+               Text="{Binding ElapsedTime}"
+               FontFamily="LexendSemibold"
+               FontSize="72"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               IsVisible="{Binding IsRunning}" />
+
+        <!-- Status message (visible during startup + failure) -->
+        <VerticalStackLayout Grid.Row="2" Spacing="12" HorizontalOptions="Center">
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               HorizontalOptions="Center" />
+
+            <Label Text="{Binding StatusMessage}"
+                   FontSize="18"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+
+        <!-- Action buttons -->
+        <VerticalStackLayout Grid.Row="3" Spacing="12" Margin="0,20,0,0">
+
+            <Button Text="STOP"
+                    Command="{Binding StopCommand}"
+                    Style="{StaticResource PrimaryLargeButton}"
+                    IsVisible="{Binding IsRunning}"
+                    HeightRequest="64"
+                    FontSize="20"
+                    FontAttributes="Bold" />
+
+            <Button Text="Go Back"
+                    Command="{Binding GoBackCommand}"
+                    Style="{StaticResource SecondaryLargeButton}"
+                    IsVisible="{Binding IsFailed}"
+                    HeightRequest="52" />
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

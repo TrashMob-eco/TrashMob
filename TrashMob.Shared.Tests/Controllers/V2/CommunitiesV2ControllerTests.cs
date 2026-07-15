@@ -76,6 +76,40 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         }
 
         [Fact]
+        public async Task GetCommunityAtLocation_ReturnsOkWithMatchWhenCommunityContainsPoint()
+        {
+            var seattle = new Partner
+            {
+                Id = Guid.NewGuid(),
+                Name = "Seattle, WA",
+                Slug = "seattle-wa",
+            };
+            communityManager
+                .Setup(m => m.GetCommunityAtLocationAsync(47.6, -122.3, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(seattle);
+
+            var result = await controller.GetCommunityAtLocation(47.6, -122.3, CancellationToken.None);
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var dto = Assert.IsType<CommunityLocationMatchDto>(ok.Value);
+            Assert.Equal(seattle.Id, dto.Id);
+            Assert.Equal("Seattle, WA", dto.Name);
+            Assert.Equal("seattle-wa", dto.Slug);
+        }
+
+        [Fact]
+        public async Task GetCommunityAtLocation_Returns404WhenNoCommunityMatches()
+        {
+            communityManager
+                .Setup(m => m.GetCommunityAtLocationAsync(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Partner)null!);
+
+            var result = await controller.GetCommunityAtLocation(0.0, 0.0, CancellationToken.None);
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
         public async Task GetCommunities_WithGeoFilter_PassesParamsToManager()
         {
             communityManager

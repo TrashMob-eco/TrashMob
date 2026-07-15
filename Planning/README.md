@@ -49,6 +49,7 @@
 | [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md) | Pre-event waiver validation, configurable check-in notifications, attendance roster for event leads | Not Started |
 | [Project 56 - Board Metrics Dashboard](./Projects/Project_56_Board_Metrics_Dashboard.md) | Unified admin dashboard consolidating App Insights, GA4, Sentry, Clarity, Azure costs, and QuickBooks for board meetings | Planning |
 | [Project 57 - Participation Report](./Projects/Project_57_Participation_Report.md) | Official volunteer participation report email with PDF for school/court/employer verification | In Progress (Phases 1-3 Complete) |
+| [Project 65 - Instant Events](./Projects/Project_65_Instant_Events.md) | Strava-style one-tap "Start a Pick" mobile flow for solo private cleanups with optional route tracking and deferred stats entry | Complete (all phases shipped 2026-07-12 through 2026-07-14) |
 
 #### High Priority (Marketing & Growth)
 
@@ -147,6 +148,7 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 ### Event Experience
 - [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md)
 - [Project 59 - Event Weather Forecast](./Projects/Archive/Project_59_Event_Weather_Forecast.md) ✅
+- [Project 65 - Instant Events](./Projects/Project_65_Instant_Events.md) ✅
 
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Archive/Project_07_Event_Weights.md) ✅
@@ -195,15 +197,15 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | Status | Count | Projects |
 |--------|-------|----------|
 | ✅ **Complete** (archived) | 34 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 24, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53, 59 |
-| ✅ **Complete** (production live, in-place) | 2 | Project 23 (PRIVO live 2026-05-20, testing complete 2026-07-01), Project 63 (Municipal Sales Pipeline live 2026-07-05) |
+| ✅ **Complete** (production live, in-place) | 3 | Project 23 (PRIVO live 2026-05-20, testing complete 2026-07-01), Project 63 (Municipal Sales Pipeline live 2026-07-05), Project 65 (Instant Events, all phases shipped 2026-07-12 through 2026-07-14) |
 | ✅ **Complete** (pending external) | 1 | Project 8 (minor waiver text pending legal review) |
 | **In Progress** | 14 | Projects 1, 4, 5, 6, 15, 25, 30, 36, 41, 45, 46, 49, 57, **64** (Phases 1–4a live; Phase 4b column-drop queued for ~2026-08-05) |
 | **Planning** | 3 | Projects 56, 58, 62 |
 | **Ready for Review** | 1 | Project 2 |
-| **Not Started** | 5 | Projects 12, 31, 43, 52, 54, 55 |
+| **Not Started** | 6 | Projects 12, 31, 43, 52, 54, 55 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 62 project specifications documented
+**Total:** 63 project specifications documented
 
 ---
 
@@ -326,6 +328,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** April 5, 2026
+**Last Updated:** July 12, 2026
 **Maintained By:** Product & Engineering Team
-**Next Review:** End of Q2 2026
+**Next Review:** End of Q3 2026

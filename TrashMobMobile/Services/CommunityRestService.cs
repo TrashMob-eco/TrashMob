@@ -82,4 +82,21 @@ public class CommunityRestService(IHttpClientFactory httpClientFactory) : RestSe
         var dto = JsonConvert.DeserializeObject<StatsDto>(content)!;
         return dto.ToEntity();
     }
+
+    public async Task<CommunityLocationMatchDto?> GetCommunityAtLocationAsync(double latitude, double longitude,
+        CancellationToken cancellationToken = default)
+    {
+        var requestUri = $"{Controller}/at-location?latitude={latitude.ToString(CultureInfo.InvariantCulture)}&longitude={longitude.ToString(CultureInfo.InvariantCulture)}";
+        using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
+
+        // 404 = no matching community — normal result, not an error condition.
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        return JsonConvert.DeserializeObject<CommunityLocationMatchDto>(content);
+    }
 }
