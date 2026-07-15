@@ -95,6 +95,8 @@ See `CUSTOM_DOMAIN_MIGRATION.md` for the history of the original migration.
 
 Azure Container Apps doesn't support apex/root domains with managed certificates directly, so production uses Azure Front Door (`fd-tm-pr`) to terminate `trashmob.eco` and 308-redirect to `https://www.trashmob.eco/`. Front Door also fronts `www.trashmob.eco` and proxies to the Container App.
 
+> **Known symptom:** users report "site not found" on the first visit to `trashmob.eco`, then success on refresh. Investigation and candidate fixes in [`APEX_FIRST_VISIT_INVESTIGATION.md`](APEX_FIRST_VISIT_INVESTIGATION.md).
+
 ### Current configuration
 
 | Component | Value |
@@ -138,7 +140,25 @@ az deployment group create \
 
 ## Azure DNS Zone
 
-The production DNS zone is described by [`Deploy/dnsZone.bicep`](dnsZone.bicep). Re-applying the template will overwrite the `_dnsauth*` TXT records with placeholder values — if you re-deploy, pull the real validation tokens from Azure Portal first and patch them back in, or scope the deployment to just the records you intend to change.
+The production DNS zone is described by [`Deploy/dnsZone.bicep`](dnsZone.bicep). The `_dnsauth` + `_dnsauth.www` TXT records that carry the Front Door managed-cert validation tokens are guarded by two Bicep parameters (`apexDnsAuthToken`, `wwwDnsAuthToken`) that default to empty strings; when unset, the resources are not declared and ARM Incremental leaves any existing records in Azure DNS untouched. That's the safe default for a routine re-apply.
+
+**If you actually intend to update the tokens** (e.g. after `az afd custom-domain regenerate-validation-token`), fetch the live values and pass them explicitly:
+
+```bash
+APEX_TOKEN=$(az afd custom-domain show --resource-group rg-trashmob-pr-westus2 \
+  --profile-name fd-tm-pr --custom-domain-name trashmob-eco \
+  --query validationProperties.validationToken -o tsv)
+WWW_TOKEN=$(az afd custom-domain show --resource-group rg-trashmob-pr-westus2 \
+  --profile-name fd-tm-pr --custom-domain-name www-trashmob-eco \
+  --query validationProperties.validationToken -o tsv)
+
+az deployment group create --template-file Deploy/dnsZone.bicep \
+  -g rg-trashmob-pr-westus2 \
+  --parameters zoneName=trashmob.eco environment=pr \
+               apexDnsAuthToken=$APEX_TOKEN wwwDnsAuthToken=$WWW_TOKEN
+```
+
+Background on why this parameterization exists: an earlier version of the template hardcoded `<ADD_VALIDATION_TOKEN_FROM_AZURE_PORTAL>` as literal placeholder values. A re-apply would have blown away the real tokens and caused the same PendingRevalidation outage recorded in [`Deploy/APEX_FIRST_VISIT_INVESTIGATION.md`](APEX_FIRST_VISIT_INVESTIGATION.md). Empty-string defaults + `if` guards mean an accidental re-apply is a no-op on those records.
 
 The zone was originally migrated from Microsoft 365 Admin Center to Azure DNS to add apex support. The deployment + nameserver-cutover happened pre-this-runbook-revision; current state is steady.
 

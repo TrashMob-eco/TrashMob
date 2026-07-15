@@ -352,6 +352,394 @@ namespace TrashMob.Shared.Tests.Managers.Events
 
         #endregion
 
+        #region AddInstantEventAsync Tests
+
+        [Fact]
+        public async Task AddInstantEventAsync_SetsExpectedDefaults()
+        {
+            var userId = Guid.NewGuid();
+            _eventRepository.SetupAddAsync();
+            _eventAttendeeManager.Setup(m => m.AddAsync(It.IsAny<EventAttendee>(), userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((EventAttendee ea, Guid _, CancellationToken _) => ea);
+
+            var result = await _sut.AddInstantEventAsync(47.6, -122.3, userId);
+
+            Assert.NotNull(result);
+            Assert.StartsWith("Instant Event", result.Name);
+            Assert.Equal("Instant private event", result.Description);
+            Assert.Equal((int)EventVisibilityEnum.Private, result.EventVisibilityId);
+            Assert.Equal((int)EventStatusEnum.Active, result.EventStatusId);
+            Assert.Equal(47.6, result.Latitude);
+            Assert.Equal(-122.3, result.Longitude);
+            Assert.Equal(1, result.MaxNumberOfParticipants);
+            Assert.Null(result.TeamId);
+        }
+
+        [Fact]
+        public async Task AddInstantEventAsync_RegistersCreatorAsEventLead()
+        {
+            var userId = Guid.NewGuid();
+            _eventRepository.SetupAddAsync();
+            _eventAttendeeManager.Setup(m => m.AddAsync(It.IsAny<EventAttendee>(), userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((EventAttendee ea, Guid _, CancellationToken _) => ea);
+
+            var result = await _sut.AddInstantEventAsync(0, 0, userId);
+
+            _eventAttendeeManager.Verify(m => m.AddAsync(
+                It.Is<EventAttendee>(ea => ea.UserId == userId
+                                           && ea.EventId == result.Id
+                                           && ea.IsEventLead),
+                userId,
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task AddInstantEventAsync_PopulatesAddressFromReverseGeocode()
+        {
+            var userId = Guid.NewGuid();
+            _eventRepository.SetupAddAsync();
+            _eventAttendeeManager.Setup(m => m.AddAsync(It.IsAny<EventAttendee>(), userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((EventAttendee ea, Guid _, CancellationToken _) => ea);
+
+            _mapManager.Setup(m => m.GetAddressAsync(47.6, -122.3))
+                .ReturnsAsync(new Address
+                {
+                    StreetAddress = "123 Test St",
+                    City = "Seattle",
+                    Region = "WA",
+                    Country = "United States",
+                    PostalCode = "98101",
+                });
+
+            var result = await _sut.AddInstantEventAsync(47.6, -122.3, userId);
+
+            Assert.Equal("123 Test St", result.StreetAddress);
+            Assert.Equal("Seattle", result.City);
+            Assert.Equal("WA", result.Region);
+            Assert.Equal("United States", result.Country);
+            Assert.Equal("98101", result.PostalCode);
+        }
+
+        [Fact]
+        public async Task AddInstantEventAsync_ContinuesWhenReverseGeocodeThrows()
+        {
+            // Geocoding is a nice-to-have — a network blip or Azure Maps outage must not
+            // block Instant Event creation. Event should still exist with only GPS.
+            var userId = Guid.NewGuid();
+            _eventRepository.SetupAddAsync();
+            _eventAttendeeManager.Setup(m => m.AddAsync(It.IsAny<EventAttendee>(), userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((EventAttendee ea, Guid _, CancellationToken _) => ea);
+
+            _mapManager.Setup(m => m.GetAddressAsync(It.IsAny<double>(), It.IsAny<double>()))
+                .ThrowsAsync(new InvalidOperationException("Azure Maps returned 503"));
+
+            var result = await _sut.AddInstantEventAsync(47.6, -122.3, userId);
+
+            Assert.NotNull(result);
+            Assert.Equal(47.6, result.Latitude);
+            Assert.Equal(-122.3, result.Longitude);
+            Assert.Null(result.StreetAddress);
+            Assert.Null(result.City);
+        }
+
+        [Fact]
+        public async Task AddInstantEventAsync_DoesNotSendNewEventNotificationEmail()
+        {
+            // The regular AddAsync fires a "New Event Alert" email to info@trashmob.eco.
+            // For solo private cleanups that would spam the inbox — the AddInstantEventAsync
+            // path deliberately skips it. Guarding the behavior with a test so a future refactor
+            // doesn't accidentally re-enable it.
+            var userId = Guid.NewGuid();
+            _eventRepository.SetupAddAsync();
+            _eventAttendeeManager.Setup(m => m.AddAsync(It.IsAny<EventAttendee>(), userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((EventAttendee ea, Guid _, CancellationToken _) => ea);
+
+            await _sut.AddInstantEventAsync(0, 0, userId);
+
+            _emailManager.Verify(e => e.SendTemplatedEmailAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<int>(),
+                It.IsAny<object>(),
+                It.IsAny<List<EmailAddress>>(),
+                It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        #endregion
+
+        #region CompleteEventAsync Tests
+
+        [Fact]
+        public async Task CompleteEventAsync_SetsStatusToCompleteAndComputesDuration()
+        {
+            var userId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            var startedTwoHoursAgo = DateTimeOffset.UtcNow.AddHours(-2).AddMinutes(-15);
+            var existing = new EventBuilder()
+                .WithId(eventId)
+                .WithName("Instant Event to Complete")
+                .CreatedBy(userId)
+                .AsActive()
+                .Build();
+            existing.EventDate = startedTwoHoursAgo;
+
+            _eventRepository.SetupGetAsync(existing);
+            _eventRepository.SetupUpdateAsync();
+
+            var result = await _sut.CompleteEventAsync(eventId, userId);
+
+            Assert.Equal((int)EventStatusEnum.Complete, result.EventStatusId);
+            Assert.Equal(2, result.DurationHours);
+            // Minutes field is the sub-hour remainder; allow ±1 for clock skew during test run.
+            Assert.InRange(result.DurationMinutes, 14, 16);
+        }
+
+        [Fact]
+        public async Task CompleteEventAsync_ClampsDurationTo24Hours_WhenEventAbandoned()
+        {
+            var userId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            var existing = new EventBuilder()
+                .WithId(eventId)
+                .WithName("Abandoned Instant Event")
+                .CreatedBy(userId)
+                .AsActive()
+                .Build();
+            existing.EventDate = DateTimeOffset.UtcNow.AddDays(-3);
+
+            _eventRepository.SetupGetAsync(existing);
+            _eventRepository.SetupUpdateAsync();
+
+            var result = await _sut.CompleteEventAsync(eventId, userId);
+
+            Assert.Equal(24, result.DurationHours);
+            Assert.Equal(0, result.DurationMinutes);
+        }
+
+        [Fact]
+        public async Task CompleteEventAsync_ClampsNegativeDurationToZero_ForBackdatedFutureEvents()
+        {
+            var userId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            var existing = new EventBuilder()
+                .WithId(eventId)
+                .WithName("Future-dated Event")
+                .CreatedBy(userId)
+                .AsActive()
+                .Build();
+            existing.EventDate = DateTimeOffset.UtcNow.AddHours(2);
+
+            _eventRepository.SetupGetAsync(existing);
+            _eventRepository.SetupUpdateAsync();
+
+            var result = await _sut.CompleteEventAsync(eventId, userId);
+
+            Assert.Equal(0, result.DurationHours);
+            Assert.Equal(0, result.DurationMinutes);
+        }
+
+        [Fact]
+        public async Task CompleteEventAsync_Throws_WhenEventNotFound()
+        {
+            var missingId = Guid.NewGuid();
+            _eventRepository.Setup(r => r.GetAsync(missingId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Event)null!);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => _sut.CompleteEventAsync(missingId, Guid.NewGuid()));
+        }
+
+        #endregion
+
+        #region CompleteAbandonedInstantEventsAsync Tests
+
+        [Fact]
+        public async Task CompleteAbandonedInstantEventsAsync_TransitionsMatchingEventsToComplete()
+        {
+            var userId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            var abandoned = new EventBuilder()
+                .WithId(eventId)
+                .WithName("Instant Event abandoned")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(0, 0)
+                .WithEventDate(DateTimeOffset.UtcNow.AddHours(-6))
+                .Build();
+
+            _eventRepository.SetupGetWithFilter(new[] { abandoned });
+            _eventRepository.SetupUpdateAsync();
+
+            var count = await _sut.CompleteAbandonedInstantEventsAsync(TimeSpan.FromHours(4));
+
+            Assert.Equal(1, count);
+            Assert.Equal((int)EventStatusEnum.Complete, abandoned.EventStatusId);
+            Assert.Equal(4, abandoned.DurationHours);
+            Assert.Equal(0, abandoned.DurationMinutes);
+        }
+
+        [Fact]
+        public async Task CompleteAbandonedInstantEventsAsync_ExcludesCompletedEventsAndWizardEvents()
+        {
+            var userId = Guid.NewGuid();
+
+            // Completed Instant — Duration set, should NOT match.
+            var completedInstant = new EventBuilder()
+                .WithName("Completed Instant")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(2, 15)
+                .WithEventDate(DateTimeOffset.UtcNow.AddHours(-6))
+                .Build();
+
+            // Wizard event — Public visibility, should NOT match even with zero duration.
+            var wizardEvent = new EventBuilder()
+                .WithName("Wizard Event")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPublic()
+                .WithDuration(0, 0)
+                .WithEventDate(DateTimeOffset.UtcNow.AddHours(-6))
+                .Build();
+
+            // Recent Instant — under the 4h cutoff, should NOT match.
+            var recentInstant = new EventBuilder()
+                .WithName("Recent Instant")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(0, 0)
+                .WithEventDate(DateTimeOffset.UtcNow.AddMinutes(-30))
+                .Build();
+
+            _eventRepository.SetupGetWithFilter(new[] { completedInstant, wizardEvent, recentInstant });
+            _eventRepository.SetupUpdateAsync();
+
+            var count = await _sut.CompleteAbandonedInstantEventsAsync(TimeSpan.FromHours(4));
+
+            Assert.Equal(0, count);
+            Assert.Equal((int)EventStatusEnum.Active, wizardEvent.EventStatusId);
+            Assert.Equal((int)EventStatusEnum.Active, recentInstant.EventStatusId);
+        }
+
+        [Fact]
+        public async Task CompleteAbandonedInstantEventsAsync_UsesCreatorForAuditFields()
+        {
+            // Never invent a sentinel system-user id (Project 64 lessons learned).
+            // The event creator gets attributed as the auto-completer of their own event.
+            var creatorId = Guid.NewGuid();
+            var abandoned = new EventBuilder()
+                .WithName("Instant")
+                .CreatedBy(creatorId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(0, 0)
+                .WithEventDate(DateTimeOffset.UtcNow.AddHours(-6))
+                .Build();
+
+            _eventRepository.SetupGetWithFilter(new[] { abandoned });
+            _eventRepository.SetupUpdateAsync();
+
+            await _sut.CompleteAbandonedInstantEventsAsync(TimeSpan.FromHours(4));
+
+            _eventRepository.Verify(r => r.UpdateAsync(
+                It.Is<Event>(e => e.LastUpdatedByUserId == creatorId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task CompleteAbandonedInstantEventsAsync_ReturnsZero_WhenNoAbandonedEvents()
+        {
+            _eventRepository.SetupGetWithFilter(Array.Empty<Event>());
+
+            var count = await _sut.CompleteAbandonedInstantEventsAsync(TimeSpan.FromHours(4));
+
+            Assert.Equal(0, count);
+        }
+
+        #endregion
+
+        #region GetInProgressInstantEventsAsync Tests
+
+        [Fact]
+        public async Task GetInProgressInstantEventsAsync_ReturnsOnlyResumableInstantEventsForUser()
+        {
+            var userId = Guid.NewGuid();
+            var otherUserId = Guid.NewGuid();
+            var thirtyMinAgo = DateTimeOffset.UtcNow.AddMinutes(-30);
+
+            // Ideal candidate — owned by user, Active, Private, zero duration, started recently.
+            var resumable = new EventBuilder()
+                .WithName("Instant Event – 2026-07-13 09:30")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(0, 0)
+                .WithEventDate(thirtyMinAgo)
+                .Build();
+
+            // Completed Instant Event — has a duration set. Should NOT resume.
+            var completed = new EventBuilder()
+                .WithName("Instant Event – 2026-07-13 08:00")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(1, 15)
+                .WithEventDate(thirtyMinAgo)
+                .Build();
+
+            // Public event — wrong visibility. Should NOT resume.
+            var publicEvent = new EventBuilder()
+                .WithName("Public event")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPublic()
+                .WithDuration(0, 0)
+                .WithEventDate(thirtyMinAgo)
+                .Build();
+
+            // Owned by another user. Should NOT resume for this caller.
+            var otherUsers = new EventBuilder()
+                .WithName("Someone else's instant event")
+                .CreatedBy(otherUserId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(0, 0)
+                .WithEventDate(thirtyMinAgo)
+                .Build();
+
+            // Too old — outside the 24h resume window. Belongs to Phase 4 abandonment guard.
+            var tooOld = new EventBuilder()
+                .WithName("Instant Event – three days ago")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(0, 0)
+                .WithEventDate(DateTimeOffset.UtcNow.AddDays(-3))
+                .Build();
+
+            _eventRepository.SetupGetWithFilter(new[] { resumable, completed, publicEvent, otherUsers, tooOld });
+
+            var result = await _sut.GetInProgressInstantEventsAsync(userId);
+
+            var list = result.ToList();
+            Assert.Single(list);
+            Assert.Equal(resumable.Id, list[0].Id);
+        }
+
+        [Fact]
+        public async Task GetInProgressInstantEventsAsync_ReturnsEmpty_WhenNoCandidates()
+        {
+            _eventRepository.SetupGetWithFilter(Array.Empty<Event>());
+
+            var result = await _sut.GetInProgressInstantEventsAsync(Guid.NewGuid());
+
+            Assert.Empty(result);
+        }
+
+        #endregion
+
         #region DeleteAsync Tests
 
         [Fact]

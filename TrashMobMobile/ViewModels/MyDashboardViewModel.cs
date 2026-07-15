@@ -44,6 +44,31 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private bool hasPendingWaiverAlerts;
 
+    // True when local Preferences hold a started-but-not-completed Instant Event. Drives
+    // the resume banner + hides the fresh Start button. Refreshed on every Dashboard load
+    // via RefreshInstantEventResumeState so the state stays in sync after Stop / cancel /
+    // out-of-band server completion. See Project 65 Phase 1 gap discussion.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanStartFreshInstantEvent))]
+    private bool hasInProgressInstantEvent;
+
+    public bool CanStartFreshInstantEvent => !HasInProgressInstantEvent;
+
+    // Route-tracking toggle for the next Start-a-Pick tap. Remembered across sessions
+    // per Project 65 decision (Q2: default off on first-ever use, then remember). Stored
+    // in Preferences under PrefKeyLastTrackRouteChoice; loaded on Init, saved on change.
+    // The toggle is only meaningful when starting fresh — Resume uses the value the
+    // event was originally started with, stored on the event's persisted state.
+    public const string PrefKeyLastTrackRouteChoice = "instant_event_last_track_route_choice";
+
+    [ObservableProperty]
+    private bool trackRouteForNextPick;
+
+    partial void OnTrackRouteForNextPickChanged(bool value)
+    {
+        Preferences.Default.Set(PrefKeyLastTrackRouteChoice, value);
+    }
+
     public ObservableCollection<string> UpcomingDateRanges { get; set; } = [];
 
     public ObservableCollection<string> CompletedDateRanges { get; set; } = [];
@@ -220,8 +245,52 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
             SelectedCreatedDateRange = DateRanges.LastMonth;
 
-            await Task.WhenAll(RefreshEvents(), RefreshStatistics(), RefreshLitterReports(), RefreshPendingWaiverAlerts());
+            // Load the remembered route-tracking toggle choice. Direct field write to
+            // avoid the change notification writing back to Preferences with the same
+            // value (harmless, just noise).
+            trackRouteForNextPick = Preferences.Default.Get(PrefKeyLastTrackRouteChoice, false);
+            OnPropertyChanged(nameof(TrackRouteForNextPick));
+
+            await Task.WhenAll(RefreshEvents(), RefreshStatistics(), RefreshLitterReports(), RefreshPendingWaiverAlerts(), RefreshInstantEventResumeStateAsync());
         }, "An error has occurred while loading the dashboard. Please wait and try again in a moment.");
+    }
+
+    private async Task RefreshInstantEventResumeStateAsync()
+    {
+        // Local state is the fast path — if Preferences hold a running Instant Event,
+        // that's the resume target and we're done.
+        var pending = Preferences.Default.Get(InstantEventViewModel.PrefKeyEventId, string.Empty);
+        if (!string.IsNullOrEmpty(pending))
+        {
+            HasInProgressInstantEvent = true;
+            return;
+        }
+
+        // Cross-device / fresh-install fallback — Preferences got wiped or the user
+        // started their pick on another device. Ask the server for any in-progress
+        // Instant Events owned by the caller in the last 24h; if one exists, hydrate
+        // Preferences from it so the resume flow behaves identically to the local case.
+        try
+        {
+            var candidates = await mobEventManager.GetInProgressInstantEventsAsync();
+            var candidate = candidates?.FirstOrDefault();
+            if (candidate != null)
+            {
+                Preferences.Default.Set(InstantEventViewModel.PrefKeyEventId, candidate.Id.ToString());
+                Preferences.Default.Set(InstantEventViewModel.PrefKeyStartedAt, candidate.EventDate.ToString("o"));
+                HasInProgressInstantEvent = true;
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Non-critical — the local Preferences check already returned false, so
+            // the worst outcome is the user doesn't see a resume banner they could have.
+            // Don't break the dashboard for this.
+            SentrySdk.CaptureException(ex);
+        }
+
+        HasInProgressInstantEvent = false;
     }
 
     private async void PerformEventNavigation(EventViewModel eventViewModel)
@@ -420,6 +489,35 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
         }
 
         await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={Guid.Empty}");
+    }
+
+    [RelayCommand]
+    private async Task StartInstantEvent()
+    {
+        // Resume path: if a running Instant Event is persisted locally, skip the waiver
+        // gate — the user already signed to create it — and go straight to the recording
+        // page. Don't pass TrackRoute here; the resume flow reads the value the event
+        // was originally started with from Preferences. InstantEventViewModel.Init
+        // validates with the server and falls through to a fresh start if the persisted
+        // event was completed/canceled out-of-band.
+        if (HasInProgressInstantEvent)
+        {
+            await Shell.Current.GoToAsync(nameof(InstantEventPage));
+            return;
+        }
+
+        // Waiver gate mirrors CreateEvent — Instant Events still register the user as
+        // an event attendee under the hood, so the same waiver requirement applies.
+        // Project 65 Phase 1 design decision: block Start if unsigned, redirect to
+        // WaiverListPage; no in-flow signing.
+        if (!await waiverManager.HasUserSignedAllRequiredWaiversAsync())
+        {
+            await Shell.Current.GoToAsync(nameof(WaiverListPage));
+            return;
+        }
+
+        await Shell.Current.GoToAsync(
+            $"{nameof(InstantEventPage)}?TrackRoute={TrackRouteForNextPick}");
     }
 
     private async void HandleUpcomingDateRangeSelected()

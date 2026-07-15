@@ -109,5 +109,68 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <returns>The number of entities deleted.</returns>
         Task<int> DeleteAsync(Guid id, string cancellationReason, Guid userId,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Creates a new solo private Instant Event for the specified user at the given GPS
+        /// coordinates. Auto-fills name (with timestamp), description, EventType (Cleanup),
+        /// visibility (Private), status (Active), and EventDate (now). Reverse-geocodes the
+        /// coordinates to populate StreetAddress / City / Region / Country / PostalCode; a
+        /// geocode failure does not fail the creation (the event just gets no address).
+        /// Registers the creator as sole attendee + event lead. Deliberately skips the info@
+        /// new-event notification email — private solo cleanups would flood that inbox.
+        /// See Planning/Projects/Project_65_Instant_Events.md.
+        /// </summary>
+        /// <param name="latitude">Latitude of the user's location at Start.</param>
+        /// <param name="longitude">Longitude of the user's location at Start.</param>
+        /// <param name="userId">The user creating the event.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The newly created event.</returns>
+        Task<Event> AddInstantEventAsync(double latitude, double longitude, Guid userId,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Marks an event as Complete and computes its actual duration from the elapsed time
+        /// since the event was created. Used by the Instant Events "Stop" flow but works for
+        /// any event. Duration is clamped to [0, 24h] as a safeguard against abandoned or
+        /// backdated events producing absurd values.
+        /// </summary>
+        /// <param name="eventId">The event to complete.</param>
+        /// <param name="userId">The user completing the event (used for audit fields).</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The updated event.</returns>
+        Task<Event> CompleteEventAsync(Guid eventId, Guid userId,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Returns Instant Events owned by the specified user that appear to still be in
+        /// progress — status Active, visibility Private, zero duration (never Completed),
+        /// and started within the last 24 hours. Used by the mobile Dashboard to offer a
+        /// resume path after a fresh install, cross-device switch, or cleared app data
+        /// where the local Preferences record was lost. See
+        /// Planning/Projects/Project_65_Instant_Events.md Phase 1 (Option B).
+        /// </summary>
+        Task<IEnumerable<Event>> GetInProgressInstantEventsAsync(Guid userId,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Sweeps Instant Events that have been left in Active status past the given
+        /// threshold and auto-transitions them to Complete. Used by the hourly job
+        /// (Project 65 Phase 4) to prevent orphaned Instant Events from piling up when
+        /// users forget to hit Stop.
+        ///
+        /// Match criteria (all must hold):
+        /// - EventStatusId = Active
+        /// - EventVisibilityId = Private
+        /// - DurationHours == 0 AND DurationMinutes == 0 (never completed)
+        /// - EventDate &lt; UtcNow - <paramref name="abandonmentThreshold"/>
+        ///
+        /// Duration on the completed event is set to the threshold value (not the true
+        /// elapsed time) — the user was probably done long before the app started
+        /// counting them as abandoned. Audit fields use the event creator's user id
+        /// (per Project 64 lesson: never invent a sentinel system-user id).
+        /// </summary>
+        /// <returns>The number of Instant Events that were auto-completed.</returns>
+        Task<int> CompleteAbandonedInstantEventsAsync(TimeSpan abandonmentThreshold,
+            CancellationToken cancellationToken = default);
     }
 }

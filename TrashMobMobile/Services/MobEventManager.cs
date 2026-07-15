@@ -100,5 +100,22 @@
         {
             return mobEventRestService.GetLocationsByTimeRangeAsync(startDate, endDate, cancellationToken);
         }
+
+        public Task<Event> AddInstantEventAsync(double latitude, double longitude,
+            CancellationToken cancellationToken = default)
+        {
+            return mobEventRestService.AddInstantEventAsync(latitude, longitude, cancellationToken);
+        }
+
+        public Task<Event> CompleteEventAsync(Guid eventId, CancellationToken cancellationToken = default)
+        {
+            return mobEventRestService.CompleteEventAsync(eventId, cancellationToken);
+        }
+
+        public Task<IEnumerable<Event>> GetInProgressInstantEventsAsync(
+            CancellationToken cancellationToken = default)
+        {
+            return mobEventRestService.GetInProgressInstantEventsAsync(cancellationToken);
+        }
     }
 }

@@ -20,6 +20,32 @@
                     TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
                     Margin="5,8,5,0" />
 
+                <!-- Community-contribution banner (Project 65 Phase 3). Shown when the
+                     event's GPS lies inside a community's boundary. Purely informational —
+                     the community's stats aggregate this event automatically via the same
+                     bounding-box, so no explicit opt-in mechanism is needed. -->
+                <Border Padding="12" Margin="5,8,5,0"
+                        BackgroundColor="{AppThemeBinding Light=#f0fdf4, Dark=#052e16}"
+                        StrokeShape="RoundRectangle 10"
+                        Stroke="{AppThemeBinding Light=#86efac, Dark=#16a34a}"
+                        StrokeThickness="1"
+                        IsVisible="{Binding HasMatchedCommunity}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label FontFamily="LexendSemibold" FontSize="14"
+                               TextColor="{AppThemeBinding Light=#166534, Dark=#bbf7d0}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Contributing to " />
+                                    <Span Text="{Binding MatchedCommunityName}" FontAttributes="Bold" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label Text="Your impact rolls up into this community's totals."
+                               FontSize="12"
+                               TextColor="{AppThemeBinding Light=#166534, Dark=#dcfce7}" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <Label
                     Text="Pre-filled from route tracking data"
                     FontSize="Micro"
