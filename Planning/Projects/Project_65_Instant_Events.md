@@ -171,10 +171,13 @@ Not blocked by any project. Can start immediately.
 
 **Exit criteria:** a user standing in a community's boundary is offered the community linkage; the community's stats page reflects the Instant Event's metrics.
 
-### Phase 4 — Abandonment guard
+### Phase 4 — Abandonment guard (shipped 2026-07-14)
 
-- Background-transition logic: if an Instant Event has been In Progress > 4 hours and the app has been backgrounded, auto-transition to Completed with elapsed = 4h and prompt on next open.
-- Analytics: report on stopped-vs-abandoned ratio.
+- **Server-side hourly sweep** in `TrashMobHourlyJobs`. `EventManager.CompleteAbandonedInstantEventsAsync(TimeSpan threshold)` queries for Instant Events in Active status with zero duration and `EventDate < now - threshold`, sets each to Complete with duration = threshold, and returns the count for logging.
+- Threshold set to 4h per the original plan. Configurable via the call site if we ever want to change it.
+- **Design note — no mobile prompt on next open.** The doc originally suggested "prompt on next open." In practice the interaction is cleaner: once auto-Completed the event drops out of `GetInProgressInstantEventsAsync` (which requires Active status), so the resume banner just doesn't appear. If local Preferences still point at the completed event, the VM resume path validates with the server, sees the Complete status, and clears Preferences without needing an explicit prompt.
+- **Design note — audit fields use the event creator's user id**, not a system-user sentinel. Direct application of the [Project 64 lesson](./Project_64_Roles_and_RBAC_Refactor.md) about never inventing sentinel user ids. Semantic reading: "the user's own event was auto-completed on their behalf."
+- **Deferred — analytics on stopped-vs-abandoned ratio.** Would need a boolean flag on `Event` (or similar) to distinguish. Not worth a schema migration for a metric that isn't driving decisions today. Duration = exactly 4h 0min is a reasonable proxy signal in ad-hoc queries.
 
 ### Phase 5 — Web parity (deferred; see Open Questions)
 

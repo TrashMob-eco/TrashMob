@@ -151,5 +151,26 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// </summary>
         Task<IEnumerable<Event>> GetInProgressInstantEventsAsync(Guid userId,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Sweeps Instant Events that have been left in Active status past the given
+        /// threshold and auto-transitions them to Complete. Used by the hourly job
+        /// (Project 65 Phase 4) to prevent orphaned Instant Events from piling up when
+        /// users forget to hit Stop.
+        ///
+        /// Match criteria (all must hold):
+        /// - EventStatusId = Active
+        /// - EventVisibilityId = Private
+        /// - DurationHours == 0 AND DurationMinutes == 0 (never completed)
+        /// - EventDate &lt; UtcNow - <paramref name="abandonmentThreshold"/>
+        ///
+        /// Duration on the completed event is set to the threshold value (not the true
+        /// elapsed time) — the user was probably done long before the app started
+        /// counting them as abandoned. Audit fields use the event creator's user id
+        /// (per Project 64 lesson: never invent a sentinel system-user id).
+        /// </summary>
+        /// <returns>The number of Instant Events that were auto-completed.</returns>
+        Task<int> CompleteAbandonedInstantEventsAsync(TimeSpan abandonmentThreshold,
+            CancellationToken cancellationToken = default);
     }
 }

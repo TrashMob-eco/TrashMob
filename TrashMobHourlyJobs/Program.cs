@@ -54,6 +54,24 @@ namespace TrashMobHourlyJobs
             var followUpCount = await outreachManager.ProcessDueFollowUpsAsync();
             logger.LogInformation("Processed {Count} outreach follow-up emails", followUpCount);
 
+            // Auto-complete abandoned Instant Events. Users who forget to hit Stop leave
+            // the event in Active status with zero duration; without this sweep those
+            // pile up in the DB and skew personal-stats displays. 4h threshold per the
+            // Project 65 Phase 4 plan — well past the typical solo pick duration.
+            //
+            // Interaction with mobile resume: the resume banner filters for Active
+            // status, so once an event crosses the 4h line and is auto-Completed it
+            // stops showing as resumable. Users returning between 4h and 24h see no
+            // banner, and if their local Preferences still point at that event the VM
+            // resume path validates with the server, sees the Complete status, and
+            // falls through to a fresh start.
+            //
+            // See Project 65 Phase 4.
+            logger.LogInformation("Sweeping abandoned Instant Events...");
+            var eventManager = scope.ServiceProvider.GetRequiredService<IEventManager>();
+            var abandonedCount = await eventManager.CompleteAbandonedInstantEventsAsync(TimeSpan.FromHours(4));
+            logger.LogInformation("Auto-completed {Count} abandoned Instant Events", abandonedCount);
+
             logger.LogInformation("Hourly jobs completed at: {Time}", DateTime.UtcNow);
         }
 

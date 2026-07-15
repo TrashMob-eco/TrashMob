@@ -551,6 +551,115 @@ namespace TrashMob.Shared.Tests.Managers.Events
 
         #endregion
 
+        #region CompleteAbandonedInstantEventsAsync Tests
+
+        [Fact]
+        public async Task CompleteAbandonedInstantEventsAsync_TransitionsMatchingEventsToComplete()
+        {
+            var userId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            var abandoned = new EventBuilder()
+                .WithId(eventId)
+                .WithName("Instant Event abandoned")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(0, 0)
+                .WithEventDate(DateTimeOffset.UtcNow.AddHours(-6))
+                .Build();
+
+            _eventRepository.SetupGetWithFilter(new[] { abandoned });
+            _eventRepository.SetupUpdateAsync();
+
+            var count = await _sut.CompleteAbandonedInstantEventsAsync(TimeSpan.FromHours(4));
+
+            Assert.Equal(1, count);
+            Assert.Equal((int)EventStatusEnum.Complete, abandoned.EventStatusId);
+            Assert.Equal(4, abandoned.DurationHours);
+            Assert.Equal(0, abandoned.DurationMinutes);
+        }
+
+        [Fact]
+        public async Task CompleteAbandonedInstantEventsAsync_ExcludesCompletedEventsAndWizardEvents()
+        {
+            var userId = Guid.NewGuid();
+
+            // Completed Instant — Duration set, should NOT match.
+            var completedInstant = new EventBuilder()
+                .WithName("Completed Instant")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(2, 15)
+                .WithEventDate(DateTimeOffset.UtcNow.AddHours(-6))
+                .Build();
+
+            // Wizard event — Public visibility, should NOT match even with zero duration.
+            var wizardEvent = new EventBuilder()
+                .WithName("Wizard Event")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPublic()
+                .WithDuration(0, 0)
+                .WithEventDate(DateTimeOffset.UtcNow.AddHours(-6))
+                .Build();
+
+            // Recent Instant — under the 4h cutoff, should NOT match.
+            var recentInstant = new EventBuilder()
+                .WithName("Recent Instant")
+                .CreatedBy(userId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(0, 0)
+                .WithEventDate(DateTimeOffset.UtcNow.AddMinutes(-30))
+                .Build();
+
+            _eventRepository.SetupGetWithFilter(new[] { completedInstant, wizardEvent, recentInstant });
+            _eventRepository.SetupUpdateAsync();
+
+            var count = await _sut.CompleteAbandonedInstantEventsAsync(TimeSpan.FromHours(4));
+
+            Assert.Equal(0, count);
+            Assert.Equal((int)EventStatusEnum.Active, wizardEvent.EventStatusId);
+            Assert.Equal((int)EventStatusEnum.Active, recentInstant.EventStatusId);
+        }
+
+        [Fact]
+        public async Task CompleteAbandonedInstantEventsAsync_UsesCreatorForAuditFields()
+        {
+            // Never invent a sentinel system-user id (Project 64 lessons learned).
+            // The event creator gets attributed as the auto-completer of their own event.
+            var creatorId = Guid.NewGuid();
+            var abandoned = new EventBuilder()
+                .WithName("Instant")
+                .CreatedBy(creatorId)
+                .AsActive()
+                .AsPrivate()
+                .WithDuration(0, 0)
+                .WithEventDate(DateTimeOffset.UtcNow.AddHours(-6))
+                .Build();
+
+            _eventRepository.SetupGetWithFilter(new[] { abandoned });
+            _eventRepository.SetupUpdateAsync();
+
+            await _sut.CompleteAbandonedInstantEventsAsync(TimeSpan.FromHours(4));
+
+            _eventRepository.Verify(r => r.UpdateAsync(
+                It.Is<Event>(e => e.LastUpdatedByUserId == creatorId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task CompleteAbandonedInstantEventsAsync_ReturnsZero_WhenNoAbandonedEvents()
+        {
+            _eventRepository.SetupGetWithFilter(Array.Empty<Event>());
+
+            var count = await _sut.CompleteAbandonedInstantEventsAsync(TimeSpan.FromHours(4));
+
+            Assert.Equal(0, count);
+        }
+
+        #endregion
+
         #region GetInProgressInstantEventsAsync Tests
 
         [Fact]

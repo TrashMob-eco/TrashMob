@@ -423,6 +423,48 @@ namespace TrashMob.Shared.Managers.Events
         }
 
         /// <inheritdoc />
+        public async Task<int> CompleteAbandonedInstantEventsAsync(TimeSpan abandonmentThreshold,
+            CancellationToken cancellationToken = default)
+        {
+            var cutoff = DateTimeOffset.UtcNow - abandonmentThreshold;
+
+            var abandoned = await Repo.Get(e =>
+                    e.EventStatusId == (int)EventStatusEnum.Active
+                    && e.EventVisibilityId == (int)EventVisibilityEnum.Private
+                    && e.DurationHours == 0
+                    && e.DurationMinutes == 0
+                    && e.EventDate < cutoff)
+                .ToListAsync(cancellationToken);
+
+            if (abandoned.Count == 0)
+            {
+                return 0;
+            }
+
+            // Duration is set to the threshold rather than the true elapsed time. The
+            // user was probably done long before the "abandoned" line — we don't know
+            // when, so pick a plausible cap. Also keeps abandoned events from returning
+            // absurd durations (e.g. an event started three days ago shouldn't show as
+            // 72h of cleanup).
+            var thresholdHours = (int)abandonmentThreshold.TotalHours;
+            var thresholdMinutes = abandonmentThreshold.Minutes;
+
+            foreach (var mobEvent in abandoned)
+            {
+                mobEvent.EventStatusId = (int)EventStatusEnum.Complete;
+                mobEvent.DurationHours = thresholdHours;
+                mobEvent.DurationMinutes = thresholdMinutes;
+
+                // Use the event creator for audit fields — never invent a sentinel
+                // system-user id (Project 64 lessons learned). Semantic reading:
+                // "the user's own event was auto-completed on their behalf."
+                await base.UpdateAsync(mobEvent, mobEvent.CreatedByUserId, cancellationToken);
+            }
+
+            return abandoned.Count;
+        }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetInProgressInstantEventsAsync(Guid userId,
             CancellationToken cancellationToken = default)
         {
