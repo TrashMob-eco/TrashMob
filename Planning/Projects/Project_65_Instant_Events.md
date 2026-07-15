@@ -2,11 +2,35 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | Complete — all phases shipped 2026-07-12 through 2026-07-14 |
 | **Priority** | Medium |
 | **Risk** | Low |
-| **Size** | Small |
+| **Size** | Small (grew to ~10 PRs; each individually small) |
 | **Dependencies** | [Project 15 (Route Tracing)](./Project_15_Route_Tracing.md) — the optional route-tracking toggle depends on the mobile route-recording pipeline already shipped in Phases 1–5 |
+
+## Shipped
+
+| Phase / Slice | PR | Shipped |
+|---------------|-----|---------|
+| Planning doc + decisions | [#3496](https://github.com/TrashMob-eco/TrashMob/pull/3496) | 2026-07-12 |
+| Phase 1 backend endpoints (`POST /events/instant`, `PUT /events/{id}/complete`) | [#3497](https://github.com/TrashMob-eco/TrashMob/pull/3497) | 2026-07-12 |
+| Phase 1 mobile UI + local resume (Preferences-backed) | [#3498](https://github.com/TrashMob-eco/TrashMob/pull/3498) | 2026-07-12 |
+| Phase 1 cross-device resume (server-side lookup fallback) | [#3499](https://github.com/TrashMob-eco/TrashMob/pull/3499) | 2026-07-12 |
+| Phase 2 reverse geocoding (server-side at creation) | [#3500](https://github.com/TrashMob-eco/TrashMob/pull/3500) | 2026-07-13 |
+| Phase 2 route tracking toggle + shared `IRouteRecordingCoordinator` | [#3501](https://github.com/TrashMob-eco/TrashMob/pull/3501) | 2026-07-13 |
+| Wizard refactor to use the coordinator (net −70 lines) | [#3502](https://github.com/TrashMob-eco/TrashMob/pull/3502) | 2026-07-13 |
+| Phase 2 route resume after app force-close | [#3503](https://github.com/TrashMob-eco/TrashMob/pull/3503) | 2026-07-13 |
+| Phase 3 community auto-detection banner | [#3504](https://github.com/TrashMob-eco/TrashMob/pull/3504) | 2026-07-14 |
+| Phase 4 abandonment guard (hourly job) | [#3505](https://github.com/TrashMob-eco/TrashMob/pull/3505) | 2026-07-14 |
+
+## Lessons learned
+
+- **The doc's "opt-in" mechanism for Phase 3 turned out to be unnecessary.** The doc assumed community linkage would need a `CommunityId` FK on `Event`. Discovered during implementation that `CommunityManager.GetCommunityStatsAsync` already aggregates events via bounding-box match with no per-event flag involved — so linkage happens automatically. Shipped as an informational banner instead of an opt-in.
+- **Server-side reverse geocoding beat client-side.** Doc suggested mobile-side; server-side was cleaner (one API call, no follow-up round trip, no stale-address gap) and `IMapManager.GetAddressAsync` already existed in the manager's constructor scope.
+- **Route resume after force-close needed hydration in three places**, not just the one the initial doc implied. `RouteTrackingSessionManager.TryRestoreSession` had to actually be called (nobody was), the coordinator needed a `TryResumeAsync` method distinct from `StartAsync`, and the writer's `pointOrder` had to be re-seeded from `SyncQueue.GetMaxPointOrderAsync` to avoid PointOrder collisions with existing SQLite points.
+- **Sharing the coordinator with wizard events was worth the refactor.** Phase 2 slice 2 shipped the coordinator + Instant Events integration; a follow-up PR ripped ~120 lines of near-duplicate code out of `ViewEventViewModel` in exchange for a single Start/Stop call sandwiched by `Task.Delay(Timeout.Infinite, cancellationToken)`. Net −70 lines in the wizard VM, behavior fully preserved.
+- **Abandonment guard didn't need the mobile "prompt on next open" the doc suggested.** Once auto-Completed, the event drops out of `GetInProgressInstantEventsAsync` (which requires Active status), so the resume banner just doesn't appear. Local Preferences → server validation → clean fresh start. No prompt needed — the existing resume flow degrades gracefully.
+- **Reverse-engineering community aggregation before writing Phase 3 saved a schema migration.** Would have been easy to charge in with a `CommunityId` FK + backfill migration + join queries. Reading `GetCommunityStatsAsync` first showed that the bounding-box match was already doing the work.
 
 ## Business Rationale
 
