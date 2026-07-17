@@ -119,6 +119,7 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setQuery(e.target.value);
+        setShowSuggestion(true);
     };
 
     const customInputProps: RenderInputProps = {
