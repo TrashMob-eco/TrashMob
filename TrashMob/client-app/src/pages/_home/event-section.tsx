@@ -50,7 +50,14 @@ const useGetFilteredEvents = (params: GetFilteredEvents_Params) => {
 
 export const EventSection = (props: EventSectionProps) => {
     const { isUserLoaded, currentUser } = useLogin();
-    const defaultMapCenter = useGetDefaultMapCenter();
+    const geoDefaultCenter = useGetDefaultMapCenter();
+    const defaultMapCenter = useMemo(
+        () =>
+            isUserLoaded && currentUser.latitude != null && currentUser.longitude != null
+                ? { lat: currentUser.latitude, lng: currentUser.longitude }
+                : geoDefaultCenter,
+        [isUserLoaded, currentUser.latitude, currentUser.longitude, geoDefaultCenter],
+    );
 
     /** Statuses */
     const statuses = [
