@@ -17,7 +17,7 @@ export const LeaderboardsPage = () => {
     const canViewRanking = isFeatureEnabled(PrivoFeature.Leaderboard);
     const [entityType, setEntityType] = useState<'users' | 'teams'>('users');
     const [leaderboardType, setLeaderboardType] = useState('Events');
-    const [timeRange, setTimeRange] = useState('Month');
+    const [timeRange, setTimeRange] = useState('AllTime');
 
     // Fetch available options
     const { data: optionsResponse } = useQuery({

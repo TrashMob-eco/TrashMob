@@ -206,7 +206,7 @@ namespace TrashMob.Controllers.V2
 
                 if (!string.IsNullOrEmpty(category))
                 {
-                    url += $"&filters[news_category][slug][$eq]={category}";
+                    url += $"&filters[category][slug][$eq]={category}";
                 }
 
                 var client = httpClientFactory.CreateClient();
