@@ -138,12 +138,18 @@ export const EventSection = (props: EventSectionProps) => {
     /**
      * Side Effect
      */
-    // Side Effect 1: Reverse Search City from lat,lng
+    // Side Effect 1: Reverse Search City from lat,lng.
+    // Key on scalar lat/lng — not the defaultMapCenter object — so an
+    // async browser-geolocation resolve (which produces a new useMemo
+    // object with unchanged user coords) does not re-fire this effect
+    // and clobber a location the user just picked from the search box.
+    const centerLat = defaultMapCenter.lat;
+    const centerLng = defaultMapCenter.lng;
     useEffect(() => {
         ReverseGeocode()
             .service({
-                lat: defaultMapCenter.lat,
-                long: defaultMapCenter.lng,
+                lat: centerLat,
+                long: centerLng,
             })
             .then((response) => {
                 const result = response.data.addresses[0];
@@ -156,7 +162,7 @@ export const EventSection = (props: EventSectionProps) => {
                 };
                 setSelectedLocation(location);
             });
-    }, [defaultMapCenter]);
+    }, [centerLat, centerLng]);
 
     // Side Effect 2: When eventStatusFilter change, set timeRangeOption accordingly
     useEffect(() => {
