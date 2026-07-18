@@ -1,0 +1,91 @@
+# Workflow for deploying the production Azure Front Door profile from Deploy/frontDoor.bicep.
+#
+# Before this workflow existed, frontDoor.bicep was a manual `az deployment group create` per
+# OPERATIONS_RUNBOOK.md — easy to forget. On 2026-07-18 a queryStringCachingBehavior fix was
+# merged to `release` and appeared to deploy (the Container App workflow succeeded), but Front
+# Door was unchanged for ~40 minutes because nobody ran the manual bicep re-apply.
+
+name: TrashMobProd - Front Door
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - '.github/workflows/release_frontdoor-tm-pr.yml'
+      - 'Deploy/frontDoor.bicep'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-prod-frontdoor
+  cancel-in-progress: true
+
+env:
+  RESOURCE_GROUP: rg-trashmob-pr-westus2
+  CONTAINER_APP_NAME: ca-tm-pr-westus2
+  FRONT_DOOR_PROFILE: fd-tm-pr
+  FRONT_DOOR_ENDPOINT: fde-tm-pr
+  PRIMARY_DOMAIN: www.trashmob.eco
+  APEX_DOMAIN: trashmob.eco
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Login to Azure
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Fetch the container-app FQDN at deploy time so we don't hardcode the environment's
+      # `greenground-fd8fc385` subdomain — that value would change if the Container Apps
+      # environment were ever recreated.
+      - name: Get Container App FQDN
+        id: get-fqdn
+        run: |
+          FQDN=$(az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query properties.configuration.ingress.fqdn \
+            -o tsv)
+          echo "Container App FQDN: $FQDN"
+          echo "fqdn=$FQDN" >> $GITHUB_OUTPUT
+
+      - name: Deploy Front Door
+        run: |
+          az deployment group create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --template-file Deploy/frontDoor.bicep \
+            --parameters \
+              environment=pr \
+              containerAppFqdn=${{ steps.get-fqdn.outputs.fqdn }} \
+              primaryDomain=${{ env.PRIMARY_DOMAIN }} \
+              apexDomain=${{ env.APEX_DOMAIN }}
+
+      # Purge cached HTML/asset responses so the new bicep behavior (and any updated
+      # cache-control from a same-deploy container image) takes effect immediately, not
+      # after Front Door's default TTL expires. Backend Cache-Control: no-store on
+      # index.html (Program.cs, added alongside this workflow) makes future purges
+      # optional for the SPA shell, but purging is still the right call because bicep
+      # changes to cacheConfiguration don't invalidate cached entries.
+      - name: Purge Front Door cache
+        run: |
+          az afd endpoint purge \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --profile-name ${{ env.FRONT_DOOR_PROFILE }} \
+            --endpoint-name ${{ env.FRONT_DOOR_ENDPOINT }} \
+            --content-paths "/" "/index.html" "/assets/*"
+
+      - name: Logout from Azure
+        if: always()
+        run: az logout
