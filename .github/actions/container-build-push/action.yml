@@ -30,12 +30,19 @@ inputs:
     default: ''
 
 outputs:
+  # The unique per-commit tag consumers should deploy. GitVersion emits the same semVer
+  # (`2.11.1169`) for many consecutive commits on release under the current Mainline
+  # config (probably tag-derived + slow-to-increment). Deploying the same tag causes
+  # Azure Container Apps to see "no image change" and skip creating a new revision even
+  # when the pushed bytes at that tag differ — which stranded three Program.cs deploys
+  # on 2026-07-18 until the revision was manually rolled. Suffixing with the short SHA
+  # guarantees each commit produces a unique tag, so ACA rolls reliably.
   semver:
-    description: 'Semantic version from GitVersion'
-    value: ${{ steps.version_step.outputs.semVer }}
+    description: 'Unique per-commit tag (`{semVer}-{shortSha}`) — deploy this.'
+    value: ${{ steps.version_step.outputs.semVer }}-${{ steps.version_step.outputs.shortSha }}
   image-tag:
-    description: 'Full image tag (registry/image:version)'
-    value: ${{ inputs.registry-name }}.azurecr.io/${{ inputs.image-name }}:${{ steps.version_step.outputs.semVer }}
+    description: 'Full unique image tag (registry/image:{semVer}-{shortSha})'
+    value: ${{ inputs.registry-name }}.azurecr.io/${{ inputs.image-name }}:${{ steps.version_step.outputs.semVer }}-${{ steps.version_step.outputs.shortSha }}
 
 runs:
   using: 'composite'
@@ -68,9 +75,17 @@ runs:
     - name: Build and push Docker image
       shell: bash
       run: |
-        IMAGE_TAG="${{ inputs.registry-name }}.azurecr.io/${{ inputs.image-name }}:${{ steps.version_step.outputs.semVer }}"
+        # Unique per-commit tag — this is what the caller deploys.
+        IMAGE_TAG_UNIQUE="${{ inputs.registry-name }}.azurecr.io/${{ inputs.image-name }}:${{ steps.version_step.outputs.semVer }}-${{ steps.version_step.outputs.shortSha }}"
+        # Rolling semver tag — kept for humans doing manual pulls / rollbacks by version.
+        IMAGE_TAG_SEMVER="${{ inputs.registry-name }}.azurecr.io/${{ inputs.image-name }}:${{ steps.version_step.outputs.semVer }}"
         IMAGE_TAG_LATEST="${{ inputs.registry-name }}.azurecr.io/${{ inputs.image-name }}:latest"
 
-        docker build -f ${{ inputs.dockerfile }} ${{ inputs.build-args }} -t $IMAGE_TAG -t $IMAGE_TAG_LATEST ${{ inputs.context }}
-        docker push $IMAGE_TAG
+        docker build -f ${{ inputs.dockerfile }} ${{ inputs.build-args }} \
+          -t $IMAGE_TAG_UNIQUE \
+          -t $IMAGE_TAG_SEMVER \
+          -t $IMAGE_TAG_LATEST \
+          ${{ inputs.context }}
+        docker push $IMAGE_TAG_UNIQUE
+        docker push $IMAGE_TAG_SEMVER
         docker push $IMAGE_TAG_LATEST
