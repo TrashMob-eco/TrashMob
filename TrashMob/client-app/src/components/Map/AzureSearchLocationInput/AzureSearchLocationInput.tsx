@@ -149,8 +149,12 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
             )}
             <CommandList
                 className={cn(
-                    'hidden [&.cmdk-list-sizer]:w-full',
-                    { flex: showSuggestion && query.length > 1 },
+                    '[&.cmdk-list-sizer]:w-full',
+                    // Toggle between hidden and flex (don't stack both) — in
+                    // Tailwind 4's generated CSS `hidden` comes after `flex`
+                    // in the display-utility group, so stacking makes the
+                    // dropdown invisible even when `flex` is present.
+                    showSuggestion && query.length > 1 ? 'flex' : 'hidden',
                     listClassName,
                 )}
             >
