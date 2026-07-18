@@ -222,15 +222,16 @@ resource route 'Microsoft.Cdn/profiles/afdEndpoints/routes@2024-02-01' = {
     httpsRedirect: 'Disabled'
     enabledState: 'Enabled'
     cacheConfiguration: {
-      // Required by the AFD Standard/Premium schema whenever
-      // cacheConfiguration is set. Matches the effective behavior of
-      // the historic config that was accepted under an older API
-      // version — Front Door treats a URL's cache key without regard
-      // to query string, which is correct for our SPA (all client
-      // routing lives in the app; the same index.html is served for
-      // any path). Origin Cache-Control headers still control whether
-      // any given response is actually cached.
-      queryStringCachingBehavior: 'IgnoreQueryString'
+      // Cache key MUST include the query string — otherwise API responses
+      // like /api/v2/maps/search?query=X and ?query=Y share a cache entry
+      // and the first response wins for every subsequent caller (2026-07-18:
+      // "Toronto" returned an Azure Maps response for query="iss" —
+      // Wellesley Islands, Australia). The SPA doesn't rely on query
+      // strings for HTML delivery, so this only adds harmless per-URL
+      // cache fragmentation for /*.html while making /api/* correct.
+      // Origin Cache-Control headers still control whether any given
+      // response is actually cached.
+      queryStringCachingBehavior: 'UseQueryString'
       compressionSettings: {
         isCompressionEnabled: true
         contentTypesToCompress: [
