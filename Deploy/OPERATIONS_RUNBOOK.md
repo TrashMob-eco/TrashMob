@@ -123,19 +123,33 @@ curl -sSI https://trashmob.eco   # expect: HTTP/2 308, location: https://www.tra
 curl -sSI https://www.trashmob.eco   # expect: HTTP/2 200
 ```
 
-### Re-deploy Front Door (rare — only if config drift)
+### Re-deploy Front Door
 
-The deployed state is described by [`Deploy/frontDoor.bicep`](frontDoor.bicep). Re-applying the template is idempotent:
+The deployed state is described by [`Deploy/frontDoor.bicep`](frontDoor.bicep). Any commit to `release` that touches that file (or the workflow itself) triggers [`release_frontdoor-tm-pr.yml`](../.github/workflows/release_frontdoor-tm-pr.yml), which redeploys the bicep and purges the Front Door cache. Prefer that path — merge to `release`.
+
+If you need to reapply outside CI (config drift, testing a parameter tweak, GitHub Actions outage), the workflow can be triggered manually from the Actions tab (`workflow_dispatch`), or you can run the underlying command locally — the template is idempotent:
 
 ```bash
+CONTAINER_APP_FQDN=$(az containerapp show \
+  --name ca-tm-pr-westus2 \
+  --resource-group rg-trashmob-pr-westus2 \
+  --query properties.configuration.ingress.fqdn -o tsv)
+
 az deployment group create \
   --resource-group rg-trashmob-pr-westus2 \
   --template-file Deploy/frontDoor.bicep \
   --parameters \
     environment=pr \
-    containerAppFqdn=ca-tm-pr-westus2.greenground-fd8fc385.westus2.azurecontainerapps.io \
+    containerAppFqdn=$CONTAINER_APP_FQDN \
     primaryDomain=www.trashmob.eco \
     apexDomain=trashmob.eco
+
+# Purge cache so any cacheConfiguration change takes effect immediately.
+az afd endpoint purge \
+  --resource-group rg-trashmob-pr-westus2 \
+  --profile-name fd-tm-pr \
+  --endpoint-name fde-tm-pr \
+  --content-paths "/" "/index.html" "/assets/*"
 ```
 
 ## Azure DNS Zone

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
@@ -427,8 +428,35 @@ public class Program
 
         app.UseHttpsRedirection();
         app.UseResponseCompression();
-        app.UseStaticFiles();
-        app.UseSpaStaticFiles();
+
+        // Cache policy for SPA assets:
+        //   /assets/*  → Vite emits hashed filenames (e.g. index-mf4CIRi9.js), so the URL itself
+        //                changes every deploy. Safe to cache aggressively (1 year, immutable).
+        //   everything else (index.html, /) → the URL is stable but the content — specifically the
+        //                <script src="/assets/index-<hash>.js"> — changes every deploy. If any
+        //                intermediate cache (Front Door, browser, corporate proxy) serves a stale
+        //                index.html, users load fresh code from a bundle URL the shell doesn't
+        //                reference, or worse the reverse. We hit this on 2026-07-18 when Front Door
+        //                cached index.html and users were pinned to the old bundle for ~40 minutes
+        //                after a fix deployed. no-store prevents both edge and browser caching.
+        static void SetSpaCacheHeaders(StaticFileResponseContext ctx)
+        {
+            var path = ctx.Context.Request.Path.Value ?? string.Empty;
+            // Set the raw header string directly — the typed CacheControlHeaderValue doesn't
+            // expose the "immutable" directive and mixing typed + raw would produce two headers.
+            ctx.Context.Response.Headers["Cache-Control"] = path.StartsWith("/assets/", StringComparison.OrdinalIgnoreCase)
+                ? "public, max-age=31536000, immutable"
+                : "no-store, no-cache, must-revalidate";
+        }
+
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            OnPrepareResponse = SetSpaCacheHeaders,
+        });
+        app.UseSpaStaticFiles(new StaticFileOptions
+        {
+            OnPrepareResponse = SetSpaCacheHeaders,
+        });
 
         app.UseRouting();
 
