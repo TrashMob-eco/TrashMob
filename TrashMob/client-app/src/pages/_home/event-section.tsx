@@ -190,8 +190,14 @@ export const EventSection = (props: EventSectionProps) => {
                             <AzureSearchLocationInput
                                 entityType={['Municipality']}
                                 placeholder={selectedLocation ? selectedLocation.address.municipality : 'Location ...'}
-                                className='rounded-none! border-none! shadow-none! bg-transparent!'
-                                listClassName='rounded-lg! border md:min-w-[200px] relative shadow-md bg-card mt-2!'
+                                // overflow-visible! overrides shadcn Command's default
+                                // overflow-hidden so the dropdown isn't clipped by the
+                                // 60px fixed-height wrapper above.
+                                className='rounded-none! border-none! shadow-none! bg-transparent! overflow-visible!'
+                                // absolute-position the dropdown so it overlays content
+                                // below the input instead of trying to expand inside the
+                                // 60px flex-column parent (which had 0 room for it).
+                                listClassName='absolute top-full left-0 z-20 rounded-lg! border md:min-w-[200px] shadow-md bg-card mt-2!'
                                 renderInput={(inputProps) => (
                                     <div className='w-fit flex flex-row items-center'>
                                         <input
