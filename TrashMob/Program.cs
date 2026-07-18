@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +24,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -429,34 +429,57 @@ public class Program
         app.UseHttpsRedirection();
         app.UseResponseCompression();
 
-        // Cache policy for SPA assets:
-        //   /assets/*  → Vite emits hashed filenames (e.g. index-mf4CIRi9.js), so the URL itself
-        //                changes every deploy. Safe to cache aggressively (1 year, immutable).
-        //   everything else (index.html, /) → the URL is stable but the content — specifically the
-        //                <script src="/assets/index-<hash>.js"> — changes every deploy. If any
-        //                intermediate cache (Front Door, browser, corporate proxy) serves a stale
-        //                index.html, users load fresh code from a bundle URL the shell doesn't
-        //                reference, or worse the reverse. We hit this on 2026-07-18 when Front Door
-        //                cached index.html and users were pinned to the old bundle for ~40 minutes
-        //                after a fix deployed. no-store prevents both edge and browser caching.
-        static void SetSpaCacheHeaders(StaticFileResponseContext ctx)
+        // Cache policy for SPA responses. Runs as a global middleware (before static files)
+        // and uses Response.OnStarting so it catches the header just before the response is
+        // sent — regardless of whether the response came from UseStaticFiles,
+        // UseSpaStaticFiles, or UseSpa's fallback (which rewrites the path to /index.html
+        // and re-enters the pipeline via its own internal StaticFileOptions instance, which
+        // is why a StaticFileOptions.OnPrepareResponse on OUR calls to UseStaticFiles alone
+        // did not fire for `/` — observed on 2026-07-18 prod).
+        //
+        // /assets/*  → Vite emits hashed filenames (e.g. index-mf4CIRi9.js), so the URL
+        //              itself changes every deploy. Safe to cache aggressively.
+        // everything else (index.html, /, /dashboard, …) → URL is stable but the content
+        //              — specifically the <script src="/assets/index-<hash>.js"> — changes
+        //              every deploy. If any intermediate cache serves a stale shell, users
+        //              load fresh code from a bundle URL the shell doesn't reference (or
+        //              vice-versa). We hit this on 2026-07-18 when Front Door cached
+        //              index.html with no origin Cache-Control and users were pinned to the
+        //              old bundle for ~40 minutes after a fix deployed. no-store on the
+        //              shell prevents both edge and browser caching.
+        //
+        // Applied only to GETs; API routes never satisfy either condition since they're
+        // handled by MapControllers, not static files, and don't fall through to /assets/.
+        app.Use(async (context, next) =>
         {
-            var path = ctx.Context.Request.Path.Value ?? string.Empty;
-            // Set the raw header string directly — the typed CacheControlHeaderValue doesn't
-            // expose the "immutable" directive and mixing typed + raw would produce two headers.
-            ctx.Context.Response.Headers["Cache-Control"] = path.StartsWith("/assets/", StringComparison.OrdinalIgnoreCase)
-                ? "public, max-age=31536000, immutable"
-                : "no-store, no-cache, must-revalidate";
-        }
+            context.Response.OnStarting(() =>
+            {
+                // Only set for successful static-content responses; leave API and error
+                // paths to whatever the controller / exception handler decided.
+                if (context.Response.StatusCode is < 200 or >= 300)
+                {
+                    return Task.CompletedTask;
+                }
 
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            OnPrepareResponse = SetSpaCacheHeaders,
+                var path = context.Request.Path.Value ?? string.Empty;
+                if (path.StartsWith("/api", StringComparison.OrdinalIgnoreCase) ||
+                    path.StartsWith("/health", StringComparison.OrdinalIgnoreCase) ||
+                    path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Task.CompletedTask;
+                }
+
+                context.Response.Headers["Cache-Control"] =
+                    path.StartsWith("/assets/", StringComparison.OrdinalIgnoreCase)
+                        ? "public, max-age=31536000, immutable"
+                        : "no-store, no-cache, must-revalidate";
+                return Task.CompletedTask;
+            });
+            await next();
         });
-        app.UseSpaStaticFiles(new StaticFileOptions
-        {
-            OnPrepareResponse = SetSpaCacheHeaders,
-        });
+
+        app.UseStaticFiles();
+        app.UseSpaStaticFiles();
 
         app.UseRouting();
 
