@@ -1,9 +1,11 @@
 # Apex First-Visit "Site Not Found" — Investigation Log
 
-**Status:** Fix A deployed 2026-07-05; monitoring for symptom recurrence
+**Status:** ✅ Root cause identified and mitigated 2026-07-21. See change log entry for that date; short version: Azure DNS alias-A resolution for the AFD Standard endpoint was returning the ACA env's static IP (20.69.75.244) from a subset of nameservers, poisoning the caches of every major public resolver (Cloudflare, Google, Quad9) for months. Fixed by replacing the apex alias with explicit AFD anycast A records + binding apex to the Container App as a temporary safety net for stale-cache clients.
 **First observed:** ongoing for months as of 2026-07-05
 **Reproduction rate:** intermittent; multiple users report seeing it on first visit to `trashmob.eco`
 **Owner:** Joe
+
+**⚠ Theories 1-4 below are preserved for historical accuracy but were all wrong.** The actual root cause turned out to be an Azure DNS bug, not a TLS/HSTS/POP-config issue as originally hypothesized. Read the 2026-07-21 change log entry first.
 
 ## Symptom
 
@@ -102,6 +104,27 @@ If Theory 3 evidence appears (Front Door access logs show a nonzero rate of 404s
 4. Update this file with what you find. Add a section under `Working theories` with a date, or an entry under `## Not-yet-checked`.
 
 ## Change log
+
+- **2026-07-21 (Theory 5 — actual root cause) — Azure DNS alias resolution for AFD Standard endpoints returns the origin's ACA env IP; caches at Cloudflare/Google/Quad9 were poisoned for months.** Reddit crowd-source ([post](https://www.reddit.com/r/azure/)) surfaced two decisive signals: (1) one respondent saw an "Error 404 - This Container App is stopped or does not exist" blue page — the Azure Container Apps environment default 404, only served when a request reaches the ACA env with a Host header not bound to any custom domain; (2) a second respondent claimed "DNS shows apex and www pointing directly to Container Apps." The second observation was correct; ours was wrong.
+
+  **Investigation** — inspection of the four Azure DNS authoritative nameservers returned three different answers to the same query for the apex alias A record:
+  - `ns1-07`, `ns2-07`, `ns4-07`: `13.107.226.70` + `13.107.253.70` (classic AFD anycast — correct)
+  - `ns3-07`: `150.171.110.146` (AFD Std/Prem frontend — also correct)
+  - Public resolvers (`1.1.1.1`, `8.8.8.8`, `9.9.9.9`): `20.69.75.244` — **the ACA env's static IP** (`az containerapp env show -n cae-tm-pr-westus2 --query "properties.staticIp"` returns the same value)
+
+  None of the four Azure NSes were currently returning `20.69.75.244`, but the poisoned answer was pervasively cached in the three most-used public resolvers. The alias A record's `targetResource.id` pointed at the AFD endpoint resource, which should resolve to AFD frontend IPs — but Azure DNS was apparently "walking" the AFD endpoint's origin group → origin's `hostName` (the ACA default FQDN) → A record and returning that. That's an alias-resolver bug — Azure DNS should return only the target's own frontend IPs, not traverse into origins.
+
+  **Why this looked intermittent for months** — users whose recursive resolver happened to be pointed at Cloudflare/Google/Quad9 (huge fraction of internet DNS) got `20.69.75.244` and connected directly to the ACA env with `Host: trashmob.eco`, which was never bound as a custom domain on ACA → TLS handshake fails / connection reset / blue "Container App not found" 404 (depending on ACA env behavior at that moment). Users whose resolver was pointed elsewhere got a valid AFD anycast IP and everything worked. Refresh sometimes worked because a re-attempt might race a different resolver path.
+
+  **Fix (live, applied 2026-07-21 ~14:20 UTC):**
+  1. Deleted the apex alias A record, replaced with explicit A records for `13.107.226.70` + `13.107.253.70` (classic AFD anycast, routes to any AFD tenant via SNI). TTL 300 for future agility.
+  2. Bicep change to [`Deploy/dnsZone.bicep`](dnsZone.bicep) removes the `frontDoorEndpointId` alias-target param and declares the explicit `ARecords` array with the AFD anycast pair.
+
+  **Follow-on outage (fixed same day)** — first attempt to remove the orphan `www.trashmob.eco` custom-domain binding on the Container App (redditor's advice, sound in principle) took the site down for every user whose resolver still had the poisoned `www → ACA FQDN → 20.69.75.244` cache — with the CA binding gone, ACA no longer had a cert for `www.trashmob.eco`, so those users got TLS reset. Reversed immediately with `az containerapp hostname bind`. Lesson: **cannot remove a binding that has been publicly-served for a long time until stale caches at all major resolvers have provably aged out.**
+
+  **Bridge state (for at least 24-48h from 2026-07-21):** ACA has BOTH `www.trashmob.eco` and `trashmob.eco` bound as custom domains, each with its own managed cert (`trashmob-eco-cert` and `trashmob-eco-apex-cert`). Front Door is the canonical path for both. The ACA bindings exist purely to TLS-terminate stale-cache clients. Once telemetry (or manual probes at 1.1.1.1/8.8.8.8/9.9.9.9) shows apex A record has fully re-resolved to `13.107.226.70`/`13.107.253.70`, the ACA bindings can be removed. Bicep changes in this PR declare both bindings so the next release does not strip them.
+
+  **Not fixed by this change** — Azure DNS's underlying alias-resolution bug is still there and will presumably keep affecting anyone else on the internet who follows Microsoft's own "use an alias A record for apex" AFD documentation. Worth a Microsoft support ticket / GitHub issue against `MicrosoftDocs/azure-docs` documenting the reproduction.
 
 - **2026-07-05 (late evening, apex restored)** — Apex domain fully restored; Fix A confirmed live on all four paths.
   - After the customDomains hotfix in #3492 landed, `az afd route show` confirmed both custom domains were bound to the route, but apex probes kept returning 404 / connection reset. Root cause: `az afd custom-domain show trashmob-eco` reported `domainValidationState: PendingRevalidation` while `www-trashmob-eco` was `Approved`. The stripped-then-re-added apex binding forced a fresh managed-cert validation, and the `_dnsauth.trashmob.eco` TXT record still held the *original* validation token from initial cutover.

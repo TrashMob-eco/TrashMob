@@ -33,6 +33,11 @@ env:
   REGION: westus2
   CUSTOM_DOMAIN_NAME: www.trashmob.eco
   MANAGED_CERTIFICATE_NAME: trashmob-eco-cert
+  # Apex binding: bridge for stale-cache users pinned to the ACA env IP
+  # by the Azure DNS alias-record bug — see Deploy/APEX_FIRST_VISIT_INVESTIGATION.md
+  # (2026-07-21 change log entry). Front Door remains the canonical apex path.
+  APEX_DOMAIN_NAME: trashmob.eco
+  APEX_MANAGED_CERTIFICATE_NAME: trashmob-eco-apex-cert
   STRAPI_CONTAINER_APP_NAME: ca-strapi-tm-pr-westus2
 
 jobs:
@@ -106,6 +111,8 @@ jobs:
               maxReplicas=10 \
               customDomainName=${{ env.CUSTOM_DOMAIN_NAME }} \
               managedCertificateName=${{ env.MANAGED_CERTIFICATE_NAME }} \
+              apexDomainName=${{ env.APEX_DOMAIN_NAME }} \
+              apexManagedCertificateName=${{ env.APEX_MANAGED_CERTIFICATE_NAME }} \
               strapiBaseUrl="${{ steps.get-strapi.outputs.strapi_url }}"
 
       # Note: Azure AD Entra External ID configuration is set via environment variables in containerApp.bicep
