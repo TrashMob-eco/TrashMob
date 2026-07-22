@@ -15,8 +15,21 @@ param strapiBaseUrl string = ''
 param customDomainName string = ''
 param managedCertificateName string = ''
 
-// Build the managed certificate resource ID if provided
+// Optional secondary custom-domain binding (apex domain) — bound to the
+// Container App as a safety net for users whose DNS resolvers still
+// have the pre-fix `trashmob.eco -> ACA env IP (20.69.75.244)` cached
+// from the Azure DNS alias-record bug documented in
+// Deploy/APEX_FIRST_VISIT_INVESTIGATION.md (2026-07-21). Front Door is
+// the canonical path for apex traffic; this binding only exists so
+// that stale-cache connections hitting ACA directly get TLS-terminated
+// and served instead of TCP-reset. Safe to remove once cache
+// telemetry confirms all major public resolvers have re-resolved.
+param apexDomainName string = ''
+param apexManagedCertificateName string = ''
+
+// Build the managed certificate resource IDs if provided
 var managedCertificateId = managedCertificateName != '' ? '${containerAppsEnvironmentId}/managedCertificates/${managedCertificateName}' : ''
+var apexManagedCertificateId = apexManagedCertificateName != '' ? '${containerAppsEnvironmentId}/managedCertificates/${apexManagedCertificateName}' : ''
 
 // Derive the Application Insights name from environment and region
 var appInsightsName = 'ai-tm-${environment}-${region}'
@@ -59,13 +72,18 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: 8080
         transport: 'auto'
         allowInsecure: false
-        customDomains: customDomainName != '' && managedCertificateId != '' ? [
-          {
+        customDomains: concat(
+          customDomainName != '' && managedCertificateId != '' ? [{
             name: customDomainName
             certificateId: managedCertificateId
             bindingType: 'SniEnabled'
-          }
-        ] : []
+          }] : [],
+          apexDomainName != '' && apexManagedCertificateId != '' ? [{
+            name: apexDomainName
+            certificateId: apexManagedCertificateId
+            bindingType: 'SniEnabled'
+          }] : []
+        )
       }
       registries: [
         {

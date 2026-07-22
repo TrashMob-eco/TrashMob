@@ -10,10 +10,7 @@ param frontDoorEndpointHostname string = ''
 @description('Container App FQDN for direct access (fallback if no Front Door)')
 param containerAppFqdn string = ''
 
-@description('Front Door endpoint resource ID for alias record (e.g., /subscriptions/.../providers/Microsoft.Cdn/profiles/fd-tm-pr/afdEndpoints/fde-tm-pr)')
-param frontDoorEndpointId string = ''
-
-@description('Enable Front Door integration (uses alias records for apex)')
+@description('Enable Front Door integration (uses explicit AFD anycast A records for apex)')
 param useFrontDoor bool = true
 
 // Domain-validation tokens for the Front Door managed certificates on
@@ -83,16 +80,39 @@ resource wwwRecord 'Microsoft.Network/dnsZones/CNAME@2023-07-01-preview' = if ((
   }
 }
 
-// Apex A record with alias to Front Door (only if using Front Door)
-// This is the key record that enables apex domain support
-resource apexAliasRecord 'Microsoft.Network/dnsZones/A@2023-07-01-preview' = if (useFrontDoor && frontDoorEndpointId != '') {
+// Apex A record: EXPLICIT Front Door anycast IPs, not an alias-to-endpoint.
+//
+// We used to declare this as `targetResource: { id: frontDoorEndpointId }`
+// (an Azure DNS alias A record) — the standard "apex CNAME" pattern for
+// AFD Standard/Premium. That produced weeks of intermittent user reports
+// of a blue "This Container App is stopped or does not exist" 404 on
+// first visit to trashmob.eco. See Deploy/APEX_FIRST_VISIT_INVESTIGATION.md
+// change log entry for 2026-07-21 for the full autopsy.
+//
+// Root cause: Azure DNS alias resolution for AFD Standard/Premium
+// endpoints was returning inconsistent answers across the four NSes
+// (some correct AFD anycast, some 150.171.x.x AFD Std/Prem frontends,
+// some — critically — the origin's Container Apps environment static
+// IP 20.69.75.244, apparently by "walking" through the AFD origin
+// group's origin hostName). Public resolvers (Cloudflare, Google,
+// Quad9) all cached the ACA env IP, so a majority of first-visit
+// users connected directly to ACA with Host: trashmob.eco, ACA had
+// no cert for that hostname, and the connection died in TLS.
+//
+// Explicit A records pin apex traffic to Microsoft's classic Front
+// Door anycast pair, which routes to any AFD tenant via SNI at the
+// TLS layer regardless of profile SKU. If Microsoft ever changes
+// these anycast IPs (they've been stable since 2016-ish), we update
+// them here.
+resource apexARecord 'Microsoft.Network/dnsZones/A@2023-07-01-preview' = if (useFrontDoor) {
   parent: dnsZone
   name: '@'
   properties: {
-    TTL: 3600
-    targetResource: {
-      id: frontDoorEndpointId
-    }
+    TTL: 300
+    ARecords: [
+      { ipv4Address: '13.107.226.70' }
+      { ipv4Address: '13.107.253.70' }
+    ]
   }
 }
 
