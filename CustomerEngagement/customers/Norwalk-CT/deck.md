@@ -11,7 +11,8 @@ style: |
     font-family: 'Lexend', 'Segoe UI', Arial, sans-serif;
     background-color: #F5F7F8;   /* --background */
     color: #22262A;              /* --foreground */
-    padding: 60px 70px;
+    padding: 50px 60px 70px;     /* extra bottom padding reserves space for footer */
+    font-size: 26px;
   }
   h1 {
     color: #005C4D;              /* --primary — TrashMob teal */
@@ -21,30 +22,33 @@ style: |
     color: #005C4D;
     font-weight: 600;
     border-bottom: 3px solid #005C4D;
-    padding-bottom: 8px;
-    margin-bottom: 24px;
+    padding-bottom: 6px;
+    margin: 0 0 18px 0;
   }
-  h3 { color: #22262A; font-weight: 500; }
+  h3 { color: #22262A; font-weight: 500; margin: 8px 0; }
   strong { color: #005C4D; }
   a { color: #005C4D; text-decoration: underline; }
-  table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.85em; }
   table th {
     background-color: #005C4D;
     color: #FFFFFF;
-    padding: 10px 14px;
+    padding: 6px 10px;
     text-align: left;
     font-weight: 600;
   }
   table td {
-    padding: 10px 14px;
+    padding: 5px 10px;
     border-bottom: 1px solid #E4E7E8;
     vertical-align: top;
+    line-height: 1.35;
   }
   table tr:nth-child(even) td { background-color: #EEF1F2; }
-  ul li { margin: 6px 0; }
+  ul { margin: 8px 0; }
+  ul li { margin: 4px 0; line-height: 1.4; }
+  p { margin: 8px 0; }
   footer {
     color: #666666;
-    font-size: 0.7em;
+    font-size: 0.65em;
   }
   section.lead { text-align: center; }
   section.lead h1 { font-size: 2.8em; margin-bottom: 0.2em; }
