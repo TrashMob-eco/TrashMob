@@ -33,25 +33,34 @@ $pandoc = "$env:LOCALAPPDATA\Pandoc\pandoc.exe"       # or just "pandoc" once yo
 & $pandoc customers\Norwalk-CT\pre-call-brief.md -o customers\Norwalk-CT\pre-call-brief.docx --from=gfm --to=docx
 ```
 
-## Exporting the deck to `.pptx`
+## Exporting the deck to `.pptx` — Marp
 
-**Option A — Pandoc** (no extra deps, plain slides):
-
-```powershell
-& $pandoc customers\Norwalk-CT\deck.md -o customers\Norwalk-CT\deck.pptx --from=gfm --to=pptx --slide-level=2
-```
-
-**Option B — Marp** (nicer styling, matches the Marp preview in VS Code):
+**Do not use pandoc for the deck.** Pandoc can't render the Marp CSS or Marp directives (`![w:140](...)`, `<!-- _class: lead -->`, `footer:`, etc.) — the output shows those as literal text and splits slides in the wrong places. Use Marp.
 
 ```powershell
-# One-time install (downloads chromium on first run — ~150 MB)
+# Preferred install — npm (fast, small)
 npm install -g @marp-team/marp-cli
-# or install "Marp for VS Code" extension for live preview
 
-marp customers\Norwalk-CT\deck.md --pptx    # PowerPoint
-marp customers\Norwalk-CT\deck.md --pdf     # PDF handout
-marp customers\Norwalk-CT\deck.md --html    # Self-contained HTML
+# Fallback install — standalone binary from GitHub Releases
+# Use this when npm registry is unreachable (corporate proxy / TLS issues).
+# ~60 MB download, ~120 MB extracted with bundled chromium.
+$release = Invoke-RestMethod "https://api.github.com/repos/marp-team/marp-cli/releases/latest"
+$url     = ($release.assets | Where-Object name -like "*win.zip").browser_download_url
+$zip     = "$env:TEMP\marp-cli.zip"
+$dest    = "$env:LOCALAPPDATA\marp-cli"
+Invoke-WebRequest -Uri $url -OutFile $zip -UseBasicParsing
+Expand-Archive -Path $zip -DestinationPath $dest -Force
+Remove-Item $zip
+# Then either add $dest to PATH, or invoke via full path each time:
+$marp = "$env:LOCALAPPDATA\marp-cli\marp.exe"
+
+# Generate outputs — --allow-local-files is required so the logo can embed
+& $marp customers\Norwalk-CT\deck.md --pptx --allow-local-files
+& $marp customers\Norwalk-CT\deck.md --pdf  --allow-local-files
+& $marp customers\Norwalk-CT\deck.md --html --allow-local-files
 ```
+
+For live preview while editing: install the "Marp for VS Code" extension.
 
 Why markdown-first instead of maintaining `.pptx` / `.docx` in git:
 - Diffable — reviewers see exactly what changed
