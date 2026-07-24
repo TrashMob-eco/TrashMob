@@ -52,12 +52,40 @@
 - **Cost:** Free. 501(c)(3). No procurement hurdle for the pilot.
 - **We already work with cities.** Live in production since 2022. Ready-made **Community Admin onboarding** ([`Support/COMMUNITY_ADMIN_ONBOARDING.md`](../../../Support/COMMUNITY_ADMIN_ONBOARDING.md)).
 
+## What's actually shipped (double-check before pitching)
+
+The bulk of what a municipal customer would ask for is **already in production** as of July 2026. See [`Planning/README.md`](../../../Planning/README.md) for the authoritative status; short version:
+
+- ✅ **Community Pages** — Norwalk-branded landing page with logo, colors, custom tagline (Project 10)
+- ✅ **Adopt-A-Location** — streets, parks, beaches, traffic islands — teams/individuals/businesses can claim (Project 11)
+- ✅ **Regional Communities** — county- or state-level rollups (Project 39) → Fairfield County or CT-wide framing is available
+- ✅ **Community-specific waivers** (Waivers V3, Project 8) — minor waiver text pending legal review, but infrastructure is live
+- ✅ **Parental consent for minors** — PRIVO integration, production live 2026-05-20 (Project 23)
+- ✅ **Litter reporting on web + mobile** with photos and geotags (Project 3)
+- ✅ **Before/after photos** on events (Project 18)
+- ✅ **Attendee-level metrics** — per-volunteer impact (Project 22)
+- ✅ **Route recording + litter density heatmap** — backend and web live; mobile still under device testing (Projects 15, 48)
+- ✅ **Instant Events / "Start a Pick"** — Strava-style solo cleanup logging (Project 65)
+- ✅ **Weather forecast on event pages** (Project 59)
+- ✅ **Area Map Editor with AI area suggestions + bulk import** — makes setting up Norwalk's adoptable areas trivial (Project 44)
+- ✅ **Sponsored Adoptions** — business/sponsor-funded professional cleanups (Project 41, Phases 1–4 live; analytics remaining)
+- ✅ **Official Participation Reports** — PDF for school/court/employer verification (Project 57, Phases 1–3 live)
+- ✅ **Photo moderation, gamification/leaderboards, Teams, event co-leads** all shipped
+
+**Not yet shipped that could come up:**
+- Project 55 — Event Check-In (QR code check-in at events, pre-event waiver validation)
+- Project 43 — Sign Management (physical Adopt-A-Location sign tracking)
+- Project 12 — In-app messaging / push notifications
+- Project 15 — Mobile route recording (device testing remaining; web + backend live)
+- Project 41 Phase 5 — Sponsored-adoption reporting/analytics
+
 ## Angles to avoid or handle carefully
 
 - **Do not oversell "displacing" the Green Workforce Program.** That's a paid job-training program with equity goals — position TrashMob as an amplifier, never a substitute.
-- **Do not promise features that aren't shipped.** Community Pages custom branding, Adopt-A-Location V2, and route heatmaps are on the Q3–Q4 2026 roadmap. Present them as "coming" honestly. See [`Planning/README.md`](../../../Planning/README.md).
 - **Don't assume Jodi wants a new tool for her team to run.** She has a small office. Frame TrashMob as **residents-run, city-visible** — she gets the reports, David gets fewer inbound coordination calls, we handle onboarding.
-- **Waivers/minors.** Waivers V3 (community-specific waivers, minor/guardian workflow) is Q3 2026 roadmap. Today's waiver is generic. If she pushes on this, be honest that community-specific waivers are coming this fall.
+- **Waivers/minors nuance.** Adult community waivers are live. The minor-specific waiver text is pending legal review — infrastructure is there, we can enable a minor waiver as soon as Norwalk's counsel signs off (or we can use Norwalk's own text). Parental consent (PRIVO) is production-live.
+- **Route heatmaps are a mobile feature** — for a resident with the app who opts in. If Jodi asks about that specifically, note mobile route recording is still in device testing (web + backend already live). Ready shortly, but don't demo it as complete.
+- **Community onboarding is already documented.** Point to [`Support/COMMUNITY_ADMIN_ONBOARDING.md`](../../../Support/COMMUNITY_ADMIN_ONBOARDING.md) — this exists, we've done it before.
 
 ## Likely questions & answers
 

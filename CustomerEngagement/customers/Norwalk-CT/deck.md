@@ -46,16 +46,18 @@ Presented to **Jodi Trendler** — Director of Sustainability and Resilience, Ci
 
 ---
 
-## What TrashMob provides — today
+## What TrashMob provides — today, in production
 
 | Capability | How it helps Norwalk |
 |---|---|
-| Event creation & registration | Residents self-organize; David Shockley's phone gets quieter |
-| Digital waivers | Legal coverage for adults + minors 13+ |
-| Hauler coordination | Auto-notify pickup crews with photos + GPS |
-| Mobile litter reporting | Residents geotag; Green Workforce crew prioritizes |
-| Adoptable areas | Extend "Adopt-a-Spot" to streets, parks, beaches |
-| City impact reports | Bags, hours, areas — exportable for Sustainable CT + grants |
+| **Norwalk-branded community page** | Your logo, colors, calendar — a proper city presence |
+| **Adopt-A-Location** | Streets, parks, beaches, islands — extends Adopt-a-Spot |
+| **Sponsored adoptions** | Local businesses fund pro cleanup on adopted stretches |
+| **Community-specific waivers** | Adult live · minor infra live · PRIVO parental consent live |
+| **Mobile litter reporting** | Residents geotag; Green Workforce crew prioritizes |
+| **"Start a Pick" (Instant Events)** | Strava-style solo logging on a walk |
+| **Impact tracking** | Per-attendee metrics · before/after photos · density heatmap |
+| **Official participation reports** | PDF for school / court / employer verification |
 
 ---
 
@@ -72,28 +74,30 @@ Storm-drain and shoreline cleanups (Calf Pasture Beach, Sheffield Island, drain 
 
 ---
 
-## On the roadmap — Q3–Q4 2026
+## On the near-term backlog
 
-- **Community Pages** — Norwalk-branded landing page, city-specific waivers
-- **Adopt-A-Location V2** — richer sponsorship + business adoption workflows
-- **Route heatmaps** — see which streets got coverage over time
-- **Before/after photos** — visual proof for reporting
-- **Attendee-level metrics** — per-volunteer impact for recognition
+- **Event Check-In** — QR-code check-in at events, pre-event waiver validation, live attendance roster
+- **Sign Management** — track physical Adopt-A-Location sign lifecycle and location
+- **In-App Messaging** — event lead → attendee push notifications
+- **Mobile route recording** — final device testing on iOS/Android (web + backend live today)
+- **Sponsored-adoption analytics** — volunteer vs. sponsored breakdown, cost-per-mile, compliance reports
 
 Full roadmap: `Planning/README.md` on GitHub
 
 ---
 
-## What a Norwalk city report could look like
+## What a Norwalk city report captures
 
-*Sample metrics captured automatically:*
+*All metrics captured automatically today — sample 90-day pilot output:*
 
-- 42 cleanup events over 90 days
-- 380 volunteers · 1,240 volunteer-hours
-- 720 bags collected · ~14,400 lbs of litter
-- 18 adopted street segments · 6 adopted parks
+- 42 cleanup events · 12 "Start a Pick" solo picks
+- 380 volunteers · 1,240 volunteer-hours · per-attendee breakdown
+- 720 bags collected · ~14,400 lbs of litter (weights tracked)
+- 18 adopted street segments · 6 adopted parks · 3 sponsored stretches
+- Before/after photos · litter density heatmap over covered areas
 - Top-covered areas: South Norwalk, East Norwalk shoreline, Norwalk Green
 - Ready-to-attach appendix for **Sustainable CT recertification**
+- Official **participation reports (PDF)** available per volunteer
 
 ---
 
