@@ -64,7 +64,7 @@ The bulk of what a municipal customer would ask for is **already in production**
 - ✅ **Litter reporting on web + mobile** with photos and geotags (Project 3)
 - ✅ **Before/after photos** on events (Project 18)
 - ✅ **Attendee-level metrics** — per-volunteer impact (Project 22)
-- ✅ **Route recording + litter density heatmap** — backend and web live; mobile still under device testing (Projects 15, 48)
+- ✅ **Route recording + litter density heatmap** — shipped across web, backend, and mobile (Projects 15, 48)
 - ✅ **Instant Events / "Start a Pick"** — Strava-style solo cleanup logging (Project 65)
 - ✅ **Weather forecast on event pages** (Project 59)
 - ✅ **Area Map Editor with AI area suggestions + bulk import** — makes setting up Norwalk's adoptable areas trivial (Project 44)
@@ -76,7 +76,6 @@ The bulk of what a municipal customer would ask for is **already in production**
 - Project 55 — Event Check-In (QR code check-in at events, pre-event waiver validation)
 - Project 43 — Sign Management (physical Adopt-A-Location sign tracking)
 - Project 12 — In-app messaging / push notifications
-- Project 15 — Mobile route recording (device testing remaining; web + backend live)
 - Project 41 Phase 5 — Sponsored-adoption reporting/analytics
 
 ## Angles to avoid or handle carefully
@@ -84,7 +83,6 @@ The bulk of what a municipal customer would ask for is **already in production**
 - **Do not oversell "displacing" the Green Workforce Program.** That's a paid job-training program with equity goals — position TrashMob as an amplifier, never a substitute.
 - **Don't assume Jodi wants a new tool for her team to run.** She has a small office. Frame TrashMob as **residents-run, city-visible** — she gets the reports, David gets fewer inbound coordination calls, we handle onboarding.
 - **Waivers/minors nuance.** Adult community waivers are live. The minor-specific waiver text is pending legal review — infrastructure is there, we can enable a minor waiver as soon as Norwalk's counsel signs off (or we can use Norwalk's own text). Parental consent (PRIVO) is production-live.
-- **Route heatmaps are a mobile feature** — for a resident with the app who opts in. If Jodi asks about that specifically, note mobile route recording is still in device testing (web + backend already live). Ready shortly, but don't demo it as complete.
 - **Community onboarding is already documented.** Point to [`Support/COMMUNITY_ADMIN_ONBOARDING.md`](../../../Support/COMMUNITY_ADMIN_ONBOARDING.md) — this exists, we've done it before.
 
 ## Likely questions & answers

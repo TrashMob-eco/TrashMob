@@ -14,7 +14,7 @@ Norwalk earned **Sustainable CT Gold Certification** and **Climate Leader** stat
 - **Event coordination** — residents create and publicize cleanups; digital waivers (community-specific), attendee lists, hauler notifications, and event weather forecast are all handled.
 - **"Start a Pick" (Instant Events)** — solo, Strava-style logging for casual pickers on a walk. Every bag counts toward Norwalk's metrics.
 - **Mobile litter reporting** — residents geotag litter with photos from iOS/Android; feeds a prioritized work queue the Green Workforce crew or volunteer groups can act on.
-- **Impact tracking** — per-attendee metrics, before/after photos, route recording with **litter density heatmap** (web + backend live; mobile route recording under device testing), official participation reports (PDF) for school/court/employer verification.
+- **Impact tracking** — per-attendee metrics, before/after photos, route recording (web, backend, and mobile) with **litter density heatmap**, official participation reports (PDF) for school/court/employer verification.
 - **Trust & safety** — Waivers V3 (community-specific), PRIVO parental consent for minors (production-live), photo moderation, leaderboards, event co-leads.
 
 ## Fit with Norwalk's plan
@@ -24,7 +24,7 @@ Norwalk earned **Sustainable CT Gold Certification** and **Climate Leader** stat
 - **Coastal + flood resilience** — storm-drain and shoreline cleanups (Calf Pasture Beach, Sheffield Island, drain outfalls) tie directly to flood-mitigation goals — not just aesthetics.
 
 ## On the near-term backlog
-Event check-in with QR codes, physical adoption-sign lifecycle tracking, in-app messaging, mobile route recording (final device testing).
+Event check-in with QR codes, physical adoption-sign lifecycle tracking, in-app messaging, sponsored-adoption analytics.
 Full roadmap: [`Planning/README.md`](https://github.com/TrashMob-eco/TrashMob/blob/main/Planning/README.md).
 
 ## What we're asking

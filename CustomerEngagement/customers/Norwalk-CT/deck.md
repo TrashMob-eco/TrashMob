@@ -79,8 +79,8 @@ Storm-drain and shoreline cleanups (Calf Pasture Beach, Sheffield Island, drain 
 - **Event Check-In** — QR-code check-in at events, pre-event waiver validation, live attendance roster
 - **Sign Management** — track physical Adopt-A-Location sign lifecycle and location
 - **In-App Messaging** — event lead → attendee push notifications
-- **Mobile route recording** — final device testing on iOS/Android (web + backend live today)
 - **Sponsored-adoption analytics** — volunteer vs. sponsored breakdown, cost-per-mile, compliance reports
+- **Volunteer Rewards** — partner-contributed recognition (future)
 
 Full roadmap: `Planning/README.md` on GitHub
 
