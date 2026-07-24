@@ -3,11 +3,11 @@ marp: true
 theme: default
 paginate: true
 size: 16:9
-title: TrashMob for {City}
+title: TrashMob.eco for {City}
 ---
 
 <!-- Slide 1 — Title -->
-# TrashMob for {City}
+# TrashMob.eco for {City}
 ### Mobilize volunteers to clean up the city
 Non-profit · Open source · Live in production since 2022
 
@@ -31,12 +31,12 @@ Presented to **{Name, Title}** — {Date}
 
 - {Program 1}
 - {Program 2}
-- Gap: {what's missing that TrashMob solves}
+- Gap: {what's missing that TrashMob.eco solves}
 
 ---
 
-<!-- Slide 4 — What TrashMob provides today -->
-## What TrashMob provides — today
+<!-- Slide 4 — What TrashMob.eco provides today -->
+## What TrashMob.eco provides — today
 
 | Capability | How it helps {City} |
 |---|---|

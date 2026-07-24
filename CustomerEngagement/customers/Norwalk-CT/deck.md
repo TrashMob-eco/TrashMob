@@ -3,12 +3,61 @@ marp: true
 theme: default
 paginate: true
 size: 16:9
-title: TrashMob for Norwalk
+title: TrashMob.eco for Norwalk
+footer: 'TrashMob.eco · Meet up. Clean up. Feel good.'
+style: |
+  /* TrashMob.eco brand — mirrors TrashMob/client-app/src/index.css */
+  section {
+    font-family: 'Lexend', 'Segoe UI', Arial, sans-serif;
+    background-color: #F5F7F8;   /* --background */
+    color: #22262A;              /* --foreground */
+    padding: 60px 70px;
+  }
+  h1 {
+    color: #005C4D;              /* --primary — TrashMob teal */
+    font-weight: 700;
+  }
+  h2 {
+    color: #005C4D;
+    font-weight: 600;
+    border-bottom: 3px solid #005C4D;
+    padding-bottom: 8px;
+    margin-bottom: 24px;
+  }
+  h3 { color: #22262A; font-weight: 500; }
+  strong { color: #005C4D; }
+  a { color: #005C4D; text-decoration: underline; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  table th {
+    background-color: #005C4D;
+    color: #FFFFFF;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+  }
+  table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #E4E7E8;
+    vertical-align: top;
+  }
+  table tr:nth-child(even) td { background-color: #EEF1F2; }
+  ul li { margin: 6px 0; }
+  footer {
+    color: #666666;
+    font-size: 0.7em;
+  }
+  section.lead { text-align: center; }
+  section.lead h1 { font-size: 2.8em; margin-bottom: 0.2em; }
+  section.lead img { margin-bottom: 20px; }
 ---
 
+<!-- _class: lead -->
 <!-- _paginate: false -->
+<!-- _footer: '' -->
 
-# TrashMob for Norwalk
+![w:140](../../assets/logo.png)
+
+# TrashMob.eco for Norwalk
 ### Mobilize volunteers to clean up the city
 Non-profit · Open source · Live in production since 2022
 
@@ -46,7 +95,7 @@ Presented to **Jodi Trendler** — Director of Sustainability and Resilience, Ci
 
 ---
 
-## What TrashMob provides — today, in production
+## What TrashMob.eco provides — today, in production
 
 | Capability | How it helps Norwalk |
 |---|---|
@@ -109,7 +158,11 @@ We'll shape scope and cadence with you — this is a conversation, not a fixed p
 
 ---
 
+<!-- _class: lead -->
 <!-- _paginate: false -->
+<!-- _footer: '' -->
+
+![w:140](../../assets/logo.png)
 
 # Thank you.
 

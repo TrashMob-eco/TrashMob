@@ -1,4 +1,4 @@
-# TrashMob for {City Name}
+# TrashMob.eco for {City Name}
 **Mobilize volunteers to clean up {City}. Non-profit, in production since 2022, built for cities like yours.**
 
 ---
@@ -6,7 +6,7 @@
 ## What {City} has today
 {2–3 sentence summary of the city's existing beautification / cleanup / sustainability programs. Name specific programs, staff, and gaps. This is how you show you did your homework.}
 
-## What TrashMob provides
+## What TrashMob.eco provides
 
 - **Event coordination** — Volunteers create and publicize cleanup events; waivers, attendee lists, and hauler notifications are handled automatically.
 - **Adoptable areas** — Streets, parks, beaches, or traffic islands that groups or businesses can claim and maintain over time (mirrors "Adopt-a-Spot" style programs).
@@ -22,7 +22,7 @@
 - A **community champion** on your side — typically the beautification coordinator plus a council-side ally.
 - Feedback on what works, what's missing, and what a partnership could look like.
 
-## About TrashMob
+## About TrashMob.eco
 TrashMob.eco is a **US 501(c)(3) non-profit**. Open source on GitHub. Live in production since May 2022.
 
 ## Contact

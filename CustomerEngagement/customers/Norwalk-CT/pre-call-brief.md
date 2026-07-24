@@ -1,3 +1,5 @@
+![TrashMob.eco](../../assets/logo.png){ width=80 }
+
 # Pre-call brief — Norwalk, CT
 
 **Meeting with:** Jodi Trendler, Director of Sustainability and Resilience — City of Norwalk
@@ -37,16 +39,16 @@
 | **Energy Smart Norwalk, Solarize Norwalk, HeatSmart** | Office of Sustainability | Residential energy | Ongoing |
 | **Flood resilience planning** | Office of Sustainability | Coastal community priority | Priority initiative |
 
-## The gap TrashMob fills
+## The gap TrashMob.eco fills
 
 1. **No cleanup event coordination platform.** Adopt-a-Spot is traffic islands only. Broad street/park cleanups get organized ad hoc — no shared calendar, no waivers, no attendee tracking, no impact metrics feeding back into Sustainable CT reporting.
-2. **David Shockley is a single-person coordination bottleneck.** Every "I want to help" call goes through him. TrashMob turns that into self-service.
+2. **David Shockley is a single-person coordination bottleneck.** Every "I want to help" call goes through him. TrashMob.eco turns that into self-service.
 3. **Litter reporting is verbal / email.** No geotagged photos, no work queue, no way for the Green Workforce crew to prioritize based on citizen input.
 4. **No documented impact data.** Bags collected, hours volunteered, areas cleaned — these are Sustainable CT actions that Norwalk isn't capturing today because they have no system.
 
 ## Angles that will land well
 
-- **Sustainable CT recertification.** Every event, waiver, adoptable area, and documented cleanup is a documentable action. TrashMob's city report is grant/recertification-ready.
+- **Sustainable CT recertification.** Every event, waiver, adoptable area, and documented cleanup is a documentable action. TrashMob.eco's city report is grant/recertification-ready.
 - **Green Workforce complement.** Volunteers can't replace paid crews, but they can **extend their reach** — cleanups on weekends, litter reports that route to the paid crew's priority list, adoptable stretches near new tree plantings.
 - **Coastal / flood resilience tie-in.** Storm-drain and shoreline debris is a resilience issue, not just aesthetics. Cleanups at Calf Pasture Beach, Sheffield Island, and along storm-drain outfalls fit their flood plan narrative.
 - **We already work with cities.** Live in production since 2022. Ready-made **Community Admin onboarding** ([`Support/COMMUNITY_ADMIN_ONBOARDING.md`](../../../Support/COMMUNITY_ADMIN_ONBOARDING.md)).
@@ -79,8 +81,8 @@ The bulk of what a municipal customer would ask for is **already in production**
 
 ## Angles to avoid or handle carefully
 
-- **Do not oversell "displacing" the Green Workforce Program.** That's a paid job-training program with equity goals — position TrashMob as an amplifier, never a substitute.
-- **Don't assume Jodi wants a new tool for her team to run.** She has a small office. Frame TrashMob as **residents-run, city-visible** — she gets the reports, David gets fewer inbound coordination calls, we handle onboarding.
+- **Do not oversell "displacing" the Green Workforce Program.** That's a paid job-training program with equity goals — position TrashMob.eco as an amplifier, never a substitute.
+- **Don't assume Jodi wants a new tool for her team to run.** She has a small office. Frame TrashMob.eco as **residents-run, city-visible** — she gets the reports, David gets fewer inbound coordination calls, we handle onboarding.
 - **Waivers/minors nuance.** Adult community waivers are live. The minor-specific waiver text is pending legal review — infrastructure is there, we can enable a minor waiver as soon as Norwalk's counsel signs off (or we can use Norwalk's own text). Parental consent (PRIVO) is production-live.
 - **Community onboarding is already documented.** Point to [`Support/COMMUNITY_ADMIN_ONBOARDING.md`](../../../Support/COMMUNITY_ADMIN_ONBOARDING.md) — this exists, we've done it before.
 - **Do NOT quote pricing or say "free."** The org has not agreed on a pricing model. If Jodi asks about cost, say: *"Terms are part of the conversation we'd like to have — happy to follow up with specifics once we understand scope."* Don't improvise numbers. Escalate to Joe before any pricing commitment.
@@ -92,7 +94,7 @@ The bulk of what a municipal customer would ask for is **already in production**
 **Q: Who owns the data?**
 A: Norwalk does. City reports are exportable. Volunteer PII is minimized and follows our privacy policy. Waivers are stored per our legal retention policy.
 
-**Q: What happens if TrashMob shuts down?**
+**Q: What happens if TrashMob.eco shuts down?**
 A: We're a 501(c)(3) with a board and volunteer contributors. Code is open source on GitHub — worst case, someone else could run the platform. All city data is exportable.
 
 **Q: COPPA / minors?**
@@ -102,10 +104,10 @@ A: We support ages 13+ with a minor-specific flow. Full parental-consent integra
 A: We use Entra External ID (CIAM) as of Feb 2026. SSO with partner tenants is on the community-features roadmap — not day-one for an initial engagement.
 
 **Q: Insurance?**
-A: Waivers cover liability; the city is not the event host on TrashMob — the event lead (typically a resident volunteer) is. Happy to walk through the waiver language with your legal team.
+A: Waivers cover liability; the city is not the event host on TrashMob.eco — the event lead (typically a resident volunteer) is. Happy to walk through the waiver language with your legal team.
 
 **Q: How much of David Shockley's time does this take?**
-A: Light-touch to start — setup and training are on us. Long-term, TrashMob should **reduce** his coordination load.
+A: Light-touch to start — setup and training are on us. Long-term, TrashMob.eco should **reduce** his coordination load.
 
 **Q: What does it cost?**
 A: **Escalate to Joe before answering.** The org has not settled on a pricing model. Safe response: *"Terms are part of the conversation we'd like to have — I'd like to understand scope first and follow up with specifics."* Do NOT quote a number, and do NOT say "free."
