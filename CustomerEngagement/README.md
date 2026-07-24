@@ -17,31 +17,48 @@ CustomerEngagement/
         └── deck.md           # External: slide deck (Marp format — see below)
 ```
 
-## Slide deck format: Marp
+## Source of truth is markdown
 
-Decks are written in [Marp](https://marp.app/) markdown — plain `.md` files where `---` separates slides. Render to PowerPoint, PDF, or HTML:
+All docs here — one-pagers, decks, briefs — are plain markdown. Generated binaries (`.docx`, `.pptx`, `.pdf`) are `.gitignored` and regenerated on demand. This keeps diffs readable and avoids format drift.
 
-```bash
-# One-time install (choose one)
-npm install -g @marp-team/marp-cli      # CLI
-# or install "Marp for VS Code" extension for live preview
+## Exporting to `.docx` (one-pagers, briefs) — Pandoc
+
+```powershell
+# One-time install
+winget install --id=JohnMacFarlane.Pandoc --accept-source-agreements --accept-package-agreements
 
 # Export
-marp customers/Norwalk-CT/deck.md --pptx    # PowerPoint (.pptx)
-marp customers/Norwalk-CT/deck.md --pdf     # PDF handout
-marp customers/Norwalk-CT/deck.md --html    # Self-contained HTML
+$pandoc = "$env:LOCALAPPDATA\Pandoc\pandoc.exe"       # or just "pandoc" once your PATH picks it up
+& $pandoc customers\Norwalk-CT\one-pager.md      -o customers\Norwalk-CT\one-pager.docx      --from=gfm --to=docx
+& $pandoc customers\Norwalk-CT\pre-call-brief.md -o customers\Norwalk-CT\pre-call-brief.docx --from=gfm --to=docx
 ```
 
-Why Marp instead of `.pptx` binaries:
-- Diffable in git — reviewers can see exactly what changed
+## Exporting the deck to `.pptx`
+
+**Option A — Pandoc** (no extra deps, plain slides):
+
+```powershell
+& $pandoc customers\Norwalk-CT\deck.md -o customers\Norwalk-CT\deck.pptx --from=gfm --to=pptx --slide-level=2
+```
+
+**Option B — Marp** (nicer styling, matches the Marp preview in VS Code):
+
+```powershell
+# One-time install (downloads chromium on first run — ~150 MB)
+npm install -g @marp-team/marp-cli
+# or install "Marp for VS Code" extension for live preview
+
+marp customers\Norwalk-CT\deck.md --pptx    # PowerPoint
+marp customers\Norwalk-CT\deck.md --pdf     # PDF handout
+marp customers\Norwalk-CT\deck.md --html    # Self-contained HTML
+```
+
+Why markdown-first instead of maintaining `.pptx` / `.docx` in git:
+- Diffable — reviewers see exactly what changed
 - Trivial to reuse content across customers (copy a slide, swap the city name)
-- Free of PowerPoint's design drift between contributors
+- No PowerPoint / Word design drift between contributors
 
-For a customer who insists on editing the deck themselves, export to `.pptx` and hand that off.
-
-## One-pagers
-
-One-pagers are plain markdown, ready to render to PDF via any markdown-to-PDF tool (VS Code's built-in export, Pandoc, or `marp --pdf` if you add a Marp header). They should fit on a single US Letter page when printed.
+For a customer who insists on editing the deck themselves, export to `.pptx` and hand that off — that's a one-way handoff, and further edits happen in their file.
 
 ## Creating materials for a new customer
 

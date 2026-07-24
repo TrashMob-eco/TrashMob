@@ -1,0 +1,5 @@
+# Generated binaries — regenerate from the source .md via pandoc or marp.
+# See CustomerEngagement/README.md for the commands.
+*.docx
+*.pptx
+*.pdf
