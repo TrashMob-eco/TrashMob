@@ -49,7 +49,6 @@
 - **Sustainable CT recertification.** Every event, waiver, adoptable area, and documented cleanup is a documentable action. TrashMob's city report is grant/recertification-ready.
 - **Green Workforce complement.** Volunteers can't replace paid crews, but they can **extend their reach** — cleanups on weekends, litter reports that route to the paid crew's priority list, adoptable stretches near new tree plantings.
 - **Coastal / flood resilience tie-in.** Storm-drain and shoreline debris is a resilience issue, not just aesthetics. Cleanups at Calf Pasture Beach, Sheffield Island, and along storm-drain outfalls fit their flood plan narrative.
-- **Cost:** Free. 501(c)(3). No procurement hurdle for the pilot.
 - **We already work with cities.** Live in production since 2022. Ready-made **Community Admin onboarding** ([`Support/COMMUNITY_ADMIN_ONBOARDING.md`](../../../Support/COMMUNITY_ADMIN_ONBOARDING.md)).
 
 ## What's actually shipped (double-check before pitching)
@@ -84,6 +83,9 @@ The bulk of what a municipal customer would ask for is **already in production**
 - **Don't assume Jodi wants a new tool for her team to run.** She has a small office. Frame TrashMob as **residents-run, city-visible** — she gets the reports, David gets fewer inbound coordination calls, we handle onboarding.
 - **Waivers/minors nuance.** Adult community waivers are live. The minor-specific waiver text is pending legal review — infrastructure is there, we can enable a minor waiver as soon as Norwalk's counsel signs off (or we can use Norwalk's own text). Parental consent (PRIVO) is production-live.
 - **Community onboarding is already documented.** Point to [`Support/COMMUNITY_ADMIN_ONBOARDING.md`](../../../Support/COMMUNITY_ADMIN_ONBOARDING.md) — this exists, we've done it before.
+- **Do NOT quote pricing or say "free."** The org has not agreed on a pricing model. If Jodi asks about cost, say: *"Terms are part of the conversation we'd like to have — happy to follow up with specifics once we understand scope."* Don't improvise numbers. Escalate to Joe before any pricing commitment.
+- **Do NOT propose a specific engagement model** — no "90-day pilot," no phased milestone table, no pre-baked timeline. The org hasn't agreed on a standard customer approach. Frame the ask as **a next conversation**, not a signed pilot.
+- **Do NOT lead with what's not shipped.** In external materials, the near-term backlog list above is internal-only — don't drop it into a deck or leave-behind. It only comes out if Jodi asks directly about a specific missing capability.
 
 ## Likely questions & answers
 
@@ -97,20 +99,25 @@ A: We're a 501(c)(3) with a board and volunteer contributors. Code is open sourc
 A: We support ages 13+ with a minor-specific flow. Full parental-consent integration (Privo.com) is in the 2026 plan. Details in the PRD.
 
 **Q: What about SSO with our city Entra tenant?**
-A: We use Entra External ID (CIAM) as of Feb 2026. SSO with partner tenants is on the community-features roadmap. Not day-one for a pilot.
+A: We use Entra External ID (CIAM) as of Feb 2026. SSO with partner tenants is on the community-features roadmap — not day-one for an initial engagement.
 
 **Q: Insurance?**
 A: Waivers cover liability; the city is not the event host on TrashMob — the event lead (typically a resident volunteer) is. Happy to walk through the waiver language with your legal team.
 
 **Q: How much of David Shockley's time does this take?**
-A: For the pilot, we're targeting ~2 hrs/week from him. Setup and training on us. Long-term, TrashMob should **reduce** his coordination load.
+A: Light-touch to start — setup and training are on us. Long-term, TrashMob should **reduce** his coordination load.
+
+**Q: What does it cost?**
+A: **Escalate to Joe before answering.** The org has not settled on a pricing model. Safe response: *"Terms are part of the conversation we'd like to have — I'd like to understand scope first and follow up with specifics."* Do NOT quote a number, and do NOT say "free."
 
 ## The ask
 
-- **90-day pilot** starting {target start date}.
-- **Point of contact:** David Shockley (or her designee).
-- **One co-branded launch event** — pick a visible location (Calf Pasture Beach? A traffic island cluster?) and we'll help staff it.
-- **A letter of support** from Norwalk if the pilot goes well — helpful for our outreach to peer CT cities (Stamford, Bridgeport, New Haven).
+The primary ask is **a follow-up conversation**, not a signed commitment. Concretely:
+
+- **Yes to going deeper** — a working session with Jodi + David Shockley on Norwalk's priorities and calendar.
+- **A named champion** on their side — David Shockley (or Jodi's designee) plus ideally one council-side ally.
+- **Explore a co-branded event together** — a visible Norwalk location (Calf Pasture Beach? A traffic island cluster?) we could run jointly.
+- **Optional close, if it feels right:** offer to share what we learn with peer CT cities (Stamford, Bridgeport, New Haven) as we build our network.
 
 ## Sources
 

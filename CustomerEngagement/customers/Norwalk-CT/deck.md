@@ -10,7 +10,7 @@ title: TrashMob for Norwalk
 
 # TrashMob for Norwalk
 ### Mobilize volunteers to clean up the city
-Free · Non-profit · Open source · Live in production since 2022
+Non-profit · Open source · Live in production since 2022
 
 Presented to **Jodi Trendler** — Director of Sustainability and Resilience, City of Norwalk
 
@@ -22,7 +22,7 @@ Presented to **Jodi Trendler** — Director of Sustainability and Resilience, Ci
 - Platform for organizing community cleanup events at scale
 - Web + iOS + Android — all **open source** on GitHub
 - Built by volunteers, funded by donations
-- **No licensing fees. Ever.**
+- Already working with communities across the country
 
 ---
 
@@ -74,63 +74,38 @@ Storm-drain and shoreline cleanups (Calf Pasture Beach, Sheffield Island, drain 
 
 ---
 
-## On the near-term backlog
-
-- **Event Check-In** — QR-code check-in at events, pre-event waiver validation, live attendance roster
-- **Sign Management** — track physical Adopt-A-Location sign lifecycle and location
-- **In-App Messaging** — event lead → attendee push notifications
-- **Sponsored-adoption analytics** — volunteer vs. sponsored breakdown, cost-per-mile, compliance reports
-- **Volunteer Rewards** — partner-contributed recognition (future)
-
-Full roadmap: `Planning/README.md` on GitHub
-
----
-
 ## What a Norwalk city report captures
 
-*All metrics captured automatically today — sample 90-day pilot output:*
+*All metrics captured automatically today — illustrative snapshot:*
 
-- 42 cleanup events · 12 "Start a Pick" solo picks
-- 380 volunteers · 1,240 volunteer-hours · per-attendee breakdown
-- 720 bags collected · ~14,400 lbs of litter (weights tracked)
-- 18 adopted street segments · 6 adopted parks · 3 sponsored stretches
+- Cleanup events + "Start a Pick" solo picks
+- Volunteers · volunteer-hours · per-attendee breakdown
+- Bags collected · weight (lbs) tracked per event
+- Adopted street segments · adopted parks · sponsored stretches
 - Before/after photos · litter density heatmap over covered areas
-- Top-covered areas: South Norwalk, East Norwalk shoreline, Norwalk Green
+- Coverage heat by neighborhood (e.g. South Norwalk, East Norwalk shoreline, Norwalk Green)
 - Ready-to-attach appendix for **Sustainable CT recertification**
 - Official **participation reports (PDF)** available per volunteer
 
 ---
 
-## Proposed 90-day pilot
+## What a partnership could look like
 
-| Weeks | Milestone |
-|---|---|
-| 1–2 | Community page setup · brand colors · waiver review |
-| 3–4 | Adoptable areas defined with David Shockley · first co-branded event scheduled |
-| 5–8 | Volunteer recruitment · 2–3 events run · litter reporting live |
-| 9–12 | Impact report delivered · retro · go/no-go decision |
+- **Norwalk-branded community page** — logo, colors, tagline, event calendar
+- **Adoptable areas** — streets, parks, beaches; extends your Adopt-a-Spot program
+- **Co-branded launch event** — pick a visible location; we'd help staff it
+- **Volunteer recruitment support** — onboarding, training, event-day playbook
+- **Ongoing impact reporting** — feeds directly into Sustainable CT recertification
 
-**Norwalk's commitment:** ~2 hrs/week from beautification coordinator · 1 launch event
-**Our commitment:** Setup, training, weekly check-ins, on-call for the launch
-
----
-
-## Cost
-
-# Free.
-
-We are a US 501(c)(3). No licenses. No per-user fees. No procurement.
-
-If the pilot succeeds, we'd welcome an **in-kind partnership**:
-a letter of support, a co-branded press release, or an intro to peer CT cities.
+We'll shape scope and cadence with you — this is a conversation, not a fixed playbook.
 
 ---
 
 ## What we're asking today
 
-1. **Yes to a 90-day pilot** — low commitment, high signal
-2. **Name a champion** — David Shockley (or your designee) as day-to-day POC
-3. **Pick a launch event** — Calf Pasture Beach? A traffic-island cluster? You choose
+1. **A follow-up conversation** — deeper on your priorities, calendar, constraints
+2. **Name a champion** — David Shockley (or your designee) as day-to-day POC, ideally plus one council-side ally
+3. **Explore a co-branded event together** — Calf Pasture Beach? A traffic-island cluster? Your call
 
 ---
 

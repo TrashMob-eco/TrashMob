@@ -1,5 +1,5 @@
 # TrashMob for {City Name}
-**Mobilize volunteers to clean up {City}. Free, non-profit, built for cities like yours.**
+**Mobilize volunteers to clean up {City}. Non-profit, in production since 2022, built for cities like yours.**
 
 ---
 
@@ -18,12 +18,12 @@
 {2–3 bullets from Planning/ that map directly to this city's stated priorities.}
 
 ## What we're asking
-- A **90-day pilot** with your beautification coordinator as the point of contact.
-- Feedback from you on what works and what's missing.
-- A **community champion** we can co-brand a launch event with.
+- A **follow-up conversation** to go deeper on your priorities and constraints.
+- A **community champion** on your side — typically the beautification coordinator plus a council-side ally.
+- Feedback on what works, what's missing, and what a partnership could look like.
 
-## Cost & procurement
-TrashMob.eco is a **US 501(c)(3) non-profit**. The platform is **free** for cities and community groups. Open source on GitHub. No procurement needed for the pilot.
+## About TrashMob
+TrashMob.eco is a **US 501(c)(3) non-profit**. Open source on GitHub. Live in production since May 2022.
 
 ## Contact
 - **Joe Beernink** — Founder, TrashMob.eco — joe@trashmob.eco

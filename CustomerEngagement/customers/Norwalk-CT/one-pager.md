@@ -1,5 +1,5 @@
 # TrashMob for Norwalk
-**Mobilize volunteers to clean up Norwalk. Free, non-profit, ready to pilot in 90 days.**
+**Mobilize volunteers to clean up Norwalk. Non-profit, in production since 2022, ready to partner with cities.**
 
 ---
 
@@ -23,18 +23,14 @@ Norwalk earned **Sustainable CT Gold Certification** and **Climate Leader** stat
 - **Green Workforce amplifier** — volunteer cleanups on weekends extend paid-crew reach without replacing them; citizen litter reports feed the crew's priority list.
 - **Coastal + flood resilience** — storm-drain and shoreline cleanups (Calf Pasture Beach, Sheffield Island, drain outfalls) tie directly to flood-mitigation goals — not just aesthetics.
 
-## On the near-term backlog
-Event check-in with QR codes, physical adoption-sign lifecycle tracking, in-app messaging, sponsored-adoption analytics.
-Full roadmap: [`Planning/README.md`](https://github.com/TrashMob-eco/TrashMob/blob/main/Planning/README.md).
-
 ## What we're asking
 
-- A **90-day pilot** with David Shockley (Neighborhood Improvement Coordinator) as day-to-day contact — ~2 hrs/week.
-- **One co-branded launch event** at a visible Norwalk location.
-- A **letter of support** at pilot end if it's a fit — helpful as we approach peer CT cities.
+- A **follow-up conversation** to go deeper on Norwalk's priorities, calendar, and constraints.
+- **Name a champion** — typically the beautification coordinator (David Shockley) plus a council-side ally.
+- **Explore a co-branded event together** at a visible Norwalk location.
 
-## Cost & procurement
-**Free.** TrashMob.eco is a US 501(c)(3) non-profit — no licenses, no per-user fees, no procurement paperwork for the pilot. Open source on [GitHub](https://github.com/TrashMob-eco/TrashMob). Live in production since May 2022.
+## About TrashMob
+TrashMob.eco is a **US 501(c)(3) non-profit**, open source on [GitHub](https://github.com/TrashMob-eco/TrashMob), live in production since May 2022.
 
 ## Contact
 

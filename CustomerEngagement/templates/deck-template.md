@@ -9,7 +9,7 @@ title: TrashMob for {City}
 <!-- Slide 1 — Title -->
 # TrashMob for {City}
 ### Mobilize volunteers to clean up the city
-Free · Non-profit · Open source · Live since 2022
+Non-profit · Open source · Live in production since 2022
 
 Presented to **{Name, Title}** — {Date}
 
@@ -20,8 +20,8 @@ Presented to **{Name, Title}** — {Date}
 
 - **TrashMob.eco** — US 501(c)(3) non-profit, launched May 2022
 - Platform for organizing community cleanup events at scale
-- Web + iOS + Android, all open source
-- Built by volunteers, for volunteers — no licensing fees, ever
+- Web + iOS + Android, all open source on GitHub
+- Built by volunteers, for volunteers and the communities they serve
 
 ---
 
@@ -49,20 +49,7 @@ Presented to **{Name, Title}** — {Date}
 
 ---
 
-<!-- Slide 5 — Coming soon -->
-## On the roadmap (Q3–Q4 2026)
-
-- **Community Pages** — {City}-branded landing page, custom waivers
-- **Adopt-A-Location v2** — richer sponsorship + business adoption
-- **Attendee-level metrics** — per-volunteer impact tracking
-- **Before/after photos** — visual proof of impact
-- **Route heatmaps** — see which streets got coverage
-
-Full roadmap: [`Planning/README.md`](https://github.com/TrashMob-eco/TrashMob/blob/main/Planning/README.md)
-
----
-
-<!-- Slide 6 — {City}-specific fit -->
+<!-- Slide 5 — {City}-specific fit -->
 ## Why this fits {City}
 {3–4 city-specific angles: coastal cleanups, storm-drain / flood tie-in, grant reporting, workforce program complement, etc.}
 
@@ -74,37 +61,24 @@ Full roadmap: [`Planning/README.md`](https://github.com/TrashMob-eco/TrashMob/bl
 
 ---
 
-<!-- Slide 8 — Pilot proposal -->
-## Proposed 90-day pilot
+<!-- Slide 8 — What a partnership could look like -->
+## What a partnership could look like
 
-| Week | Milestone |
-|---|---|
-| 1–2 | Community page setup, brand + waivers |
-| 3–4 | Adoptable areas defined; first co-branded event |
-| 5–8 | Volunteer recruitment; 2–3 events run |
-| 9–12 | Impact report delivered; retro + next steps |
+- **Community page setup** — {City}-branded landing page, adoptable areas, waivers
+- **First co-branded event** — pick a visible location; we help staff it
+- **Volunteer recruitment support** — onboarding, training, event-day playbook
+- **Impact reporting** — bags, hours, areas, per-attendee metrics, official PDFs
 
-**{City}'s commitment:** ~2 hrs/week from beautification coordinator, 1 launch event.
-**Our commitment:** Setup, training, weekly check-ins, on-call for the launch.
+We'll shape scope and cadence with you — no one-size-fits-all playbook here.
 
 ---
 
-<!-- Slide 9 — Cost -->
-## Cost
+<!-- Slide 9 — Ask -->
+## What we're asking today
 
-# Free.
-
-We are a US 501(c)(3). No licenses, no per-user fees, no procurement.
-If the pilot is a fit, we'd welcome an **in-kind partnership** — a letter of support, a shared press release, or an intro to peer cities.
-
----
-
-<!-- Slide 10 — Ask -->
-## What we're asking
-
-1. **Yes to the pilot** — 90 days, low commitment
-2. **Name a champion** — your beautification coordinator + one council-side ally
-3. **Co-brand a launch event** — pick a visible location, we'll help staff it
+1. **A follow-up conversation** — deeper on your priorities, constraints, calendar
+2. **Name a champion** — your beautification coordinator + ideally one council-side ally
+3. **Explore a co-branded event** — a visible location we could run together
 
 ---
 
