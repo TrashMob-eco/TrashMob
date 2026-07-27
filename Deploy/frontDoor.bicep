@@ -7,10 +7,10 @@ param environment string
 @description('The FQDN of the Container App backend')
 param containerAppFqdn string
 
-@description('Primary custom domain (e.g., www.trashmob.eco)')
-param primaryDomain string
+@description('Primary custom domain (e.g., www.trashmob.eco). Empty is allowed for auth-only deployments (e.g. dev, where the ACA hostname is bound directly).')
+param primaryDomain string = ''
 
-@description('Apex domain for redirect (e.g., trashmob.eco)')
+@description('Apex domain for redirect (e.g., trashmob.eco). Empty skips the apex→primary redirect rule set.')
 param apexDomain string = ''
 
 @description('Custom auth domain for Entra External ID (e.g., auth.trashmob.eco). Empty disables E6 auth-domain plumbing. Requires ciamTenantHost to also be set. See Planning/PRODUCTION_DEPLOYMENT_CHECKLIST.md §E6.')
