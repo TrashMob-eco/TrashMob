@@ -51,6 +51,34 @@ param apexDnsAuthToken string = ''
 @description('Front Door managed-cert validation token for the www custom-domain. Leave empty on re-apply to preserve the existing DNS record.')
 param wwwDnsAuthToken string = ''
 
+// E6 (custom auth domain) — dev-tier records for auth-dev.trashmob.eco.
+// The DEV Front Door lives in the Sandbox subscription (rg-trashmob-dev-westus2)
+// but the DNS zone is here in TrashMobProd. That cross-sub setup means these
+// records have to be declared explicitly with the dev AFD's values — there's
+// no way to reference them from a Bicep resource in another sub.
+//
+// Fetch the current expected values (from the Sandbox sub) with:
+//   az account set --subscription <Sandbox>
+//   az afd endpoint show --resource-group rg-trashmob-dev-westus2 --profile-name fd-tm-dev \
+//     --endpoint-name fde-tm-dev --query hostName -o tsv
+//   az afd custom-domain show --resource-group rg-trashmob-dev-westus2 --profile-name fd-tm-dev \
+//     --custom-domain-name auth-dev-trashmob-eco --query validationProperties.validationToken -o tsv
+//
+// Then pass them here, e.g.:
+//   az deployment group create --template-file .\dnsZone.bicep -g rg-trashmob-pr-westus2 \
+//     --parameters zoneName=trashmob.eco environment=pr \
+//                  authDevFrontDoorHostname=fde-tm-dev-<random>.z01.azurefd.net \
+//                  authDevDnsAuthToken=_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+//
+// Leave both empty on a re-apply that only means to update non-auth-dev
+// records — ARM Incremental will preserve whatever records exist, same as
+// the apex/www _dnsauth pattern above.
+@description('E6: Dev Front Door endpoint hostname (e.g. fde-tm-dev-<random>.z01.azurefd.net). Empty skips the auth-dev CNAME record.')
+param authDevFrontDoorHostname string = ''
+
+@description('E6: Dev Front Door managed-cert validation token for the auth-dev custom-domain. Empty skips the _dnsauth.auth-dev TXT record.')
+param authDevDnsAuthToken string = ''
+
 // DNS Zone
 resource dnsZone 'Microsoft.Network/dnsZones@2023-07-01-preview' = {
   name: zoneName
@@ -128,6 +156,21 @@ resource devRecord 'Microsoft.Network/dnsZones/CNAME@2023-07-01-preview' = if (e
   }
 }
 
+// E6 — auth-dev subdomain CNAME (routes dev CIAM sign-in through the dev
+// Front Door). Guarded on the param so a re-apply that doesn't pass the
+// hostname doesn't clobber the record with an empty cname (same trap as
+// wwwRecord above).
+resource authDevRecord 'Microsoft.Network/dnsZones/CNAME@2023-07-01-preview' = if (authDevFrontDoorHostname != '') {
+  parent: dnsZone
+  name: 'auth-dev'
+  properties: {
+    TTL: 300
+    CNAMERecord: {
+      cname: authDevFrontDoorHostname
+    }
+  }
+}
+
 // Domain validation TXT records for Front Door managed certificates.
 // Guarded by the token params — if not supplied, the resource is not
 // declared in this template and ARM Incremental will not touch any
@@ -153,6 +196,22 @@ resource dnsAuthApex 'Microsoft.Network/dnsZones/TXT@2023-07-01-preview' = if (u
     TXTRecords: [
       {
         value: [apexDnsAuthToken]
+      }
+    ]
+  }
+}
+
+// E6 — Front Door managed-cert validation TXT for auth-dev.trashmob.eco.
+// Guarded by the token param so a re-apply that doesn't pass a token
+// preserves whatever record exists (same pattern as the apex/www TXTs).
+resource dnsAuthAuthDev 'Microsoft.Network/dnsZones/TXT@2023-07-01-preview' = if (authDevDnsAuthToken != '') {
+  parent: dnsZone
+  name: '_dnsauth.auth-dev'
+  properties: {
+    TTL: 3600
+    TXTRecords: [
+      {
+        value: [authDevDnsAuthToken]
       }
     ]
   }
@@ -237,4 +296,12 @@ DNS Migration Steps:
 5. Deploy Front Door (frontDoor.bicep) — this creates the custom-domain resources which issue DNS-validation tokens.
 6. Fetch the tokens via `az afd custom-domain show ... --query validationProperties.validationToken` and re-run this template with apexDnsAuthToken / wwwDnsAuthToken set to those values.
 7. Verify email still works (MX, SPF, DKIM records included)
+
+E6 auth-dev subdomain (parameters are in a separate subscription — see param docstrings above):
+8. Deploy dev Front Door via .github/workflows/container_frontdoor-tm-dev-westus2.yml.
+9. From the Sandbox subscription, fetch:
+   - AFD endpoint hostname (fde-tm-dev-<random>.z01.azurefd.net)
+   - Custom-domain validation token for auth-dev-trashmob-eco
+10. Re-run this template with authDevFrontDoorHostname + authDevDnsAuthToken set to those values.
+11. Wait a few minutes for the token TXT to propagate; the dev Front Door custom domain will flip from Pending -> Approved.
 '''
