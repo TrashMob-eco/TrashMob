@@ -233,7 +233,24 @@ resource mxRecord 'Microsoft.Network/dnsZones/MX@2023-07-01-preview' = {
   }
 }
 
-// SPF record for email authentication
+// Apex TXT record set for trashmob.eco. Holds:
+//   1. SPF for Outlook / M365 email authentication
+//   2. `_mn729nlts6vg16hckcss91bxyub7qvz` — a domain-verification-shaped
+//      token added out-of-band more than 3 months ago. Provenance is
+//      unknown: the format matches an AFD custom-domain validation
+//      token, but neither of our current AFD custom domains (apex,
+//      www) matches this value — their live tokens are correctly at
+//      `_dnsauth` and `_dnsauth.www`. Not referenced anywhere in this
+//      repo. Preserved defensively because we don't know which service
+//      (if any) relies on it, and it's been in prod for months without
+//      issue.
+//
+// A prior version of this file declared only the SPF value, which
+// would have caused ARM Incremental to strip the mystery token on any
+// re-apply (discovered via `az deployment group what-if` on 2026-07-26
+// while preparing to publish the E6 auth-dev records). If the mystery
+// token's owner is ever identified and confirmed obsolete, delete the
+// second array entry below and this comment block.
 resource spfRecord 'Microsoft.Network/dnsZones/TXT@2023-07-01-preview' = {
   parent: dnsZone
   name: '@'
@@ -242,6 +259,9 @@ resource spfRecord 'Microsoft.Network/dnsZones/TXT@2023-07-01-preview' = {
     TXTRecords: [
       {
         value: ['v=spf1 include:spf.protection.outlook.com -all']
+      }
+      {
+        value: ['_mn729nlts6vg16hckcss91bxyub7qvz']
       }
     ]
   }
