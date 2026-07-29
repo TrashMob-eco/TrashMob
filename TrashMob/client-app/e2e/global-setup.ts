@@ -39,7 +39,11 @@ async function loginAndSaveState(
         // Click Sign In
         await page.getByRole('button', { name: /sign in/i }).waitFor({ state: 'visible', timeout: 30000 });
         await page.getByRole('button', { name: /sign in/i }).click();
-        await page.waitForURL(/.*ciamlogin\.com.*/, { timeout: 15000 });
+        // Match on the OAuth authorize path rather than the host — E6 (PR #3535)
+        // flipped the authority from *.ciamlogin.com to auth-dev.trashmob.eco (dev)
+        // and will do the same for auth.trashmob.eco on prod. The `/oauth2/v2.0/authorize`
+        // path is stable across both, so this stays correct through the cutover.
+        await page.waitForURL(/\/oauth2\/v2\.0\/authorize/, { timeout: 15000 });
 
         // Step 1: Email
         await page.fill('input[name="username"]', email);
