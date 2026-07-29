@@ -51,10 +51,7 @@ export const CommunityAreasSection = ({
         useAreaFilters(areas);
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.max(1, Math.ceil(filteredAreas.length / AREAS_PAGE_SIZE));
-    const pagedAreas = filteredAreas.slice(
-        (currentPage - 1) * AREAS_PAGE_SIZE,
-        currentPage * AREAS_PAGE_SIZE,
-    );
+    const pagedAreas = filteredAreas.slice((currentPage - 1) * AREAS_PAGE_SIZE, currentPage * AREAS_PAGE_SIZE);
 
     useEffect(() => {
         setCurrentPage(1);
