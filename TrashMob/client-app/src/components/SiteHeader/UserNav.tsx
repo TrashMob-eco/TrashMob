@@ -131,6 +131,10 @@ export const UserNav = (props: UserNavProps) => {
                                     <span className='text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full w-fit'>
                                         Site Admin
                                     </span>
+                                ) : currentUser.isSalesRep ? (
+                                    <span className='text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full w-fit'>
+                                        Sales Rep
+                                    </span>
                                 ) : null}
                             </div>
                         </HoverCardContent>
@@ -146,6 +150,13 @@ export const UserNav = (props: UserNavProps) => {
                                     <Link to='/siteadmin'>
                                         <IdCard />
                                         <span>Site Administration</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                            ) : currentUser.isSalesRep ? (
+                                <DropdownMenuItem asChild>
+                                    <Link to='/siteadmin/prospects'>
+                                        <IdCard />
+                                        <span>Sales Portal</span>
                                     </Link>
                                 </DropdownMenuItem>
                             ) : null}

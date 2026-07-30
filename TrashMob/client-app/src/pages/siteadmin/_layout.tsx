@@ -34,6 +34,7 @@ import {
     CalendarDays,
 } from 'lucide-react';
 import { SidebarNav, NavGroup } from '@/components/ui/sidebar-nav';
+import { useLogin } from '@/hooks/useLogin';
 
 const pathPrefix = '/siteadmin';
 
@@ -97,14 +98,34 @@ const navGroups: NavGroup[] = [
     },
 ];
 
+// SalesRep holders get the municipal sales pipeline CRM and reports, and nothing else
+// (see Project 64 / Project 63 — they must not see user admin, waivers, or moderation surfaces).
+const salesRepNavGroups: NavGroup[] = [
+    {
+        title: 'Sales Pipeline',
+        items: [
+            { name: 'Prospects', href: `${pathPrefix}/prospects`, icon: Target },
+            { name: 'Discovery', href: `${pathPrefix}/prospects/discovery`, icon: Search },
+            { name: 'Import CSV', href: `${pathPrefix}/prospects/import`, icon: Upload },
+            { name: 'Pipeline Analytics', href: `${pathPrefix}/prospects/analytics`, icon: BarChart3 },
+            { name: 'Weekly Report', href: `${pathPrefix}/prospects/reports/weekly`, icon: CalendarClock },
+            { name: 'Monthly Report', href: `${pathPrefix}/prospects/reports/monthly`, icon: CalendarDays },
+            { name: 'Report Subscribers', href: `${pathPrefix}/prospects/reports/subscribers`, icon: Mail },
+        ],
+    },
+];
+
 export const SiteAdminLayout = () => {
+    const { currentUser } = useLogin();
+    const groups = currentUser.isSiteAdmin ? navGroups : salesRepNavGroups;
+
     return (
         <div className='container mx-auto py-6'>
             <h1 className='scroll-m-20 pb-6 text-3xl font-light tracking-tight'>Site Administration</h1>
             <div className='flex flex-col gap-6 lg:flex-row'>
                 <aside className='w-full shrink-0 lg:w-64'>
                     <div className='sticky top-4 rounded-lg border bg-card p-4'>
-                        <SidebarNav groups={navGroups} />
+                        <SidebarNav groups={groups} />
                     </div>
                 </aside>
                 <main className='min-w-0 flex-1'>
