@@ -51,12 +51,22 @@ namespace TrashMob.Controllers.V2
 
         /// <summary>
         /// Maps a <see cref="User"/> to a <see cref="UserDto"/> and populates role-derived
-        /// fields (<see cref="UserDto.IsSalesRep"/>) that the entity-only mapping can't compute
-        /// since role membership requires a database lookup.
+        /// fields that the entity-only mapping can't compute since role membership requires
+        /// a database lookup.
         /// </summary>
+        /// <remarks>
+        /// <see cref="UserDto.IsSiteAdmin"/> is recomputed via <c>HasRoleAsync</c> rather than
+        /// trusting <c>User.ToV2Dto()</c>'s raw column read: a SiteAdmin grant made through the
+        /// Project 64 Roles UI (<c>POST /users/{id}/roles</c>) only writes a <c>UserRole</c> row
+        /// and never touches the legacy <c>IsSiteAdmin</c> column, so the entity-only mapping
+        /// would under-report admin status for anyone promoted that way. <c>HasRoleAsync</c>
+        /// already bridges both the legacy boolean and the new role table — see
+        /// <see cref="TrashMob.Shared.Managers.UserRoleService.GetRoleNamesAsync"/>.
+        /// </remarks>
         private async Task<UserDto> ToUserDtoAsync(User user, CancellationToken cancellationToken)
         {
             var dto = user.ToV2Dto();
+            dto.IsSiteAdmin = await userRoleService.HasRoleAsync(user.Id, RoleNames.SiteAdmin, cancellationToken);
             dto.IsSalesRep = await userRoleService.HasRoleAsync(user.Id, RoleNames.SalesRep, cancellationToken);
             return dto;
         }
