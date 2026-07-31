@@ -31,6 +31,8 @@ class UserData {
 
     isSiteAdmin: boolean = false;
 
+    isSalesRep: boolean = false;
+
     givenName: string = '';
 
     surname: string = '';

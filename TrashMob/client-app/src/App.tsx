@@ -543,7 +543,7 @@ const AuthSideAdminLayout = () => {
                 <Loader2 className='animate-spin mr-2' /> Loading
             </div>
         );
-    if (isUserLoaded && !currentUser.isSiteAdmin) return <em>Access Denied</em>;
+    if (isUserLoaded && !currentUser.isSiteAdmin && !currentUser.isSalesRep) return <em>Access Denied</em>;
 
     return (
         <MsalAuthenticationTemplate
