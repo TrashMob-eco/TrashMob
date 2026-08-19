@@ -122,12 +122,17 @@ jobs:
             -o none
           echo "rule_name=$RULE_NAME" >> $GITHUB_OUTPUT
 
-      - name: Fetch DB connection string from Key Vault
+      - name: Fetch admin DB connection string from Key Vault
         id: db-conn
         run: |
+          # Use TMDBAdminConnectionString (dbadmin — has DDL rights), NOT
+          # TMDBServerConnectionString (trashmob_app — DML only, used by the
+          # running app at runtime). Attempted TMDBServerConnectionString on
+          # 2026-08-19 run 32218927181 failed with "CREATE TABLE permission
+          # denied" halfway through AddProspectContactsAndDropLegacyContactFields.
           CONN=$(az keyvault secret show \
             --vault-name "${{ env.KEY_VAULT_NAME }}" \
-            --name "TMDBServerConnectionString" \
+            --name "TMDBAdminConnectionString" \
             --query value -o tsv)
           echo "::add-mask::$CONN"
           echo "value=$CONN" >> $GITHUB_OUTPUT
