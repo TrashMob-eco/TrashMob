@@ -141,6 +141,11 @@ jobs:
         run: |
           dotnet tool install --global dotnet-ef --version 10.0.*
           export PATH="$PATH:$HOME/.dotnet/tools"
+          # `dotnet ef database update` runs a design-time build of the startup
+          # project. The container-build-push step above built inside a Docker
+          # container so no restore artifacts exist on the runner filesystem —
+          # explicit restore is required before ef can build.
+          dotnet restore TrashMob/TrashMob.csproj
           dotnet ef database update \
             --project TrashMob.Shared \
             --startup-project TrashMob \
