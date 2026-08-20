@@ -84,87 +84,10 @@ jobs:
             echo "strapi_url=" >> $GITHUB_OUTPUT
           fi
 
-      # ─── EF migrations (before container deploy) ──────────────────────────
-      # Applies any pending EF Core migrations to the dev SQL DB before the
-      # new container revision goes live. Prevents the class of bug where a
-      # merged PR adds a migration in code but the schema never actually gets
-      # applied — the exact failure mode that surfaced on 2026-08-19 when
-      # the RBAC refactor's AddRolesAndUserRoles migration had never run and
-      # every authenticated request threw "Invalid object name 'UserRoles'."
-      #
-      # Order: runs after container build/push and Strapi lookup, before the
-      # bicep deploy of the new revision. A migration failure aborts the
-      # workflow with the deploy skipped, so we never ship code that assumes
-      # a schema the DB doesn't have.
-      #
-      # SQL access: the runner opens a per-run firewall pinhole for its own
-      # public IP, fetches the connection string from Key Vault (workflow SP
-      # already has KV read via the pattern used by the Azure Maps step), and
-      # tears the firewall rule down in an always-run cleanup step.
-
-      - name: Setup .NET for EF migrations
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Add runner IP to SQL firewall (temp)
-        id: sql-fw
-        run: |
-          RUNNER_IP=$(curl -sS https://api.ipify.org)
-          RULE_NAME="ci-migration-${GITHUB_RUN_ID}"
-          echo "Adding firewall rule '$RULE_NAME' for $RUNNER_IP"
-          az sql server firewall-rule create \
-            --name "$RULE_NAME" \
-            --resource-group "${{ env.RESOURCE_GROUP }}" \
-            --server "sql-tm-dev-westus2" \
-            --start-ip-address "$RUNNER_IP" \
-            --end-ip-address "$RUNNER_IP" \
-            -o none
-          echo "rule_name=$RULE_NAME" >> $GITHUB_OUTPUT
-
-      - name: Fetch admin DB connection string from Key Vault
-        id: db-conn
-        run: |
-          # Use TMDBAdminConnectionString (dbadmin — has DDL rights), NOT
-          # TMDBServerConnectionString (trashmob_app — DML only, used by the
-          # running app at runtime). Attempted TMDBServerConnectionString on
-          # 2026-08-19 run 32218927181 failed with "CREATE TABLE permission
-          # denied" halfway through AddProspectContactsAndDropLegacyContactFields.
-          CONN=$(az keyvault secret show \
-            --vault-name "${{ env.KEY_VAULT_NAME }}" \
-            --name "TMDBAdminConnectionString" \
-            --query value -o tsv)
-          echo "::add-mask::$CONN"
-          echo "value=$CONN" >> $GITHUB_OUTPUT
-
-      - name: Apply EF migrations to dev DB
-        env:
-          # The app reads the connection string from the top-level
-          # TMDBServerConnectionString config key (see TrashMob/Program.cs:258).
-          # `dotnet ef` picks it up via IConfiguration during design-time build.
-          TMDBServerConnectionString: ${{ steps.db-conn.outputs.value }}
-        run: |
-          dotnet tool install --global dotnet-ef --version 10.0.*
-          export PATH="$PATH:$HOME/.dotnet/tools"
-          # `dotnet ef database update` runs a design-time build of the startup
-          # project. The container-build-push step above built inside a Docker
-          # container so no restore artifacts exist on the runner filesystem —
-          # explicit restore is required before ef can build.
-          dotnet restore TrashMob/TrashMob.csproj
-          dotnet ef database update \
-            --project TrashMob.Shared \
-            --startup-project TrashMob \
-            --context MobDbContext
-
-      - name: Remove runner IP from SQL firewall (cleanup)
-        if: always() && steps.sql-fw.outputs.rule_name != ''
-        run: |
-          az sql server firewall-rule delete \
-            --name "${{ steps.sql-fw.outputs.rule_name }}" \
-            --resource-group "${{ env.RESOURCE_GROUP }}" \
-            --server "sql-tm-dev-westus2" \
-            -o none || true
-      # ─── end EF migrations ────────────────────────────────────────────────
+      # Note: EF Core migrations are applied by a separate workflow,
+      # main_db-migrations.yml, mirroring the prod pattern in
+      # release_db-migrations.yml. That workflow is triggered on the same
+      # push if the push includes migration file changes.
 
       - name: Deploy to Azure Container Apps
         run: |
