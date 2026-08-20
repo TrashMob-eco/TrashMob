@@ -25,6 +25,14 @@ test.describe('Accessibility (WCAG 2.2 AA)', () => {
         const results = await new AxeBuilder({ page })
             .withTags(['wcag2a', 'wcag2aa', 'wcag22aa'])
             .exclude('.azure-maps-control-container') // Third-party map controls
+            // YouTube embeds — YouTube's own iframe markup emits
+            // aria-level="2" on <a> tags, which trips aria-allowed-attr.
+            // We can't fix third-party iframe content; scanning our own
+            // page's use of the iframe (title, allowfullscreen, etc.) is
+            // still covered because .exclude() only skips the iframe's
+            // internal document, not the <iframe> element itself.
+            .exclude('iframe[src*="youtube.com"]')
+            .exclude('iframe[src*="youtube-nocookie.com"]')
             .analyze();
 
         return results;
