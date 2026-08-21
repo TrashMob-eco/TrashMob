@@ -12,6 +12,17 @@ describe('AgeGateDialog', () => {
         vi.clearAllMocks();
     });
 
+    // pointerEventsCheck: 0 disables user-event's pre-click check for
+    // `pointer-events: none` on the target. Radix Popover/Dialog applies
+    // pointer-events: none during entrance/exit transitions to prevent
+    // interaction with stale content — real users don't notice because
+    // their clicks are async with the animation, but JSDOM's synchronous
+    // clicks race with it and would throw "Unable to perform pointer
+    // interaction as the element has `pointer-events: none`." These tests
+    // check business logic (age → correct message), not click
+    // interactability, so skipping the check is safe here.
+    const setupUser = () => userEvent.setup({ pointerEventsCheck: 0 });
+
     const renderDialog = () =>
         render(
             <MemoryRouter>
@@ -26,7 +37,7 @@ describe('AgeGateDialog', () => {
     });
 
     it('renders month and year dropdown selects for quick navigation', async () => {
-        const user = userEvent.setup();
+        const user = setupUser();
         renderDialog();
 
         // Click the date picker button to open the calendar popover
@@ -48,7 +59,7 @@ describe('AgeGateDialog', () => {
     });
 
     it('shows blocked message for under-13 date of birth', async () => {
-        const user = userEvent.setup();
+        const user = setupUser();
         renderDialog();
 
         // Click the date picker to open it
@@ -77,7 +88,7 @@ describe('AgeGateDialog', () => {
     });
 
     it('shows parental consent message for 13-17 date of birth', async () => {
-        const user = userEvent.setup();
+        const user = setupUser();
         renderDialog();
 
         // Click the date picker to open it
