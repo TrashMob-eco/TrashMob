@@ -53,7 +53,7 @@ jobs:
           return pr;
 
     - name: Checkout PR branch
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || (github.event.inputs.pr_number != '' && steps.get_pr.outputs.head_sha || github.ref) }}
         fetch-depth: 0
