@@ -37,7 +37,7 @@ jobs:
 
       - name: Cache Cuttlefish packages
         id: cache-cf
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/cuttlefish-packages
           key: cf-packages-${{ env.CUTTLEFISH_VERSION }}
@@ -76,7 +76,7 @@ jobs:
 
       - name: Cache Android images
         id: cache-images
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/cuttlefish-downloads
           key: android-images-${{ env.ANDROID_BRANCH }}-${{ steps.build-id.outputs.BUILD_ID }}
