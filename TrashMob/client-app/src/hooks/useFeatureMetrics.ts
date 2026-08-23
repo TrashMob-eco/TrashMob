@@ -5,15 +5,7 @@ import { trackEvent, trackPageView as trackPageViewFn } from '../services/appIns
  * Event categories for feature metrics
  */
 export type MetricCategory =
-    | 'Auth'
-    | 'Event'
-    | 'Attendance'
-    | 'LitterReport'
-    | 'Partner'
-    | 'Team'
-    | 'Search'
-    | 'Navigation'
-    | 'Feedback';
+    'Auth' | 'Event' | 'Attendance' | 'LitterReport' | 'Partner' | 'Team' | 'Search' | 'Navigation' | 'Feedback';
 
 /**
  * Common actions for feature metrics
