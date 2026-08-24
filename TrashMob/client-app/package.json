@@ -93,7 +93,7 @@
         "@tailwindcss/typography": "^0.5.16",
         "@tanstack/react-query-devtools": "^5.0.0",
         "@testing-library/dom": "^10.4.0",
-        "@testing-library/jest-dom": "^6.0.0",
+        "@testing-library/jest-dom": "^7.0.0",
         "@testing-library/react": "^16.0.0",
         "@testing-library/user-event": "^14.0.0",
         "@types/google.maps": "^3.58.1",
