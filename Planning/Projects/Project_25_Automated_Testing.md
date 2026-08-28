@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Phases 1–3 Complete — 197 E2E tests, 32 test files, authenticated + admin flows, CI integration |
+| **Status** | Phases 1–4 Complete — 197 web E2E tests + 28 mobile UI tests, CI integration for both |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -123,7 +123,7 @@ Reduce regression risk, enable confident releases, and replace manual test scena
 | **Slow test execution** | Low | Medium | ✅ Parallel execution (2 CI workers); runs in ~4-5 min |
 | **Test maintenance burden** | Medium | Medium | ✅ Page object pattern; shared auth fixture; error boundary detection |
 | **Auth session expiry** | Medium | Medium | ✅ Global setup re-login if state > 30 min old; sessionStorage capture/restore |
-| **Mobile emulator issues in CI** | N/A | N/A | Mobile testing deferred |
+| **Mobile emulator issues in CI** | Low | Medium | ✅ Solved — Cuttlefish emulator (KVM-accelerated, API 34) on ubuntu-latest; 100% reliable |
 
 ---
 
@@ -301,13 +301,15 @@ E2E tests caught real bugs during development:
 - ✅ Partner request forms
 - ✅ Page coverage for previously untested pages
 
-### Phase 4: Mobile Testing — Tests Written, CI Blocked
+### Phase 4: Mobile Testing — Tests Written, CI Working ✅
 - ✅ Evaluate Appium vs MAUI testing → Appium with UiAutomator2 selected
 - ✅ Set up mobile test project (TrashMobMobile.UITests — 28 tests, 8 files)
 - ✅ Add AutomationIds to XAML views (HomeFeed, Explore, Impact, Profile)
 - ✅ Implement tests: app launch, tab navigation, home feed, explore map, impact stats, profile, quick action, screenshots
-- ❌ Configure CI — **blocked** (see Phase 4 CI Investigation below)
+- ✅ Configure CI — **working** with Cuttlefish emulator on ubuntu-latest (PR #3178)
+- ✅ CI results: 28 tests run, 4 passed (unauthenticated), 24 failed (require login), ~17min total (~12min with warm caches)
 - Tests run locally: `appium & dotnet test TrashMobMobile.UITests/`
+- CI trigger: `workflow_dispatch` (manual) via `.github/workflows/mobile-ui-tests.yml`
 
 ---
 
@@ -447,13 +449,14 @@ Deep evaluation of jonathanpeppers/cuttlefish shows this is a strong candidate:
 
 **Last Updated:** March 22, 2026
 **Owner:** Engineering Team
-**Status:** Phases 1–3 Complete, Phase 4 Tests Written (CI blocked), evaluating Cuttlefish for Phase 5
-**Next Review:** After Cuttlefish evaluation
+**Status:** Phases 1–4 Complete (CI working via Cuttlefish), 24 tests need auth flow for CI
+**Next Review:** When mobile auth flow added to CI tests
 
 ---
 
 ## Changelog
 
+- **2026-03-22:** Cuttlefish CI integration working — 28 tests run on ubuntu-latest, 4 passed (unauthenticated), 24 need login. Emulator boots in ~1m19s, full pipeline ~17min. PR #3178 merged.
 - **2026-03-22:** Deep evaluation of Cuttlefish — 100% reliable on API 34+, ~5min total on ubuntu-latest with KVM. Prototyping integration with existing Appium tests.
 - **2026-03-22:** Added community-recommended CI tools (Cuttlefish, maui-containers) from Reddit r/dotnetMAUI thread. Defined recommended evaluation path for Phase 5.
 - **2026-03-22:** Phase 4 mobile testing — 28 Appium tests written (8 files), AutomationIds added to XAML views. CI workflow created but blocked by GitHub Actions emulator instability. Documented all CI attempts. Reddit discussion posted. Tests work locally.
