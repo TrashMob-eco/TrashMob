@@ -103,6 +103,14 @@ param wwwDnsAuthToken string = ''
 @description('E6: Dev Front Door managed-cert validation token for the auth-dev custom-domain. Empty skips the _dnsauth.auth-dev TXT record.')
 param authDevDnsAuthToken string = ''
 
+// E6 (prod) — same pattern as authDevDnsAuthToken above, for auth.trashmob.eco.
+// Fetch with:
+//   az afd custom-domain show --resource-group rg-trashmob-pr-westus2 \
+//     --profile-name fd-tm-pr --custom-domain-name auth-trashmob-eco \
+//     --query validationProperties.validationToken -o tsv
+@description('E6: Prod Front Door managed-cert validation token for the auth custom-domain. Empty skips the _dnsauth.auth TXT record.')
+param authDnsAuthToken string = ''
+
 // DNS Zone
 resource dnsZone 'Microsoft.Network/dnsZones@2023-07-01-preview' = {
   name: zoneName
@@ -203,6 +211,22 @@ resource authDevRecord 'Microsoft.Network/dnsZones/A@2023-07-01-preview' = {
   }
 }
 
+// E6 (prod) — auth subdomain A record, same anycast-pinning rationale as
+// authDevRecord above. Do NOT use a CNAME to the prod AFD endpoint hostname —
+// it hits the identical aadg-fleet hijack (see the long E6 comment block near
+// the params). Unconditional, same as authDevRecord.
+resource authRecord 'Microsoft.Network/dnsZones/A@2023-07-01-preview' = {
+  parent: dnsZone
+  name: 'auth'
+  properties: {
+    TTL: 300
+    ARecords: [
+      { ipv4Address: '13.107.226.70' }
+      { ipv4Address: '13.107.253.70' }
+    ]
+  }
+}
+
 // Domain validation TXT records for Front Door managed certificates.
 // Guarded by the token params — if not supplied, the resource is not
 // declared in this template and ARM Incremental will not touch any
@@ -244,6 +268,21 @@ resource dnsAuthAuthDev 'Microsoft.Network/dnsZones/TXT@2023-07-01-preview' = if
     TXTRecords: [
       {
         value: [authDevDnsAuthToken]
+      }
+    ]
+  }
+}
+
+// E6 (prod) — Front Door managed-cert validation TXT for auth.trashmob.eco.
+// Same guard pattern as dnsAuthAuthDev above.
+resource dnsAuthAuth 'Microsoft.Network/dnsZones/TXT@2023-07-01-preview' = if (authDnsAuthToken != '') {
+  parent: dnsZone
+  name: '_dnsauth.auth'
+  properties: {
+    TTL: 3600
+    TXTRecords: [
+      {
+        value: [authDnsAuthToken]
       }
     ]
   }
@@ -361,4 +400,20 @@ E6 auth-dev subdomain:
 12. In the Entra admin center on the TrashMobEcoDev tenant, add auth-dev.trashmob.eco under
     Identity > Domain names > Custom domain names (requires TXT MS=<token> verification), then
     associate it under Entra ID > Domain names > Custom URL domains.
+
+E6 auth subdomain (prod):
+13. Deploy prod Front Door via .github/workflows/release_frontdoor-tm-pr.yml with
+    ciamAuthDomain=auth.trashmob.eco and ciamTenantHost=trashmobecopr.ciamlogin.com set.
+14. Fetch the AFD custom-domain validation token:
+    az afd custom-domain show --resource-group rg-trashmob-pr-westus2 \
+      --profile-name fd-tm-pr --custom-domain-name auth-trashmob-eco \
+      --query validationProperties.validationToken -o tsv
+15. Re-run this template with authDnsAuthToken set to that value. The auth A records
+    to AFD anycast (13.107.226.70, 13.107.253.70) deploy unconditionally — no lookup needed.
+16. Wait a few minutes for the token TXT to propagate; the prod Front Door custom domain will flip from Pending -> Approved.
+17. In the Entra admin center on the TrashMobEcoPr tenant, add auth.trashmob.eco under
+    Identity > Domain names > Custom domain names (requires TXT MS=<token> verification), then
+    associate it under Entra ID > Domain names > Custom URL domains. See
+    Planning/PRODUCTION_DEPLOYMENT_CHECKLIST.md §E6 for the full task list (redirect URIs, etc.)
+    before flipping entraAuthDomain on the prod Container App workflow.
 '''

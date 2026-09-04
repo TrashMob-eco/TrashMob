@@ -412,6 +412,10 @@ DNS Configuration Required:
 2. For ${apexDomain}: Create ALIAS/ANAME record -> ${endpoint.properties.hostName}
    (Microsoft 365 DNS may not support ALIAS records - consider Azure DNS or Cloudflare)
 3. For domain validation, create TXT record: _dnsauth.${primaryDomain} with the validation token from Azure Portal
-4. (E6) If ciamAuthDomain is set: create CNAME ${ciamAuthDomain} -> ${endpoint.properties.hostName}
-        and TXT record _dnsauth.${ciamAuthDomain} with the validation token from Azure Portal
+4. (E6) If ciamAuthDomain is set: create explicit A records for ${ciamAuthDomain} pinned to
+        AFD's classic anycast pair (13.107.226.70, 13.107.253.70) — NOT a CNAME to
+        ${endpoint.properties.hostName}. A CNAME's upstream chain transits Microsoft's aadg
+        fleet and serves the wrong cert (see Deploy/dnsZone.bicep's E6 comment block for the
+        full story). Also add TXT record _dnsauth.${ciamAuthDomain} with the validation token
+        from Azure Portal.
 '''
