@@ -27,6 +27,10 @@ env:
   FRONT_DOOR_ENDPOINT: fde-tm-pr
   PRIMARY_DOMAIN: www.trashmob.eco
   APEX_DOMAIN: trashmob.eco
+  # E6 — custom auth domain for Entra External ID. Both gated together in frontDoor.bicep
+  # (enableAuthDomain); see Planning/PRODUCTION_DEPLOYMENT_CHECKLIST.md §E6.
+  CIAM_AUTH_DOMAIN: auth.trashmob.eco
+  CIAM_TENANT_HOST: trashmobecopr.ciamlogin.com
 
 jobs:
   deploy:
@@ -70,7 +74,9 @@ jobs:
               environment=pr \
               containerAppFqdn=${{ steps.get-fqdn.outputs.fqdn }} \
               primaryDomain=${{ env.PRIMARY_DOMAIN }} \
-              apexDomain=${{ env.APEX_DOMAIN }}
+              apexDomain=${{ env.APEX_DOMAIN }} \
+              ciamAuthDomain=${{ env.CIAM_AUTH_DOMAIN }} \
+              ciamTenantHost=${{ env.CIAM_TENANT_HOST }}
 
       # Purge cached HTML/asset responses so the new bicep behavior (and any updated
       # cache-control from a same-deploy container image) takes effect immediately, not
