@@ -95,6 +95,12 @@ namespace TrashMob.Models.Poco.V2
         public bool IsSiteAdmin { get; set; }
 
         /// <summary>
+        /// Gets or sets whether the user holds the SalesRep role (see <see cref="TrashMob.Shared.Managers.RoleNames"/>).
+        /// Grants access to the prospect CRM and sales reports admin pages, nothing else.
+        /// </summary>
+        public bool IsSalesRep { get; set; }
+
+        /// <summary>
         /// Gets or sets the date when the user agreed to the TrashMob waiver.
         /// </summary>
         public DateTimeOffset? DateAgreedToTrashMobWaiver { get; set; }

@@ -15,15 +15,35 @@ param strapiBaseUrl string = ''
 param customDomainName string = ''
 param managedCertificateName string = ''
 
-// Build the managed certificate resource ID if provided
+// Optional secondary custom-domain binding (apex domain) — bound to the
+// Container App as a safety net for users whose DNS resolvers still
+// have the pre-fix `trashmob.eco -> ACA env IP (20.69.75.244)` cached
+// from the Azure DNS alias-record bug documented in
+// Deploy/APEX_FIRST_VISIT_INVESTIGATION.md (2026-07-21). Front Door is
+// the canonical path for apex traffic; this binding only exists so
+// that stale-cache connections hitting ACA directly get TLS-terminated
+// and served instead of TCP-reset. Safe to remove once cache
+// telemetry confirms all major public resolvers have re-resolved.
+param apexDomainName string = ''
+param apexManagedCertificateName string = ''
+
+@description('E6: Optional custom auth domain (e.g. auth.trashmob.eco). When set, overrides the default per-environment *.ciamlogin.com authority for AzureAdEntra__Instance. This flows to both the backend (JWT authority) and the SPA (via ConfigV2Controller). Must be paired with matching ciamAuthDomain/ciamTenantHost in frontDoor.bicep and DNS/portal work — see Planning/PRODUCTION_DEPLOYMENT_CHECKLIST.md §E6.')
+param entraAuthDomain string = ''
+
+// Build the managed certificate resource IDs if provided
 var managedCertificateId = managedCertificateName != '' ? '${containerAppsEnvironmentId}/managedCertificates/${managedCertificateName}' : ''
+var apexManagedCertificateId = apexManagedCertificateName != '' ? '${containerAppsEnvironmentId}/managedCertificates/${apexManagedCertificateName}' : ''
 
 // Derive the Application Insights name from environment and region
 var appInsightsName = 'ai-tm-${environment}-${region}'
 
 // Azure AD Entra External ID configuration - these are public values, not secrets
 // Note: Microsoft accounts work natively in Entra External ID (no external IDP setup needed)
-var entraInstance = environment == 'dev' ? 'https://trashmobecodev.ciamlogin.com/' : 'https://trashmobecopr.ciamlogin.com/'
+// When entraAuthDomain is set (E6 cutover), it replaces the ciamlogin.com host for user-facing
+// sign-in URLs. The tenant ID + client IDs + scopes stay the same — only the host changes.
+var entraInstance = entraAuthDomain != ''
+  ? 'https://${entraAuthDomain}/'
+  : (environment == 'dev' ? 'https://trashmobecodev.ciamlogin.com/' : 'https://trashmobecopr.ciamlogin.com/')
 var entraDomain = environment == 'dev' ? 'TrashMobEcoDev.onmicrosoft.com' : 'trashmobecopr.onmicrosoft.com'
 var entraBackendClientId = environment == 'dev' ? '84df543d-6535-45f5-afab-4d38528b721a' : 'dc09e17b-bce4-4af9-82ab-f7b12af586b4'
 var entraTenantId = environment == 'dev' ? '8577fa31-4b86-4e4b-8b02-93fba708cb19' : 'b5fc8717-29eb-496e-8e09-cf90d344ce9f'
@@ -59,13 +79,18 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: 8080
         transport: 'auto'
         allowInsecure: false
-        customDomains: customDomainName != '' && managedCertificateId != '' ? [
-          {
+        customDomains: concat(
+          customDomainName != '' && managedCertificateId != '' ? [{
             name: customDomainName
             certificateId: managedCertificateId
             bindingType: 'SniEnabled'
-          }
-        ] : []
+          }] : [],
+          apexDomainName != '' && apexManagedCertificateId != '' ? [{
+            name: apexDomainName
+            certificateId: apexManagedCertificateId
+            bindingType: 'SniEnabled'
+          }] : []
+        )
       }
       registries: [
         {

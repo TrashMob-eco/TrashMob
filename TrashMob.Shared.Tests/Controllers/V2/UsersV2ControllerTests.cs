@@ -153,6 +153,67 @@ namespace TrashMob.Shared.Tests.Controllers.V2
         }
 
         [Fact]
+        public async Task GetUser_SetsIsSiteAdmin_WhenUserHoldsSiteAdminRoleViaRoleGrantOnly()
+        {
+            // Legacy IsSiteAdmin column is false — the user was promoted via the
+            // Project 64 Roles UI (POST /users/{id}/roles), which only writes a
+            // UserRole row and never touches the column.
+            var userId = Guid.NewGuid();
+            var user = new User { Id = userId, UserName = "rolegrantedadmin", IsSiteAdmin = false };
+
+            userManager
+                .Setup(m => m.GetAsync(userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(user);
+            userRoleService
+                .Setup(s => s.HasRoleAsync(userId, "SiteAdmin", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            var result = await controller.GetUser(userId, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dto = Assert.IsType<UserDto>(okResult.Value);
+            Assert.True(dto.IsSiteAdmin);
+        }
+
+        [Fact]
+        public async Task GetUser_SetsIsSalesRep_WhenUserHoldsSalesRepRole()
+        {
+            var userId = Guid.NewGuid();
+            var user = new User { Id = userId, UserName = "salesuser" };
+
+            userManager
+                .Setup(m => m.GetAsync(userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(user);
+            userRoleService
+                .Setup(s => s.HasRoleAsync(userId, "SalesRep", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            var result = await controller.GetUser(userId, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dto = Assert.IsType<UserDto>(okResult.Value);
+            Assert.True(dto.IsSalesRep);
+        }
+
+        [Fact]
+        public async Task GetUser_IsSalesRepFalse_WhenUserHasNoRoles()
+        {
+            var userId = Guid.NewGuid();
+            var user = new User { Id = userId, UserName = "plainuser" };
+
+            userManager
+                .Setup(m => m.GetAsync(userId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(user);
+            // Default userRoleService mock returns false for HasRoleAsync.
+
+            var result = await controller.GetUser(userId, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dto = Assert.IsType<UserDto>(okResult.Value);
+            Assert.False(dto.IsSalesRep);
+        }
+
+        [Fact]
         public async Task GetUser_ReturnsNotFound_WhenUserDoesNotExist()
         {
             var userId = Guid.NewGuid();

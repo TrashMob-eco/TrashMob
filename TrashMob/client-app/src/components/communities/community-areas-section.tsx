@@ -1,5 +1,15 @@
-import { useState } from 'react';
-import { Calendar, ClipboardCheck, List, Map as MapIcon, MapPin, Search, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import {
+    Calendar,
+    ChevronLeft,
+    ChevronRight,
+    ClipboardCheck,
+    List,
+    Map as MapIcon,
+    MapPin,
+    Search,
+    X,
+} from 'lucide-react';
 import AdoptableAreaData from '@/components/Models/AdoptableAreaData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +24,7 @@ import { AdoptAreaDialog } from './adopt-area-dialog';
 import { useAreaFilters, AREA_TYPES, AREA_STATUSES } from '@/hooks/useAreaFilters';
 
 const COMMUNITY_AREAS_MAP_ID = 'communityAreasMap';
+const AREAS_PAGE_SIZE = 10;
 
 const statusVariant: Record<string, 'success' | 'default' | 'secondary'> = {
     Available: 'success',
@@ -38,6 +49,17 @@ export const CommunityAreasSection = ({
     const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
     const { search, setSearch, areaType, setAreaType, status, setStatus, filteredAreas, totalCount, hasActiveFilters } =
         useAreaFilters(areas);
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalPages = Math.max(1, Math.ceil(filteredAreas.length / AREAS_PAGE_SIZE));
+    const pagedAreas = filteredAreas.slice((currentPage - 1) * AREAS_PAGE_SIZE, currentPage * AREAS_PAGE_SIZE);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search, areaType, status]);
+
+    useEffect(() => {
+        if (currentPage > totalPages) setCurrentPage(totalPages);
+    }, [currentPage, totalPages]);
 
     if (isLoading) {
         return (
@@ -170,7 +192,7 @@ export const CommunityAreasSection = ({
                         </div>
                     ) : (
                         <div className='space-y-4'>
-                            {filteredAreas.map((area) => (
+                            {pagedAreas.map((area) => (
                                 <div key={area.id} className='p-3 rounded-lg border space-y-2'>
                                     <div className='flex items-center justify-between gap-2'>
                                         <div className='flex items-center gap-2 min-w-0'>
@@ -201,6 +223,31 @@ export const CommunityAreasSection = ({
                                     </div>
                                 </div>
                             ))}
+                            {totalPages > 1 ? (
+                                <div className='flex items-center justify-between pt-2'>
+                                    <span className='text-sm text-muted-foreground'>
+                                        Page {currentPage} of {totalPages}
+                                    </span>
+                                    <div className='flex items-center gap-2'>
+                                        <Button
+                                            variant='outline'
+                                            size='sm'
+                                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                            disabled={currentPage === 1}
+                                        >
+                                            <ChevronLeft className='h-4 w-4 mr-1' /> Previous
+                                        </Button>
+                                        <Button
+                                            variant='outline'
+                                            size='sm'
+                                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                            disabled={currentPage === totalPages}
+                                        >
+                                            Next <ChevronRight className='h-4 w-4 ml-1' />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : null}
                         </div>
                     )}
                 </CardContent>

@@ -1,0 +1,114 @@
+# Workflow for deploying the dev Azure Front Door profile from Deploy/frontDoor.bicep.
+#
+# Purpose: E6 (custom auth domain) dev-first testing per
+# Planning/PRODUCTION_DEPLOYMENT_CHECKLIST.md §E6 item 206. Deploys an AFD profile
+# with only the CIAM auth flow wired up — no www/apex customer-facing routing on
+# dev. Existing dev.trashmob.eco traffic keeps going direct to the Container App
+# (bound at the ACA env level, not via AFD).
+#
+# The Container App origin group + route still deploy (bicep requires them), but
+# with no custom domains attached they're only reachable at the default AFD
+# hostname fde-tm-dev.<random>.azurefd.net — harmless, nobody hits that URL.
+
+name: TrashMobDev - Front Door
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/container_frontdoor-tm-dev-westus2.yml'
+      - 'Deploy/frontDoor.bicep'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-dev-frontdoor
+  cancel-in-progress: true
+
+env:
+  RESOURCE_GROUP: rg-trashmob-dev-westus2
+  CONTAINER_APP_NAME: ca-tm-dev-westus2
+  FRONT_DOOR_PROFILE: fd-tm-dev
+  FRONT_DOOR_ENDPOINT: fde-tm-dev
+  # E6 — auth-only routing. When Joe adds the DNS CNAME + Entra portal
+  # association, sign-ins on the dev tenant will resolve through this domain.
+  CIAM_AUTH_DOMAIN: auth-dev.trashmob.eco
+  CIAM_TENANT_HOST: trashmobecodev.ciamlogin.com
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: test
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Login to Azure
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Container App FQDN is required by the bicep even when we're not using
+      # AFD for customer traffic on dev. The route it creates is harmless
+      # (reachable only at the default AFD hostname, nobody hits that URL).
+      - name: Get Container App FQDN
+        id: get-fqdn
+        run: |
+          FQDN=$(az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query properties.configuration.ingress.fqdn \
+            -o tsv)
+          echo "Container App FQDN: $FQDN"
+          echo "fqdn=$FQDN" >> $GITHUB_OUTPUT
+
+      - name: Deploy Front Door
+        run: |
+          az deployment group create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --template-file Deploy/frontDoor.bicep \
+            --parameters \
+              environment=dev \
+              containerAppFqdn=${{ steps.get-fqdn.outputs.fqdn }} \
+              primaryDomain='' \
+              apexDomain='' \
+              ciamAuthDomain=${{ env.CIAM_AUTH_DOMAIN }} \
+              ciamTenantHost=${{ env.CIAM_TENANT_HOST }}
+
+      # After the deploy, the auth custom domain will be in "Pending validation"
+      # state until the DNS validation TXT record is added. Print the values
+      # Joe needs to publish so he doesn't have to hunt them down in the portal.
+      - name: Print DNS setup instructions
+        run: |
+          echo "==== E6 DNS setup for ${{ env.CIAM_AUTH_DOMAIN }} ===="
+          echo ""
+          echo "1) CNAME record:"
+          echo "   ${{ env.CIAM_AUTH_DOMAIN }}  ->  ${{ env.FRONT_DOOR_ENDPOINT }}.<random>.azurefd.net"
+          echo ""
+          echo "   Look up the exact <random> segment with:"
+          echo "   az afd endpoint show --resource-group ${{ env.RESOURCE_GROUP }} \\"
+          echo "     --profile-name ${{ env.FRONT_DOOR_PROFILE }} \\"
+          echo "     --endpoint-name ${{ env.FRONT_DOOR_ENDPOINT }} --query hostName -o tsv"
+          echo ""
+          echo "2) TXT record for domain validation:"
+          echo "   _dnsauth.${{ env.CIAM_AUTH_DOMAIN }}  ->  <validation token>"
+          echo ""
+          echo "   Get the validation token with:"
+          echo "   az afd custom-domain show --resource-group ${{ env.RESOURCE_GROUP }} \\"
+          echo "     --profile-name ${{ env.FRONT_DOOR_PROFILE }} \\"
+          echo "     --custom-domain-name $(echo '${{ env.CIAM_AUTH_DOMAIN }}' | tr '.' '-') \\"
+          echo "     --query validationProperties.validationToken -o tsv"
+          echo ""
+          echo "3) After DNS validation propagates (a few minutes), associate the"
+          echo "   custom URL domain in Entra portal on the TrashMobEcoDev tenant:"
+          echo "   Entra admin center > External Identities > Custom URL domains"
+
+      - name: Logout from Azure
+        if: always()
+        run: az logout
