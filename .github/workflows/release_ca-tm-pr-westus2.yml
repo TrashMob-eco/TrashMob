@@ -39,6 +39,13 @@ env:
   APEX_DOMAIN_NAME: trashmob.eco
   APEX_MANAGED_CERTIFICATE_NAME: trashmob-eco-apex-cert
   STRAPI_CONTAINER_APP_NAME: ca-strapi-tm-pr-westus2
+  # E6 — branded auth authority for TrashMobEcoPr CIAM tenant. Backend + SPA
+  # read AzureAdEntra__Instance from the Container App; when this env var is
+  # passed to containerApp.bicep, the ternary overrides the default
+  # trashmobecopr.ciamlogin.com URL. See Planning/PRODUCTION_DEPLOYMENT_CHECKLIST.md
+  # §E6 and PR #3528. Front Door + DNS + Entra Custom URL Domain association
+  # were completed first (PR #3609 + manual Entra portal steps).
+  ENTRA_AUTH_DOMAIN: auth.trashmob.eco
 
 jobs:
   build-and-deploy:
@@ -113,6 +120,7 @@ jobs:
               managedCertificateName=${{ env.MANAGED_CERTIFICATE_NAME }} \
               apexDomainName=${{ env.APEX_DOMAIN_NAME }} \
               apexManagedCertificateName=${{ env.APEX_MANAGED_CERTIFICATE_NAME }} \
+              entraAuthDomain=${{ env.ENTRA_AUTH_DOMAIN }} \
               strapiBaseUrl="${{ steps.get-strapi.outputs.strapi_url }}"
 
       # Note: Azure AD Entra External ID configuration is set via environment variables in containerApp.bicep
