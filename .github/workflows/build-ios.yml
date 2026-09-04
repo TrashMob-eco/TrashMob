@@ -12,6 +12,9 @@ on:
             build_number:
                 required: true
                 type: string
+            release_number:
+                required: true
+                type: string
             bundle_id:
                 required: true
                 type: string
@@ -69,11 +72,16 @@ jobs:
           id: version_step # step id used as reference for output values
           uses: gittools/actions/gitversion/execute@v3.2.1
 
+        # CFBundleVersion must strictly increase between TestFlight uploads. GitVersion's
+        # semVer can repeat across consecutive commits under this repo's Mainline config
+        # (see the container-tag fix in .github/actions/container-build-push/action.yml
+        # for the same class of bug) — inputs.release_number is a github.run_number-based
+        # value that always increases, mirroring build-android.yml's ApplicationVersion.
         - name: Update Build Number
-          run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>${{ env.semVer }}</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
+          run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>${{ inputs.release_number }}</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Update Version Number
-          run: sed -i '' "s|<ApplicationDisplayVersion>.*</ApplicationDisplayVersion>|<Version>${{ env.semVer }}</Version>|g" TrashMobMobile/TrashMobMobile.csproj
+          run: sed -i '' "s|<ApplicationDisplayVersion>.*</ApplicationDisplayVersion>|<ApplicationDisplayVersion>${{ env.semVer }}</ApplicationDisplayVersion>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Update Bundle ID
           run: sed -i '' "s|<ApplicationId>.*</ApplicationId>|<ApplicationId>${{ inputs.bundle_id }}</ApplicationId>|g" TrashMobMobile/TrashMobMobile.csproj

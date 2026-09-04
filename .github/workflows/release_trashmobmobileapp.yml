@@ -76,6 +76,7 @@ jobs:
       environment: production
       configuration: Release
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+      release_number: ${{ needs.generate-build-number.outputs.releaseNumber }}
       bundle_id: 'eco.trashmob'
       dotnet_version: '10.0.x'
       ios_provisioning_profile_type: 'IOS_APP_STORE'
