@@ -29,6 +29,13 @@ namespace TrashMob.Controllers.V2
         {
             logger.LogInformation("V2 GetConfig");
 
+            // Config is deploy-time data (auth authority, instrumentation key), not
+            // cacheable content. Without this, Front Door caches the response at the
+            // edge with no invalidation on deploy — different POPs can keep serving a
+            // stale authority (e.g. the old ciamlogin.com domain after an E6 auth-domain
+            // cutover) until each edge's cache independently expires.
+            Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
+
             var connectionString = configuration["ApplicationInsights:ConnectionString"];
 
             // Extract instrumentation key from connection string
