@@ -1698,31 +1698,47 @@ After the production deployment is stable and the B2C coexistence window has end
 
 ---
 
-### E6. Custom Auth Domain (Post-Launch Enhancement) — BLOCKED
+### E6. Custom Auth Domain (Post-Launch Enhancement) — READY WITH CAVEAT
 
 Replace `trashmobecopr.ciamlogin.com` with a branded domain (e.g., `auth.trashmob.eco`) so users see your domain during sign-in instead of a Microsoft domain.
 
-**Status: BLOCKED** (as of Feb 2026)
+**Status: READY WITH CAVEAT** (revised 2026-07-26; previously "BLOCKED" as of Feb 2026)
 
-Entra External ID custom URL domains **do not support social identity providers** (Google, Facebook, Apple). When a custom URL domain is configured, users signing in via social IDPs fall back to the default `ciamlogin.com` endpoint. Since TrashMob uses Google, Apple, and Microsoft social sign-in, this feature is unusable until Microsoft adds social IDP support.
+**What changed:** Microsoft has added social IDP support for Entra External ID custom URL domains. Per the [Overview of custom URL domains](https://learn.microsoft.com/en-us/entra/external-id/customers/concept-custom-url-domain) doc (updated 2026-02-06): _"Social identity providers: Custom URL domains now support Google and Facebook in addition to Apple."_ All three of our social IDPs (Google, Apple, Microsoft) are now covered.
 
-Additionally, custom URL domains require **Azure Front Door** as a reverse proxy (CNAME alone is insufficient), adding infrastructure cost and complexity.
+**Residual caveat** (per [Microsoft Q&A, 2026-05-19](https://learn.microsoft.com/en-us/answers/questions/5892252/entra-external-id-how-to-replace-ciamlogin-com-wit)):
 
-**Prerequisites before this can proceed:**
-1. Microsoft must add social IDP support for Entra External ID custom URL domains
-2. Azure Front Door must be deployed (see `Deploy/frontDoor.bicep`) with `ciamlogin.com` as the origin
+> During some parts of the social sign-in flow, Google or Facebook may still display `ciamlogin.com`. This behavior is currently expected. There is no documented configuration that guarantees the branded domain will appear in every Google or Facebook sign-in screen.
+
+Practically: users see `auth.trashmob.eco` on the main sign-in page and after the OAuth round-trip, but the branded domain may briefly flash to `ciamlogin.com` mid-redirect on Google/Facebook. UX imperfection, not a functional block. Accept it as-is, or defer until Microsoft closes that gap.
+
+**Prerequisites (current state — 2026-07-26):**
+1. ~~Microsoft must add social IDP support for Entra External ID custom URL domains~~ — **DONE** (with the redirect-flow caveat above)
+2. **Azure Front Door profile deployed — DONE.** `Deploy/frontDoor.bicep` is production-live serving `www.trashmob.eco` and apex. However, it currently has **only one origin group + one route** (both → Container App). E6 requires **extending the existing profile** with:
+   - A new origin group targeting `trashmobecopr.ciamlogin.com` (health probe against a CIAM discovery endpoint like `/${tenantId}/v2.0/.well-known/openid-configuration`)
+   - A new route on the same `fde-tm-pr` endpoint, pattern-matched to the `auth.trashmob.eco` host
+   - A new `customDomains` resource for `auth.trashmob.eco` with a Managed Certificate
 3. Custom domain must be verified in Entra admin center: Domain names > Custom URL domains
+4. `x-forwarded-for` handling — Microsoft [notes](https://learn.microsoft.com/en-us/entra/external-id/customers/concept-custom-url-domain) that AFD passes the original client IP; verify Entra Conditional Access + claim resolvers see the right IP before flipping traffic.
 
-**Code changes (PR #2865, closed):** The code changes were prepared and validated but closed pending the above prerequisites. Changes would touch: `Deploy/containerApp.bicep`, `TrashMob/appsettings.Development.json`, `TrashMobMobile/Authentication/AuthConstants.cs`, `TrashMob/client-app/src/store/AuthStore.tsx`, `TrashMob/client-app/e2e/fixtures/auth.fixture.ts`.
+**Code changes (PR #2865, closed):** Prepared and validated in Feb 2026 but closed pending Microsoft's social-IDP fix. When reopened, changes would touch: `Deploy/frontDoor.bicep` (add CIAM origin group + route + custom domain), `Deploy/containerApp.bicep` (`entraInstance`), `TrashMob/appsettings.Development.json`, `TrashMobMobile/Authentication/AuthConstants.cs`, `TrashMob/client-app/src/store/AuthStore.tsx`, `TrashMob/client-app/e2e/fixtures/auth.fixture.ts`. Note: PR #2865 predated the "always list customDomains explicitly on the route" lesson from the 2026-07-05 apex outage — the new bicep must add the auth custom-domain resource to the route's `customDomains` array (via a separate route, since patterns/origins differ from the Container App route).
 
-- [ ] **196.** Deploy Azure Front Door with `ciamlogin.com` as origin
-- [ ] **197.** Add DNS CNAME record: `auth.trashmob.eco` → Front Door endpoint
-- [ ] **198.** Configure custom URL domain in Entra portal: Domain names > Custom URL domains
-- [ ] **199.** Update redirect URIs in all 3 app registrations (Web SPA, API, Mobile) to use `auth.trashmob.eco`
-- [ ] **200.** Update social IDP redirect URIs (Google, Facebook, Apple) to use `auth.trashmob.eco`
-- [ ] **201.** Update `Deploy/containerApp.bicep` `entraInstance` to `https://auth.trashmob.eco/`
-- [ ] **202.** Update mobile `AuthConstants.cs` with new auth domain
-- [ ] **203.** Test sign-in on web and mobile with the new domain (all IDPs including social)
+**Task list (revised):**
+
+- [ ] **196.** Extend `Deploy/frontDoor.bicep` with a CIAM origin group (`hostName: trashmobecopr.ciamlogin.com`, health probe path against the OIDC discovery endpoint)
+- [ ] **197.** Add a second route on `fde-tm-pr` endpoint bound to `auth.trashmob.eco`, wired to the new CIAM origin group (no rule set — no apex/https rewrite needed for auth)
+- [ ] **198.** Add `customDomains` resource for `auth.trashmob.eco` (Managed Certificate, TLS 1.2 min) and reference it on the new route's `customDomains` array (do not rely on `linkToDefaultDomain` alone — see the 2026-07-05 apex-outage lesson)
+- [ ] **199.** Add DNS CNAME record: `auth.trashmob.eco` → `fde-tm-pr.<random>.azurefd.net`, plus `_dnsauth.auth.trashmob.eco` TXT for domain validation
+- [ ] **200.** Configure custom URL domain in Entra portal: Domain names > Custom URL domains, associate with the user flows in use
+- [ ] **201.** Update redirect URIs in all 3 app registrations (Web SPA, API, Mobile) to use `https://auth.trashmob.eco/...`
+- [ ] **202.** Update social IDP redirect URIs (Google, Apple — Facebook is not currently a TrashMob.eco IDP) to `https://auth.trashmob.eco/trashmobecopr.onmicrosoft.com/federation/...`
+- [ ] **203.** Update `Deploy/containerApp.bicep` `entraInstance` env var from `https://trashmobecopr.ciamlogin.com/` to `https://auth.trashmob.eco/`
+- [ ] **204.** Update mobile `TrashMobMobile/Authentication/AuthConstants.cs` with `auth.trashmob.eco`
+- [ ] **205.** Update web `TrashMob/client-app/src/store/AuthStore.tsx` (and Playwright `e2e/fixtures/auth.fixture.ts`) to use the new authority
+- [ ] **206.** Regression-test on dev tenant first (`trashmobecodev.ciamlogin.com` → `auth-dev.trashmob.eco` or similar) — do NOT flip production first
+- [ ] **207.** Verify `x-forwarded-for` header propagates so Conditional Access + `{Context:IPAddress}` claims resolvers see the real client IP, not AFD
+- [ ] **208.** Test sign-in on web and mobile with all IDPs (email/OTP, Google, Apple, Microsoft). Expect the ciamlogin.com flash on Google mid-redirect — verify it's transient and not blocking
+- [ ] **209.** After 30 days of stable operation, [open a support ticket](https://learn.microsoft.com/en-us/entra/fundamentals/how-to-get-support) to block the default `trashmobecopr.ciamlogin.com` endpoint (DDoS + attack-surface reduction, per Microsoft's recommendation)
 
 ---
 

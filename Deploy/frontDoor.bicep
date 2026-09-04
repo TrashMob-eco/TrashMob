@@ -7,15 +7,25 @@ param environment string
 @description('The FQDN of the Container App backend')
 param containerAppFqdn string
 
-@description('Primary custom domain (e.g., www.trashmob.eco)')
-param primaryDomain string
+@description('Primary custom domain (e.g., www.trashmob.eco). Empty is allowed for auth-only deployments (e.g. dev, where the ACA hostname is bound directly).')
+param primaryDomain string = ''
 
-@description('Apex domain for redirect (e.g., trashmob.eco)')
+@description('Apex domain for redirect (e.g., trashmob.eco). Empty skips the apex→primary redirect rule set.')
 param apexDomain string = ''
+
+@description('Custom auth domain for Entra External ID (e.g., auth.trashmob.eco). Empty disables E6 auth-domain plumbing. Requires ciamTenantHost to also be set. See Planning/PRODUCTION_DEPLOYMENT_CHECKLIST.md §E6.')
+param ciamAuthDomain string = ''
+
+@description('Entra External ID tenant hostname (e.g., trashmobecopr.ciamlogin.com). Empty disables E6 auth-domain plumbing. Requires ciamAuthDomain to also be set.')
+param ciamTenantHost string = ''
 
 @description('Front Door SKU')
 @allowed(['Standard_AzureFrontDoor', 'Premium_AzureFrontDoor'])
 param skuName string = 'Standard_AzureFrontDoor'
+
+// E6 gate: both auth params must be set together. Prevents half-configured deployments
+// (e.g. CIAM origin without a custom domain to route to, or vice versa).
+var enableAuthDomain = ciamAuthDomain != '' && ciamTenantHost != ''
 
 // Naming convention
 var frontDoorProfileName = 'fd-tm-${environment}'
@@ -278,6 +288,115 @@ resource customDomainApex 'Microsoft.Cdn/profiles/customDomains@2024-02-01' = if
   }
 }
 
+// ---------------------------------------------------------------------------
+// E6 — Custom auth domain plumbing for Entra External ID.
+// See Planning/PRODUCTION_DEPLOYMENT_CHECKLIST.md §E6.
+//
+// When enabled, adds a second origin group targeting the Entra External ID
+// tenant (e.g. trashmobecopr.ciamlogin.com) and a second route on the same
+// AFD endpoint bound to a branded custom domain (e.g. auth.trashmob.eco).
+// User-facing sign-in URLs then use the branded domain instead of the raw
+// ciamlogin.com hostname.
+//
+// This entire section is gated on `enableAuthDomain` — when the two auth
+// params are empty (the default), no resources are created and this file
+// behaves exactly as before.
+//
+// Known caveat (as of 2026-07): during the OAuth round-trip to Google or
+// Facebook, users may briefly see ciamlogin.com. Microsoft has documented
+// this as expected behavior. See the E6 checklist section for details.
+// ---------------------------------------------------------------------------
+
+// CIAM origin group. Health probe hits the origin host at `/` with HEAD —
+// ciamlogin.com returns a 2xx/3xx/4xx from the bare host, which AFD treats
+// as healthy. A more specific probe (e.g. /{tenantId}/v2.0/.well-known/
+// openid-configuration) would need the tenant ID here, which we don't want
+// to hardcode; the bare-host probe is sufficient for liveness.
+resource ciamOriginGroup 'Microsoft.Cdn/profiles/originGroups@2024-02-01' = if (enableAuthDomain) {
+  parent: frontDoorProfile
+  name: 'og-ciam'
+  properties: {
+    loadBalancingSettings: {
+      sampleSize: 4
+      successfulSamplesRequired: 3
+      additionalLatencyInMilliseconds: 50
+    }
+    healthProbeSettings: {
+      probePath: '/'
+      probeRequestType: 'HEAD'
+      probeProtocol: 'Https'
+      probeIntervalInSeconds: 100
+    }
+    sessionAffinityState: 'Disabled'
+  }
+}
+
+// CIAM origin. `originHostHeader` MUST match `hostName` — CIAM tenant TLS
+// certs are issued for the ciamlogin.com hostname, so SNI has to send it.
+// `enforceCertificateNameCheck: true` keeps AFD → CIAM traffic verified.
+resource ciamOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2024-02-01' = if (enableAuthDomain) {
+  parent: ciamOriginGroup
+  name: 'origin-ciam'
+  properties: {
+    hostName: ciamTenantHost
+    httpPort: 80
+    httpsPort: 443
+    originHostHeader: ciamTenantHost
+    priority: 1
+    weight: 1000
+    enabledState: 'Enabled'
+    enforceCertificateNameCheck: true
+  }
+}
+
+// Custom domain for the branded auth hostname.
+resource customDomainAuth 'Microsoft.Cdn/profiles/customDomains@2024-02-01' = if (enableAuthDomain) {
+  parent: frontDoorProfile
+  name: replace(ciamAuthDomain, '.', '-')
+  properties: {
+    hostName: ciamAuthDomain
+    tlsSettings: {
+      certificateType: 'ManagedCertificate'
+      minimumTlsVersion: 'TLS12'
+    }
+  }
+}
+
+// Route that binds the branded auth domain to the CIAM origin group.
+//
+// `customDomains` MUST be listed explicitly (same lesson as the www/apex
+// route above — see the 2026-07-05 apex-outage note). `linkToDefaultDomain`
+// is Disabled so the auth flow is NOT reachable via the AFD default hostname
+// (fde-tm-*.azurefd.net) — only via the branded domain.
+//
+// No cacheConfiguration: CIAM responses contain tokens/cookies and MUST NOT
+// be cached at the CDN edge. Omitting the property disables caching.
+//
+// No ruleSet: unlike the www/apex route, we don't need to rewrite apex → www
+// or add HTTP→HTTPS logic beyond the route-level `httpsRedirect: Enabled`.
+resource ciamRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2024-02-01' = if (enableAuthDomain) {
+  parent: endpoint
+  name: 'route-ciam'
+  properties: {
+    customDomains: [
+      { id: customDomainAuth.id }
+    ]
+    originGroup: {
+      id: ciamOriginGroup.id
+    }
+    originPath: '/'
+    supportedProtocols: ['Http', 'Https']
+    patternsToMatch: ['/*']
+    forwardingProtocol: 'HttpsOnly'
+    linkToDefaultDomain: 'Disabled'
+    httpsRedirect: 'Enabled'
+    enabledState: 'Enabled'
+  }
+  dependsOn: [
+    ciamOrigin
+  ]
+}
+
 // Outputs
 output frontDoorId string = frontDoorProfile.id
 output frontDoorEndpointHostName string = endpoint.properties.hostName
@@ -293,4 +412,6 @@ DNS Configuration Required:
 2. For ${apexDomain}: Create ALIAS/ANAME record -> ${endpoint.properties.hostName}
    (Microsoft 365 DNS may not support ALIAS records - consider Azure DNS or Cloudflare)
 3. For domain validation, create TXT record: _dnsauth.${primaryDomain} with the validation token from Azure Portal
+4. (E6) If ciamAuthDomain is set: create CNAME ${ciamAuthDomain} -> ${endpoint.properties.hostName}
+        and TXT record _dnsauth.${ciamAuthDomain} with the validation token from Azure Portal
 '''

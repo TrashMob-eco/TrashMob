@@ -56,7 +56,7 @@ jobs:
 
         steps:
         - name: Checkout
-          uses: actions/checkout@v6
+          uses: actions/checkout@v7
           with:
             fetch-depth: 0
 
@@ -82,7 +82,7 @@ jobs:
           run: sed -i '' "s|<DefineConstants>USETEST</DefineConstants>|<DefineConstants>${{ inputs.define_constants }}</DefineConstants>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
-          uses: actions/setup-dotnet@v5
+          uses: actions/setup-dotnet@v6
           with:
             dotnet-version: ${{ inputs.dotnet_version }}
 
@@ -94,7 +94,7 @@ jobs:
             xcodebuild -version || true
 
         - name: Cache NuGet packages
-          uses: actions/cache@v5
+          uses: actions/cache@v6
           with:
             path: ~/.nuget/packages
             key: nuget-ios-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
@@ -124,13 +124,13 @@ jobs:
             xcode-version: '26.4.1'
 
         - name: Import Code-Signing Certificates
-          uses: Apple-Actions/import-codesign-certs@v6
+          uses: Apple-Actions/import-codesign-certs@v7
           with:
             p12-file-base64: ${{ secrets.ios_signing_certificate }}
             p12-password: ${{ secrets.ios_signing_certificate_password }}
 
         - name: Download Apple Provisioning Profiles
-          uses: Apple-Actions/download-provisioning-profiles@v5
+          uses: Apple-Actions/download-provisioning-profiles@v6
           with:
             bundle-id: ${{ inputs.bundle_id }}
             profile-type: ${{ inputs.ios_provisioning_profile_type }}

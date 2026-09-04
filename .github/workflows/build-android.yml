@@ -53,7 +53,7 @@ jobs:
 
         steps:
         - name: Checkout
-          uses: actions/checkout@v6
+          uses: actions/checkout@v7
           with:
             fetch-depth: 0
 
@@ -105,12 +105,12 @@ jobs:
               Set-Content TrashMobMobile/Platforms/Android/AndroidManifest.xml -Value $newContent
   
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
-          uses: actions/setup-dotnet@v5
+          uses: actions/setup-dotnet@v6
           with:
             dotnet-version: ${{ inputs.dotnet_version }}
 
         - name: Cache NuGet packages
-          uses: actions/cache@v5
+          uses: actions/cache@v6
           with:
             path: ~/.nuget/packages
             key: nuget-android-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}

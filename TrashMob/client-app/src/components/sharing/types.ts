@@ -13,12 +13,4 @@ export interface ShareableContent {
 }
 
 export type SocialPlatform =
-    | 'facebook'
-    | 'twitter'
-    | 'bluesky'
-    | 'linkedin'
-    | 'reddit'
-    | 'whatsapp'
-    | 'email'
-    | 'copy'
-    | 'qr';
+    'facebook' | 'twitter' | 'bluesky' | 'linkedin' | 'reddit' | 'whatsapp' | 'email' | 'copy' | 'qr';

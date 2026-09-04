@@ -50,6 +50,28 @@ namespace TrashMob.Controllers.V2
             userRoleService.HasRoleAsync(UserId, RoleNames.SiteAdmin, cancellationToken);
 
         /// <summary>
+        /// Maps a <see cref="User"/> to a <see cref="UserDto"/> and populates role-derived
+        /// fields that the entity-only mapping can't compute since role membership requires
+        /// a database lookup.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="UserDto.IsSiteAdmin"/> is recomputed via <c>HasRoleAsync</c> rather than
+        /// trusting <c>User.ToV2Dto()</c>'s raw column read: a SiteAdmin grant made through the
+        /// Project 64 Roles UI (<c>POST /users/{id}/roles</c>) only writes a <c>UserRole</c> row
+        /// and never touches the legacy <c>IsSiteAdmin</c> column, so the entity-only mapping
+        /// would under-report admin status for anyone promoted that way. <c>HasRoleAsync</c>
+        /// already bridges both the legacy boolean and the new role table — see
+        /// <see cref="TrashMob.Shared.Managers.UserRoleService.GetRoleNamesAsync"/>.
+        /// </remarks>
+        private async Task<UserDto> ToUserDtoAsync(User user, CancellationToken cancellationToken)
+        {
+            var dto = user.ToV2Dto();
+            dto.IsSiteAdmin = await userRoleService.HasRoleAsync(user.Id, RoleNames.SiteAdmin, cancellationToken);
+            dto.IsSalesRep = await userRoleService.HasRoleAsync(user.Id, RoleNames.SalesRep, cancellationToken);
+            return dto;
+        }
+
+        /// <summary>
         /// Gets a paginated list of users with optional filtering.
         /// </summary>
         /// <param name="filter">Query parameters for pagination and filtering.</param>
@@ -96,7 +118,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            return Ok(user.ToV2Dto());
+            return Ok(await ToUserDtoAsync(user, cancellationToken));
         }
 
         /// <summary>
@@ -115,7 +137,7 @@ namespace TrashMob.Controllers.V2
 
             var user = userDto.ToEntity();
             var result = await userManager.AddAsync(user, UserId, cancellationToken);
-            return CreatedAtAction(nameof(GetUser), new { id = result.Id }, result.ToV2Dto());
+            return CreatedAtAction(nameof(GetUser), new { id = result.Id }, await ToUserDtoAsync(result, cancellationToken));
         }
 
         /// <summary>
@@ -165,7 +187,7 @@ namespace TrashMob.Controllers.V2
                 user.CreatedDate = currentUser.CreatedDate;
 
                 var updatedUser = await userManager.UpdateAsync(user, cancellationToken);
-                return Ok(updatedUser.ToV2Dto());
+                return Ok(await ToUserDtoAsync(updatedUser, cancellationToken));
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -200,7 +222,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            return Ok(user.ToV2Dto());
+            return Ok(await ToUserDtoAsync(user, cancellationToken));
         }
 
         /// <summary>
@@ -225,7 +247,7 @@ namespace TrashMob.Controllers.V2
                 return NotFound();
             }
 
-            return Ok(user.ToV2Dto());
+            return Ok(await ToUserDtoAsync(user, cancellationToken));
         }
 
         /// <summary>
@@ -293,7 +315,7 @@ namespace TrashMob.Controllers.V2
             user.ProfilePhotoUrl = imageUrl;
 
             var updatedUser = await userManager.UpdateAsync(user, cancellationToken);
-            return Ok(updatedUser.ToV2Dto());
+            return Ok(await ToUserDtoAsync(updatedUser, cancellationToken));
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 # TrashMob.eco — 2026 Planning Documentation
 
-**Version:** 1.5
-**Date:** April 5, 2026
+**Version:** 1.6
+**Date:** July 18, 2026
 **Owner:** Director of Product & Engineering
 
 ---
@@ -30,8 +30,6 @@
 | Project | Description | Status |
 |---------|-------------|--------|
 | [Project 2 - Home Page Improvements](./Projects/Project_02_Home_Page.md) | Dynamic content, ads, sponsors | Ready for Design Review |
-| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | Complete (minor waiver text pending legal — all infrastructure built) |
-| [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | PRIVO integration for minors | Complete on INT (awaiting PRIVO production credentials) |
 
 #### Medium Priority (Enhancements)
 
@@ -49,7 +47,7 @@
 | [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md) | Pre-event waiver validation, configurable check-in notifications, attendance roster for event leads | Not Started |
 | [Project 56 - Board Metrics Dashboard](./Projects/Project_56_Board_Metrics_Dashboard.md) | Unified admin dashboard consolidating App Insights, GA4, Sentry, Clarity, Azure costs, and QuickBooks for board meetings | Planning |
 | [Project 57 - Participation Report](./Projects/Project_57_Participation_Report.md) | Official volunteer participation report email with PDF for school/court/employer verification | In Progress (Phases 1-3 Complete) |
-| [Project 65 - Instant Events](./Projects/Project_65_Instant_Events.md) | Strava-style one-tap "Start a Pick" mobile flow for solo private cleanups with optional route tracking and deferred stats entry | Complete (all phases shipped 2026-07-12 through 2026-07-14) |
+| [Project 60 - Prospect Contact Tracking](./Projects/Project_60_Prospect_Contact_Tracking.md) | Multi-contact per prospect + per-contact outreach history for sales pipeline reporting | Not Started |
 
 #### High Priority (Marketing & Growth)
 
@@ -70,7 +68,7 @@
 
 ---
 
-## Archived (Complete) Projects — 34 Total
+## Archived (Complete) Projects — 38 Total
 
 Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). These are delivered and in production.
 
@@ -78,6 +76,7 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 |---------|-------------|
 | [Project 3 - Litter Reporting Web](./Projects/Archive/Project_03_Litter_Reporting_Web.md) | Complete web parity for litter reports |
 | [Project 7 - Event Weights](./Projects/Archive/Project_07_Event_Weights.md) | Track weight metrics |
+| [Project 8 - Waivers V3](./Projects/Archive/Project_08_Waivers_V3.md) | Community waivers, minors coverage — infrastructure complete; minor waiver text pending legal |
 | [Project 9 - Teams](./Projects/Archive/Project_09_Teams.md) | User-created teams MVP |
 | [Project 10 - Community Pages](./Projects/Archive/Project_10_Community_Pages.md) | Branded partner community pages |
 | [Project 11 - Adopt-A-Location](./Projects/Archive/Project_11_Adopt_A_Location.md) | Location adoption program |
@@ -90,6 +89,7 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | [Project 20 - Gamification](./Projects/Archive/Project_20_Gamification.md) | Leaderboards and achievements |
 | [Project 21 - Event Co-Leads](./Projects/Archive/Project_21_Event_Co_Leads.md) | Multiple event admins |
 | [Project 22 - Attendee Metrics](./Projects/Archive/Project_22_Attendee_Metrics.md) | Per-attendee event statistics |
+| [Project 23 - Parental Consent](./Projects/Archive/Project_23_Parental_Consent.md) | PRIVO integration for minors — production live 2026-05-20; E2E verified 2026-07-01 |
 | [Project 24 - API v2 Modernization](./Projects/Archive/Project_24_API_v2_Modernization.md) | Pagination, error handling, DTOs, v2 API layer (89 controllers, 467 endpoints) |
 | [Project 26 - KeyVault RBAC Migration](./Projects/Archive/Project_26_KeyVault_RBAC_Migration.md) | Migrate from access policies to RBAC |
 | [Project 27 - OpenTelemetry Migration](./Projects/Archive/Project_27_OpenTelemetry_Migration.md) | Vendor-neutral observability |
@@ -110,11 +110,14 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | [Project 51 - Contact Management](./Projects/Archive/Project_51_Contact_Management.md) | Donor tracking, grant management, contact CRM for nonprofit fundraising |
 | [Project 53 - Mobile Offline Persistence](./Projects/Archive/Project_53_Mobile_Offline_Persistence.md) | Client-side persistence for routes, metrics, and photos with background sync |
 | [Project 59 - Event Weather Forecast](./Projects/Archive/Project_59_Event_Weather_Forecast.md) | Weather forecast on event details page (web + mobile) using Open-Meteo API |
+| [Project 63 - Municipal Sales Pipeline Reporting](./Projects/Archive/Project_63_Municipal_Sales_Pipeline_Reporting.md) | Municipal sales pipeline reporting — all phases shipped 2026-07-05 |
+| [Project 65 - Instant Events](./Projects/Archive/Project_65_Instant_Events.md) | Strava-style one-tap "Start a Pick" mobile flow for solo private cleanups — shipped 2026-07-12 through 2026-07-14 |
 
 ### Complete with Deferred Items
 
 | Project | Deferred Items |
 |---------|---------------|
+| [Project 8 - Waivers V3](./Projects/Archive/Project_08_Waivers_V3.md) | Minor waiver text pending legal review — create WaiverVersion with minor scope once approved |
 | [Project 22 - Attendee Metrics](./Projects/Archive/Project_22_Attendee_Metrics.md) | Route association (waiting for routes to be routinely used) |
 | [Project 24 - API v2 Modernization](./Projects/Archive/Project_24_API_v2_Modernization.md) | Phase 4: ETags, rate limiting, bulk operations, webhook infrastructure |
 | [Project 48 - Enhanced Route Tracking](./Projects/Archive/Project_48_Enhanced_Route_Tracking.md) | Phase 2b: Per-segment density; Phase 4: Smart trim suggestions (speed anomaly detection) |
@@ -126,8 +129,8 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 
 ### Trust & Safety
 - [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md)
-- [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md)
-- [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md)
+- [Project 8 - Waivers V3](./Projects/Archive/Project_08_Waivers_V3.md) ✅
+- [Project 23 - Parental Consent](./Projects/Archive/Project_23_Parental_Consent.md) ✅
 - [Project 28 - Photo Moderation](./Projects/Archive/Project_28_Photo_Moderation.md) ✅
 - [Project 49 - Privacy & Compliance Review](./Projects/Project_49_Privacy_Compliance_Review.md)
 - [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md)
@@ -148,7 +151,7 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 ### Event Experience
 - [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md)
 - [Project 59 - Event Weather Forecast](./Projects/Archive/Project_59_Event_Weather_Forecast.md) ✅
-- [Project 65 - Instant Events](./Projects/Project_65_Instant_Events.md) ✅
+- [Project 65 - Instant Events](./Projects/Archive/Project_65_Instant_Events.md) ✅
 
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Archive/Project_07_Event_Weights.md) ✅
@@ -196,16 +199,14 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** (archived) | 34 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 24, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53, 59 |
-| ✅ **Complete** (production live, in-place) | 3 | Project 23 (PRIVO live 2026-05-20, testing complete 2026-07-01), Project 63 (Municipal Sales Pipeline live 2026-07-05), Project 65 (Instant Events, all phases shipped 2026-07-12 through 2026-07-14) |
-| ✅ **Complete** (pending external) | 1 | Project 8 (minor waiver text pending legal review) |
-| **In Progress** | 14 | Projects 1, 4, 5, 6, 15, 25, 30, 36, 41, 45, 46, 49, 57, **64** (Phases 1–4a live; Phase 4b column-drop queued for ~2026-08-05) |
+| ✅ **Complete** (archived) | 38 | Projects 3, 7, **8**, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, **23**, 24, 26, 27, 28, 29, 32, 34, 35, 37, 38, 39, 40, 42, 44, 47, 48, 50, 51, 53, 59, **63**, **65** |
+| **In Progress** | 14 | Projects 1, 4, 5, 6, 15, 25, 30, 36, 41, 45, 46, 49, 57, 64 (Phases 1–4a live; Phase 4b column-drop queued for ~2026-08-05) |
 | **Planning** | 3 | Projects 56, 58, 62 |
 | **Ready for Review** | 1 | Project 2 |
-| **Not Started** | 6 | Projects 12, 31, 43, 52, 54, 55 |
+| **Not Started** | 7 | Projects 12, 31, 43, 52, 54, 55, 60 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 63 project specifications documented
+**Total:** 64 project specifications documented
 
 ---
 
@@ -215,14 +216,12 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 
 | Project | What's Left |
 |---------|-------------|
-| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Phase 6: Partial — remaining auth edge cases. Phases 0-5a, 7 complete. |
-| ~~[Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md)~~ | ✅ **Complete 2026-07-01.** PRIVO production live since 2026-05-20; Flow 3 (child-initiated) E2E verification finished. Privo sponsorship deliverable documentation is a separate track. |
-| [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Phases 3-5: Manual test matrix on physical devices, regression testing, load testing, accessibility audit (TalkBack/VoiceOver), supported device docs |
+| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Phase 6: Partial — mobile app update remains. Phases 0-5a, 7 complete and production-live. |
+| [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Phases 3-5: Manual test matrix on physical devices, regression testing, load testing, accessibility audit (TalkBack/VoiceOver), supported device docs. Phase 7 in progress. |
 | [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | Phase 4: Deployment health dashboards; Phase 5: Cost optimization & auto-scaling; Phase 6: Security scanning (OWASP ZAP, CodeQL, Trivy) |
 | [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Phase 3: Security audit — review remaining API endpoints for authorization, input validation, rate limiting |
-| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | All infrastructure complete. Minor waiver text pending legal review — once approved, create WaiverVersion with minor scope. |
-| [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Mobile app route recording/upload device testing on iOS and Android |
-| [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | Phase 4: 28 Appium tests written, AutomationIds added. CI blocked — GitHub Actions emulators unstable for MAUI+Appium ([Reddit discussion](https://www.reddit.com/r/dotnetMAUI/comments/1s0tiq3/running_maui_appium_ui_tests_on_github_actions/)). Tests run locally. |
+| [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Backend & website complete. Mobile app route recording/upload device testing on iOS and Android remains. |
+| [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | Phases 1–3 complete (197 E2E tests, 32 test files, authenticated + admin flows, CI integration). Phase 4 (mobile Appium) tests written locally; CI blocked on GitHub Actions emulator stability for MAUI+Appium. |
 | [Project 30 - Azure Billing Alerts](./Projects/Project_30_Azure_Billing_Alerts.md) | Operational monitoring and alert tuning |
 | [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md) | Phase 5: Reporting & analytics (community-level volunteer vs. sponsored breakdown, cost-per-mile, company comparison, compliance reports) |
 | [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md) | Deferred: Community testimonials (waiting on onboarded communities), AI Sales Agent integration |
@@ -256,6 +255,7 @@ Complete projects have been moved to [Projects/Archive/](./Projects/Archive/). T
 | [Project 52 - Volunteer Rewards](./Projects/Project_52_Volunteer_Rewards.md) | Partner reward sourcing, criteria, distribution, fraud prevention (future) |
 | [Project 54 - Community Adoption Outreach](./Projects/Project_54_Community_Adoption_Outreach.md) | AI-powered sponsor/adopter discovery and outreach for community managers |
 | [Project 55 - Event Check-In](./Projects/Project_55_Event_Check_In.md) | Pre-event waiver validation, configurable check-in notifications, attendance roster |
+| [Project 60 - Prospect Contact Tracking](./Projects/Project_60_Prospect_Contact_Tracking.md) | Multi-contact per prospect + per-contact outreach history for sales pipeline reporting |
 
 ---
 
@@ -328,6 +328,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** July 12, 2026
+**Last Updated:** July 18, 2026
 **Maintained By:** Product & Engineering Team
 **Next Review:** End of Q3 2026
