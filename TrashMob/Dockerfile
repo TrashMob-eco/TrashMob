@@ -8,9 +8,19 @@ ARG BUILD_ENVIRONMENT=pr
 
 WORKDIR /src
 
-# Install Node.js for React build
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs
+# Install Node.js for the React build by copying the official Node.js Docker
+# image's runtime, instead of NodeSource's apt-repo installer script. That
+# script (`setup_20.x | bash`) started silently failing to add its apt repo
+# starting 2026-09-04/05 (every deploy since 22:11 UTC 2026-09-04 failed
+# identically) — `apt-get install nodejs` then fell back to Ubuntu's own
+# bundled `nodejs` package, which doesn't include npm ("npm: not found").
+# Copying straight from the official image sidesteps any apt-repo /
+# distro-packaging path entirely; kept on Node 20 to match the rest of the
+# toolchain (this is a build-time-only dependency, not a runtime one).
+COPY --from=node:20-slim /usr/local/bin/node /usr/local/bin/node
+COPY --from=node:20-slim /usr/local/bin/npm /usr/local/bin/npm
+COPY --from=node:20-slim /usr/local/bin/npx /usr/local/bin/npx
+COPY --from=node:20-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
 
 # Copy csproj files and restore dependencies
 COPY ["TrashMob/TrashMob.csproj", "TrashMob/"]
