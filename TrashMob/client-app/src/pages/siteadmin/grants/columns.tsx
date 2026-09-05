@@ -2,7 +2,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Link } from 'react-router';
 import { Edit, Ellipsis, Eye, SquareX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -35,7 +35,7 @@ function formatAmount(min: number | null, max: number | null, awarded: number | 
     return '—';
 }
 
-export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<GrantRow>[] => [
+export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<typeof features, GrantRow>[] => [
     {
         accessorKey: 'funderName',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Funder' />,

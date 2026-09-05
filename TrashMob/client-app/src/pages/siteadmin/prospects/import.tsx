@@ -3,13 +3,13 @@ import { useMutation } from '@tanstack/react-query';
 import { Upload, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable, features } from '@/components/ui/data-table';
 import { useToast } from '@/hooks/use-toast';
 import { ImportProspectsCsv } from '@/services/community-prospects';
 import type { CsvImportError } from '@/components/Models/CsvImportResultData';
 import type { ColumnDef } from '@tanstack/react-table';
 
-const errorColumns: ColumnDef<CsvImportError>[] = [
+const errorColumns: ColumnDef<typeof features, CsvImportError>[] = [
     { accessorKey: 'rowNumber', header: 'Row' },
     { accessorKey: 'message', header: 'Error' },
 ];

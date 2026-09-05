@@ -10,7 +10,7 @@ import {
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { PipelineStageBadge, PriorityBadge } from '@/components/prospects/pipeline-stage-badge';
 import CommunityProspectData from '@/components/Models/CommunityProspectData';
 
@@ -18,7 +18,7 @@ interface GetColumnsProps {
     onDelete: (id: string, name: string) => void;
 }
 
-export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<CommunityProspectData>[] => [
+export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<typeof features, CommunityProspectData>[] => [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
@@ -50,7 +50,7 @@ export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<CommunityPr
         accessorKey: 'priority',
         header: 'Priority',
         cell: ({ row }) => <PriorityBadge priority={row.original.priority} />,
-        sortingFn: (a, b) => (a.original.priority ?? 99) - (b.original.priority ?? 99),
+        sortFn: (a, b) => (a.original.priority ?? 99) - (b.original.priority ?? 99),
     },
     {
         accessorKey: 'department',
@@ -95,7 +95,7 @@ export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<CommunityPr
             const days = Math.max(0, moment().diff(moment(createdDate), 'days'));
             return <span className='text-sm'>{days}</span>;
         },
-        sortingFn: (a, b) => {
+        sortFn: (a, b) => {
             const aDate = a.original.createdDate ? moment(a.original.createdDate).valueOf() : 0;
             const bDate = b.original.createdDate ? moment(b.original.createdDate).valueOf() : 0;
             // Newer prospects have HIGHER createdDate but LOWER days-in-pipeline,

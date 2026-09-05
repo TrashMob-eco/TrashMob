@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { UserFeedbackData } from '@/services/feedback';
 
 interface GetColumnsProps {
@@ -39,7 +39,10 @@ const categoryLabels: Record<string, string> = {
     Praise: 'Praise',
 };
 
-export const getColumns = ({ onUpdateStatus, onDelete }: GetColumnsProps): ColumnDef<UserFeedbackData>[] => [
+export const getColumns = ({
+    onUpdateStatus,
+    onDelete,
+}: GetColumnsProps): ColumnDef<typeof features, UserFeedbackData>[] => [
     {
         accessorKey: 'category',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Category' />,

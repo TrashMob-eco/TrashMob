@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import { ColumnDef } from '@tanstack/react-table';
 import { MapPin, Users, Eye, Crown } from 'lucide-react';
 
-import { DataTable, DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTable, DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import TeamData from '@/components/Models/TeamData';
@@ -20,7 +20,7 @@ interface MyTeamsTableProps {
 export const MyTeamsTable = ({ items, teamsILead }: MyTeamsTableProps) => {
     const leadTeamIds = new Set(teamsILead.map((t) => t.id));
 
-    const columns: ColumnDef<TeamData>[] = [
+    const columns: ColumnDef<typeof features, TeamData>[] = [
         {
             accessorKey: 'name',
             header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,

@@ -7,7 +7,7 @@ import {
     DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import JobOpportunityData from '@/components/Models/JobOpportunityData';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router';
@@ -16,7 +16,7 @@ interface GetColumnsProps {
     onDelete: (id: string, name: string) => void;
 }
 
-export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<JobOpportunityData>[] => [
+export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<typeof features, JobOpportunityData>[] => [
     {
         accessorKey: 'title',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Title' />,

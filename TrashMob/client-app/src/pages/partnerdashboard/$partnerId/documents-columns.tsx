@@ -1,5 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { DocumentExpirationBadge } from '@/components/documents/document-expiration-badge';
 import { Button } from '@/components/ui/button';
@@ -40,7 +40,10 @@ interface GetColumnsProps {
     onDelete: (documentId: string, documentName: string) => void;
 }
 
-export const getColumns = ({ onDownload, onDelete }: GetColumnsProps): ColumnDef<PartnerDocumentData>[] => [
+export const getColumns = ({
+    onDownload,
+    onDelete,
+}: GetColumnsProps): ColumnDef<typeof features, PartnerDocumentData>[] => [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
