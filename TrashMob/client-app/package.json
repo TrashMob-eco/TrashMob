@@ -65,6 +65,7 @@
         "dev": "vite",
         "build": "vite build",
         "test": "vitest",
+        "test:coverage": "vitest run --coverage",
         "lint": "eslint . --fix",
         "format": "prettier . --write",
         "check": "eslint . --fix && prettier . --write",
