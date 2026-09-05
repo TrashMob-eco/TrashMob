@@ -17,10 +17,14 @@ WORKDIR /src
 # Copying straight from the official image sidesteps any apt-repo /
 # distro-packaging path entirely; kept on Node 20 to match the rest of the
 # toolchain (this is a build-time-only dependency, not a runtime one).
-COPY --from=node:20-slim /usr/local/bin/node /usr/local/bin/node
-COPY --from=node:20-slim /usr/local/bin/npm /usr/local/bin/npm
-COPY --from=node:20-slim /usr/local/bin/npx /usr/local/bin/npx
-COPY --from=node:20-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
+#
+# Copy whole directories (trailing slashes), not individual files: /usr/local/bin/npm
+# in the official image is a symlink into /usr/local/lib/node_modules/npm/bin/npm-cli.js,
+# and copying it as a single named file dereferences the symlink, dropping npm-cli.js's
+# own relative-path assumptions about where it lives (MODULE_NOT_FOUND at runtime).
+# A directory-to-directory copy preserves the symlink and everything it points to.
+COPY --from=node:20-slim /usr/local/bin/ /usr/local/bin/
+COPY --from=node:20-slim /usr/local/lib/node_modules/ /usr/local/lib/node_modules/
 
 # Copy csproj files and restore dependencies
 COPY ["TrashMob/TrashMob.csproj", "TrashMob/"]
