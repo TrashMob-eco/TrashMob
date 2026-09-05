@@ -7,7 +7,7 @@ import {
     DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { WaiverVersionData, WaiverScope } from '@/components/Models/WaiverVersionData';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router';
@@ -16,7 +16,7 @@ interface GetColumnsProps {
     onDeactivate: (id: string, name: string) => void;
 }
 
-export const getColumns = ({ onDeactivate }: GetColumnsProps): ColumnDef<WaiverVersionData>[] => [
+export const getColumns = ({ onDeactivate }: GetColumnsProps): ColumnDef<typeof features, WaiverVersionData>[] => [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,

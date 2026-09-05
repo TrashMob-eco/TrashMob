@@ -7,12 +7,34 @@ import {
     Column,
     ColumnDef,
     flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable,
+    useTable,
+    tableFeatures,
+    columnFilteringFeature,
+    rowPaginationFeature,
+    rowSortingFeature,
+    globalFilteringFeature,
+    createFilteredRowModel,
+    createPaginatedRowModel,
+    createSortedRowModel,
+    filterFns,
+    sortFns,
 } from '@tanstack/react-table';
+
+// v9 replaces the v8 pattern of passing individual `getXRowModel()` factories
+// as table options with a single `features` registry — every table in the
+// app shares this one instance so `DataTable` and every `columns.tsx` file's
+// `ColumnDef<typeof features, TData>` agree on the same feature set.
+export const features = tableFeatures({
+    columnFilteringFeature,
+    rowPaginationFeature,
+    rowSortingFeature,
+    globalFilteringFeature,
+    filteredRowModel: createFilteredRowModel(),
+    paginatedRowModel: createPaginatedRowModel(),
+    sortedRowModel: createSortedRowModel(),
+    filterFns,
+    sortFns,
+});
 
 import {
     ArrowDown,
@@ -42,7 +64,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { cn } from '@/lib/utils';
 
 interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[];
+    columns: ColumnDef<typeof features, TData, TValue>[];
     data: TData[];
     /** Enable global search filter */
     enableSearch?: boolean;
@@ -66,16 +88,13 @@ export const DataTable = <TData, TValue>({
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
 
-    const table = useReactTable({
+    const table = useTable({
+        features,
         data,
         columns,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
-        getSortedRowModel: getSortedRowModel(),
         onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,
-        getFilteredRowModel: getFilteredRowModel(),
         globalFilterFn: searchColumns
             ? (row, _columnId, filterValue) => {
                   const search = filterValue.toLowerCase();
@@ -167,11 +186,11 @@ export const DataTable = <TData, TValue>({
 /** Pagination */
 
 interface DataTablePaginationProps<TData> {
-    table: TanstackTable<TData>;
+    table: TanstackTable<typeof features, TData>;
 }
 
 export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
-    const { pageIndex, pageSize } = table.getState().pagination;
+    const { pageIndex, pageSize } = table.state.pagination;
     const totalFiltered = table.getFilteredRowModel().rows.length;
     const currentPageRows = table.getRowModel().rows.length;
     const firstItemNumber = pageIndex * pageSize + 1;
@@ -186,13 +205,13 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
                 <div className='flex items-center space-x-2'>
                     <p className='text-sm font-medium'>Rows per page</p>
                     <Select
-                        value={`${table.getState().pagination.pageSize}`}
+                        value={`${table.state.pagination.pageSize}`}
                         onValueChange={(value) => {
                             table.setPageSize(Number(value));
                         }}
                     >
                         <SelectTrigger className='h-8 w-[70px]'>
-                            <SelectValue placeholder={table.getState().pagination.pageSize} />
+                            <SelectValue placeholder={table.state.pagination.pageSize} />
                         </SelectTrigger>
                         <SelectContent side='top'>
                             {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -204,7 +223,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
                     </Select>
                 </div>
                 <div className='flex w-[100px] items-center justify-center text-sm font-medium'>
-                    Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                    Page {table.state.pagination.pageIndex + 1} of {table.getPageCount()}
                 </div>
                 <div className='flex items-center space-x-2'>
                     <Button
@@ -251,7 +270,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
 
 /** Column Header */
 interface DataTableColumnHeaderProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
-    column: Column<TData, TValue>;
+    column: Column<typeof features, TData, TValue>;
     title: string;
 }
 

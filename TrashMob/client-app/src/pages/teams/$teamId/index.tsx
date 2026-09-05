@@ -21,7 +21,7 @@ import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge, EventVisibilityBadge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DataTable, DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTable, DataTableColumnHeader, features } from '@/components/ui/data-table';
 import TeamData from '@/components/Models/TeamData';
 import TeamMemberData from '@/components/Models/TeamMemberData';
 import TeamPhotoData from '@/components/Models/TeamPhotoData';
@@ -157,7 +157,7 @@ export const TeamDetailPage = () => {
         }
     };
 
-    const memberColumns: ColumnDef<TeamMemberData>[] = [
+    const memberColumns: ColumnDef<typeof features, TeamMemberData>[] = [
         {
             accessorKey: 'userName',
             header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
@@ -179,7 +179,7 @@ export const TeamDetailPage = () => {
         },
     ];
 
-    const eventColumns: ColumnDef<EventData>[] = [
+    const eventColumns: ColumnDef<typeof features, EventData>[] = [
         {
             accessorKey: 'name',
             header: ({ column }) => <DataTableColumnHeader column={column} title='Event' />,

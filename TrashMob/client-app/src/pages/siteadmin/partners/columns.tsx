@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import PartnerData from '@/components/Models/PartnerData';
 
 interface GetColumnsProps {
@@ -33,7 +33,7 @@ const partnerStatusLabels: Record<
     3: { label: 'Pending', variant: 'outline' },
 };
 
-export const getColumns = ({ onDelete, onToggleHomePage }: GetColumnsProps): ColumnDef<PartnerData>[] => [
+export const getColumns = ({ onDelete, onToggleHomePage }: GetColumnsProps): ColumnDef<typeof features, PartnerData>[] => [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,

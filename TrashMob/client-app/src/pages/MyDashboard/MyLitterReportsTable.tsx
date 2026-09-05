@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import { ColumnDef } from '@tanstack/react-table';
 import { MapPin, Calendar, Eye } from 'lucide-react';
 
-import { DataTable, DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTable, DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import LitterReportData from '@/components/Models/LitterReportData';
@@ -28,7 +28,7 @@ const getLocation = (report: LitterReportData) => {
     return parts.join(', ') || '-';
 };
 
-const columns: ColumnDef<LitterReportData>[] = [
+const columns: ColumnDef<typeof features, LitterReportData>[] = [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,

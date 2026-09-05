@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { ColumnDef } from '@tanstack/react-table';
+import { features } from '@/components/ui/data-table';
 import { Ellipsis, Eye } from 'lucide-react';
 import {
     DropdownMenu,
@@ -11,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import PartnerRequestData from '@/components/Models/PartnerRequestData';
 import { PartnerRequestStatusBadge } from '@/components/partner-requests/partner-request-status-badge';
 
-export const columns: ColumnDef<PartnerRequestData>[] = [
+export const columns: ColumnDef<typeof features, PartnerRequestData>[] = [
     {
         accessorKey: 'name',
         header: 'Name',

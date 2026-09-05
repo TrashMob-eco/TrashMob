@@ -7,7 +7,7 @@ import { MapPin, Users, Eye, Plus, Globe, Lock, Map, List, Loader2 } from 'lucid
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent } from '@/components/ui/card';
-import { DataTable, DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTable, DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TeamsMap } from '@/components/teams/teams-map';
@@ -24,7 +24,7 @@ const getLocation = (team: TeamData) => {
     return parts.join(', ') || '-';
 };
 
-const columns: ColumnDef<TeamData>[] = [
+const columns: ColumnDef<typeof features, TeamData>[] = [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Team Name' />,
