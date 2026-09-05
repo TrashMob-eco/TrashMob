@@ -8,9 +8,23 @@ ARG BUILD_ENVIRONMENT=pr
 
 WORKDIR /src
 
-# Install Node.js for React build
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs
+# Install Node.js for the React build by copying the official Node.js Docker
+# image's runtime, instead of NodeSource's apt-repo installer script. That
+# script (`setup_20.x | bash`) started silently failing to add its apt repo
+# starting 2026-09-04/05 (every deploy since 22:11 UTC 2026-09-04 failed
+# identically) — `apt-get install nodejs` then fell back to Ubuntu's own
+# bundled `nodejs` package, which doesn't include npm ("npm: not found").
+# Copying straight from the official image sidesteps any apt-repo /
+# distro-packaging path entirely; kept on Node 20 to match the rest of the
+# toolchain (this is a build-time-only dependency, not a runtime one).
+#
+# Copy whole directories (trailing slashes), not individual files: /usr/local/bin/npm
+# in the official image is a symlink into /usr/local/lib/node_modules/npm/bin/npm-cli.js,
+# and copying it as a single named file dereferences the symlink, dropping npm-cli.js's
+# own relative-path assumptions about where it lives (MODULE_NOT_FOUND at runtime).
+# A directory-to-directory copy preserves the symlink and everything it points to.
+COPY --from=node:20-slim /usr/local/bin/ /usr/local/bin/
+COPY --from=node:20-slim /usr/local/lib/node_modules/ /usr/local/lib/node_modules/
 
 # Copy csproj files and restore dependencies
 COPY ["TrashMob/TrashMob.csproj", "TrashMob/"]
