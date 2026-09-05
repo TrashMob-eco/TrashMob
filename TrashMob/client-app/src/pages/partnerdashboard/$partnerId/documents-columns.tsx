@@ -40,7 +40,10 @@ interface GetColumnsProps {
     onDelete: (documentId: string, documentName: string) => void;
 }
 
-export const getColumns = ({ onDownload, onDelete }: GetColumnsProps): ColumnDef<typeof features, PartnerDocumentData>[] => [
+export const getColumns = ({
+    onDownload,
+    onDelete,
+}: GetColumnsProps): ColumnDef<typeof features, PartnerDocumentData>[] => [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,

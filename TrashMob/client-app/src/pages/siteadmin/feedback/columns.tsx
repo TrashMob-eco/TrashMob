@@ -39,7 +39,10 @@ const categoryLabels: Record<string, string> = {
     Praise: 'Praise',
 };
 
-export const getColumns = ({ onUpdateStatus, onDelete }: GetColumnsProps): ColumnDef<typeof features, UserFeedbackData>[] => [
+export const getColumns = ({
+    onUpdateStatus,
+    onDelete,
+}: GetColumnsProps): ColumnDef<typeof features, UserFeedbackData>[] => [
     {
         accessorKey: 'category',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Category' />,

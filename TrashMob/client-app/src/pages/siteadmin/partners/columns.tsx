@@ -33,7 +33,10 @@ const partnerStatusLabels: Record<
     3: { label: 'Pending', variant: 'outline' },
 };
 
-export const getColumns = ({ onDelete, onToggleHomePage }: GetColumnsProps): ColumnDef<typeof features, PartnerData>[] => [
+export const getColumns = ({
+    onDelete,
+    onToggleHomePage,
+}: GetColumnsProps): ColumnDef<typeof features, PartnerData>[] => [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
