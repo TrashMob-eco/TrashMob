@@ -330,16 +330,6 @@ namespace TrashMob.Models
         public virtual ICollection<EventSummary> EventSummariesUpdated { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of IFTTT triggers created by this user.
-        /// </summary>
-        public virtual ICollection<IftttTrigger> IftttTriggersCreated { get; set; }
-
-        /// <summary>
-        /// Gets or sets the collection of IFTTT triggers last updated by this user.
-        /// </summary>
-        public virtual ICollection<IftttTrigger> IftttTriggersUpdated { get; set; }
-
-        /// <summary>
         /// Gets or sets the collection of job opportunities created by this user.
         /// </summary>
         public virtual ICollection<JobOpportunity> JobOpportunitiesCreated { get; set; }

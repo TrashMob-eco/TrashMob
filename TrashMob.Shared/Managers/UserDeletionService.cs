@@ -91,11 +91,6 @@ namespace TrashMob.Shared.Managers
                 .Where(n => n.UserId == userId)
                 .ExecuteDeleteAsync(ct);
 
-            // IFTTT triggers (user-specific)
-            await context.IftttTriggers
-                .Where(t => t.UserId == userId)
-                .ExecuteDeleteAsync(ct);
-
             // Professional company membership
             await context.ProfessionalCompanyUsers
                 .Where(pcu => pcu.UserId == userId)
@@ -264,7 +259,6 @@ namespace TrashMob.Shared.Managers
             await AnonymizeAuditFieldsAsync<TeamAdoption>(userId, ct);
             await AnonymizeAuditFieldsAsync<TeamJoinRequest>(userId, ct);
             await AnonymizeAuditFieldsAsync<ProfessionalCompanyUser>(userId, ct);
-            await AnonymizeAuditFieldsAsync<IftttTrigger>(userId, ct);
 
             // Entities from the original UserManager.DeleteAsync that were already handled
             await AnonymizeAuditFieldsAsync<PartnerRequest>(userId, ct);
