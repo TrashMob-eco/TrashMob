@@ -13,10 +13,16 @@
       "notes": "API keys don't expire unless revoked. Set to 2099 as placeholder. Update if you set an expiry."
     },
     {
-      "name": "Apple Sign-In Client Secret (Entra IDP)",
-      "expiryDate": "2026-08-20",
+      "name": "Apple Sign-In Client Secret (Entra IDP) - Dev",
+      "expiryDate": "2027-03-12",
       "renewUrl": "https://developer.apple.com/account/resources/authkeys/list",
-      "notes": "Apple client secrets expire every 6 months. Regenerate using d:/tools/Apple/generate-apple-secret.js"
+      "notes": "Apple client secrets expire every 6 months. Renew in the DEV Entra tenant (TrashMobEcoDev) portal: External Identities > All identity providers > Apple > re-select the .p8 key file (d:/tools/Apple/TrashMobEntraDev_AuthKey_KSP56LUPCG.p8) > Save. The file field always shows empty when reopened (browser security), and Service ID/Team ID/Key ID fields staying populated does NOT mean the secret was rotated -- you must actively re-select the file and Save to mint a fresh JWT. Rotated 2026-09-12."
+    },
+    {
+      "name": "Apple Sign-In Client Secret (Entra IDP) - Prod",
+      "expiryDate": "2027-03-12",
+      "renewUrl": "https://developer.apple.com/account/resources/authkeys/list",
+      "notes": "Apple client secrets expire every 6 months. Renew in the PROD Entra tenant (TrashMobEcoPr) portal: External Identities > All identity providers > Apple > re-select the .p8 key file (d:/tools/Apple/TrashMobEntraProd_AuthKey_535PNV2RYU.p8) > Save. Same caveats as the dev entry apply. Rotated 2026-09-12."
     },
     {
       "name": "Android Upload Keystore",
