@@ -1,5 +1,6 @@
 namespace TrashMobMobile.Services;
 
+using System.Globalization;
 using System.Net.Http.Json;
 using TrashMob.Models.Poco.V2;
 
@@ -12,7 +13,7 @@ public class WeatherRestService(IHttpClientFactory httpClientFactory) : RestServ
         DateTimeOffset eventDate, int durationHours, CancellationToken cancellationToken = default)
     {
         var dateParam = Uri.EscapeDataString(eventDate.ToString("o"));
-        var requestUri = $"forecast?lat={latitude}&lng={longitude}&date={dateParam}&durationHours={durationHours}";
+        var requestUri = $"forecast?lat={latitude.ToString(CultureInfo.InvariantCulture)}&lng={longitude.ToString(CultureInfo.InvariantCulture)}&date={dateParam}&durationHours={durationHours}";
 
         var httpClient = AnonymousHttpClient;
         var response = await httpClient.GetAsync(requestUri, cancellationToken);

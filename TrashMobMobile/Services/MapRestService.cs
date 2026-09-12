@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
+using System.Globalization;
 using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMob.Models.Extensions.V2;
@@ -13,7 +14,8 @@ public class MapRestService(IHttpClientFactory httpClientFactory) : RestServiceB
     public async Task<Address> GetAddressAsync(double latitude, double longitude,
         CancellationToken cancellationToken = default)
     {
-        var requestUri = Controller + $"/address?latitude={latitude}&longitude={longitude}";
+        var requestUri = Controller +
+            $"/address?latitude={latitude.ToString(CultureInfo.InvariantCulture)}&longitude={longitude.ToString(CultureInfo.InvariantCulture)}";
 
         using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
         {
