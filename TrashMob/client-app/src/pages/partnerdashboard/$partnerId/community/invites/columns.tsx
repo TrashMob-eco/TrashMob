@@ -1,12 +1,12 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { EmailInviteBatch } from '@/services/email-invites';
 import { Badge } from '@/components/ui/badge';
 import { Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router';
 
-export const getColumns = (partnerId: string): ColumnDef<EmailInviteBatch>[] => [
+export const getColumns = (partnerId: string): ColumnDef<typeof features, EmailInviteBatch>[] => [
     {
         accessorKey: 'createdDate',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Date' />,

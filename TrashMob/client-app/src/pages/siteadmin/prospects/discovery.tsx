@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable, features } from '@/components/ui/data-table';
 import { useToast } from '@/hooks/use-toast';
 import {
     DiscoverProspects,
@@ -20,7 +20,7 @@ import type DiscoveredProspectData from '@/components/Models/DiscoveredProspectD
 import type GeographicGapData from '@/components/Models/GeographicGapData';
 import type { ColumnDef } from '@tanstack/react-table';
 
-const discoveredColumns: ColumnDef<DiscoveredProspectData>[] = [
+const discoveredColumns: ColumnDef<typeof features, DiscoveredProspectData>[] = [
     { accessorKey: 'name', header: 'Name' },
     { accessorKey: 'type', header: 'Type' },
     {
@@ -159,7 +159,7 @@ const GapResearchButton = ({ gap }: { gap: GeographicGapData }) => {
     );
 };
 
-const gapColumns: ColumnDef<GeographicGapData>[] = [
+const gapColumns: ColumnDef<typeof features, GeographicGapData>[] = [
     { accessorKey: 'city', header: 'City' },
     { accessorKey: 'region', header: 'Region' },
     { accessorKey: 'country', header: 'Country' },

@@ -1352,47 +1352,7 @@ TrashMob.eco is a community-driven platform that connects volunteers to organize
 
 ### 10.1 IFTTT Integration
 
-**Status:** ? Implemented (Partial)  
-**Description:** Integrate with IFTTT for social media automation
-
-**Implementation:** `/Controllers/IFTTT/v1/` endpoints
-
-#### ? 10.1.1 IFTTT Setup
-**Status:** Implemented  
-**Description:** Authentication and channel setup
-
-**Implementation:** SetupController, StatusController
-
-#### ?? 10.1.2 Auto-Post New Events
-**Description:** Automatically post new events to social media
-
-**Trigger:** Event created
-
-**Platforms:** Twitter, Facebook, Instagram (via IFTTT)
-
-#### ?? 10.1.3 Auto-Post Litter Reports
-**Description:** Automatically share new litter reports
-
-**Use Case:** Increase awareness and recruit volunteers
-
-#### ?? 10.1.4 Auto-Post Partners
-**Description:** Welcome new partners on social media
-
-#### ?? 10.1.5 Auto-Post Event Summaries
-**Description:** Share impact after events complete
-
-**Content:**
-- Event name and location
-- Bags collected
-- Volunteers participated
-- Thank you message
-
-#### ?? 10.1.6 Auto-Post Event Reminders
-**Description:** Reminder posts about upcoming events
-
-**Timing:** 7 days before, 1 day before
-
-**Implementation:** IFTTT triggers (TriggersController, QueriesController)
+**Status:** Removed — the integration never shipped (no frontend surface, no tests, and its authorization policy was never wired up) and was deleted from the codebase rather than fixed up for a dependency upgrade.
 
 ---
 

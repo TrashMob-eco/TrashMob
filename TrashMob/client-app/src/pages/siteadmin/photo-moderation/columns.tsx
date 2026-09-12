@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { PhotoModerationItem, PhotoType } from '@/services/photo-moderation';
 
 interface GetColumnsProps {
@@ -46,7 +46,7 @@ export const getColumns = ({
     onDismiss,
     onViewDetails,
     tab,
-}: GetColumnsProps): ColumnDef<PhotoModerationItem>[] => [
+}: GetColumnsProps): ColumnDef<typeof features, PhotoModerationItem>[] => [
     {
         accessorKey: 'imageUrl',
         header: 'Photo',
@@ -130,7 +130,7 @@ export const getColumns = ({
                           <span className='text-muted-foreground'>-</span>
                       );
                   },
-              } as ColumnDef<PhotoModerationItem>,
+              } as ColumnDef<typeof features, PhotoModerationItem>,
           ]
         : []),
     ...(tab === 'moderated'
@@ -143,7 +143,7 @@ export const getColumns = ({
                       const statusInfo = statusColors[status] || { label: 'Unknown', color: 'bg-gray-500' };
                       return <Badge className={statusInfo.color}>{statusInfo.label}</Badge>;
                   },
-              } as ColumnDef<PhotoModerationItem>,
+              } as ColumnDef<typeof features, PhotoModerationItem>,
               {
                   accessorKey: 'moderatedDate',
                   header: 'Moderated',
@@ -151,7 +151,7 @@ export const getColumns = ({
                       const date = row.getValue('moderatedDate') as string;
                       return date ? new Date(date).toLocaleDateString() : '-';
                   },
-              } as ColumnDef<PhotoModerationItem>,
+              } as ColumnDef<typeof features, PhotoModerationItem>,
           ]
         : []),
     {

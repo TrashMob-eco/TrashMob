@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,7 +24,7 @@ interface GetColumnsProps {
     onDownload: (documentId: string) => void;
 }
 
-export const getColumns = ({ onDownload }: GetColumnsProps): ColumnDef<AdminPartnerDocumentData>[] => [
+export const getColumns = ({ onDownload }: GetColumnsProps): ColumnDef<typeof features, AdminPartnerDocumentData>[] => [
     {
         id: 'partnerName',
         accessorFn: (row) => row.partner?.name ?? '',

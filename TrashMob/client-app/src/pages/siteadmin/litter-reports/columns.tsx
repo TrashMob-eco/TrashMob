@@ -11,9 +11,9 @@ import {
     DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 
-export const columns: ColumnDef<LitterReportData>[] = [
+export const columns: ColumnDef<typeof features, LitterReportData>[] = [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,

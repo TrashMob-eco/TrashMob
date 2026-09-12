@@ -60,6 +60,15 @@ export default defineConfig(() => {
             globals: true,
             setupFiles: './tests/setup.ts',
             exclude: ['**/node_modules/**', '**/e2e/**'],
+            // Report-only for now (npm run test:coverage) — no threshold gate.
+            // Requires `@vitest/coverage-v8` installed (`npm install -D @vitest/coverage-v8`);
+            // not added to package.json here since this environment has no network access to
+            // resolve it and regenerate package-lock.json accordingly.
+            coverage: {
+                provider: 'v8',
+                reporter: ['text', 'html'],
+                exclude: ['**/node_modules/**', '**/e2e/**', '**/*.test.{ts,tsx}', 'tests/**'],
+            },
         },
     };
 });

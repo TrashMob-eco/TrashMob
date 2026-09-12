@@ -24,10 +24,5 @@
         /// The display name used when sending emails from TrashMob.
         /// </summary>
         public const string TrashMobEmailName = "TrashMob Information";
-
-        /// <summary>
-        /// The OAuth scope for IFTTT integration.
-        /// </summary>
-        public const string TrashMobIFTTTScope = "ifttt";
     }
 }

@@ -1,6 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Link } from 'react-router';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { DonorLifecycleBadge, EngagementScoreBadge } from '@/components/contacts/contact-constants';
 import { type ContactEngagementScoreData } from '@/services/contacts';
 
@@ -16,7 +16,7 @@ function getLastActivity(score: ContactEngagementScoreData): string {
     return formatDate(latest);
 }
 
-export const engagementColumns: ColumnDef<ContactEngagementScoreData>[] = [
+export const engagementColumns: ColumnDef<typeof features, ContactEngagementScoreData>[] = [
     {
         accessorKey: 'contactName',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,

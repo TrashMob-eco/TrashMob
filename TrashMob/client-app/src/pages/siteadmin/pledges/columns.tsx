@@ -2,7 +2,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Link } from 'react-router';
 import { Edit, Ellipsis, SquareX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -27,7 +27,7 @@ interface GetColumnsProps {
     onDelete: (id: string) => void;
 }
 
-export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<PledgeRow>[] => [
+export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<typeof features, PledgeRow>[] => [
     {
         accessorKey: 'contactName',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Contact' />,

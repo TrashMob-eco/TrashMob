@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { Newsletter } from '@/services/newsletters';
 
 interface GetColumnsProps {
@@ -33,7 +33,7 @@ export const getColumns = ({
     onSchedule,
     onTestSend,
     onDelete,
-}: GetColumnsProps): ColumnDef<Newsletter>[] => [
+}: GetColumnsProps): ColumnDef<typeof features, Newsletter>[] => [
     {
         accessorKey: 'subject',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Subject' />,

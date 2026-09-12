@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Edit, Ellipsis, SquareX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,7 +15,7 @@ interface GetColumnsProps {
     onDelete: (id: string, name: string) => void;
 }
 
-export const getColumns = ({ onEdit, onDelete }: GetColumnsProps): ColumnDef<ContactTagData>[] => [
+export const getColumns = ({ onEdit, onDelete }: GetColumnsProps): ColumnDef<typeof features, ContactTagData>[] => [
     {
         accessorKey: 'color',
         header: '',

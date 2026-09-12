@@ -7,7 +7,7 @@ import { MapPin, Building2, Eye, Map, List, Loader2 } from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent } from '@/components/ui/card';
-import { DataTable, DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTable, DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CommunitiesMap } from '@/components/communities/communities-map';
@@ -17,7 +17,7 @@ import { getLocation, getRegionTypeLabel } from '@/lib/community-utils';
 
 type ViewMode = 'list' | 'map';
 
-const columns: ColumnDef<CommunityData>[] = [
+const columns: ColumnDef<typeof features, CommunityData>[] = [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Community Name' />,

@@ -24,7 +24,5 @@
         /// sales-report v2 controllers.
         /// </summary>
         public const string UserIsSalesRepOrIsAdmin = "UserIsSalesRepOrIsAdmin";
-
-        public const string IftttServiceKey = "IftttServiceKey";
     }
 }

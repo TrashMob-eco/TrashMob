@@ -8,7 +8,7 @@ import { MapPin, Calendar, Eye, Plus, List, Map, Search } from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent } from '@/components/ui/card';
-import { DataTable, DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTable, DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -76,7 +76,7 @@ const dateOptions = [
     { value: getAllCompletedTimerange(), label: 'All time' },
 ];
 
-const columns: ColumnDef<LitterReportData>[] = [
+const columns: ColumnDef<typeof features, LitterReportData>[] = [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
