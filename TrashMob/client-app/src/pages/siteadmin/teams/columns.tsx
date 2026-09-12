@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import TeamData from '@/components/Models/TeamData';
 
 interface GetColumnsProps {
@@ -23,7 +23,7 @@ const getLocation = (team: TeamData) => {
     return parts.join(', ') || '-';
 };
 
-export const getColumns = ({ onDelete, onReactivate }: GetColumnsProps): ColumnDef<TeamData>[] => [
+export const getColumns = ({ onDelete, onReactivate }: GetColumnsProps): ColumnDef<typeof features, TeamData>[] => [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,

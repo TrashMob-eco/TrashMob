@@ -8,14 +8,14 @@ import {
     DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import UserData from '@/components/Models/UserData';
 
 interface GetColumnsProps {
     onDelete: (id: string, name: string) => void;
 }
 
-export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<UserData>[] => [
+export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<typeof features, UserData>[] => [
     {
         accessorKey: 'userName',
         header: ({ column }) => <DataTableColumnHeader column={column} title='UserName' />,

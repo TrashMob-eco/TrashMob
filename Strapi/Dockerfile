@@ -23,6 +23,9 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+# Install build dependencies for native modules (e.g. better-sqlite3)
+RUN apk add --no-cache python3 make g++
+
 # Install production dependencies only
 COPY package*.json ./
 RUN npm ci --omit=dev

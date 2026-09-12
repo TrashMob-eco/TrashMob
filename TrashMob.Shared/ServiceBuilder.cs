@@ -4,7 +4,6 @@
     using TrashMob.Models;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Events;
-    using TrashMob.Shared.Managers.IFTTT;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers.LitterReport;
     using TrashMob.Shared.Managers.Contacts;
@@ -205,8 +204,6 @@
             services.AddScoped<IImageManager, ImageManager>();
             services.AddScoped<IMapManager, MapManager>();
             services.AddScoped<ISecretRepository, SecretRepository>();
-            services.AddScoped<IQueriesManager, QueriesManager>();
-            services.AddScoped<ITriggersManager, TriggersManager>();
             services.AddScoped<IDbTransaction, DbTransaction>();
 
             return services;
@@ -229,7 +226,6 @@
             services.AddScoped<IBaseRepository<EventSummary>, BaseRepository<EventSummary>>();
             services.AddScoped<IKeyedRepository<EventAttendeeMetrics>, KeyedRepository<EventAttendeeMetrics>>();
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
-            services.AddScoped<IBaseRepository<IftttTrigger>, BaseRepository<IftttTrigger>>();
             services.AddScoped<ILookupRepository<InvitationStatus>, LookupRepository<InvitationStatus>>();
             services.AddScoped<IKeyedRepository<JobOpportunity>, KeyedRepository<JobOpportunity>>();
             services.AddScoped<IKeyedRepository<LitterImage>, KeyedRepository<LitterImage>>();

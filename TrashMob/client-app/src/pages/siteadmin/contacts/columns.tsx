@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Edit, Ellipsis, Eye, SquareX } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,7 +18,7 @@ interface GetColumnsProps {
     onDelete: (id: string, name: string) => void;
 }
 
-export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<ContactData>[] => [
+export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<typeof features, ContactData>[] => [
     {
         accessorKey: 'lastName',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,

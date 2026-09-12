@@ -3,7 +3,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type EventData from '@/components/Models/EventData';
 import type UserData from '@/components/Models/UserData';
 import moment from 'moment';
-import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { DataTableColumnHeader, features } from '@/components/ui/data-table';
 import { EventVisibilityBadge } from '@/components/ui/badge';
 import { EventActions } from './actions';
 
@@ -17,7 +17,7 @@ export const getColumns = ({
     currentUser,
     onShareEvent,
     onUnregisterEvent,
-}: GetColumnsProps): ColumnDef<EventData>[] => [
+}: GetColumnsProps): ColumnDef<typeof features, EventData>[] => [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,

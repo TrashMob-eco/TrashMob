@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable, features } from '@/components/ui/data-table';
 import { useToast } from '@/hooks/use-toast';
 import { DiscoverGrants, type DiscoverGrants_Body, type DiscoveredGrantData } from '@/services/grants';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -30,7 +30,7 @@ const formatAmount = (min: number | null, max: number | null) => {
     return '—';
 };
 
-const discoveredColumns: ColumnDef<DiscoveredGrantData>[] = [
+const discoveredColumns: ColumnDef<typeof features, DiscoveredGrantData>[] = [
     { accessorKey: 'funderName', header: 'Funder' },
     { accessorKey: 'programName', header: 'Program' },
     {
