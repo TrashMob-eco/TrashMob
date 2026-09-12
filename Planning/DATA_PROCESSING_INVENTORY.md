@@ -164,7 +164,7 @@ When a user requests account deletion, the `UserDeletionService` executes the fo
 
 | Phase | Action | Affected Data |
 |---|---|---|
-| **Phase A** | Full delete | Event attendee records, notifications, IFTTT triggers, professional company user records, partner admin roles |
+| **Phase A** | Full delete | Event attendee records, notifications, professional company user records, partner admin roles |
 | **Phase B** | Anonymize (UserId replaced with `Guid.Empty`) | Route data, cleanup metrics, photo moderation flags, moderation logs, email invite batches |
 | **Phase C** | Anonymize photo references | Event photo upload/moderation references, partner photo references, team photo references |
 | **Phase D** | Nullify UserId | Feedback records, email invitation records, team adoption records, litter image records |

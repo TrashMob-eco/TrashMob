@@ -54,7 +54,6 @@ Enable sustained growth of TrashMob.eco by strengthening onboarding & safety (mi
 - Newsletter support
 - In-app messaging (with guardrails)
 - Improved social media integration
-- IFTTT completion
 
 ### Technical & Operations
 - Mobile stabilization (MAUI)

@@ -59,7 +59,7 @@ Independent-engineer scan of the auth surface before drafting scope:
   - `UserIsProfessionalCompanyUserOrIsAdminAuthHandler`
   - `UserOwnsEntityOrIsAdminAuthHandler`
   - `UserIsValidUserAuthHandler` (indirect — via user provisioning)
-- **9 authorization policies** in `AuthorizationPolicyConstants.cs`: `UserIsAdmin`, `UserIsPartnerUserOrIsAdmin`, `UserOwnsEntity`, `UserOwnsEntityOrIsAdmin`, `UserIsEventLead`, `UserIsEventLeadOrIsAdmin`, `ValidUser`, `UserIsProfessionalCompanyUserOrIsAdmin`, `IftttServiceKey`. All work today; new role-scoped policies will layer alongside them.
+- **8 authorization policies** in `AuthorizationPolicyConstants.cs`: `UserIsAdmin`, `UserIsPartnerUserOrIsAdmin`, `UserOwnsEntity`, `UserOwnsEntityOrIsAdmin`, `UserIsEventLead`, `UserIsEventLeadOrIsAdmin`, `ValidUser`, `UserIsProfessionalCompanyUserOrIsAdmin`. All work today; new role-scoped policies will layer alongside them.
 - **`UsersV2Controller`** — 4 endpoints touch `IsSiteAdmin` on writes (create + update + admin-only writes to another user). These are the endpoints that need to route through a role-grant/revoke API in Phase 3.
 - **Photo moderation** and other jobs query `IsSiteAdmin` to find moderators for notifications; those queries need to swap to "users with the `PhotoModerator` role or the `SiteAdmin` role" (a small change once the data model lands).
 

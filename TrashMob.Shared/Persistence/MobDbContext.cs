@@ -33,8 +33,6 @@
 
         public virtual DbSet<EventType> EventTypes { get; set; }
 
-        public virtual DbSet<IftttTrigger> IftttTriggers { get; set; }
-
         public virtual DbSet<InvitationStatus> InvitationStatuses { get; set; }
 
         public virtual DbSet<JobOpportunity> JobOpportunities { get; set; }
@@ -689,23 +687,6 @@
                         Id = (int)EventStatusEnum.Complete, Name = "Completed", Description = "Event has completed",
                         DisplayOrder = 4, IsActive = true,
                     });
-            });
-
-            modelBuilder.Entity<IftttTrigger>(entity =>
-            {
-                entity.HasKey(e => new { e.TriggerId });
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.IftttTriggersCreated)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_IftttTriggers_CreatedByUser_Id");
-
-                entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.IftttTriggersUpdated)
-                    .HasForeignKey(d => d.LastUpdatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_IffttTriggers_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<InvitationStatus>(entity =>
