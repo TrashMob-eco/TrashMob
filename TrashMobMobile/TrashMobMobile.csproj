@@ -96,9 +96,9 @@
 		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="10.0.11" />
 		<PackageReference Include="Microsoft.Identity.Client" Version="4.87.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.100" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.90" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.100" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.11" />
-		<PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.90" />
+		<PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.100" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="Polly" Version="8.7.0" />
 		<PackageReference Include="Sentry.Maui" Version="6.8.0" />
