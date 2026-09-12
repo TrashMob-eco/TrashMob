@@ -226,10 +226,10 @@ public class Program
         builder.Services.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(2, 0);
-                options.AssumeDefaultVersionWhenUnspecified = true;
                 options.ReportApiVersions = true;
                 options.ApiVersionReader = new UrlSegmentApiVersionReader();
             })
+            .AddMvc()
             .AddApiExplorer(options =>
             {
                 options.GroupNameFormat = "'v'VVV";
