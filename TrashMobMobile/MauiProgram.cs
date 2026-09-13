@@ -42,6 +42,15 @@ public static class MauiProgram
             options.Dsn =
                 "https://4be7fb697cee47ce9554bb64f7d6a476@o4505460799045632.ingest.sentry.io/4505460800225280";
 
+            // Without this, Sentry's SDK default ("production") applies to every build,
+            // including dev/test -- mixing dev crashes into production data. Matches the
+            // "test"/"production" naming already used for the backend's GitHub environments.
+#if USETEST
+            options.Environment = "test";
+#else
+            options.Environment = "production";
+#endif
+
             // Use debug mode if you want to see what the SDK is doing.
             // Debug messages are written to stdout with Console.Writeline,
             // and are viewable in your IDE's debug console or with 'adb logcat', etc.

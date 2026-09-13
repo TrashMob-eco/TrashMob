@@ -39,6 +39,8 @@ on:
                 required: false
             ANDROID_GOOGLE_APIKEY:
                 required: false
+            SENTRY_AUTH_TOKEN:
+                required: false
         outputs:
             artifact_name:
                 value: artifacts-android-${{ inputs.build_number }}
@@ -129,6 +131,8 @@ jobs:
             dotnet restore TrashMobMobileApp.sln
 
         - name: Publish Android Mobile App
+          env:
+            SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           run: |
             dotnet publish TrashMobMobile/TrashMobMobile.csproj -c:${{ inputs.configuration }} -f:net10.0-android --no-restore /p:AndroidPackageFormat="aab"
 
