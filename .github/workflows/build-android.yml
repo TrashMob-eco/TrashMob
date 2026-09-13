@@ -65,6 +65,8 @@ jobs:
         - name: Determine Version
           id: version_step # step id used as reference for output values
           uses: gittools/actions/gitversion/execute@v3.2.1
+          with:
+            useConfigFile: true
   
         - name: Update Build Number
           run: |
