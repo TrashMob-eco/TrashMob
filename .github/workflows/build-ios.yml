@@ -44,6 +44,8 @@ on:
                 required: true
             appsettings:
                 required: true
+            sentry_auth_token:
+                required: false
         outputs:
             artifact_name:
                 value: artifacts-ios-${{ inputs.build_number }}
@@ -149,6 +151,8 @@ jobs:
             api-private-key: ${{ secrets.apple_key }}
 
         - name: Build MAUI iOS
+          env:
+            SENTRY_AUTH_TOKEN: ${{ secrets.sentry_auth_token }}
           run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ inputs.configuration }} -f net10.0-ios -r ios-arm64
 
         - name: Upload iOS Artifact
