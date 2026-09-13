@@ -1,12 +1,12 @@
 assembly-versioning-scheme: MajorMinorPatch
 mode: Mainline
-tag-pre-release-weight: 1590665287
+tag-pre-release-weight: 0
 branches:
   main:
     regex: ^main$
     increment: Patch
     is-release-branch: true
-    pre-release-weight: 1590665287
+    pre-release-weight: 0
     source-branches: ['main']
     tracks-release-branches: false
     tag: ''
@@ -14,7 +14,7 @@ branches:
     regex: ^release$
     increment: Patch
     is-release-branch: true
-    pre-release-weight: 1590665287
+    pre-release-weight: 0
     source-branches: ['main', 'release']
     tracks-release-branches: false
     tag: ''
