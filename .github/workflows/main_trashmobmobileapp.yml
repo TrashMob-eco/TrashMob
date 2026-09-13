@@ -40,7 +40,16 @@ jobs:
       - name: Set Offsets
         env:
           NUM: ${{ github.run_number }}
-          OFFSET: ${{ steps.version_step.outputs.WeightedPreReleaseNumber }}
+          # Fixed base for the shared Android versionCode / iOS CFBundleVersion field.
+          # Both platforms require this value to strictly increase forever and never
+          # decrease -- Google Play additionally enforces a hard ceiling of 2100000000.
+          # Previously derived from GitVersion's WeightedPreReleaseNumber (a ~1.59
+          # billion value driven by GitVersion.yml's pre-release-weight), which put us
+          # at ~76% of Google's ceiling and was one config typo away from jumping past
+          # it (see GitVersion.yml history, PR #1738). This is now a plain, explicit,
+          # human-reviewable constant instead, chosen to stay above the last shipped
+          # value (1590666003) with room to spare. Do not lower this value.
+          OFFSET: 1591000000
         run: |
           GITHUB_RUN_NUMBER_WITH_OFFSET=$(($NUM+$OFFSET))
           echo "GITHUB_RUN_NUMBER_WITH_OFFSET=$(($NUM+$OFFSET))" >> $GITHUB_ENV
