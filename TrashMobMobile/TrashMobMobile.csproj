@@ -43,6 +43,17 @@
 		<MauiVersion>10.0.70</MauiVersion>
 	</PropertyGroup>
 
+	<!-- Uploads native debug symbols + sources to Sentry so crashes (e.g. Android SIGABRT,
+	     iOS native aborts) are actually symbolicated instead of showing raw "?, in syscall"
+	     frames. Requires the SENTRY_AUTH_TOKEN env var (set in CI only); the Sentry MSBuild
+	     targets no-op locally when it's absent, so this is safe for local dev builds. -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<SentryOrg>trashmob</SentryOrg>
+		<SentryProject>dotnet-maui</SentryProject>
+		<SentryUploadSymbols>true</SentryUploadSymbols>
+		<SentryUploadSources>true</SentryUploadSources>
+	</PropertyGroup>
+
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-ios|AnyCPU'">
 	  <CreatePackage>false</CreatePackage>
