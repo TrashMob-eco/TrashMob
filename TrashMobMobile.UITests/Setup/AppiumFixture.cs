@@ -1,5 +1,6 @@
 namespace TrashMobMobile.UITests.Setup;
 
+using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
 using Xunit;
@@ -46,6 +47,19 @@ public class AppiumFixture : IAsyncLifetime
         Driver = new AndroidDriver(new Uri(serverUrl), options, TimeSpan.FromMinutes(5));
         Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
 
+        // Ensure the app is in the foreground (noReset=true + appWaitForLaunch=false
+        // may leave us on the launcher home screen)
+        Driver.ActivateApp(AppPackage);
+
+        // Wait for app to fully load (splash screen + initial data fetch)
+        WaitForAppReady(Driver);
+
+        // Auto-login in CI when test credentials are available
+        if (LoginHelper.HasCredentials)
+        {
+            LoginHelper.Login(Driver);
+        }
+
         return Task.CompletedTask;
     }
 
@@ -53,5 +67,36 @@ public class AppiumFixture : IAsyncLifetime
     {
         Driver?.Quit();
         return Task.CompletedTask;
+    }
+
+    private static void WaitForAppReady(AndroidDriver driver)
+    {
+        // Temporarily disable implicit wait for fast polling
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.Zero;
+
+        // Wait up to 2 minutes for the app to show either WelcomePage or MainTabsPage
+        var deadline = DateTime.UtcNow.AddMinutes(2);
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                driver.FindElement(MobileBy.AccessibilityId("WelcomeLogo"));
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
+                return;
+            }
+            catch { }
+
+            try
+            {
+                driver.FindElement(MobileBy.AccessibilityId("HomeTab"));
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
+                return;
+            }
+            catch { }
+
+            Thread.Sleep(2000);
+        }
+
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
     }
 }
