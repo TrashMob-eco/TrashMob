@@ -23,8 +23,8 @@ WORKDIR /src
 # and copying it as a single named file dereferences the symlink, dropping npm-cli.js's
 # own relative-path assumptions about where it lives (MODULE_NOT_FOUND at runtime).
 # A directory-to-directory copy preserves the symlink and everything it points to.
-COPY --from=node:20-slim /usr/local/bin/ /usr/local/bin/
-COPY --from=node:20-slim /usr/local/lib/node_modules/ /usr/local/lib/node_modules/
+COPY --from=node:24-slim /usr/local/bin/ /usr/local/bin/
+COPY --from=node:24-slim /usr/local/lib/node_modules/ /usr/local/lib/node_modules/
 
 # Copy csproj files and restore dependencies
 COPY ["TrashMob/TrashMob.csproj", "TrashMob/"]
